@@ -53,6 +53,6 @@
 		"@tailwindcss/typography": "^0.5.15"
 	},
 	"overrides": {
-    "@polka/url": "1.0.0-next.28"
-  }
+		"@polka/url": "1.0.0-next.28"
+	}
 }

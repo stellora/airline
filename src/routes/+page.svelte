@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { slide } from 'svelte/transition';
+	import { enhance } from '$app/forms'
+	import { slide } from 'svelte/transition'
 
-	let { data, form } = $props();
+	let { data, form } = $props()
 </script>
 
 <div class="flex flex-col gap-10 items-stretch w-full max-w-[600px] mx-auto">
@@ -39,4 +39,3 @@
 		{/each}
 	</ul>
 </div>
-

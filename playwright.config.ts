@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
 	webServer: {
@@ -6,7 +6,7 @@ export default defineConfig({
 		port: 4173
 	},
 	use: {
-		browserName:'chromium'
+		browserName: 'chromium'
 	},
 	testDir: 'e2e'
-});
+})
