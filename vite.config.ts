@@ -7,5 +7,11 @@ export default defineConfig({
 
 	test: {
 		include: ['src/**/*.test.ts']
-	}
+	},
+
+	resolve: process.env.VITEST
+		? {
+				conditions: ['browser']
+			}
+		: undefined
 })
