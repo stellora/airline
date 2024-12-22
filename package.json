@@ -20,7 +20,6 @@
 	"devDependencies": {
 		"@chromatic-com/storybook": "^3.2.3",
 		"@eslint/compat": "^1.2.3",
-		"@fontsource/fira-mono": "^5.0.0",
 		"@neoconfetti/svelte": "^2.0.0",
 		"@playwright/test": "^1.45.3",
 		"@storybook/addon-essentials": "^8.4.7",
