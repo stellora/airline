@@ -1,14 +1,14 @@
-import type { Todo } from '$lib/types';
+import type { Product } from '$lib/types';
 import { writable } from 'svelte/store';
 
 function createTodoStore() {
-    const { subscribe, set, update } = writable<Todo[]>([]);
+    const { subscribe, set, update } = writable<Product[]>([]);
 
     return {
         subscribe,
         add: (text: string) => update(todos => [
             ...todos,
-            { id: crypto.randomUUID(), text, completed: false }
+            { id: crypto.randomUUID(), description: text, done: false }
         ]),
         remove: (id: string) => update(todos => 
             todos.filter(todo => todo.id !== id)
@@ -16,7 +16,7 @@ function createTodoStore() {
         toggle: (id: string) => update(todos => 
             todos.map(todo => 
                 todo.id === id 
-                    ? { ...todo, completed: !todo.completed }
+                    ? { ...todo, done: !todo.done }
                     : todo
             )
         ),

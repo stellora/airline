@@ -1,41 +1,40 @@
-<script lang="ts">
-	import TodoItem from '$lib/components/TodoItem.svelte';
-	import { todos } from '$lib/stores/todoStore';
-	
-	let newTodoText = $state('');
+<script>
+	import { enhance } from '$app/forms';
+	import { fly, slide } from 'svelte/transition';
 
-	function handleSubmit() {
-			if (newTodoText.trim()) {
-					todos.add(newTodoText);
-					newTodoText = '';
-			}
-	}
+	let { data, form } = $props();
 </script>
 
-<svelte:head>
-	<title>TODOs</title>
-</svelte:head>
+<div class="flex flex-col gap-10 items-stretch w-full max-w-[600px] mx-auto">
+	<h1 class="text-4xl font-bold">Products</h1>
 
-<main class="max-w-[600px] mx-auto my-8 px-4 flex flex-col gap-6">
-	<h1 class="text-4xl font-bold text-center">TODOs</h1>
-	
-	<form onsubmit={handleSubmit} class="flex gap-4">
-			<input
-					type="text"
-					bind:value={newTodoText}
-					placeholder="Add a new todo..."
-					class="flex-1"
-			/>
-			<button type="submit" class="bg-green-500 text-white cursor-pointer">Add</button>
+	{#if form?.error}
+		<p class="text-red-700">{form.error}</p>
+	{/if}
+
+	<form method="POST" action="?/create" use:enhance class="flex flex-wrap gap-2">
+		<input
+			type="text"
+			name="description"
+			placeholder="New product description..."
+			value={form?.description ?? ''}
+			autocomplete="off"
+			class="flex-1"
+			required
+		/>
+		<button type="submit" class="bg-green-500 text-white">Add</button>
 	</form>
 
-	<div class="flex flex-col gap-2">
-			{#each $todos as todo (todo.id)}
-					<TodoItem {todo} />
-			{/each}
-	</div>
+	<ul class="flex flex-col gap-4">
+		{#each data.products as product (product.id)}
+			<li in:fly={{ y: 20 }} out:slide>
+				<form method="POST" action="?/delete" use:enhance class="flex flex-wrap gap-2 items-center">
+					<input type="hidden" name="id" value={product.id} />
+					<button type="submit">Delete</button>
+					<span>{product.description}</span>
+				</form>
+			</li>
+		{/each}
+	</ul>
+</div>
 
-	{#if $todos.length > 0}
-			<button class="cursor-pointer" onclick={() => todos.clear()}>Clear All</button>
-	{/if}
-</main>

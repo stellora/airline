@@ -13,6 +13,7 @@ body {
 	margin: 0;
 	background-color: Canvas;
 	color: CanvasText;
+	padding: 1rem;
 }
 
 input[type="text"] {

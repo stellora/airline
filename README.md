@@ -1,1 +1,1 @@
-# todo-app-sveltekit
+# storefront-app-sveltekit
