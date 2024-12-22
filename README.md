@@ -1,1 +1,1 @@
-# todo-app
+# todo-app-sveltekit
