@@ -27,6 +27,7 @@ input[type='text'] {
 	color: FieldText;
 	border: 1px solid color-mix(in srgb, Canvas, FieldText);
 	border-radius: var(--form-control-border-radius);
+	padding: 0.25rem 0.5rem;
 }
 
 input[type='checkbox'] {
@@ -39,7 +40,7 @@ button {
 	background-color: ButtonFace;
 	color: ButtonText;
 	border-radius: var(--form-control-border-radius);
-	padding: 0.5rem 0.75rem;
+	padding: 0.25rem 0.5rem;
 }
 
 @media (forced-colors: active) {

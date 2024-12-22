@@ -1,6 +1,18 @@
 import type { Product } from '$lib/types'
 
-const products: Product[] = []
+const INITIAL_PRODUCTS = [
+	'Fork',
+	'Spoon',
+	'Knife',
+	'Cast-Iron Pan',
+	'Baking Sheet',
+	'Flour',
+	'Tomato',
+	'Zucchini',
+	'Avocado'
+]
+
+const products: Product[] = INITIAL_PRODUCTS.map((title) => ({ id: crypto.randomUUID(), title }))
 
 export function listProducts() {
 	return products

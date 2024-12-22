@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
-	import { slide } from 'svelte/transition'
+	import { fade } from 'svelte/transition'
 
 	let { data, form } = $props()
 </script>
@@ -27,7 +27,7 @@
 
 	<ul class="flex flex-col gap-4">
 		{#each data.products as product (product.id)}
-			<li in:slide out:slide>
+			<li in:fade out:fade>
 				<form method="POST" action="?/delete" use:enhance class="flex flex-wrap gap-2 items-center">
 					<input type="hidden" name="id" value={product.id} />
 					<button type="submit">Delete</button>
