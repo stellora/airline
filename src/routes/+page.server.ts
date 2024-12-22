@@ -4,7 +4,7 @@ import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = () => {
 	return {
-		products: db.getProducts()
+		products: db.listProducts()
 	};
 }
 
@@ -12,18 +12,32 @@ export const actions: Actions = {
 	create: async ({ request }) => {
 		const data = await request.formData();
 
+		const title = data.get('title')
+		if (title === null || typeof title !== 'string') {
+			return fail(400, {
+				title,
+				error: 'title is required'
+			});
+		}
 		try {
-			db.createProduct(data.get('description'));
+			db.createProduct(title);
 		} catch (error) {
 			return fail(422, {
-				description: data.get('description'),
-				error: error instanceof Error ? error.message : 'Unknown error'
+				title,
+				error: error instanceof Error ? error.message : 'unknown error'
 			});
 		}
 	},
 
 	delete: async ({ request }) => {
 		const data = await request.formData();
-		db.deleteProduct(data.get('id'));
+		const id = data.get('id')
+		if (!id || typeof id !== 'string') {
+			return fail(400, {
+				error: 'id is required'
+			});
+
+		}
+		db.deleteProduct(id);
 	}
 };

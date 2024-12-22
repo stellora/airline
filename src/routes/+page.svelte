@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
 	import { enhance } from '$app/forms';
-	import { fly, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 
 	let { data, form } = $props();
 </script>
@@ -15,9 +15,9 @@
 	<form method="POST" action="?/create" use:enhance class="flex flex-wrap gap-2">
 		<input
 			type="text"
-			name="description"
-			placeholder="New product description..."
-			value={form?.description ?? ''}
+			name="title"
+			placeholder="New product..."
+			value={form?.title ?? ''}
 			autocomplete="off"
 			class="flex-1"
 			required
@@ -27,13 +27,15 @@
 
 	<ul class="flex flex-col gap-4">
 		{#each data.products as product (product.id)}
-			<li in:fly={{ y: 20 }} out:slide>
+			<li in:slide out:slide>
 				<form method="POST" action="?/delete" use:enhance class="flex flex-wrap gap-2 items-center">
 					<input type="hidden" name="id" value={product.id} />
 					<button type="submit">Delete</button>
-					<span>{product.description}</span>
+					<span>{product.title}</span>
 				</form>
 			</li>
+		{:else}
+			<p class="text-gray-500">No products yet.</p>
 		{/each}
 	</ul>
 </div>

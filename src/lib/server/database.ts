@@ -1,30 +1,29 @@
 import type { Product } from '$lib/types';
 
-const todos: Product[] = [];
+const products: Product[] = [];
 
-export function getProducts() {
-	return todos;
+export function listProducts() {
+	return products;
 }
 
-export function createProduct(description: string):void {
-	if (description === '') {
-		throw new Error('todo must have a description');
+export function createProduct(title: string):void {
+	if (title === '') {
+		throw new Error('title must not be empty');
 	}
 
-	if (todos.find((todo) => todo.description === description)) {
-		throw new Error('todos must be unique');
+	if (products.find((product) => product.title === title)) {
+		throw new Error('title must be unique across all products');
 	}
 
-	todos.push({
+	products.push({
 		id: crypto.randomUUID(),
-		description,
-		done: false
+		title: title,
 	});
 }
 
 export function deleteProduct(id: string):void {
-	const index = todos.findIndex((todo) => todo.id === id);
+	const index = products.findIndex((product) => product.id === id);
 	if (index !== -1) {
-		todos.splice(index, 1);
+		products.splice(index, 1);
 	}
 }
