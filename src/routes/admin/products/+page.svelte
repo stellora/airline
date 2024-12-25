@@ -1,6 +1,6 @@
 <script lang="ts">
-	import ProductForm from './ProductForm.svelte'
-	import ProductList from './ProductList.svelte'
+	import ProductForm from './product-form.svelte'
+	import ProductList from './product-list.svelte'
 
 	let { data, form } = $props()
 </script>

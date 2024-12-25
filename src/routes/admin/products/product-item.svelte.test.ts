@@ -1,7 +1,7 @@
 import type { Product } from '$lib/types'
 import { render } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
-import ProductItem from './ProductItem.svelte'
+import ProductItem from './product-item.svelte'
 
 describe('ProductItem', () => {
 	const mockProduct: Product = {

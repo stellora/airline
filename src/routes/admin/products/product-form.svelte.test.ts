@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
-import ProductForm from './ProductForm.svelte'
+import ProductForm from './product-form.svelte'
 
 describe('ProductForm', () => {
 	it('renders form elements', () => {

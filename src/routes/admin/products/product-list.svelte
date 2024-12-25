@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Product } from '$lib/types'
-	import ProductItem from './ProductItem.svelte'
+	import ProductItem from './product-item.svelte'
 
 	let { products }: { products: Product[] } = $props()
 </script>
