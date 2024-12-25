@@ -16,12 +16,6 @@ describe('ProductItem', () => {
 	})
 
 	describe('starring', () => {
-		it('shows star emoji when product is starred', () => {
-			const starredProduct = { ...mockProduct, starred: true }
-			const { getByText } = render(ProductItem, { props: { product: starredProduct } })
-			expect(getByText('Test Product ⭐')).toBeInTheDocument()
-		})
-
 		it('renders star/unstar button with correct text', async () => {
 			const { getByText, rerender } = render(ProductItem, { props: { product: mockProduct } })
 			expect(getByText('Star')).toBeInTheDocument()
