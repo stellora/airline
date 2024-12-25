@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
+	import { Button } from '$lib/components/ui/button'
+	import { Input } from '$lib/components/ui/input'
 	import type { ActionData } from './$types'
 	let { form }: { form: ActionData } = $props()
 </script>
@@ -12,7 +14,7 @@
 		class="flex flex-wrap gap-2"
 		data-testid="product-form"
 	>
-		<input
+		<Input
 			type="text"
 			name="title"
 			placeholder="New product..."
@@ -23,7 +25,7 @@
 			aria-label="Product title"
 			aria-required="true"
 		/>
-		<button type="submit" class="bg-green-500 text-white" aria-label="Add product">Add</button>
+		<Button type="submit" variant="secondary" aria-label="Add product">Add</Button>
 	</form>
 
 	{#if form?.error}
