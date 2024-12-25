@@ -1,6 +1,6 @@
 import * as db from '$lib/server/database.js'
 import { fail } from '@sveltejs/kit'
-import type { Actions, PageServerLoad } from '../../$types'
+import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = () => {
 	return {
