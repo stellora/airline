@@ -9,7 +9,7 @@
 <Sidebar.Provider>
 	<AppSidebar />
 	<Sidebar.Inset class="p-4">
-		<Sidebar.Trigger mobileOnly={true} />
+		<Sidebar.Trigger mobileOnly={true} class="mb-2" />
 		{@render children?.()}
 	</Sidebar.Inset>
 </Sidebar.Provider>
