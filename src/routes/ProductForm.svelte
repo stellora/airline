@@ -8,7 +8,13 @@
 	<p class="text-red-700">{form.error}</p>
 {/if}
 
-<form method="POST" action="?/create" use:enhance class="flex flex-wrap gap-2">
+<form
+	method="POST"
+	action="?/create"
+	use:enhance
+	class="flex flex-wrap gap-2"
+	data-testid="product-form"
+>
 	<input
 		type="text"
 		name="title"

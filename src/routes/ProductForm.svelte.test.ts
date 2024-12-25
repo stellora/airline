@@ -27,7 +27,7 @@ describe('ProductForm', () => {
 
 	it('has correct form action and method', () => {
 		render(ProductForm)
-		const form = screen.getByRole('form')
+		const form = screen.queryByTestId('product-form')
 		expect(form).toHaveAttribute('action', '?/create')
 		expect(form).toHaveAttribute('method', 'POST')
 	})
