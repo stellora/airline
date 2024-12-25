@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test'
 
 test('product list has expected title and initial products', async ({ page }) => {
-	await page.goto('/products')
+	await page.goto('/admin/products')
 	await expect(page.locator('h1')).toContainText('Products')
 	await expect(page.getByText('Avocado')).toBeVisible()
 })
 
 test('add and delete product', async ({ page }) => {
-	await page.goto('/products')
+	await page.goto('/admin/products')
 
 	// Add product
 	const input = page.getByPlaceholder('New product...')
@@ -25,7 +25,7 @@ test('add and delete product', async ({ page }) => {
 })
 
 test('star product', async ({ page }) => {
-	await page.goto('/products')
+	await page.goto('/admin/products')
 
 	const avocadoProduct = page.locator('li', { hasText: 'Avocado' })
 
