@@ -32,8 +32,10 @@ test('star product', async ({ page }) => {
 	const starButton = avocadoProduct.getByRole('button', { name: /Star|Unstar/ })
 	await starButton.click()
 	await expect(starButton).toHaveText('Unstar')
+	await expect(avocadoProduct).toContainText('⭐')
 
 	// Unstar product
 	await starButton.click()
 	await expect(starButton).toHaveText('Star')
+	await expect(avocadoProduct).not.toContainText('⭐')
 })
