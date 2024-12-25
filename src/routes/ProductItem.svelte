@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
+	import { Button } from '$lib/components/ui/button'
 	import type { Product } from '$lib/types'
 	import { fade } from 'svelte/transition'
 
@@ -15,18 +16,24 @@
 		<form method="POST" action="?/setProductStarred" use:enhance class="flex">
 			<input type="hidden" name="id" value={product.id} />
 			<input type="hidden" name="starred" value={!product.starred ? 'true' : 'false'} />
-			<button type="submit">{product.starred ? 'Unstar' : 'Star'}</button>
+			<Button type="submit" variant="secondary" size="sm"
+				>{product.starred ? 'Unstar' : 'Star'}</Button
+			>
 		</form>
 		<form method="POST" action="?/delete" use:enhance class="flex">
 			<input type="hidden" name="id" value={product.id} />
-			<button
+			<Button
 				type="submit"
+				variant="destructive"
+				size="sm"
 				onclick={async (event) => {
 					event.preventDefault()
 					if (confirm('Really delete?')) {
-						event.currentTarget.form?.submit()
+						if (event.currentTarget instanceof HTMLButtonElement) {
+							event.currentTarget.form?.submit()
+						}
 					}
-				}}>Delete</button
+				}}>Delete</Button
 			>
 		</form>
 	</div>
