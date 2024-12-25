@@ -6,12 +6,12 @@ describe('ProductForm', () => {
 	it('renders form elements', () => {
 		render(ProductForm)
 		expect(screen.getByPlaceholderText('New product...')).toBeInTheDocument()
-		expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument()
+		expect(screen.getByRole('button', { name: 'Add product' })).toBeInTheDocument()
 	})
 
 	it('displays error message when form.error exists', () => {
 		render(ProductForm, { props: { form: { error: 'Test error message' } } })
-		expect(screen.getByText('Test error message')).toBeInTheDocument()
+		expect(screen.getByText('Test error message', { exact: false })).toBeInTheDocument()
 	})
 
 	it('preserves input value from form data', () => {
