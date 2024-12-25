@@ -12,7 +12,11 @@ const INITIAL_PRODUCTS = [
 	'Avocado'
 ]
 
-const products: Product[] = INITIAL_PRODUCTS.map((title) => ({ id: crypto.randomUUID(), title }))
+const products: Product[] = INITIAL_PRODUCTS.map((title) => ({
+	id: crypto.randomUUID(),
+	title,
+	starred: false
+}))
 
 export function listProducts() {
 	return products
@@ -29,8 +33,17 @@ export function createProduct(title: string): void {
 
 	products.push({
 		id: crypto.randomUUID(),
-		title: title
+		title,
+		starred: false
 	})
+}
+
+export function setProductStarred(id: string, starred: boolean): void {
+	const product = products.find((product) => product.id === id)
+	if (!product) {
+		throw new Error(`product with id ${id} not found`)
+	}
+	product.starred = starred
 }
 
 export function deleteProduct(id: string): void {

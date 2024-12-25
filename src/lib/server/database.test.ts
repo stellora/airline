@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { createProduct, deleteAllProducts, deleteProduct, listProducts } from './database'
+import {
+	createProduct,
+	deleteAllProducts,
+	deleteProduct,
+	listProducts,
+	setProductStarred
+} from './database'
 
 describe('database', () => {
 	beforeEach(() => {
@@ -42,6 +48,23 @@ describe('database', () => {
 			createProduct('Test Product')
 			expect(() => createProduct('Test Product')).toThrow(
 				'title must be unique across all products'
+			)
+		})
+	})
+
+	describe('setProductStarred', () => {
+		it('updates starred status of product with given id', () => {
+			createProduct('Test Product')
+			const products = listProducts()
+			setProductStarred(products[0].id, true)
+			expect(listProducts()[0].starred).toBe(true)
+			setProductStarred(products[0].id, false)
+			expect(listProducts()[0].starred).toBe(false)
+		})
+
+		it('throws error when product id does not exist', () => {
+			expect(() => setProductStarred('non-existent-id', true)).toThrow(
+				'product with id non-existent-id not found'
 			)
 		})
 	})

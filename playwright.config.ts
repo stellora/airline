@@ -8,5 +8,6 @@ export default defineConfig({
 	use: {
 		browserName: 'chromium'
 	},
-	testDir: 'e2e'
+	testDir: 'e2e',
+	timeout: 2500
 })

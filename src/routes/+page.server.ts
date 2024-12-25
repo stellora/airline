@@ -29,6 +29,25 @@ export const actions: Actions = {
 		}
 	},
 
+	setProductStarred: async ({ request }) => {
+		const data = await request.formData()
+		const id = data.get('id')
+		if (!id || typeof id !== 'string') {
+			return fail(400, {
+				id,
+				error: 'id is required'
+			})
+		}
+		const starred = data.get('starred')
+		if (starred !== 'true' && starred !== 'false') {
+			return fail(400, {
+				starred,
+				error: 'starred must be "true" or "false"'
+			})
+		}
+		db.setProductStarred(id, starred === 'true')
+	},
+
 	delete: async ({ request }) => {
 		const data = await request.formData()
 		const id = data.get('id')
