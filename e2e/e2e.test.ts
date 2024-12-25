@@ -19,6 +19,7 @@ test('add and delete product', async ({ page }) => {
 	// Delete product
 	const productItem = page.locator('li', { hasText: 'Test Product' })
 	const deleteButton = productItem.getByRole('button', { name: 'Delete' })
+	page.on('dialog', (dialog) => dialog.accept())
 	await deleteButton.click()
 	await expect(page.getByText('Test Product')).not.toBeVisible()
 })

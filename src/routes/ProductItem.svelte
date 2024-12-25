@@ -6,7 +6,7 @@
 	const { product }: { product: Product } = $props()
 </script>
 
-<li in:fade out:fade class="flex flex-col gap-4 border border-gray-50/20 p-3">
+<li in:fade out:fade class="flex flex-col gap-4 border border-gray-50/20 p-3 rounded-md">
 	<h2 class="text-lg font-bold leading-none">
 		{product.title}
 		{product.starred ? ' ⭐' : ''}
@@ -19,7 +19,15 @@
 		</form>
 		<form method="POST" action="?/delete" use:enhance class="flex">
 			<input type="hidden" name="id" value={product.id} />
-			<button type="submit">Delete</button>
+			<button
+				type="submit"
+				onclick={async (event) => {
+					event.preventDefault()
+					if (confirm('Really delete?')) {
+						event.currentTarget.form?.submit()
+					}
+				}}>Delete</button
+			>
 		</form>
 	</div>
 </li>
