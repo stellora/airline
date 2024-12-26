@@ -8,51 +8,31 @@ import (
 	"github.com/stellora/airline/api-server/api"
 )
 
-func TestDeleteAllFlights(t *testing.T) {
-	ctx, handler := handlerTest(t)
-	flights = []api.Flight{
-		{Title: "Flight 1"},
-		{Title: "Flight 2"},
-	}
-
-	resp, err := handler.DeleteAllFlights(ctx, api.DeleteAllFlightsRequestObject{})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	want := api.DeleteAllFlights204Response{}
-	if !reflect.DeepEqual(want, resp) {
-		t.Errorf("got %v, want %v", resp, want)
-	}
-
-	checkFlightTitles(t, handler, []string{})
-}
-
 func TestGetFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []api.Flight{
-		{Id: "1", Title: "Flight 1"},
-		{Id: "2", Title: "Flight 2"},
+	flights = []*api.Flight{
+		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
+		{Id: 2, Number: "ST2", OriginAirport: api.Airport{Id: 2}, DestinationAirport: api.Airport{Id: 1}},
 	}
-	airports = []api.Airport{
-		{Id: "A", Title: "Airport A"},
-	}
-	flightAirportMemberships = []flightAirportMembership{
-		{flight: "1", airport: "A"},
+	airports = []*api.Airport{
+		{Id: 1, IataCode: "AAA"},
+		{Id: 2, IataCode: "BBB"},
 	}
 
 	t.Run("exists", func(t *testing.T) {
 		resp, err := handler.GetFlight(ctx, api.GetFlightRequestObject{
-			Id: "1",
+			Id: 1,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		want := api.GetFlight200JSONResponse{
-			Id:         "1",
-			Title:      "Flight 1",
-			Airports: &[]api.Airport{{Id: "A", Title: "Airport A"}},
+			Id:                 1,
+			Number:             "ST1",
+			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
+			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
+			Published:          false,
 		}
 		if !reflect.DeepEqual(want, resp) {
 			t.Errorf("got %v, want %v", resp, want)
@@ -61,7 +41,7 @@ func TestGetFlight(t *testing.T) {
 
 	t.Run("does not exist", func(t *testing.T) {
 		resp, err := handler.GetFlight(ctx, api.GetFlightRequestObject{
-			Id: "999",
+			Id: 999,
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -74,15 +54,13 @@ func TestGetFlight(t *testing.T) {
 
 func TestListFlights(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []api.Flight{
-		{Id: "1", Title: "Flight 1"},
-		{Id: "2", Title: "Flight 2"},
+	flights = []*api.Flight{
+		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
+		{Id: 2, Number: "ST2", OriginAirport: api.Airport{Id: 2}, DestinationAirport: api.Airport{Id: 1}},
 	}
-	airports = []api.Airport{
-		{Id: "A", Title: "Airport A"},
-	}
-	flightAirportMemberships = []flightAirportMembership{
-		{flight: "1", airport: "A"},
+	airports = []*api.Airport{
+		{Id: 1, IataCode: "AAA"},
+		{Id: 2, IataCode: "BBB"},
 	}
 
 	resp, err := handler.ListFlights(ctx, api.ListFlightsRequestObject{})
@@ -92,42 +70,17 @@ func TestListFlights(t *testing.T) {
 
 	want := api.ListFlights200JSONResponse{
 		api.Flight{
-			Id:         "1",
-			Title:      "Flight 1",
-			Airports: &[]api.Airport{{Id: "A", Title: "Airport A"}},
+			Id:                 1,
+			Number:             "ST1",
+			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
+			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
 		},
-		api.Flight{Id: "2", Title: "Flight 2", Airports: &[]api.Airport{}},
-	}
-	if !reflect.DeepEqual(want, resp) {
-		t.Errorf("got %v, want %v", resp, want)
-	}
-}
-
-func TestListFlightsByAirport(t *testing.T) {
-	ctx, handler := handlerTest(t)
-	flights = []api.Flight{
-		{Id: "1", Title: "Flight 1"},
-		{Id: "2", Title: "Flight 2"},
-		{Id: "3", Title: "Flight 3"},
-	}
-	airports = []api.Airport{
-		{Id: "A", Title: "Airport A"},
-	}
-	flightAirportMemberships = []flightAirportMembership{
-		{flight: "1", airport: "A"},
-		{flight: "2", airport: "A"},
-	}
-
-	resp, err := handler.ListFlightsByAirport(ctx, api.ListFlightsByAirportRequestObject{
-		AirportId: "A",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	want := api.ListFlightsByAirport200JSONResponse{
-		FlightsInAirport:    []api.Flight{{Id: "1", Title: "Flight 1"}, {Id: "2", Title: "Flight 2"}},
-		FlightsNotInAirport: []api.Flight{{Id: "3", Title: "Flight 3"}},
+		api.Flight{
+			Id:                 2,
+			Number:             "ST2",
+			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
+			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
+		},
 	}
 	if !reflect.DeepEqual(want, resp) {
 		t.Errorf("got %v, want %v", resp, want)
@@ -136,11 +89,16 @@ func TestListFlightsByAirport(t *testing.T) {
 
 func TestCreateFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []api.Flight{}
+	airports = []*api.Airport{
+		{Id: 1, IataCode: "AAA"},
+		{Id: 2, IataCode: "BBB"},
+	}
 
 	resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 		Body: &api.CreateFlightJSONRequestBody{
-			Title: "New Flight",
+			Number:             "ST1",
+			OriginAirport:      1,
+			DestinationAirport: 2,
 		},
 	})
 	if err != nil {
@@ -152,18 +110,70 @@ func TestCreateFlight(t *testing.T) {
 		t.Errorf("got %v, want %v", resp, want)
 	}
 
-	checkFlightTitles(t, handler, []string{"New Flight"})
+	checkFlightNumbers(t, handler, []string{"ST1"})
+}
+
+func TestUpdateFlight(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	flights = []*api.Flight{
+		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
+	}
+	airports = []*api.Airport{
+		{Id: 1, IataCode: "AAA"},
+		{Id: 2, IataCode: "BBB"},
+	}
+
+	{
+		// Update the flight
+		resp, err := handler.UpdateFlight(ctx, api.UpdateFlightRequestObject{
+			Id: 1,
+			Body: &api.UpdateFlightJSONRequestBody{
+				Number:             ptrTo("ST100"),
+				OriginAirport:      ptrTo(2),
+				DestinationAirport: ptrTo(1),
+				Published:          ptrTo(true),
+			},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if want := (api.UpdateFlight204Response{}); !reflect.DeepEqual(want, resp) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
+	}
+
+	{
+		// Verify the flight was actually updated
+		resp, err := handler.GetFlight(ctx, api.GetFlightRequestObject{Id: 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		want := api.GetFlight200JSONResponse{
+			Id:                 1,
+			Number:             "ST100",
+			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
+			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
+			Published:          true,
+		}
+		if !reflect.DeepEqual(want, resp) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
+	}
 }
 
 func TestDeleteFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []api.Flight{
-		{Id: "1", Title: "Flight 1"},
-		{Id: "2", Title: "Flight 2"},
+	flights = []*api.Flight{
+		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
+	}
+	airports = []*api.Airport{
+		{Id: 1, IataCode: "AAA"},
+		{Id: 2, IataCode: "BBB"},
 	}
 
 	resp, err := handler.DeleteFlight(ctx, api.DeleteFlightRequestObject{
-		Id: "1",
+		Id: 1,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -174,47 +184,33 @@ func TestDeleteFlight(t *testing.T) {
 		t.Errorf("got %v, want %v", resp, want)
 	}
 
-	checkFlightTitles(t, handler, []string{"Flight 2"})
+	checkFlightNumbers(t, handler, []string{})
 }
 
-func TestSetFlightPublished(t *testing.T) {
+func TestDeleteAllFlights(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []api.Flight{
-		{Id: "1", Title: "Flight 1", Published: false},
-		{Id: "2", Title: "Flight 2", Published: false},
+	flights = []*api.Flight{
+		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
+	}
+	airports = []*api.Airport{
+		{Id: 1, IataCode: "AAA"},
+		{Id: 2, IataCode: "BBB"},
 	}
 
-	resp, err := handler.SetFlightPublished(ctx, api.SetFlightPublishedRequestObject{
-		Id: "1",
-		Body: &api.SetFlightPublishedJSONRequestBody{
-			Published: true,
-		},
-	})
+	resp, err := handler.DeleteAllFlights(ctx, api.DeleteAllFlightsRequestObject{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := api.SetFlightPublished204Response{}
+	want := api.DeleteAllFlights204Response{}
 	if !reflect.DeepEqual(want, resp) {
 		t.Errorf("got %v, want %v", resp, want)
 	}
 
-	// Verify the flight was actually published
-	listResp, err := handler.ListFlights(ctx, api.ListFlightsRequestObject{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	flights := listResp.(api.ListFlights200JSONResponse)
-	for _, p := range flights {
-		if p.Id == "1" && !p.Published {
-			t.Error("Flight 1 should be published")
-		}
-		if p.Id == "2" && p.Published {
-			t.Error("Flight 2 should not be published")
-		}
-	}
+	checkFlightNumbers(t, handler, []string{})
 }
-func checkFlightTitles(t *testing.T, handler *Handler, want []string) {
+
+func checkFlightNumbers(t *testing.T, handler *Handler, want []string) {
 	resp, err := handler.ListFlights(context.Background(), api.ListFlightsRequestObject{})
 	if err != nil {
 		t.Fatal(err)
@@ -223,9 +219,9 @@ func checkFlightTitles(t *testing.T, handler *Handler, want []string) {
 	if len(flights) != len(want) {
 		t.Errorf("got %d flights, want %d", len(flights), len(want))
 	}
-	for i, airport := range flights {
-		if airport.Title != want[i] {
-			t.Errorf("got title %q, want %q", airport.Title, want[i])
+	for i, flight := range flights {
+		if flight.Number != want[i] {
+			t.Errorf("got %q, want %q", flight.Number, want[i])
 		}
 	}
 }

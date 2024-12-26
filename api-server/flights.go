@@ -17,76 +17,44 @@ func (h *Handler) GetFlight(ctx context.Context, request api.GetFlightRequestObj
 }
 
 func populateFlightAirports(flight *api.Flight) {
-	airports := []api.Airport{}
-	for _, membership := range flightAirportMemberships {
-		if membership.flight == flight.Id {
-			if airport := getAirport(membership.airport); airport != nil {
-				airports = append(airports, *airport)
-			}
-		}
+	flight.OriginAirport = *getAirport(flight.OriginAirport.Id)
+	flight.DestinationAirport = *getAirport(flight.DestinationAirport.Id)
+}
+
+func copyFlights(flights []*api.Flight) []api.Flight {
+	copies := make([]api.Flight, len(flights))
+	for i, flight := range flights {
+		copies[i] = *flight
 	}
-	flight.Airports = &airports
+	return copies
 }
 
 func (h *Handler) ListFlights(ctx context.Context, request api.ListFlightsRequestObject) (api.ListFlightsResponseObject, error) {
-	flightsWithAirports := flights
-	for i := range flightsWithAirports {
-		populateFlightAirports(&flightsWithAirports[i])
+	flights := copyFlights(flights)
+	for i := range flights {
+		populateFlightAirports(&flights[i])
 	}
-	return api.ListFlights200JSONResponse(flightsWithAirports), nil
-}
-
-func (h *Handler) ListFlightsByAirport(ctx context.Context, request api.ListFlightsByAirportRequestObject) (api.ListFlightsByAirportResponseObject, error) {
-	airport := request.AirportId
-
-	flightsInAirport := []api.Flight{}
-	for _, flight := range flights {
-		for _, membership := range flightAirportMemberships {
-			if membership.flight == flight.Id && membership.airport == airport {
-				flightsInAirport = append(flightsInAirport, flight)
-				break
-			}
-		}
-	}
-
-	flightsNotInAirport := []api.Flight{}
-	for _, flight := range flights {
-		inAirport := false
-		for _, membership := range flightAirportMemberships {
-			if membership.flight == flight.Id && membership.airport == airport {
-				inAirport = true
-				break
-			}
-		}
-		if !inAirport {
-			flightsNotInAirport = append(flightsNotInAirport, flight)
-		}
-	}
-
-	return api.ListFlightsByAirport200JSONResponse{
-		FlightsInAirport:    flightsInAirport,
-		FlightsNotInAirport: flightsNotInAirport,
-	}, nil
+	return api.ListFlights200JSONResponse(flights), nil
 }
 
 func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequestObject) (api.CreateFlightResponseObject, error) {
-	if request.Body.Title == "" {
-		return nil, fmt.Errorf("title must not be empty")
+	if request.Body.Number == "" {
+		return nil, fmt.Errorf("number must not be empty")
+	}
+	if request.Body.OriginAirport == 0 {
+		return nil, fmt.Errorf("originAirport must not be empty")
+	}
+	if request.Body.DestinationAirport == 0 {
+		return nil, fmt.Errorf("destinationAirport must not be empty")
 	}
 
-	for _, flight := range flights {
-		if flight.Title == request.Body.Title {
-			return nil, fmt.Errorf("title must be unique across all flights")
-		}
-	}
-
-	newFlight := api.Flight{
-		Id:        len(flights) + 1,
-		Title:     request.Body.Title,
-		Published: false,
-	}
-	flights = append(flights, newFlight)
-
+	flights = append(flights, &api.Flight{
+		Id:                 len(flights) + 1,
+		Number:             request.Body.Number,
+		OriginAirport:      api.Airport{Id: request.Body.OriginAirport},
+		DestinationAirport: api.Airport{Id: request.Body.DestinationAirport},
+		Published:          request.Body.Published != nil && *request.Body.Published,
+	})
 	return api.CreateFlight201Response{}, nil
 }
 
@@ -123,6 +91,6 @@ func (h *Handler) DeleteFlight(ctx context.Context, request api.DeleteFlightRequ
 }
 
 func (h *Handler) DeleteAllFlights(ctx context.Context, request api.DeleteAllFlightsRequestObject) (api.DeleteAllFlightsResponseObject, error) {
-	flights = []api.Flight{}
+	flights = []*api.Flight{}
 	return api.DeleteAllFlights204Response{}, nil
 }

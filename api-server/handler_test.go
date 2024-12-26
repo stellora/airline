@@ -8,13 +8,16 @@ import (
 )
 
 func handlerTest(t *testing.T) (context.Context, *Handler) {
-	resetDatabase()
-	t.Cleanup(resetDatabase)
-	return context.Background(), NewHandler()
+	clearDatabase()
+	t.Cleanup(clearDatabase)
+	return context.Background(), NewHandler(nil, nil)
 }
 
-func resetDatabase() {
-	flights = []api.Flight{}
-	airports = []api.Airport{}
-	flightAirportMemberships = []flightAirportMembership{}
+func clearDatabase() {
+	flights = []*api.Flight{}
+	airports = []*api.Airport{}
+}
+
+func ptrTo[T any](v T) *T {
+	return &v
 }

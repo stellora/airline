@@ -15,8 +15,16 @@ func (h *Handler) GetAirport(ctx context.Context, request api.GetAirportRequestO
 	return api.GetAirport200JSONResponse(*airport), nil
 }
 
+func copyAirports(airports []*api.Airport) []api.Airport {
+	copies := make([]api.Airport, len(airports))
+	for i, airport := range airports {
+		copies[i] = *airport
+	}
+	return copies
+}
+
 func (h *Handler) ListAirports(ctx context.Context, request api.ListAirportsRequestObject) (api.ListAirportsResponseObject, error) {
-	return api.ListAirports200JSONResponse(airports), nil
+	return api.ListAirports200JSONResponse(copyAirports(airports)), nil
 }
 
 func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRequestObject) (api.CreateAirportResponseObject, error) {
@@ -31,12 +39,10 @@ func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRe
 		}
 	}
 
-	newAirport := api.Airport{
+	airports = append(airports, &api.Airport{
 		Id:       len(airports) + 1,
 		IataCode: IataCode,
-	}
-	airports = append(airports, newAirport)
-
+	})
 	return api.CreateAirport201Response{}, nil
 }
 
@@ -54,25 +60,16 @@ func (h *Handler) UpdateAirport(ctx context.Context, request api.UpdateAirportRe
 
 func (h *Handler) DeleteAirport(ctx context.Context, request api.DeleteAirportRequestObject) (api.DeleteAirportResponseObject, error) {
 	// Find and remove the airport
-	newAirports := []api.Airport{}
-	found := false
-	for _, airport := range airports {
-		if airport.Id != request.Id {
-			newAirports = append(newAirports, airport)
-		} else {
-			found = true
+	for i, airport := range airports {
+		if airport.Id == request.Id {
+			airports = append(airports[:i], airports[i+1:]...)
+			break
 		}
 	}
-
-	if !found {
-		return nil, fmt.Errorf("airport not found")
-	}
-
-	airports = newAirports
 	return api.DeleteAirport204Response{}, nil
 }
 
 func (h *Handler) DeleteAllAirports(ctx context.Context, request api.DeleteAllAirportsRequestObject) (api.DeleteAllAirportsResponseObject, error) {
-	airports = []api.Airport{}
+	airports = []*api.Airport{}
 	return api.DeleteAllAirports204Response{}, nil
 }
