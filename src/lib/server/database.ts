@@ -1,6 +1,8 @@
 import type { Product, ProductCategory } from '$lib/types'
 
-const INITIAL_CATEGORIES = ['Silverware', 'Cookware', 'Vegetables']
+const INITIAL_CATEGORIES = ['Silverware', 'Cookware', 'Vegetables'] as const
+
+type InitialCategory = (typeof INITIAL_CATEGORIES)[number]
 
 const categories: ProductCategory[] = INITIAL_CATEGORIES.map((title) => ({
 	id: crypto.randomUUID(),
@@ -43,7 +45,9 @@ const INITIAL_PRODUCTS = [
 	'Tomato',
 	'Zucchini',
 	'Avocado'
-]
+] as const
+
+type InitialProduct = (typeof INITIAL_PRODUCTS)[number]
 
 const products: Product[] = INITIAL_PRODUCTS.map((title) => ({
 	id: crypto.randomUUID(),
@@ -91,7 +95,26 @@ export function deleteAllProducts(): void {
 	productCategoryMemberships.length = 0
 }
 
-const productCategoryMemberships: { product: string; category: string }[] = []
+const INITIAL_PRODUCT_CATEGORY_MEMBERSHIPS: {
+	product: InitialProduct
+	category: InitialCategory
+}[] = [
+	{ product: 'Tomato', category: 'Vegetables' },
+	{ product: 'Avocado', category: 'Vegetables' },
+	{ product: 'Zucchini', category: 'Vegetables' },
+	{ product: 'Baking Sheet', category: 'Cookware' },
+	{ product: 'Cast-Iron Pan', category: 'Cookware' },
+	{ product: 'Cutting Board', category: 'Cookware' },
+	{ product: 'Fork', category: 'Silverware' },
+	{ product: 'Knife', category: 'Silverware' },
+	{ product: 'Spoon', category: 'Silverware' }
+]
+
+const productCategoryMemberships: { product: string; category: string }[] =
+	INITIAL_PRODUCT_CATEGORY_MEMBERSHIPS.map(({ product, category }) => ({
+		product: products.find((p) => p.title === product)?.id ?? '',
+		category: categories.find((c) => c.title === category)?.id ?? ''
+	}))
 
 export function setProductInCategory(product: string, category: string, value: boolean): void {
 	const productObj = products.find((p) => p.id === product)

@@ -23,3 +23,25 @@ test('add and delete category', async ({ page }) => {
 	await deleteButton.click()
 	await expect(page.getByText('Test Category')).not.toBeVisible()
 })
+
+test('category detail page', async ({ page }) => {
+	await page.goto('/admin/categories')
+	await page.getByRole('link', { name: 'Cookware' }).click()
+
+	await expect(page.getByText('Cookware')).toBeVisible()
+
+	// Add product to category
+	const select = page.locator('select[name="product"]')
+	await select.selectOption({ label: 'Fork' })
+	await page.getByRole('button', { name: 'Add product to category' }).click()
+	await expect(page.getByTestId('products-in-category')).toContainText('Fork')
+
+	// Remove product from category
+	const removeButton = page
+		.getByTestId('products-in-category')
+		.locator('li', { hasText: 'Fork' })
+		.getByRole('button', { name: 'Remove from category' })
+	page.on('dialog', (dialog) => dialog.accept())
+	await removeButton.click()
+	await expect(page.getByTestId('products-in-category')).not.toContainText('Fork')
+})

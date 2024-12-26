@@ -21,10 +21,13 @@
 		</CardHeader>
 		<CardContent>
 			{#if data.productsInCategory.length > 0}
-				<ul class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4">
+				<ul
+					class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4"
+					data-testid="products-in-category"
+				>
 					{#each data.productsInCategory as product (product.id)}
 						<li class="p-3 border rounded-md flex items-center justify-between gap-2">
-							<ProductTitle class="w-full" {product} />
+							<ProductTitle class="w-full" link {product} />
 							<form
 								method="POST"
 								action="?/setProductInCategory"
@@ -37,7 +40,14 @@
 								<input type="hidden" name="category" value={data.category.id} />
 								<input type="hidden" name="product" value={product.id} />
 								<input type="hidden" name="value" value="false" />
-								<Button type="submit" variant="ghost" size="iconSm"><X /></Button>
+								<Button
+									type="submit"
+									variant="ghost"
+									size="iconSm"
+									aria-label="Remove from category"
+								>
+									<X />
+								</Button>
 							</form>
 						</li>
 					{/each}

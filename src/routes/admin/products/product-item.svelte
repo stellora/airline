@@ -9,7 +9,7 @@
 </script>
 
 <li in:fade out:fade class="flex flex-col gap-4 border p-3 rounded-md">
-	<ProductTitle {product} class="text-lg font-bold leading-none" />
+	<ProductTitle {product} link class="text-lg font-bold leading-none" />
 	<div class="flex flex-wrap gap-2 items-center">
 		<form method="POST" action="?/setProductStarred" use:enhance class="flex">
 			<input type="hidden" name="id" value={product.id} />
@@ -18,6 +18,7 @@
 				>{product.starred ? 'Unstar' : 'Star'}</Button
 			>
 		</form>
+		<Button variant="secondary" size="sm" href={`/admin/products/${product.id}`}>Edit</Button>
 		<form
 			method="POST"
 			action="?/delete"

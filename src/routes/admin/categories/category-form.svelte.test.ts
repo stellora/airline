@@ -10,7 +10,7 @@ describe('CategoryForm', () => {
 	})
 
 	it('displays error message when form.error exists', () => {
-		render(CategoryForm, { props: { form: { error: 'Test error message' } } })
+		render(CategoryForm, { props: { form: { title: '', error: 'Test error message' } } })
 		expect(screen.getByText('Test error message', { exact: false })).toBeInTheDocument()
 	})
 
