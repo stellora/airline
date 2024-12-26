@@ -2,7 +2,10 @@ module github.com/stellora/storefront/backend
 
 go 1.23.4
 
-require github.com/oapi-codegen/oapi-codegen/v2 v2.4.2-0.20241128135601-9feb3033b612
+require (
+	github.com/oapi-codegen/oapi-codegen/v2 v2.4.2-0.20241128135601-9feb3033b612
+	github.com/oapi-codegen/runtime v1.1.1
+)
 
 require (
 	github.com/dprotaso/go-yit v0.0.0-20220510233725-9ba8df137936 // indirect
