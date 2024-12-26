@@ -20,7 +20,7 @@
 			<CardTitle>Products in category</CardTitle>
 		</CardHeader>
 		<CardContent>
-			{#if data.productsInCategory.length > 0}
+			{#if data.productsInCategory && data.productsInCategory.length > 0}
 				<ul
 					class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4"
 					data-testid="products-in-category"
@@ -58,7 +58,7 @@
 		</CardContent>
 		<Separator />
 		<CardContent>
-			{#if data.productsNotInCategory.length > 0}
+			{#if data.productsNotInCategory && data.productsNotInCategory.length > 0}
 				<form method="POST" action="?/setProductInCategory" use:enhance class="flex gap-2">
 					<input type="hidden" name="category" value={data.category.id} />
 					<input type="hidden" name="value" value="true" />

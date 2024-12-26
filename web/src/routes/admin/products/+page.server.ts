@@ -3,8 +3,9 @@ import { fail } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async () => {
+	const products = (await apiClient.GET('/products', { fetch })).data!
 	return {
-		products: (await apiClient.GET('/products', { fetch })).data
+		products
 	}
 }
 
