@@ -1,5 +1,4 @@
 import { apiClient } from '$lib/api'
-import * as db from '$lib/server/database.js'
 import { fail } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
@@ -47,7 +46,19 @@ export const actions: Actions = {
 			})
 		}
 		const starred = starredStr === 'true'
-		db.setProductStarred(id, starred)
+
+		const resp = await apiClient.PATCH('/products/{id}', {
+			params: { path: { id } },
+			body: { starred },
+			fetch
+		})
+		if (!resp.response.ok) {
+			// TODO(sqs)
+			return fail(422, {
+				starred: undefined,
+				error: await resp.response.text()
+			})
+		}
 	},
 
 	delete: async ({ request }) => {
@@ -58,6 +69,16 @@ export const actions: Actions = {
 				error: 'id is required'
 			})
 		}
-		db.deleteProduct(id)
+
+		const resp = await apiClient.DELETE('/products/{id}', {
+			params: { path: { id } },
+			fetch
+		})
+		if (!resp.response.ok) {
+			// TODO(sqs)
+			return fail(422, {
+				error: await resp.response.text()
+			})
+		}
 	}
 }
