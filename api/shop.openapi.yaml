@@ -42,6 +42,8 @@ paths:
               properties:
                 title:
                   type: string
+              required:
+                - title
       responses:
         '201':
           description: Category created
@@ -88,6 +90,8 @@ paths:
               properties:
                 title:
                   type: string
+              required:
+                - title
       responses:
         '201':
           description: Product created
@@ -119,6 +123,8 @@ paths:
               properties:
                 starred:
                   type: boolean
+              required:
+                - starred
       responses:
         '200':
           description: Product updated
@@ -165,6 +171,9 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Product'
+                required:
+                  - productsInCategory
+                  - productsNotInCategory
 
   /products/{productId}/categories/{categoryId}:
     put:

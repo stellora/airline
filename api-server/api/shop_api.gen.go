@@ -31,17 +31,17 @@ type Product struct {
 
 // CreateCategoryJSONBody defines parameters for CreateCategory.
 type CreateCategoryJSONBody struct {
-	Title *string `json:"title,omitempty"`
+	Title string `json:"title"`
 }
 
 // CreateProductJSONBody defines parameters for CreateProduct.
 type CreateProductJSONBody struct {
-	Title *string `json:"title,omitempty"`
+	Title string `json:"title"`
 }
 
 // SetProductStarredJSONBody defines parameters for SetProductStarred.
 type SetProductStarredJSONBody struct {
-	Starred *bool `json:"starred,omitempty"`
+	Starred bool `json:"starred"`
 }
 
 // UpdateProductCategoryMembershipJSONBody defines parameters for UpdateProductCategoryMembership.
@@ -509,8 +509,8 @@ type ListProductsByCategoryResponseObject interface {
 }
 
 type ListProductsByCategory200JSONResponse struct {
-	ProductsInCategory    *[]Product `json:"productsInCategory,omitempty"`
-	ProductsNotInCategory *[]Product `json:"productsNotInCategory,omitempty"`
+	ProductsInCategory    []Product `json:"productsInCategory"`
+	ProductsNotInCategory []Product `json:"productsNotInCategory"`
 }
 
 func (response ListProductsByCategory200JSONResponse) VisitListProductsByCategoryResponse(w http.ResponseWriter) error {

@@ -1,0 +1,67 @@
+package main
+
+import (
+	"context"
+	"reflect"
+	"testing"
+
+	"github.com/stellora/shop/api-server/api"
+)
+
+func TestListCategories(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	categories = []api.Category{
+		{Title: "Category 1"},
+		{Title: "Category 2"},
+	}
+
+	resp, err := handler.ListCategories(ctx, api.ListCategoriesRequestObject{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := api.ListCategories200JSONResponse{
+		api.Category{Title: "Category 1"},
+		api.Category{Title: "Category 2"},
+	}
+	if !reflect.DeepEqual(want, resp) {
+		t.Errorf("got %v, want %v", resp, want)
+	}
+}
+
+func TestCreateCategory(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	categories = []api.Category{}
+
+	resp, err := handler.CreateCategory(ctx, api.CreateCategoryRequestObject{
+		Body: &api.CreateCategoryJSONRequestBody{
+			Title: "New Category",
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := api.CreateCategory201Response{}
+	if !reflect.DeepEqual(want, resp) {
+		t.Errorf("got %v, want %v", resp, want)
+	}
+
+	checkCategoryTitles(t, handler, []string{"New Category"})
+}
+
+func checkCategoryTitles(t *testing.T, handler *Handler, want []string) {
+	resp, err := handler.ListCategories(context.Background(), api.ListCategoriesRequestObject{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	categories := resp.(api.ListCategories200JSONResponse)
+	if len(categories) != len(want) {
+		t.Errorf("got %d categories, want %d", len(categories), len(want))
+	}
+	for i, category := range categories {
+		if category.Title != want[i] {
+			t.Errorf("got title %q, want %q", category.Title, want[i])
+		}
+	}
+}
