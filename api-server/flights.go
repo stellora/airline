@@ -7,35 +7,6 @@ import (
 	"github.com/stellora/airline/api-server/api"
 )
 
-var (
-	flights = []api.Flight{
-		{Title: "Fork"},
-		{Title: "Spoon"},
-		{Title: "Knife"},
-		{Title: "Cast-Iron Pan"},
-		{Title: "Baking Sheet"},
-		{Title: "Cutting Board"},
-		{Title: "Tomato"},
-		{Title: "Zucchini"},
-		{Title: "Avocado"},
-	}
-)
-
-func getFlight(id int) *api.Flight {
-	for i := range flights {
-		if flights[i].Id == id {
-			return &flights[i]
-		}
-	}
-	return nil
-}
-
-func init() {
-	for i := range flights {
-		flights[i].Id = i + 1
-	}
-}
-
 func (h *Handler) GetFlight(ctx context.Context, request api.GetFlightRequestObject) (api.GetFlightResponseObject, error) {
 	flight := getFlight(request.Id)
 	if flight == nil {

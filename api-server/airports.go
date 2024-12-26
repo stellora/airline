@@ -7,29 +7,6 @@ import (
 	"github.com/stellora/airline/api-server/api"
 )
 
-var (
-	airports = []api.Airport{
-		{IataCode: "SFO"},
-		{IataCode: "AMS"},
-		{IataCode: "HND"},
-	}
-)
-
-func getAirport(id int) *api.Airport {
-	for i := range airports {
-		if airports[i].Id == id {
-			return &airports[i]
-		}
-	}
-	return nil
-}
-
-func init() {
-	for i := range airports {
-		airports[i].Id = i + 1
-	}
-}
-
 func (h *Handler) GetAirport(ctx context.Context, request api.GetAirportRequestObject) (api.GetAirportResponseObject, error) {
 	airport := getAirport(request.Id)
 	if airport == nil {
