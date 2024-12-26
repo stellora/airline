@@ -28,6 +28,50 @@ func TestDeleteAllProducts(t *testing.T) {
 	checkProductTitles(t, handler, []string{})
 }
 
+func TestGetProduct(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	products = []api.Product{
+		{Id: "1", Title: "Product 1"},
+		{Id: "2", Title: "Product 2"},
+	}
+	categories = []api.Category{
+		{Id: "A", Title: "Category A"},
+	}
+	productCategoryMemberships = []productCategoryMembership{
+		{product: "1", category: "A"},
+	}
+
+	t.Run("exists", func(t *testing.T) {
+		resp, err := handler.GetProduct(ctx, api.GetProductRequestObject{
+			Id: "1",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		want := api.GetProduct200JSONResponse{
+			Id:         "1",
+			Title:      "Product 1",
+			Categories: &[]api.Category{{Id: "A", Title: "Category A"}},
+		}
+		if !reflect.DeepEqual(want, resp) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
+	})
+
+	t.Run("does not exist", func(t *testing.T) {
+		resp, err := handler.GetProduct(ctx, api.GetProductRequestObject{
+			Id: "999",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if want := (&api.GetProduct404Response{}); !reflect.DeepEqual(resp, want) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
+	})
+}
+
 func TestListProducts(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	products = []api.Product{

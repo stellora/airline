@@ -22,6 +22,15 @@ var (
 	}
 )
 
+func getProduct(id string) *api.Product {
+	for i := range products {
+		if products[i].Id == id {
+			return &products[i]
+		}
+	}
+	return nil
+}
+
 func init() {
 	for i := range products {
 		products[i].Id = strconv.Itoa(i + 1)
@@ -34,18 +43,31 @@ func (h *Handler) DeleteAllProducts(ctx context.Context, request api.DeleteAllPr
 	return api.DeleteAllProducts204Response{}, nil
 }
 
+func (h *Handler) GetProduct(ctx context.Context, request api.GetProductRequestObject) (api.GetProductResponseObject, error) {
+	product := getProduct(request.Id)
+	if product == nil {
+		return &api.GetProduct404Response{}, nil
+	}
+	populateProductCategories(product)
+	return api.GetProduct200JSONResponse(*product), nil
+}
+
+func populateProductCategories(product *api.Product) {
+	categories := []api.Category{}
+	for _, membership := range productCategoryMemberships {
+		if membership.product == product.Id {
+			if category := getCategory(membership.category); category != nil {
+				categories = append(categories, *category)
+			}
+		}
+	}
+	product.Categories = &categories
+}
+
 func (h *Handler) ListProducts(ctx context.Context, request api.ListProductsRequestObject) (api.ListProductsResponseObject, error) {
 	productsWithCategories := products
 	for i := range productsWithCategories {
-		categories := []api.Category{}
-		for _, membership := range productCategoryMemberships {
-			if membership.product == productsWithCategories[i].Id {
-				if category := getCategory(membership.category); category != nil {
-					categories = append(categories, *category)
-				}
-			}
-		}
-		productsWithCategories[i].Categories = &categories
+		populateProductCategories(&productsWithCategories[i])
 	}
 	return api.ListProducts200JSONResponse(productsWithCategories), nil
 }

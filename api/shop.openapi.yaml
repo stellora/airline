@@ -105,6 +105,24 @@ paths:
           description: All products deleted
 
   /products/{id}:
+    get:
+      operationId: getProduct
+      summary: Get product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
     patch:
       operationId: setProductStarred
       summary: Set product starred status

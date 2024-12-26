@@ -90,6 +90,9 @@ type ServerInterface interface {
 	// Delete a product
 	// (DELETE /products/{id})
 	DeleteProduct(w http.ResponseWriter, r *http.Request, id string)
+	// Get product by ID
+	// (GET /products/{id})
+	GetProduct(w http.ResponseWriter, r *http.Request, id string)
 	// Set product starred status
 	// (PATCH /products/{id})
 	SetProductStarred(w http.ResponseWriter, r *http.Request, id string)
@@ -257,6 +260,31 @@ func (siw *ServerInterfaceWrapper) DeleteProduct(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteProduct(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetProduct operation middleware
+func (siw *ServerInterfaceWrapper) GetProduct(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetProduct(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -454,6 +482,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/products", wrapper.ListProducts)
 	m.HandleFunc("POST "+options.BaseURL+"/products", wrapper.CreateProduct)
 	m.HandleFunc("DELETE "+options.BaseURL+"/products/{id}", wrapper.DeleteProduct)
+	m.HandleFunc("GET "+options.BaseURL+"/products/{id}", wrapper.GetProduct)
 	m.HandleFunc("PATCH "+options.BaseURL+"/products/{id}", wrapper.SetProductStarred)
 	m.HandleFunc("PUT "+options.BaseURL+"/products/{productId}/categories/{categoryId}", wrapper.UpdateProductCategoryMembership)
 
@@ -641,6 +670,31 @@ func (response DeleteProduct404Response) VisitDeleteProductResponse(w http.Respo
 	return nil
 }
 
+type GetProductRequestObject struct {
+	Id string `json:"id"`
+}
+
+type GetProductResponseObject interface {
+	VisitGetProductResponse(w http.ResponseWriter) error
+}
+
+type GetProduct200JSONResponse Product
+
+func (response GetProduct200JSONResponse) VisitGetProductResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetProduct404Response struct {
+}
+
+func (response GetProduct404Response) VisitGetProductResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
 type SetProductStarredRequestObject struct {
 	Id   string `json:"id"`
 	Body *SetProductStarredJSONRequestBody
@@ -721,6 +775,9 @@ type StrictServerInterface interface {
 	// Delete a product
 	// (DELETE /products/{id})
 	DeleteProduct(ctx context.Context, request DeleteProductRequestObject) (DeleteProductResponseObject, error)
+	// Get product by ID
+	// (GET /products/{id})
+	GetProduct(ctx context.Context, request GetProductRequestObject) (GetProductResponseObject, error)
 	// Set product starred status
 	// (PATCH /products/{id})
 	SetProductStarred(ctx context.Context, request SetProductStarredRequestObject) (SetProductStarredResponseObject, error)
@@ -987,6 +1044,32 @@ func (sh *strictHandler) DeleteProduct(w http.ResponseWriter, r *http.Request, i
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(DeleteProductResponseObject); ok {
 		if err := validResponse.VisitDeleteProductResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetProduct operation middleware
+func (sh *strictHandler) GetProduct(w http.ResponseWriter, r *http.Request, id string) {
+	var request GetProductRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetProduct(ctx, request.(GetProductRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetProduct")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetProductResponseObject); ok {
+		if err := validResponse.VisitGetProductResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
