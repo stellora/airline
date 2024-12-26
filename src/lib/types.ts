@@ -3,3 +3,8 @@ export type Product = {
 	title: string
 	starred: boolean
 }
+
+export type ProductCategory = {
+	id: string
+	title: string
+}

@@ -1,4 +1,37 @@
-import type { Product } from '$lib/types'
+import type { Product, ProductCategory } from '$lib/types'
+
+const INITIAL_CATEGORIES = ['Silverware', 'Cookware', 'Vegetables']
+
+const categories: ProductCategory[] = INITIAL_CATEGORIES.map((title) => ({
+	id: crypto.randomUUID(),
+	title
+}))
+
+export function listCategories(): ProductCategory[] {
+	return categories
+}
+
+export function createCategory(title: string): void {
+	if (title === '') {
+		throw new Error('title must not be empty')
+	}
+
+	if (categories.find((category) => category.title === title)) {
+		throw new Error('title must be unique across all categories')
+	}
+
+	categories.push({
+		id: crypto.randomUUID(),
+		title
+	})
+}
+
+export function deleteCategory(id: string): void {
+	const index = categories.findIndex((category) => category.id === id)
+	if (index !== -1) {
+		categories.splice(index, 1)
+	}
+}
 
 const INITIAL_PRODUCTS = [
 	'Fork',
@@ -6,7 +39,7 @@ const INITIAL_PRODUCTS = [
 	'Knife',
 	'Cast-Iron Pan',
 	'Baking Sheet',
-	'Flour',
+	'Cutting Board',
 	'Tomato',
 	'Zucchini',
 	'Avocado'
@@ -18,7 +51,7 @@ const products: Product[] = INITIAL_PRODUCTS.map((title) => ({
 	starred: false
 }))
 
-export function listProducts() {
+export function listProducts(): Product[] {
 	return products
 }
 

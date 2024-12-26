@@ -11,7 +11,7 @@
 		{#each data.products as product (product.id)}
 			<ProductCard {product} />
 		{:else}
-			<p class="text-gray-500">No products yet.</p>
+			<p class="text-muted-foreground">No products yet.</p>
 		{/each}
 	</div>
 </div>

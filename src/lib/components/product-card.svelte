@@ -5,6 +5,6 @@
 	const { product }: { product: Product } = $props()
 </script>
 
-<li class="flex flex-col gap-4 border border-gray-50/20 p-3 rounded-md min-h-32">
+<li class="flex flex-col gap-4 border p-3 rounded-md min-h-32">
 	<ProductTitle {product} class="text-lg font-bold leading-none" />
 </li>

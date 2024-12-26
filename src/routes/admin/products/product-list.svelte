@@ -5,10 +5,10 @@
 	let { products }: { products: Product[] } = $props()
 </script>
 
-<div class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4">
+<ul class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4">
 	{#each products as product (product.id)}
 		<ProductItem {product} />
 	{:else}
-		<p class="text-gray-500">No products yet.</p>
+		<p class="text-muted-foreground">No products yet.</p>
 	{/each}
-</div>
+</ul>

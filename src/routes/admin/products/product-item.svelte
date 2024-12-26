@@ -8,7 +8,7 @@
 	const { product }: { product: Product } = $props()
 </script>
 
-<li in:fade out:fade class="flex flex-col gap-4 border border-gray-50/20 p-3 rounded-md">
+<li in:fade out:fade class="flex flex-col gap-4 border p-3 rounded-md">
 	<ProductTitle {product} class="text-lg font-bold leading-none" />
 	<div class="flex flex-wrap gap-2 items-center">
 		<form method="POST" action="?/setProductStarred" use:enhance class="flex">

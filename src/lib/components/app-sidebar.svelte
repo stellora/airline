@@ -3,6 +3,7 @@
 	import * as Sidebar from '$lib/components/ui/sidebar'
 	import Boxes from 'lucide-svelte/icons/boxes'
 	import House from 'lucide-svelte/icons/house'
+	import Tag from 'lucide-svelte/icons/tag'
 
 	type Item = {
 		title: string
@@ -23,6 +24,11 @@
 			title: 'Products',
 			url: '/admin/products',
 			icon: Boxes
+		},
+		{
+			title: 'Categories',
+			url: '/admin/categories',
+			icon: Tag
 		}
 	]
 </script>
