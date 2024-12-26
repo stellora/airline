@@ -123,6 +123,43 @@ func TestDeleteProduct(t *testing.T) {
 	checkProductTitles(t, handler, []string{"Product 2"})
 }
 
+func TestSetProductStarred(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	products = []api.Product{
+		{Id: "1", Title: "Product 1", Starred: false},
+		{Id: "2", Title: "Product 2", Starred: false},
+	}
+
+	resp, err := handler.SetProductStarred(ctx, api.SetProductStarredRequestObject{
+		Id: "1",
+		Body: &api.SetProductStarredJSONRequestBody{
+			Starred: true,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := api.SetProductStarred200Response{}
+	if !reflect.DeepEqual(want, resp) {
+		t.Errorf("got %v, want %v", resp, want)
+	}
+
+	// Verify the product was actually starred
+	listResp, err := handler.ListProducts(ctx, api.ListProductsRequestObject{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	products := listResp.(api.ListProducts200JSONResponse)
+	for _, p := range products {
+		if p.Id == "1" && !p.Starred {
+			t.Error("Product 1 should be starred")
+		}
+		if p.Id == "2" && p.Starred {
+			t.Error("Product 2 should not be starred")
+		}
+	}
+}
 func checkProductTitles(t *testing.T, handler *Handler, want []string) {
 	resp, err := handler.ListProducts(context.Background(), api.ListProductsRequestObject{})
 	if err != nil {
