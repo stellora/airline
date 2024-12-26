@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/stellora/storefront/storefront-backend/api"
+	"github.com/stellora/shop/api-server/api"
 )
 
 var (

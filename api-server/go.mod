@@ -1,4 +1,4 @@
-module github.com/stellora/storefront/storefront-backend
+module github.com/stellora/shop/api-server
 
 go 1.23.4
 

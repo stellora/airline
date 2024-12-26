@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"github.com/stellora/storefront/storefront-backend/api"
+	"github.com/stellora/shop/api-server/api"
 )
 
 func NewHandler() *Handler {

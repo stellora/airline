@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Storefront API
+  title: Stellora Shop API
   version: 1.0.0
 paths:
   /health:

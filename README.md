@@ -1,4 +1,4 @@
-# Storefront (demo app)
+# Shop (demo app)
 
 ## Usage
 
