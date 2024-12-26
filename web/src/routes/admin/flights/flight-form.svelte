@@ -12,20 +12,20 @@
 		action="?/create"
 		use:enhance
 		class="flex flex-wrap gap-2"
-		data-testid="category-form"
+		data-testid="flight-form"
 	>
 		<Input
 			type="text"
 			name="title"
-			placeholder="New category..."
+			placeholder="New flight..."
 			value={form?.title ?? ''}
 			autocomplete="off"
 			class="flex-1"
 			required
-			aria-label="Category title"
+			aria-label="Flight title"
 			aria-required="true"
 		/>
-		<Button type="submit" variant="secondary" aria-label="Add category">Add</Button>
+		<Button type="submit" variant="secondary" aria-label="Add flight">Add</Button>
 	</form>
 
 	{#if form?.error}

@@ -9,29 +9,29 @@ import (
 	"context"
 )
 
-const addProductToCategory = `-- name: AddProductToCategory :exec
+const addFlightToAirport = `-- name: AddFlightToAirport :exec
 
-INSERT INTO product_categories (
-  product_id,
-  category_id
+INSERT INTO flight_airports (
+  flight_id,
+  airport_id
 ) VALUES (
   ?, ?
 )
 `
 
-type AddProductToCategoryParams struct {
-	ProductID  int64
-	CategoryID int64
+type AddFlightToAirportParams struct {
+	FlightID  int64
+	AirportID int64
 }
 
 // -----------------------------------------------------------------------------
-func (q *Queries) AddProductToCategory(ctx context.Context, arg AddProductToCategoryParams) error {
-	_, err := q.db.ExecContext(ctx, addProductToCategory, arg.ProductID, arg.CategoryID)
+func (q *Queries) AddFlightToAirport(ctx context.Context, arg AddFlightToAirportParams) error {
+	_, err := q.db.ExecContext(ctx, addFlightToAirport, arg.FlightID, arg.AirportID)
 	return err
 }
 
-const createCategory = `-- name: CreateCategory :one
-INSERT INTO categories (
+const createAirport = `-- name: CreateAirport :one
+INSERT INTO airports (
   title
 ) VALUES (
   ?
@@ -39,15 +39,15 @@ INSERT INTO categories (
 RETURNING id, title
 `
 
-func (q *Queries) CreateCategory(ctx context.Context, title string) (Category, error) {
-	row := q.db.QueryRowContext(ctx, createCategory, title)
-	var i Category
+func (q *Queries) CreateAirport(ctx context.Context, title string) (Airport, error) {
+	row := q.db.QueryRowContext(ctx, createAirport, title)
+	var i Airport
 	err := row.Scan(&i.ID, &i.Title)
 	return i, err
 }
 
-const createProduct = `-- name: CreateProduct :one
-INSERT INTO products (
+const createFlight = `-- name: CreateFlight :one
+INSERT INTO flights (
   title, starred
 ) VALUES (
   ?, ?
@@ -55,78 +55,78 @@ INSERT INTO products (
 RETURNING id, title, starred
 `
 
-type CreateProductParams struct {
+type CreateFlightParams struct {
 	Title   string
 	Starred bool
 }
 
-func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {
-	row := q.db.QueryRowContext(ctx, createProduct, arg.Title, arg.Starred)
-	var i Product
+func (q *Queries) CreateFlight(ctx context.Context, arg CreateFlightParams) (Flight, error) {
+	row := q.db.QueryRowContext(ctx, createFlight, arg.Title, arg.Starred)
+	var i Flight
 	err := row.Scan(&i.ID, &i.Title, &i.Starred)
 	return i, err
 }
 
-const deleteCategory = `-- name: DeleteCategory :exec
-DELETE FROM categories
+const deleteAirport = `-- name: DeleteAirport :exec
+DELETE FROM airports
 WHERE id=?
 `
 
-func (q *Queries) DeleteCategory(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteCategory, id)
+func (q *Queries) DeleteAirport(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAirport, id)
 	return err
 }
 
-const deleteProduct = `-- name: DeleteProduct :exec
-DELETE FROM products
+const deleteFlight = `-- name: DeleteFlight :exec
+DELETE FROM flights
 WHERE id=?
 `
 
-func (q *Queries) DeleteProduct(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteProduct, id)
+func (q *Queries) DeleteFlight(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFlight, id)
 	return err
 }
 
-const getCategory = `-- name: GetCategory :one
-SELECT id, title FROM categories
+const getAirport = `-- name: GetAirport :one
+SELECT id, title FROM airports
 WHERE id=? LIMIT 1
 `
 
-func (q *Queries) GetCategory(ctx context.Context, id int64) (Category, error) {
-	row := q.db.QueryRowContext(ctx, getCategory, id)
-	var i Category
+func (q *Queries) GetAirport(ctx context.Context, id int64) (Airport, error) {
+	row := q.db.QueryRowContext(ctx, getAirport, id)
+	var i Airport
 	err := row.Scan(&i.ID, &i.Title)
 	return i, err
 }
 
-const getProduct = `-- name: GetProduct :one
+const getFlight = `-- name: GetFlight :one
 
-SELECT id, title, starred FROM products
+SELECT id, title, starred FROM flights
 WHERE id=? LIMIT 1
 `
 
 // -----------------------------------------------------------------------------
-func (q *Queries) GetProduct(ctx context.Context, id int64) (Product, error) {
-	row := q.db.QueryRowContext(ctx, getProduct, id)
-	var i Product
+func (q *Queries) GetFlight(ctx context.Context, id int64) (Flight, error) {
+	row := q.db.QueryRowContext(ctx, getFlight, id)
+	var i Flight
 	err := row.Scan(&i.ID, &i.Title, &i.Starred)
 	return i, err
 }
 
-const listCategorys = `-- name: ListCategorys :many
-SELECT id, title FROM categories
+const listAirports = `-- name: ListAirports :many
+SELECT id, title FROM airports
 ORDER BY id ASC
 `
 
-func (q *Queries) ListCategorys(ctx context.Context) ([]Category, error) {
-	rows, err := q.db.QueryContext(ctx, listCategorys)
+func (q *Queries) ListAirports(ctx context.Context) ([]Airport, error) {
+	rows, err := q.db.QueryContext(ctx, listAirports)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Category
+	var items []Airport
 	for rows.Next() {
-		var i Category
+		var i Airport
 		if err := rows.Scan(&i.ID, &i.Title); err != nil {
 			return nil, err
 		}
@@ -141,20 +141,20 @@ func (q *Queries) ListCategorys(ctx context.Context) ([]Category, error) {
 	return items, nil
 }
 
-const listProducts = `-- name: ListProducts :many
-SELECT id, title, starred FROM products
+const listFlights = `-- name: ListFlights :many
+SELECT id, title, starred FROM flights
 ORDER BY id ASC
 `
 
-func (q *Queries) ListProducts(ctx context.Context) ([]Product, error) {
-	rows, err := q.db.QueryContext(ctx, listProducts)
+func (q *Queries) ListFlights(ctx context.Context) ([]Flight, error) {
+	rows, err := q.db.QueryContext(ctx, listFlights)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Product
+	var items []Flight
 	for rows.Next() {
-		var i Product
+		var i Flight
 		if err := rows.Scan(&i.ID, &i.Title, &i.Starred); err != nil {
 			return nil, err
 		}
@@ -169,51 +169,51 @@ func (q *Queries) ListProducts(ctx context.Context) ([]Product, error) {
 	return items, nil
 }
 
-const removeProductFromCategory = `-- name: RemoveProductFromCategory :exec
-DELETE FROM product_categories
-WHERE product_id = ? AND category_id = ?
+const removeFlightFromAirport = `-- name: RemoveFlightFromAirport :exec
+DELETE FROM flight_airports
+WHERE flight_id = ? AND airport_id = ?
 `
 
-type RemoveProductFromCategoryParams struct {
-	ProductID  int64
-	CategoryID int64
+type RemoveFlightFromAirportParams struct {
+	FlightID  int64
+	AirportID int64
 }
 
-func (q *Queries) RemoveProductFromCategory(ctx context.Context, arg RemoveProductFromCategoryParams) error {
-	_, err := q.db.ExecContext(ctx, removeProductFromCategory, arg.ProductID, arg.CategoryID)
+func (q *Queries) RemoveFlightFromAirport(ctx context.Context, arg RemoveFlightFromAirportParams) error {
+	_, err := q.db.ExecContext(ctx, removeFlightFromAirport, arg.FlightID, arg.AirportID)
 	return err
 }
 
-const updateCategory = `-- name: UpdateCategory :exec
-UPDATE categories SET
+const updateAirport = `-- name: UpdateAirport :exec
+UPDATE airports SET
 title=?
 WHERE id=?
 `
 
-type UpdateCategoryParams struct {
+type UpdateAirportParams struct {
 	Title string
 	ID    int64
 }
 
-func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) error {
-	_, err := q.db.ExecContext(ctx, updateCategory, arg.Title, arg.ID)
+func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) error {
+	_, err := q.db.ExecContext(ctx, updateAirport, arg.Title, arg.ID)
 	return err
 }
 
-const updateProduct = `-- name: UpdateProduct :exec
-UPDATE products SET
+const updateFlight = `-- name: UpdateFlight :exec
+UPDATE flights SET
 title=?,
 starred=?
 WHERE id=?
 `
 
-type UpdateProductParams struct {
+type UpdateFlightParams struct {
 	Title   string
 	Starred bool
 	ID      int64
 }
 
-func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) error {
-	_, err := q.db.ExecContext(ctx, updateProduct, arg.Title, arg.Starred, arg.ID)
+func (q *Queries) UpdateFlight(ctx context.Context, arg UpdateFlightParams) error {
+	_, err := q.db.ExecContext(ctx, updateFlight, arg.Title, arg.Starred, arg.ID)
 	return err
 }

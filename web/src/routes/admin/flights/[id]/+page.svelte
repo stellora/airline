@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
-	import ProductTitle from '$lib/components/product-title.svelte'
+	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
 
@@ -9,25 +9,25 @@
 
 <div class="flex flex-col gap-4 items-stretch w-full">
 	<div class="flex items-center gap-4">
-		<Button variant="outline" href="/admin/products">← Back</Button>
-		<ProductTitle product={data.product} class="text-2xl font-bold" as="h1" />
+		<Button variant="outline" href="/admin/flights">← Back</Button>
+		<FlightTitle flight={data.flight} class="text-2xl font-bold" as="h1" />
 	</div>
 
 	<Card>
 		<CardHeader>
-			<CardTitle>In categories</CardTitle>
+			<CardTitle>In airports</CardTitle>
 		</CardHeader>
 		<CardContent>
-			{#if data.product.categories && data.product.categories.length > 0}
+			{#if data.flight.airports && data.flight.airports.length > 0}
 				<ul class="flex flex-wrap gap-2">
-					{#each data.product.categories as category (category.id)}
+					{#each data.flight.airports as airport (airport.id)}
 						<li class="p-2 border text-sm rounded">
-							{category.title}
+							{airport.title}
 						</li>
 					{/each}
 				</ul>
 			{:else}
-				<p class="text-muted-foreground">No categories associated with this product.</p>
+				<p class="text-muted-foreground">No airports associated with this flight.</p>
 			{/if}
 		</CardContent>
 	</Card>
@@ -43,8 +43,8 @@
 					}
 				}}
 			>
-				<input type="hidden" name="id" value={data.product.id} />
-				<Button type="submit" variant="destructive">Delete product</Button>
+				<input type="hidden" name="id" value={data.flight.id} />
+				<Button type="submit" variant="destructive">Delete flight</Button>
 			</form>
 		</CardContent>
 	</Card>

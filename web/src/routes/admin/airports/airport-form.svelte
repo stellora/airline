@@ -12,20 +12,20 @@
 		action="?/create"
 		use:enhance
 		class="flex flex-wrap gap-2"
-		data-testid="product-form"
+		data-testid="airport-form"
 	>
 		<Input
 			type="text"
 			name="title"
-			placeholder="New product..."
+			placeholder="New airport..."
 			value={form?.title ?? ''}
 			autocomplete="off"
 			class="flex-1"
 			required
-			aria-label="Product title"
+			aria-label="Airport title"
 			aria-required="true"
 		/>
-		<Button type="submit" variant="secondary" aria-label="Add product">Add</Button>
+		<Button type="submit" variant="secondary" aria-label="Add airport">Add</Button>
 	</form>
 
 	{#if form?.error}

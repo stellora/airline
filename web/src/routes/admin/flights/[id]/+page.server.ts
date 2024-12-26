@@ -3,16 +3,16 @@ import { error, fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
-	const resp = await apiClient.GET('/products/{id}', {
-		params: { path: { id: params.product } },
+	const resp = await apiClient.GET('/flights/{id}', {
+		params: { path: { id: params.flight } },
 		fetch
 	})
 	if (!resp.response.ok || !resp.data) {
 		// TODO(sqs)
-		throw error(404, 'Product not found')
+		throw error(404, 'Flight not found')
 	}
 	return {
-		product: resp.data
+		flight: resp.data
 	}
 }
 
@@ -26,7 +26,7 @@ export const actions: Actions = {
 			})
 		}
 
-		const resp = await apiClient.DELETE('/products/{id}', {
+		const resp = await apiClient.DELETE('/flights/{id}', {
 			params: { path: { id } },
 			fetch
 		})
@@ -36,6 +36,6 @@ export const actions: Actions = {
 				error: await resp.response.text()
 			})
 		}
-		return redirect(303, '/admin/products')
+		return redirect(303, '/admin/flights')
 	}
 }

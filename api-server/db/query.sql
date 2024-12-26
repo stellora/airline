@@ -1,66 +1,66 @@
--- name: GetCategory :one
-SELECT * FROM categories
+-- name: GetAirport :one
+SELECT * FROM airports
 WHERE id=? LIMIT 1;
 
--- name: ListCategorys :many
-SELECT * FROM categories
+-- name: ListAirports :many
+SELECT * FROM airports
 ORDER BY id ASC;
 
--- name: CreateCategory :one
-INSERT INTO categories (
+-- name: CreateAirport :one
+INSERT INTO airports (
   title
 ) VALUES (
   ?
 )
 RETURNING *;
 
--- name: UpdateCategory :exec
-UPDATE categories SET
+-- name: UpdateAirport :exec
+UPDATE airports SET
 title=?
 WHERE id=?;
 
--- name: DeleteCategory :exec
-DELETE FROM categories
+-- name: DeleteAirport :exec
+DELETE FROM airports
 WHERE id=?;
 
 -------------------------------------------------------------------------------
 
--- name: GetProduct :one
-SELECT * FROM products
+-- name: GetFlight :one
+SELECT * FROM flights
 WHERE id=? LIMIT 1;
 
--- name: ListProducts :many
-SELECT * FROM products
+-- name: ListFlights :many
+SELECT * FROM flights
 ORDER BY id ASC;
 
--- name: CreateProduct :one
-INSERT INTO products (
+-- name: CreateFlight :one
+INSERT INTO flights (
   title, starred
 ) VALUES (
   ?, ?
 )
 RETURNING *;
 
--- name: UpdateProduct :exec
-UPDATE products SET
+-- name: UpdateFlight :exec
+UPDATE flights SET
 title=?,
 starred=?
 WHERE id=?;
 
--- name: DeleteProduct :exec
-DELETE FROM products
+-- name: DeleteFlight :exec
+DELETE FROM flights
 WHERE id=?;
 
 -------------------------------------------------------------------------------
 
--- name: AddProductToCategory :exec
-INSERT INTO product_categories (
-  product_id,
-  category_id
+-- name: AddFlightToAirport :exec
+INSERT INTO flight_airports (
+  flight_id,
+  airport_id
 ) VALUES (
   ?, ?
 );
 
--- name: RemoveProductFromCategory :exec
-DELETE FROM product_categories
-WHERE product_id = ? AND category_id = ?;
+-- name: RemoveFlightFromAirport :exec
+DELETE FROM flight_airports
+WHERE flight_id = ? AND airport_id = ?;

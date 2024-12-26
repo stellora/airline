@@ -21,13 +21,13 @@
 
 	const adminItems: Item[] = [
 		{
-			title: 'Products',
-			url: '/admin/products',
+			title: 'Flights',
+			url: '/admin/flights',
 			icon: Boxes
 		},
 		{
-			title: 'Categories',
-			url: '/admin/categories',
+			title: 'Airports',
+			url: '/admin/airports',
 			icon: Tag
 		}
 	]

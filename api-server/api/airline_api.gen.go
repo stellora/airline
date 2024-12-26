@@ -15,93 +15,93 @@ import (
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 )
 
-// Category defines model for Category.
-type Category struct {
+// Airport defines model for Airport.
+type Airport struct {
 	Id    string `json:"id"`
 	Title string `json:"title"`
 }
 
-// Product defines model for Product.
-type Product struct {
-	Categories *[]Category `json:"categories,omitempty"`
+// Flight defines model for Flight.
+type Flight struct {
+	Airports *[]Airport `json:"airports,omitempty"`
 	Id         string      `json:"id"`
 	Starred    bool        `json:"starred"`
 	Title      string      `json:"title"`
 }
 
-// CreateCategoryJSONBody defines parameters for CreateCategory.
-type CreateCategoryJSONBody struct {
+// CreateAirportJSONBody defines parameters for CreateAirport.
+type CreateAirportJSONBody struct {
 	Title string `json:"title"`
 }
 
-// CreateProductJSONBody defines parameters for CreateProduct.
-type CreateProductJSONBody struct {
+// CreateFlightJSONBody defines parameters for CreateFlight.
+type CreateFlightJSONBody struct {
 	Title string `json:"title"`
 }
 
-// SetProductStarredJSONBody defines parameters for SetProductStarred.
-type SetProductStarredJSONBody struct {
+// SetFlightStarredJSONBody defines parameters for SetFlightStarred.
+type SetFlightStarredJSONBody struct {
 	Starred bool `json:"starred"`
 }
 
-// UpdateProductCategoryMembershipJSONBody defines parameters for UpdateProductCategoryMembership.
-type UpdateProductCategoryMembershipJSONBody struct {
+// UpdateFlightAirportMembershipJSONBody defines parameters for UpdateFlightAirportMembership.
+type UpdateFlightAirportMembershipJSONBody struct {
 	Value bool `json:"value"`
 }
 
-// CreateCategoryJSONRequestBody defines body for CreateCategory for application/json ContentType.
-type CreateCategoryJSONRequestBody CreateCategoryJSONBody
+// CreateAirportJSONRequestBody defines body for CreateAirport for application/json ContentType.
+type CreateAirportJSONRequestBody CreateAirportJSONBody
 
-// CreateProductJSONRequestBody defines body for CreateProduct for application/json ContentType.
-type CreateProductJSONRequestBody CreateProductJSONBody
+// CreateFlightJSONRequestBody defines body for CreateFlight for application/json ContentType.
+type CreateFlightJSONRequestBody CreateFlightJSONBody
 
-// SetProductStarredJSONRequestBody defines body for SetProductStarred for application/json ContentType.
-type SetProductStarredJSONRequestBody SetProductStarredJSONBody
+// SetFlightStarredJSONRequestBody defines body for SetFlightStarred for application/json ContentType.
+type SetFlightStarredJSONRequestBody SetFlightStarredJSONBody
 
-// UpdateProductCategoryMembershipJSONRequestBody defines body for UpdateProductCategoryMembership for application/json ContentType.
-type UpdateProductCategoryMembershipJSONRequestBody UpdateProductCategoryMembershipJSONBody
+// UpdateFlightAirportMembershipJSONRequestBody defines body for UpdateFlightAirportMembership for application/json ContentType.
+type UpdateFlightAirportMembershipJSONRequestBody UpdateFlightAirportMembershipJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// List all categories
-	// (GET /categories)
-	ListCategories(w http.ResponseWriter, r *http.Request)
-	// Create a new category
-	// (POST /categories)
-	CreateCategory(w http.ResponseWriter, r *http.Request)
-	// List products in a category
-	// (GET /categories/{categoryId}/products)
-	ListProductsByCategory(w http.ResponseWriter, r *http.Request, categoryId string)
-	// Delete a category
-	// (DELETE /categories/{id})
-	DeleteCategory(w http.ResponseWriter, r *http.Request, id string)
-	// Get category by ID
-	// (GET /categories/{id})
-	GetCategory(w http.ResponseWriter, r *http.Request, id string)
+	// List all airports
+	// (GET /airports)
+	ListAirports(w http.ResponseWriter, r *http.Request)
+	// Create a new airport
+	// (POST /airports)
+	CreateAirport(w http.ResponseWriter, r *http.Request)
+	// List flights in a airport
+	// (GET /airports/{airportId}/flights)
+	ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportId string)
+	// Delete a airport
+	// (DELETE /airports/{id})
+	DeleteAirport(w http.ResponseWriter, r *http.Request, id string)
+	// Get airport by ID
+	// (GET /airports/{id})
+	GetAirport(w http.ResponseWriter, r *http.Request, id string)
 	// Health check endpoint
 	// (GET /health)
 	HealthCheck(w http.ResponseWriter, r *http.Request)
-	// Delete all products
-	// (DELETE /products)
-	DeleteAllProducts(w http.ResponseWriter, r *http.Request)
-	// List all products
-	// (GET /products)
-	ListProducts(w http.ResponseWriter, r *http.Request)
-	// Create a new product
-	// (POST /products)
-	CreateProduct(w http.ResponseWriter, r *http.Request)
-	// Delete a product
-	// (DELETE /products/{id})
-	DeleteProduct(w http.ResponseWriter, r *http.Request, id string)
-	// Get product by ID
-	// (GET /products/{id})
-	GetProduct(w http.ResponseWriter, r *http.Request, id string)
-	// Set product starred status
-	// (PATCH /products/{id})
-	SetProductStarred(w http.ResponseWriter, r *http.Request, id string)
-	// Set product category membership
-	// (PUT /products/{productId}/categories/{categoryId})
-	UpdateProductCategoryMembership(w http.ResponseWriter, r *http.Request, productId string, categoryId string)
+	// Delete all flights
+	// (DELETE /flights)
+	DeleteAllFlights(w http.ResponseWriter, r *http.Request)
+	// List all flights
+	// (GET /flights)
+	ListFlights(w http.ResponseWriter, r *http.Request)
+	// Create a new flight
+	// (POST /flights)
+	CreateFlight(w http.ResponseWriter, r *http.Request)
+	// Delete a flight
+	// (DELETE /flights/{id})
+	DeleteFlight(w http.ResponseWriter, r *http.Request, id string)
+	// Get flight by ID
+	// (GET /flights/{id})
+	GetFlight(w http.ResponseWriter, r *http.Request, id string)
+	// Set flight starred status
+	// (PATCH /flights/{id})
+	SetFlightStarred(w http.ResponseWriter, r *http.Request, id string)
+	// Set flight airport membership
+	// (PUT /flights/{flightId}/airports/{airportId})
+	UpdateFlightAirportMembership(w http.ResponseWriter, r *http.Request, flightId string, airportId string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -113,11 +113,11 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// ListCategories operation middleware
-func (siw *ServerInterfaceWrapper) ListCategories(w http.ResponseWriter, r *http.Request) {
+// ListAirports operation middleware
+func (siw *ServerInterfaceWrapper) ListAirports(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListCategories(w, r)
+		siw.Handler.ListAirports(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -127,11 +127,11 @@ func (siw *ServerInterfaceWrapper) ListCategories(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
-// CreateCategory operation middleware
-func (siw *ServerInterfaceWrapper) CreateCategory(w http.ResponseWriter, r *http.Request) {
+// CreateAirport operation middleware
+func (siw *ServerInterfaceWrapper) CreateAirport(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateCategory(w, r)
+		siw.Handler.CreateAirport(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -141,22 +141,22 @@ func (siw *ServerInterfaceWrapper) CreateCategory(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
-// ListProductsByCategory operation middleware
-func (siw *ServerInterfaceWrapper) ListProductsByCategory(w http.ResponseWriter, r *http.Request) {
+// ListFlightsByAirport operation middleware
+func (siw *ServerInterfaceWrapper) ListFlightsByAirport(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
-	// ------------- Path parameter "categoryId" -------------
-	var categoryId string
+	// ------------- Path parameter "airportId" -------------
+	var airportId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "categoryId", r.PathValue("categoryId"), &categoryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "airportId", r.PathValue("airportId"), &airportId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "categoryId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "airportId", Err: err})
 		return
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListProductsByCategory(w, r, categoryId)
+		siw.Handler.ListFlightsByAirport(w, r, airportId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -166,33 +166,8 @@ func (siw *ServerInterfaceWrapper) ListProductsByCategory(w http.ResponseWriter,
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteCategory operation middleware
-func (siw *ServerInterfaceWrapper) DeleteCategory(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteCategory(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetCategory operation middleware
-func (siw *ServerInterfaceWrapper) GetCategory(w http.ResponseWriter, r *http.Request) {
+// DeleteAirport operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAirport(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -206,7 +181,32 @@ func (siw *ServerInterfaceWrapper) GetCategory(w http.ResponseWriter, r *http.Re
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetCategory(w, r, id)
+		siw.Handler.DeleteAirport(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAirport operation middleware
+func (siw *ServerInterfaceWrapper) GetAirport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAirport(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -230,11 +230,11 @@ func (siw *ServerInterfaceWrapper) HealthCheck(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteAllProducts operation middleware
-func (siw *ServerInterfaceWrapper) DeleteAllProducts(w http.ResponseWriter, r *http.Request) {
+// DeleteAllFlights operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAllFlights(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteAllProducts(w, r)
+		siw.Handler.DeleteAllFlights(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -244,11 +244,11 @@ func (siw *ServerInterfaceWrapper) DeleteAllProducts(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
-// ListProducts operation middleware
-func (siw *ServerInterfaceWrapper) ListProducts(w http.ResponseWriter, r *http.Request) {
+// ListFlights operation middleware
+func (siw *ServerInterfaceWrapper) ListFlights(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListProducts(w, r)
+		siw.Handler.ListFlights(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -258,11 +258,11 @@ func (siw *ServerInterfaceWrapper) ListProducts(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r)
 }
 
-// CreateProduct operation middleware
-func (siw *ServerInterfaceWrapper) CreateProduct(w http.ResponseWriter, r *http.Request) {
+// CreateFlight operation middleware
+func (siw *ServerInterfaceWrapper) CreateFlight(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateProduct(w, r)
+		siw.Handler.CreateFlight(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -272,8 +272,8 @@ func (siw *ServerInterfaceWrapper) CreateProduct(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteProduct operation middleware
-func (siw *ServerInterfaceWrapper) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+// DeleteFlight operation middleware
+func (siw *ServerInterfaceWrapper) DeleteFlight(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -287,7 +287,7 @@ func (siw *ServerInterfaceWrapper) DeleteProduct(w http.ResponseWriter, r *http.
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteProduct(w, r, id)
+		siw.Handler.DeleteFlight(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -297,8 +297,8 @@ func (siw *ServerInterfaceWrapper) DeleteProduct(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r)
 }
 
-// GetProduct operation middleware
-func (siw *ServerInterfaceWrapper) GetProduct(w http.ResponseWriter, r *http.Request) {
+// GetFlight operation middleware
+func (siw *ServerInterfaceWrapper) GetFlight(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -312,7 +312,7 @@ func (siw *ServerInterfaceWrapper) GetProduct(w http.ResponseWriter, r *http.Req
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetProduct(w, r, id)
+		siw.Handler.GetFlight(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -322,8 +322,8 @@ func (siw *ServerInterfaceWrapper) GetProduct(w http.ResponseWriter, r *http.Req
 	handler.ServeHTTP(w, r)
 }
 
-// SetProductStarred operation middleware
-func (siw *ServerInterfaceWrapper) SetProductStarred(w http.ResponseWriter, r *http.Request) {
+// SetFlightStarred operation middleware
+func (siw *ServerInterfaceWrapper) SetFlightStarred(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -337,7 +337,7 @@ func (siw *ServerInterfaceWrapper) SetProductStarred(w http.ResponseWriter, r *h
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.SetProductStarred(w, r, id)
+		siw.Handler.SetFlightStarred(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -347,31 +347,31 @@ func (siw *ServerInterfaceWrapper) SetProductStarred(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
-// UpdateProductCategoryMembership operation middleware
-func (siw *ServerInterfaceWrapper) UpdateProductCategoryMembership(w http.ResponseWriter, r *http.Request) {
+// UpdateFlightAirportMembership operation middleware
+func (siw *ServerInterfaceWrapper) UpdateFlightAirportMembership(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
-	// ------------- Path parameter "productId" -------------
-	var productId string
+	// ------------- Path parameter "flightId" -------------
+	var flightId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "productId", r.PathValue("productId"), &productId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "flightId", r.PathValue("flightId"), &flightId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "productId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "flightId", Err: err})
 		return
 	}
 
-	// ------------- Path parameter "categoryId" -------------
-	var categoryId string
+	// ------------- Path parameter "airportId" -------------
+	var airportId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "categoryId", r.PathValue("categoryId"), &categoryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "airportId", r.PathValue("airportId"), &airportId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "categoryId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "airportId", Err: err})
 		return
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateProductCategoryMembership(w, r, productId, categoryId)
+		siw.Handler.UpdateFlightAirportMembership(w, r, flightId, airportId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -501,128 +501,128 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
-	m.HandleFunc("GET "+options.BaseURL+"/categories", wrapper.ListCategories)
-	m.HandleFunc("POST "+options.BaseURL+"/categories", wrapper.CreateCategory)
-	m.HandleFunc("GET "+options.BaseURL+"/categories/{categoryId}/products", wrapper.ListProductsByCategory)
-	m.HandleFunc("DELETE "+options.BaseURL+"/categories/{id}", wrapper.DeleteCategory)
-	m.HandleFunc("GET "+options.BaseURL+"/categories/{id}", wrapper.GetCategory)
+	m.HandleFunc("GET "+options.BaseURL+"/airports", wrapper.ListAirports)
+	m.HandleFunc("POST "+options.BaseURL+"/airports", wrapper.CreateAirport)
+	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportId}/flights", wrapper.ListFlightsByAirport)
+	m.HandleFunc("DELETE "+options.BaseURL+"/airports/{id}", wrapper.DeleteAirport)
+	m.HandleFunc("GET "+options.BaseURL+"/airports/{id}", wrapper.GetAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/health", wrapper.HealthCheck)
-	m.HandleFunc("DELETE "+options.BaseURL+"/products", wrapper.DeleteAllProducts)
-	m.HandleFunc("GET "+options.BaseURL+"/products", wrapper.ListProducts)
-	m.HandleFunc("POST "+options.BaseURL+"/products", wrapper.CreateProduct)
-	m.HandleFunc("DELETE "+options.BaseURL+"/products/{id}", wrapper.DeleteProduct)
-	m.HandleFunc("GET "+options.BaseURL+"/products/{id}", wrapper.GetProduct)
-	m.HandleFunc("PATCH "+options.BaseURL+"/products/{id}", wrapper.SetProductStarred)
-	m.HandleFunc("PUT "+options.BaseURL+"/products/{productId}/categories/{categoryId}", wrapper.UpdateProductCategoryMembership)
+	m.HandleFunc("DELETE "+options.BaseURL+"/flights", wrapper.DeleteAllFlights)
+	m.HandleFunc("GET "+options.BaseURL+"/flights", wrapper.ListFlights)
+	m.HandleFunc("POST "+options.BaseURL+"/flights", wrapper.CreateFlight)
+	m.HandleFunc("DELETE "+options.BaseURL+"/flights/{id}", wrapper.DeleteFlight)
+	m.HandleFunc("GET "+options.BaseURL+"/flights/{id}", wrapper.GetFlight)
+	m.HandleFunc("PATCH "+options.BaseURL+"/flights/{id}", wrapper.SetFlightStarred)
+	m.HandleFunc("PUT "+options.BaseURL+"/flights/{flightId}/airports/{airportId}", wrapper.UpdateFlightAirportMembership)
 
 	return m
 }
 
-type ListCategoriesRequestObject struct {
+type ListAirportsRequestObject struct {
 }
 
-type ListCategoriesResponseObject interface {
-	VisitListCategoriesResponse(w http.ResponseWriter) error
+type ListAirportsResponseObject interface {
+	VisitListAirportsResponse(w http.ResponseWriter) error
 }
 
-type ListCategories200JSONResponse []Category
+type ListAirports200JSONResponse []Airport
 
-func (response ListCategories200JSONResponse) VisitListCategoriesResponse(w http.ResponseWriter) error {
+func (response ListAirports200JSONResponse) VisitListAirportsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateCategoryRequestObject struct {
-	Body *CreateCategoryJSONRequestBody
+type CreateAirportRequestObject struct {
+	Body *CreateAirportJSONRequestBody
 }
 
-type CreateCategoryResponseObject interface {
-	VisitCreateCategoryResponse(w http.ResponseWriter) error
+type CreateAirportResponseObject interface {
+	VisitCreateAirportResponse(w http.ResponseWriter) error
 }
 
-type CreateCategory201Response struct {
+type CreateAirport201Response struct {
 }
 
-func (response CreateCategory201Response) VisitCreateCategoryResponse(w http.ResponseWriter) error {
+func (response CreateAirport201Response) VisitCreateAirportResponse(w http.ResponseWriter) error {
 	w.WriteHeader(201)
 	return nil
 }
 
-type CreateCategory400Response struct {
+type CreateAirport400Response struct {
 }
 
-func (response CreateCategory400Response) VisitCreateCategoryResponse(w http.ResponseWriter) error {
+func (response CreateAirport400Response) VisitCreateAirportResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
 }
 
-type ListProductsByCategoryRequestObject struct {
-	CategoryId string `json:"categoryId"`
+type ListFlightsByAirportRequestObject struct {
+	AirportId string `json:"airportId"`
 }
 
-type ListProductsByCategoryResponseObject interface {
-	VisitListProductsByCategoryResponse(w http.ResponseWriter) error
+type ListFlightsByAirportResponseObject interface {
+	VisitListFlightsByAirportResponse(w http.ResponseWriter) error
 }
 
-type ListProductsByCategory200JSONResponse struct {
-	ProductsInCategory    []Product `json:"productsInCategory"`
-	ProductsNotInCategory []Product `json:"productsNotInCategory"`
+type ListFlightsByAirport200JSONResponse struct {
+	FlightsInAirport    []Flight `json:"flightsInAirport"`
+	FlightsNotInAirport []Flight `json:"flightsNotInAirport"`
 }
 
-func (response ListProductsByCategory200JSONResponse) VisitListProductsByCategoryResponse(w http.ResponseWriter) error {
+func (response ListFlightsByAirport200JSONResponse) VisitListFlightsByAirportResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteCategoryRequestObject struct {
+type DeleteAirportRequestObject struct {
 	Id string `json:"id"`
 }
 
-type DeleteCategoryResponseObject interface {
-	VisitDeleteCategoryResponse(w http.ResponseWriter) error
+type DeleteAirportResponseObject interface {
+	VisitDeleteAirportResponse(w http.ResponseWriter) error
 }
 
-type DeleteCategory204Response struct {
+type DeleteAirport204Response struct {
 }
 
-func (response DeleteCategory204Response) VisitDeleteCategoryResponse(w http.ResponseWriter) error {
+func (response DeleteAirport204Response) VisitDeleteAirportResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type DeleteCategory404Response struct {
+type DeleteAirport404Response struct {
 }
 
-func (response DeleteCategory404Response) VisitDeleteCategoryResponse(w http.ResponseWriter) error {
+func (response DeleteAirport404Response) VisitDeleteAirportResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type GetCategoryRequestObject struct {
+type GetAirportRequestObject struct {
 	Id string `json:"id"`
 }
 
-type GetCategoryResponseObject interface {
-	VisitGetCategoryResponse(w http.ResponseWriter) error
+type GetAirportResponseObject interface {
+	VisitGetAirportResponse(w http.ResponseWriter) error
 }
 
-type GetCategory200JSONResponse Category
+type GetAirport200JSONResponse Airport
 
-func (response GetCategory200JSONResponse) VisitGetCategoryResponse(w http.ResponseWriter) error {
+func (response GetAirport200JSONResponse) VisitGetAirportResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetCategory404Response struct {
+type GetAirport404Response struct {
 }
 
-func (response GetCategory404Response) VisitGetCategoryResponse(w http.ResponseWriter) error {
+func (response GetAirport404Response) VisitGetAirportResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -645,202 +645,202 @@ func (response HealthCheck200JSONResponse) VisitHealthCheckResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteAllProductsRequestObject struct {
+type DeleteAllFlightsRequestObject struct {
 }
 
-type DeleteAllProductsResponseObject interface {
-	VisitDeleteAllProductsResponse(w http.ResponseWriter) error
+type DeleteAllFlightsResponseObject interface {
+	VisitDeleteAllFlightsResponse(w http.ResponseWriter) error
 }
 
-type DeleteAllProducts204Response struct {
+type DeleteAllFlights204Response struct {
 }
 
-func (response DeleteAllProducts204Response) VisitDeleteAllProductsResponse(w http.ResponseWriter) error {
+func (response DeleteAllFlights204Response) VisitDeleteAllFlightsResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type ListProductsRequestObject struct {
+type ListFlightsRequestObject struct {
 }
 
-type ListProductsResponseObject interface {
-	VisitListProductsResponse(w http.ResponseWriter) error
+type ListFlightsResponseObject interface {
+	VisitListFlightsResponse(w http.ResponseWriter) error
 }
 
-type ListProducts200JSONResponse []Product
+type ListFlights200JSONResponse []Flight
 
-func (response ListProducts200JSONResponse) VisitListProductsResponse(w http.ResponseWriter) error {
+func (response ListFlights200JSONResponse) VisitListFlightsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateProductRequestObject struct {
-	Body *CreateProductJSONRequestBody
+type CreateFlightRequestObject struct {
+	Body *CreateFlightJSONRequestBody
 }
 
-type CreateProductResponseObject interface {
-	VisitCreateProductResponse(w http.ResponseWriter) error
+type CreateFlightResponseObject interface {
+	VisitCreateFlightResponse(w http.ResponseWriter) error
 }
 
-type CreateProduct201Response struct {
+type CreateFlight201Response struct {
 }
 
-func (response CreateProduct201Response) VisitCreateProductResponse(w http.ResponseWriter) error {
+func (response CreateFlight201Response) VisitCreateFlightResponse(w http.ResponseWriter) error {
 	w.WriteHeader(201)
 	return nil
 }
 
-type CreateProduct400Response struct {
+type CreateFlight400Response struct {
 }
 
-func (response CreateProduct400Response) VisitCreateProductResponse(w http.ResponseWriter) error {
+func (response CreateFlight400Response) VisitCreateFlightResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
 }
 
-type DeleteProductRequestObject struct {
+type DeleteFlightRequestObject struct {
 	Id string `json:"id"`
 }
 
-type DeleteProductResponseObject interface {
-	VisitDeleteProductResponse(w http.ResponseWriter) error
+type DeleteFlightResponseObject interface {
+	VisitDeleteFlightResponse(w http.ResponseWriter) error
 }
 
-type DeleteProduct204Response struct {
+type DeleteFlight204Response struct {
 }
 
-func (response DeleteProduct204Response) VisitDeleteProductResponse(w http.ResponseWriter) error {
+func (response DeleteFlight204Response) VisitDeleteFlightResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type DeleteProduct404Response struct {
+type DeleteFlight404Response struct {
 }
 
-func (response DeleteProduct404Response) VisitDeleteProductResponse(w http.ResponseWriter) error {
+func (response DeleteFlight404Response) VisitDeleteFlightResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type GetProductRequestObject struct {
+type GetFlightRequestObject struct {
 	Id string `json:"id"`
 }
 
-type GetProductResponseObject interface {
-	VisitGetProductResponse(w http.ResponseWriter) error
+type GetFlightResponseObject interface {
+	VisitGetFlightResponse(w http.ResponseWriter) error
 }
 
-type GetProduct200JSONResponse Product
+type GetFlight200JSONResponse Flight
 
-func (response GetProduct200JSONResponse) VisitGetProductResponse(w http.ResponseWriter) error {
+func (response GetFlight200JSONResponse) VisitGetFlightResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetProduct404Response struct {
+type GetFlight404Response struct {
 }
 
-func (response GetProduct404Response) VisitGetProductResponse(w http.ResponseWriter) error {
+func (response GetFlight404Response) VisitGetFlightResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type SetProductStarredRequestObject struct {
+type SetFlightStarredRequestObject struct {
 	Id   string `json:"id"`
-	Body *SetProductStarredJSONRequestBody
+	Body *SetFlightStarredJSONRequestBody
 }
 
-type SetProductStarredResponseObject interface {
-	VisitSetProductStarredResponse(w http.ResponseWriter) error
+type SetFlightStarredResponseObject interface {
+	VisitSetFlightStarredResponse(w http.ResponseWriter) error
 }
 
-type SetProductStarred204Response struct {
+type SetFlightStarred204Response struct {
 }
 
-func (response SetProductStarred204Response) VisitSetProductStarredResponse(w http.ResponseWriter) error {
+func (response SetFlightStarred204Response) VisitSetFlightStarredResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type SetProductStarred404Response struct {
+type SetFlightStarred404Response struct {
 }
 
-func (response SetProductStarred404Response) VisitSetProductStarredResponse(w http.ResponseWriter) error {
+func (response SetFlightStarred404Response) VisitSetFlightStarredResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type UpdateProductCategoryMembershipRequestObject struct {
-	ProductId  string `json:"productId"`
-	CategoryId string `json:"categoryId"`
-	Body       *UpdateProductCategoryMembershipJSONRequestBody
+type UpdateFlightAirportMembershipRequestObject struct {
+	FlightId  string `json:"flightId"`
+	AirportId string `json:"airportId"`
+	Body       *UpdateFlightAirportMembershipJSONRequestBody
 }
 
-type UpdateProductCategoryMembershipResponseObject interface {
-	VisitUpdateProductCategoryMembershipResponse(w http.ResponseWriter) error
+type UpdateFlightAirportMembershipResponseObject interface {
+	VisitUpdateFlightAirportMembershipResponse(w http.ResponseWriter) error
 }
 
-type UpdateProductCategoryMembership204Response struct {
+type UpdateFlightAirportMembership204Response struct {
 }
 
-func (response UpdateProductCategoryMembership204Response) VisitUpdateProductCategoryMembershipResponse(w http.ResponseWriter) error {
+func (response UpdateFlightAirportMembership204Response) VisitUpdateFlightAirportMembershipResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type UpdateProductCategoryMembership404Response struct {
+type UpdateFlightAirportMembership404Response struct {
 }
 
-func (response UpdateProductCategoryMembership404Response) VisitUpdateProductCategoryMembershipResponse(w http.ResponseWriter) error {
+func (response UpdateFlightAirportMembership404Response) VisitUpdateFlightAirportMembershipResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// List all categories
-	// (GET /categories)
-	ListCategories(ctx context.Context, request ListCategoriesRequestObject) (ListCategoriesResponseObject, error)
-	// Create a new category
-	// (POST /categories)
-	CreateCategory(ctx context.Context, request CreateCategoryRequestObject) (CreateCategoryResponseObject, error)
-	// List products in a category
-	// (GET /categories/{categoryId}/products)
-	ListProductsByCategory(ctx context.Context, request ListProductsByCategoryRequestObject) (ListProductsByCategoryResponseObject, error)
-	// Delete a category
-	// (DELETE /categories/{id})
-	DeleteCategory(ctx context.Context, request DeleteCategoryRequestObject) (DeleteCategoryResponseObject, error)
-	// Get category by ID
-	// (GET /categories/{id})
-	GetCategory(ctx context.Context, request GetCategoryRequestObject) (GetCategoryResponseObject, error)
+	// List all airports
+	// (GET /airports)
+	ListAirports(ctx context.Context, request ListAirportsRequestObject) (ListAirportsResponseObject, error)
+	// Create a new airport
+	// (POST /airports)
+	CreateAirport(ctx context.Context, request CreateAirportRequestObject) (CreateAirportResponseObject, error)
+	// List flights in a airport
+	// (GET /airports/{airportId}/flights)
+	ListFlightsByAirport(ctx context.Context, request ListFlightsByAirportRequestObject) (ListFlightsByAirportResponseObject, error)
+	// Delete a airport
+	// (DELETE /airports/{id})
+	DeleteAirport(ctx context.Context, request DeleteAirportRequestObject) (DeleteAirportResponseObject, error)
+	// Get airport by ID
+	// (GET /airports/{id})
+	GetAirport(ctx context.Context, request GetAirportRequestObject) (GetAirportResponseObject, error)
 	// Health check endpoint
 	// (GET /health)
 	HealthCheck(ctx context.Context, request HealthCheckRequestObject) (HealthCheckResponseObject, error)
-	// Delete all products
-	// (DELETE /products)
-	DeleteAllProducts(ctx context.Context, request DeleteAllProductsRequestObject) (DeleteAllProductsResponseObject, error)
-	// List all products
-	// (GET /products)
-	ListProducts(ctx context.Context, request ListProductsRequestObject) (ListProductsResponseObject, error)
-	// Create a new product
-	// (POST /products)
-	CreateProduct(ctx context.Context, request CreateProductRequestObject) (CreateProductResponseObject, error)
-	// Delete a product
-	// (DELETE /products/{id})
-	DeleteProduct(ctx context.Context, request DeleteProductRequestObject) (DeleteProductResponseObject, error)
-	// Get product by ID
-	// (GET /products/{id})
-	GetProduct(ctx context.Context, request GetProductRequestObject) (GetProductResponseObject, error)
-	// Set product starred status
-	// (PATCH /products/{id})
-	SetProductStarred(ctx context.Context, request SetProductStarredRequestObject) (SetProductStarredResponseObject, error)
-	// Set product category membership
-	// (PUT /products/{productId}/categories/{categoryId})
-	UpdateProductCategoryMembership(ctx context.Context, request UpdateProductCategoryMembershipRequestObject) (UpdateProductCategoryMembershipResponseObject, error)
+	// Delete all flights
+	// (DELETE /flights)
+	DeleteAllFlights(ctx context.Context, request DeleteAllFlightsRequestObject) (DeleteAllFlightsResponseObject, error)
+	// List all flights
+	// (GET /flights)
+	ListFlights(ctx context.Context, request ListFlightsRequestObject) (ListFlightsResponseObject, error)
+	// Create a new flight
+	// (POST /flights)
+	CreateFlight(ctx context.Context, request CreateFlightRequestObject) (CreateFlightResponseObject, error)
+	// Delete a flight
+	// (DELETE /flights/{id})
+	DeleteFlight(ctx context.Context, request DeleteFlightRequestObject) (DeleteFlightResponseObject, error)
+	// Get flight by ID
+	// (GET /flights/{id})
+	GetFlight(ctx context.Context, request GetFlightRequestObject) (GetFlightResponseObject, error)
+	// Set flight starred status
+	// (PATCH /flights/{id})
+	SetFlightStarred(ctx context.Context, request SetFlightStarredRequestObject) (SetFlightStarredResponseObject, error)
+	// Set flight airport membership
+	// (PUT /flights/{flightId}/airports/{airportId})
+	UpdateFlightAirportMembership(ctx context.Context, request UpdateFlightAirportMembershipRequestObject) (UpdateFlightAirportMembershipResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -872,23 +872,23 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
-// ListCategories operation middleware
-func (sh *strictHandler) ListCategories(w http.ResponseWriter, r *http.Request) {
-	var request ListCategoriesRequestObject
+// ListAirports operation middleware
+func (sh *strictHandler) ListAirports(w http.ResponseWriter, r *http.Request) {
+	var request ListAirportsRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListCategories(ctx, request.(ListCategoriesRequestObject))
+		return sh.ssi.ListAirports(ctx, request.(ListAirportsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListCategories")
+		handler = middleware(handler, "ListAirports")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListCategoriesResponseObject); ok {
-		if err := validResponse.VisitListCategoriesResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListAirportsResponseObject); ok {
+		if err := validResponse.VisitListAirportsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -896,11 +896,11 @@ func (sh *strictHandler) ListCategories(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// CreateCategory operation middleware
-func (sh *strictHandler) CreateCategory(w http.ResponseWriter, r *http.Request) {
-	var request CreateCategoryRequestObject
+// CreateAirport operation middleware
+func (sh *strictHandler) CreateAirport(w http.ResponseWriter, r *http.Request) {
+	var request CreateAirportRequestObject
 
-	var body CreateCategoryJSONRequestBody
+	var body CreateAirportJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -908,18 +908,18 @@ func (sh *strictHandler) CreateCategory(w http.ResponseWriter, r *http.Request) 
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.CreateCategory(ctx, request.(CreateCategoryRequestObject))
+		return sh.ssi.CreateAirport(ctx, request.(CreateAirportRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "CreateCategory")
+		handler = middleware(handler, "CreateAirport")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(CreateCategoryResponseObject); ok {
-		if err := validResponse.VisitCreateCategoryResponse(w); err != nil {
+	} else if validResponse, ok := response.(CreateAirportResponseObject); ok {
+		if err := validResponse.VisitCreateAirportResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -927,25 +927,25 @@ func (sh *strictHandler) CreateCategory(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// ListProductsByCategory operation middleware
-func (sh *strictHandler) ListProductsByCategory(w http.ResponseWriter, r *http.Request, categoryId string) {
-	var request ListProductsByCategoryRequestObject
+// ListFlightsByAirport operation middleware
+func (sh *strictHandler) ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportId string) {
+	var request ListFlightsByAirportRequestObject
 
-	request.CategoryId = categoryId
+	request.AirportId = airportId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListProductsByCategory(ctx, request.(ListProductsByCategoryRequestObject))
+		return sh.ssi.ListFlightsByAirport(ctx, request.(ListFlightsByAirportRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListProductsByCategory")
+		handler = middleware(handler, "ListFlightsByAirport")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListProductsByCategoryResponseObject); ok {
-		if err := validResponse.VisitListProductsByCategoryResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListFlightsByAirportResponseObject); ok {
+		if err := validResponse.VisitListFlightsByAirportResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -953,25 +953,25 @@ func (sh *strictHandler) ListProductsByCategory(w http.ResponseWriter, r *http.R
 	}
 }
 
-// DeleteCategory operation middleware
-func (sh *strictHandler) DeleteCategory(w http.ResponseWriter, r *http.Request, id string) {
-	var request DeleteCategoryRequestObject
+// DeleteAirport operation middleware
+func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, id string) {
+	var request DeleteAirportRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteCategory(ctx, request.(DeleteCategoryRequestObject))
+		return sh.ssi.DeleteAirport(ctx, request.(DeleteAirportRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteCategory")
+		handler = middleware(handler, "DeleteAirport")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteCategoryResponseObject); ok {
-		if err := validResponse.VisitDeleteCategoryResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteAirportResponseObject); ok {
+		if err := validResponse.VisitDeleteAirportResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -979,25 +979,25 @@ func (sh *strictHandler) DeleteCategory(w http.ResponseWriter, r *http.Request, 
 	}
 }
 
-// GetCategory operation middleware
-func (sh *strictHandler) GetCategory(w http.ResponseWriter, r *http.Request, id string) {
-	var request GetCategoryRequestObject
+// GetAirport operation middleware
+func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, id string) {
+	var request GetAirportRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetCategory(ctx, request.(GetCategoryRequestObject))
+		return sh.ssi.GetAirport(ctx, request.(GetAirportRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetCategory")
+		handler = middleware(handler, "GetAirport")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetCategoryResponseObject); ok {
-		if err := validResponse.VisitGetCategoryResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetAirportResponseObject); ok {
+		if err := validResponse.VisitGetAirportResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1029,23 +1029,23 @@ func (sh *strictHandler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// DeleteAllProducts operation middleware
-func (sh *strictHandler) DeleteAllProducts(w http.ResponseWriter, r *http.Request) {
-	var request DeleteAllProductsRequestObject
+// DeleteAllFlights operation middleware
+func (sh *strictHandler) DeleteAllFlights(w http.ResponseWriter, r *http.Request) {
+	var request DeleteAllFlightsRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteAllProducts(ctx, request.(DeleteAllProductsRequestObject))
+		return sh.ssi.DeleteAllFlights(ctx, request.(DeleteAllFlightsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteAllProducts")
+		handler = middleware(handler, "DeleteAllFlights")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteAllProductsResponseObject); ok {
-		if err := validResponse.VisitDeleteAllProductsResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteAllFlightsResponseObject); ok {
+		if err := validResponse.VisitDeleteAllFlightsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1053,23 +1053,23 @@ func (sh *strictHandler) DeleteAllProducts(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-// ListProducts operation middleware
-func (sh *strictHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
-	var request ListProductsRequestObject
+// ListFlights operation middleware
+func (sh *strictHandler) ListFlights(w http.ResponseWriter, r *http.Request) {
+	var request ListFlightsRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListProducts(ctx, request.(ListProductsRequestObject))
+		return sh.ssi.ListFlights(ctx, request.(ListFlightsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListProducts")
+		handler = middleware(handler, "ListFlights")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListProductsResponseObject); ok {
-		if err := validResponse.VisitListProductsResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListFlightsResponseObject); ok {
+		if err := validResponse.VisitListFlightsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1077,11 +1077,11 @@ func (sh *strictHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// CreateProduct operation middleware
-func (sh *strictHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
-	var request CreateProductRequestObject
+// CreateFlight operation middleware
+func (sh *strictHandler) CreateFlight(w http.ResponseWriter, r *http.Request) {
+	var request CreateFlightRequestObject
 
-	var body CreateProductJSONRequestBody
+	var body CreateFlightJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1089,18 +1089,18 @@ func (sh *strictHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.CreateProduct(ctx, request.(CreateProductRequestObject))
+		return sh.ssi.CreateFlight(ctx, request.(CreateFlightRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "CreateProduct")
+		handler = middleware(handler, "CreateFlight")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(CreateProductResponseObject); ok {
-		if err := validResponse.VisitCreateProductResponse(w); err != nil {
+	} else if validResponse, ok := response.(CreateFlightResponseObject); ok {
+		if err := validResponse.VisitCreateFlightResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1108,25 +1108,25 @@ func (sh *strictHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// DeleteProduct operation middleware
-func (sh *strictHandler) DeleteProduct(w http.ResponseWriter, r *http.Request, id string) {
-	var request DeleteProductRequestObject
+// DeleteFlight operation middleware
+func (sh *strictHandler) DeleteFlight(w http.ResponseWriter, r *http.Request, id string) {
+	var request DeleteFlightRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteProduct(ctx, request.(DeleteProductRequestObject))
+		return sh.ssi.DeleteFlight(ctx, request.(DeleteFlightRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteProduct")
+		handler = middleware(handler, "DeleteFlight")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteProductResponseObject); ok {
-		if err := validResponse.VisitDeleteProductResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteFlightResponseObject); ok {
+		if err := validResponse.VisitDeleteFlightResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1134,25 +1134,25 @@ func (sh *strictHandler) DeleteProduct(w http.ResponseWriter, r *http.Request, i
 	}
 }
 
-// GetProduct operation middleware
-func (sh *strictHandler) GetProduct(w http.ResponseWriter, r *http.Request, id string) {
-	var request GetProductRequestObject
+// GetFlight operation middleware
+func (sh *strictHandler) GetFlight(w http.ResponseWriter, r *http.Request, id string) {
+	var request GetFlightRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetProduct(ctx, request.(GetProductRequestObject))
+		return sh.ssi.GetFlight(ctx, request.(GetFlightRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetProduct")
+		handler = middleware(handler, "GetFlight")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetProductResponseObject); ok {
-		if err := validResponse.VisitGetProductResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetFlightResponseObject); ok {
+		if err := validResponse.VisitGetFlightResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1160,13 +1160,13 @@ func (sh *strictHandler) GetProduct(w http.ResponseWriter, r *http.Request, id s
 	}
 }
 
-// SetProductStarred operation middleware
-func (sh *strictHandler) SetProductStarred(w http.ResponseWriter, r *http.Request, id string) {
-	var request SetProductStarredRequestObject
+// SetFlightStarred operation middleware
+func (sh *strictHandler) SetFlightStarred(w http.ResponseWriter, r *http.Request, id string) {
+	var request SetFlightStarredRequestObject
 
 	request.Id = id
 
-	var body SetProductStarredJSONRequestBody
+	var body SetFlightStarredJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1174,18 +1174,18 @@ func (sh *strictHandler) SetProductStarred(w http.ResponseWriter, r *http.Reques
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.SetProductStarred(ctx, request.(SetProductStarredRequestObject))
+		return sh.ssi.SetFlightStarred(ctx, request.(SetFlightStarredRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "SetProductStarred")
+		handler = middleware(handler, "SetFlightStarred")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(SetProductStarredResponseObject); ok {
-		if err := validResponse.VisitSetProductStarredResponse(w); err != nil {
+	} else if validResponse, ok := response.(SetFlightStarredResponseObject); ok {
+		if err := validResponse.VisitSetFlightStarredResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1193,14 +1193,14 @@ func (sh *strictHandler) SetProductStarred(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-// UpdateProductCategoryMembership operation middleware
-func (sh *strictHandler) UpdateProductCategoryMembership(w http.ResponseWriter, r *http.Request, productId string, categoryId string) {
-	var request UpdateProductCategoryMembershipRequestObject
+// UpdateFlightAirportMembership operation middleware
+func (sh *strictHandler) UpdateFlightAirportMembership(w http.ResponseWriter, r *http.Request, flightId string, airportId string) {
+	var request UpdateFlightAirportMembershipRequestObject
 
-	request.ProductId = productId
-	request.CategoryId = categoryId
+	request.FlightId = flightId
+	request.AirportId = airportId
 
-	var body UpdateProductCategoryMembershipJSONRequestBody
+	var body UpdateFlightAirportMembershipJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1208,18 +1208,18 @@ func (sh *strictHandler) UpdateProductCategoryMembership(w http.ResponseWriter, 
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.UpdateProductCategoryMembership(ctx, request.(UpdateProductCategoryMembershipRequestObject))
+		return sh.ssi.UpdateFlightAirportMembership(ctx, request.(UpdateFlightAirportMembershipRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "UpdateProductCategoryMembership")
+		handler = middleware(handler, "UpdateFlightAirportMembership")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(UpdateProductCategoryMembershipResponseObject); ok {
-		if err := validResponse.VisitUpdateProductCategoryMembershipResponse(w); err != nil {
+	} else if validResponse, ok := response.(UpdateFlightAirportMembershipResponseObject); ok {
+		if err := validResponse.VisitUpdateFlightAirportMembershipResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

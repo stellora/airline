@@ -3,9 +3,9 @@ import { fail } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async () => {
-	const products = (await apiClient.GET('/products', { fetch })).data!
+	const flights = (await apiClient.GET('/flights', { fetch })).data!
 	return {
-		products
+		flights
 	}
 }
 
@@ -20,7 +20,7 @@ export const actions: Actions = {
 			})
 		}
 
-		const resp = await apiClient.POST('/products', { body: { title }, fetch })
+		const resp = await apiClient.POST('/flights', { body: { title }, fetch })
 		if (!resp.response.ok) {
 			// TODO(sqs)
 			return fail(422, {
@@ -30,7 +30,7 @@ export const actions: Actions = {
 		}
 	},
 
-	setProductStarred: async ({ request }) => {
+	setFlightStarred: async ({ request }) => {
 		const data = await request.formData()
 		const id = data.get('id')
 		if (!id || typeof id !== 'string') {
@@ -48,7 +48,7 @@ export const actions: Actions = {
 		}
 		const starred = starredStr === 'true'
 
-		const resp = await apiClient.PATCH('/products/{id}', {
+		const resp = await apiClient.PATCH('/flights/{id}', {
 			params: { path: { id } },
 			body: { starred },
 			fetch
@@ -71,7 +71,7 @@ export const actions: Actions = {
 			})
 		}
 
-		const resp = await apiClient.DELETE('/products/{id}', {
+		const resp = await apiClient.DELETE('/flights/{id}', {
 			params: { path: { id } },
 			fetch
 		})

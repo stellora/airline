@@ -4,18 +4,18 @@
 
 package db
 
-type Category struct {
+type Airport struct {
 	ID    int64
 	Title string
 }
 
-type Product struct {
+type Flight struct {
 	ID      int64
 	Title   string
 	Starred bool
 }
 
-type ProductCategory struct {
-	ProductID  int64
-	CategoryID int64
+type FlightAirport struct {
+	FlightID  int64
+	AirportID int64
 }

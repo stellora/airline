@@ -4,7 +4,7 @@ import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async () => {
 	return {
-		categories: (await apiClient.GET('/categories', { fetch })).data
+		airports: (await apiClient.GET('/airports', { fetch })).data
 	}
 }
 
@@ -19,7 +19,7 @@ export const actions: Actions = {
 			})
 		}
 
-		const resp = await apiClient.POST('/categories', { body: { title }, fetch })
+		const resp = await apiClient.POST('/airports', { body: { title }, fetch })
 		if (!resp.response.ok) {
 			// TODO(sqs)
 			return fail(422, {

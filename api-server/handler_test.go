@@ -14,7 +14,7 @@ func handlerTest(t *testing.T) (context.Context, *Handler) {
 }
 
 func resetDatabase() {
-	products = []api.Product{}
-	categories = []api.Category{}
-	productCategoryMemberships = []productCategoryMembership{}
+	flights = []api.Flight{}
+	airports = []api.Airport{}
+	flightAirportMemberships = []flightAirportMembership{}
 }

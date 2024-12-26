@@ -3,36 +3,36 @@ import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
-	const category = (
-		await apiClient.GET('/categories/{id}', { params: { path: { id: params.category } }, fetch })
+	const airport = (
+		await apiClient.GET('/airports/{id}', { params: { path: { id: params.airport } }, fetch })
 	).data
-	if (!category) {
+	if (!airport) {
 		return fail(404)
 	}
-	const { productsInCategory, productsNotInCategory } = (
-		await apiClient.GET('/categories/{categoryId}/products', {
-			params: { path: { categoryId: params.category } },
+	const { flightsInAirport, flightsNotInAirport } = (
+		await apiClient.GET('/airports/{airportId}/flights', {
+			params: { path: { airportId: params.airport } },
 			fetch
 		})
 	).data!
 	return {
-		category,
-		productsInCategory,
-		productsNotInCategory
+		airport,
+		flightsInAirport,
+		flightsNotInAirport
 	}
 }
 
 export const actions: Actions = {
-	setProductInCategory: async ({ request }) => {
+	setFlightInAirport: async ({ request }) => {
 		const data = await request.formData()
 
-		const category = data.get('category')
-		const product = data.get('product')
-		if (!category || typeof category !== 'string') {
-			return fail(400, { error: 'category is required' })
+		const airport = data.get('airport')
+		const flight = data.get('flight')
+		if (!airport || typeof airport !== 'string') {
+			return fail(400, { error: 'airport is required' })
 		}
-		if (!product || typeof product !== 'string') {
-			return fail(400, { error: 'product is required' })
+		if (!flight || typeof flight !== 'string') {
+			return fail(400, { error: 'flight is required' })
 		}
 
 		const valueStr = data.get('value')
@@ -44,8 +44,8 @@ export const actions: Actions = {
 		}
 		const value = valueStr === 'true'
 
-		const resp = await apiClient.PUT('/products/{productId}/categories/{categoryId}', {
-			params: { path: { productId: product, categoryId: category } },
+		const resp = await apiClient.PUT('/flights/{flightId}/airports/{airportId}', {
+			params: { path: { flightId: flight, airportId: airport } },
 			body: { value },
 			fetch
 		})
@@ -64,7 +64,7 @@ export const actions: Actions = {
 				error: 'id is required'
 			})
 		}
-		const resp = await apiClient.DELETE('/categories/{id}', {
+		const resp = await apiClient.DELETE('/airports/{id}', {
 			params: { path: { id } },
 			fetch
 		})
@@ -73,6 +73,6 @@ export const actions: Actions = {
 				error: await resp.response.text()
 			})
 		}
-		return redirect(303, '/admin/categories')
+		return redirect(303, '/admin/airports')
 	}
 }

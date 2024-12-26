@@ -1,18 +1,18 @@
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS flights (
   id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
   starred BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE IF NOT EXISTS airports (
   id INTEGER PRIMARY KEY,
   title TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS product_categories (
-  product_id INTEGER NOT NULL,
-  category_id INTEGER NOT NULL,
-  PRIMARY KEY (product_id, category_id),
-  FOREIGN KEY (product_id) REFERENCES products(id),
-  FOREIGN KEY (category_id) REFERENCES categories(id)
+CREATE TABLE IF NOT EXISTS flight_airports (
+  flight_id INTEGER NOT NULL,
+  airport_id INTEGER NOT NULL,
+  PRIMARY KEY (flight_id, airport_id),
+  FOREIGN KEY (flight_id) REFERENCES flights(id),
+  FOREIGN KEY (airport_id) REFERENCES airports(id)
 );

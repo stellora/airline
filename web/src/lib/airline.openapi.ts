@@ -21,89 +21,89 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/categories": {
+    "/airports": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List all categories */
-        get: operations["listCategories"];
+        /** List all airports */
+        get: operations["listAirports"];
         put?: never;
-        /** Create a new category */
-        post: operations["createCategory"];
+        /** Create a new airport */
+        post: operations["createAirport"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/categories/{id}": {
+    "/airports/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get category by ID */
-        get: operations["getCategory"];
+        /** Get airport by ID */
+        get: operations["getAirport"];
         put?: never;
         post?: never;
-        /** Delete a category */
-        delete: operations["deleteCategory"];
+        /** Delete a airport */
+        delete: operations["deleteAirport"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/products": {
+    "/flights": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List all products */
-        get: operations["listProducts"];
+        /** List all flights */
+        get: operations["listFlights"];
         put?: never;
-        /** Create a new product */
-        post: operations["createProduct"];
-        /** Delete all products */
-        delete: operations["deleteAllProducts"];
+        /** Create a new flight */
+        post: operations["createFlight"];
+        /** Delete all flights */
+        delete: operations["deleteAllFlights"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/products/{id}": {
+    "/flights/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get product by ID */
-        get: operations["getProduct"];
+        /** Get flight by ID */
+        get: operations["getFlight"];
         put?: never;
         post?: never;
-        /** Delete a product */
-        delete: operations["deleteProduct"];
+        /** Delete a flight */
+        delete: operations["deleteFlight"];
         options?: never;
         head?: never;
-        /** Set product starred status */
-        patch: operations["setProductStarred"];
+        /** Set flight starred status */
+        patch: operations["setFlightStarred"];
         trace?: never;
     };
-    "/categories/{categoryId}/products": {
+    "/airports/{airportId}/flights": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List products in a category */
-        get: operations["listProductsByCategory"];
+        /** List flights in a airport */
+        get: operations["listFlightsByAirport"];
         put?: never;
         post?: never;
         delete?: never;
@@ -112,7 +112,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/{productId}/categories/{categoryId}": {
+    "/flights/{flightId}/airports/{airportId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -120,8 +120,8 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Set product category membership */
-        put: operations["updateProductCategoryMembership"];
+        /** Set flight airport membership */
+        put: operations["updateFlightAirportMembership"];
         post?: never;
         delete?: never;
         options?: never;
@@ -133,15 +133,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Category: {
+        Airport: {
             id: string;
             title: string;
         };
-        Product: {
+        Flight: {
             id: string;
             title: string;
             starred: boolean;
-            categories?: components["schemas"]["Category"][];
+            airports?: components["schemas"]["Airport"][];
         };
     };
     responses: never;
@@ -174,7 +174,7 @@ export interface operations {
             };
         };
     };
-    listCategories: {
+    listAirports: {
         parameters: {
             query?: never;
             header?: never;
@@ -183,18 +183,18 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of categories */
+            /** @description List of airports */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Category"][];
+                    "application/json": components["schemas"]["Airport"][];
                 };
             };
         };
     };
-    createCategory: {
+    createAirport: {
         parameters: {
             query?: never;
             header?: never;
@@ -209,7 +209,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Category created */
+            /** @description Airport created */
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -225,7 +225,7 @@ export interface operations {
             };
         };
     };
-    getCategory: {
+    getAirport: {
         parameters: {
             query?: never;
             header?: never;
@@ -236,16 +236,16 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Category found */
+            /** @description Airport found */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Category"];
+                    "application/json": components["schemas"]["Airport"];
                 };
             };
-            /** @description Category not found */
+            /** @description Airport not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -254,7 +254,7 @@ export interface operations {
             };
         };
     };
-    deleteCategory: {
+    deleteAirport: {
         parameters: {
             query?: never;
             header?: never;
@@ -265,14 +265,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Category deleted */
+            /** @description Airport deleted */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Category not found */
+            /** @description Airport not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -281,7 +281,7 @@ export interface operations {
             };
         };
     };
-    listProducts: {
+    listFlights: {
         parameters: {
             query?: never;
             header?: never;
@@ -290,18 +290,18 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of products */
+            /** @description List of flights */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Product"][];
+                    "application/json": components["schemas"]["Flight"][];
                 };
             };
         };
     };
-    createProduct: {
+    createFlight: {
         parameters: {
             query?: never;
             header?: never;
@@ -316,7 +316,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Product created */
+            /** @description Flight created */
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -332,7 +332,7 @@ export interface operations {
             };
         };
     };
-    deleteAllProducts: {
+    deleteAllFlights: {
         parameters: {
             query?: never;
             header?: never;
@@ -341,7 +341,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description All products deleted */
+            /** @description All flights deleted */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -350,7 +350,7 @@ export interface operations {
             };
         };
     };
-    getProduct: {
+    getFlight: {
         parameters: {
             query?: never;
             header?: never;
@@ -361,16 +361,16 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Product found */
+            /** @description Flight found */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Product"];
+                    "application/json": components["schemas"]["Flight"];
                 };
             };
-            /** @description Product not found */
+            /** @description Flight not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -379,7 +379,7 @@ export interface operations {
             };
         };
     };
-    deleteProduct: {
+    deleteFlight: {
         parameters: {
             query?: never;
             header?: never;
@@ -390,14 +390,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Product deleted */
+            /** @description Flight deleted */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Product not found */
+            /** @description Flight not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -406,7 +406,7 @@ export interface operations {
             };
         };
     };
-    setProductStarred: {
+    setFlightStarred: {
         parameters: {
             query?: never;
             header?: never;
@@ -423,14 +423,14 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Product updated */
+            /** @description Flight updated */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Product not found */
+            /** @description Flight not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -439,38 +439,38 @@ export interface operations {
             };
         };
     };
-    listProductsByCategory: {
+    listFlightsByAirport: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                categoryId: string;
+                airportId: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Products categorization */
+            /** @description Flights categorization */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        productsInCategory: components["schemas"]["Product"][];
-                        productsNotInCategory: components["schemas"]["Product"][];
+                        flightsInAirport: components["schemas"]["Flight"][];
+                        flightsNotInAirport: components["schemas"]["Flight"][];
                     };
                 };
             };
         };
     };
-    updateProductCategoryMembership: {
+    updateFlightAirportMembership: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                productId: string;
-                categoryId: string;
+                flightId: string;
+                airportId: string;
             };
             cookie?: never;
         };
@@ -489,7 +489,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Product or category not found */
+            /** @description Flight or airport not found */
             404: {
                 headers: {
                     [name: string]: unknown;

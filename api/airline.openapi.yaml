@@ -18,22 +18,22 @@ paths:
                 properties:
                   ok:
                     type: boolean
-  /categories:
+  /airports:
     get:
-      operationId: listCategories
-      summary: List all categories
+      operationId: listAirports
+      summary: List all airports
       responses:
         '200':
-          description: List of categories
+          description: List of airports
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Category'
+                  $ref: '#/components/schemas/Airport'
     post:
-      operationId: createCategory
-      summary: Create a new category
+      operationId: createAirport
+      summary: Create a new airport
       requestBody:
         required: true
         content:
@@ -47,13 +47,13 @@ paths:
                 - title
       responses:
         '201':
-          description: Category created
+          description: Airport created
         '400':
           description: Invalid request
-  /categories/{id}:
+  /airports/{id}:
     get:
-      operationId: getCategory
-      summary: Get category by ID
+      operationId: getAirport
+      summary: Get airport by ID
       parameters:
         - name: id
           in: path
@@ -62,16 +62,16 @@ paths:
             type: string
       responses:
         '200':
-          description: Category found
+          description: Airport found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Category'
+                $ref: '#/components/schemas/Airport'
         '404':
-          description: Category not found
+          description: Airport not found
     delete:
-      operationId: deleteCategory
-      summary: Delete a category
+      operationId: deleteAirport
+      summary: Delete a airport
       parameters:
         - name: id
           in: path
@@ -80,26 +80,26 @@ paths:
             type: string
       responses:
         '204':
-          description: Category deleted
+          description: Airport deleted
         '404':
-          description: Category not found
+          description: Airport not found
 
-  /products:
+  /flights:
     get:
-      operationId: listProducts
-      summary: List all products
+      operationId: listFlights
+      summary: List all flights
       responses:
         '200':
-          description: List of products
+          description: List of flights
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Product'
+                  $ref: '#/components/schemas/Flight'
     post:
-      operationId: createProduct
-      summary: Create a new product
+      operationId: createFlight
+      summary: Create a new flight
       requestBody:
         required: true
         content:
@@ -113,20 +113,20 @@ paths:
                 - title
       responses:
         '201':
-          description: Product created
+          description: Flight created
         '400':
           description: Invalid request
     delete:
-      operationId: deleteAllProducts
-      summary: Delete all products
+      operationId: deleteAllFlights
+      summary: Delete all flights
       responses:
         '204':
-          description: All products deleted
+          description: All flights deleted
 
-  /products/{id}:
+  /flights/{id}:
     get:
-      operationId: getProduct
-      summary: Get product by ID
+      operationId: getFlight
+      summary: Get flight by ID
       parameters:
         - name: id
           in: path
@@ -135,16 +135,16 @@ paths:
             type: string
       responses:
         '200':
-          description: Product found
+          description: Flight found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: '#/components/schemas/Flight'
         '404':
-          description: Product not found
+          description: Flight not found
     patch:
-      operationId: setProductStarred
-      summary: Set product starred status
+      operationId: setFlightStarred
+      summary: Set flight starred status
       parameters:
         - name: id
           in: path
@@ -164,12 +164,12 @@ paths:
                 - starred
       responses:
         '204':
-          description: Product updated
+          description: Flight updated
         '404':
-          description: Product not found
+          description: Flight not found
     delete:
-      operationId: deleteProduct
-      summary: Delete a product
+      operationId: deleteFlight
+      summary: Delete a flight
       parameters:
         - name: id
           in: path
@@ -178,51 +178,51 @@ paths:
             type: string
       responses:
         '204':
-          description: Product deleted
+          description: Flight deleted
         '404':
-          description: Product not found
+          description: Flight not found
 
-  /categories/{categoryId}/products:
+  /airports/{airportId}/flights:
     get:
-      operationId: listProductsByCategory
-      summary: List products in a category
+      operationId: listFlightsByAirport
+      summary: List flights in a airport
       parameters:
-        - name: categoryId
+        - name: airportId
           in: path
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Products categorization
+          description: Flights categorization
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  productsInCategory:
+                  flightsInAirport:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Product'
-                  productsNotInCategory:
+                      $ref: '#/components/schemas/Flight'
+                  flightsNotInAirport:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Product'
+                      $ref: '#/components/schemas/Flight'
                 required:
-                  - productsInCategory
-                  - productsNotInCategory
+                  - flightsInAirport
+                  - flightsNotInAirport
 
-  /products/{productId}/categories/{categoryId}:
+  /flights/{flightId}/airports/{airportId}:
     put:
-      operationId: updateProductCategoryMembership
-      summary: Set product category membership
+      operationId: updateFlightAirportMembership
+      summary: Set flight airport membership
       parameters:
-        - name: productId
+        - name: flightId
           in: path
           required: true
           schema:
             type: string
-        - name: categoryId
+        - name: airportId
           in: path
           required: true
           schema:
@@ -242,11 +242,11 @@ paths:
         '204':
           description: Membership updated
         '404':
-          description: Product or category not found
+          description: Flight or airport not found
 
 components:
   schemas:
-    Category:
+    Airport:
       type: object
       properties:
         id:
@@ -257,7 +257,7 @@ components:
         - id
         - title
 
-    Product:
+    Flight:
       type: object
       properties:
         id:
@@ -266,10 +266,10 @@ components:
           type: string
         starred:
           type: boolean
-        categories:
+        airports:
           type: array
           items:
-            $ref: '#/components/schemas/Category'
+            $ref: '#/components/schemas/Airport'
       required:
         - id
         - title
