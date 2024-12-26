@@ -17,7 +17,9 @@
 		"test:e2e": "playwright test",
 		"test:unit": "vitest",
 		"lint": "eslint . && prettier --check .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"gen": "npm run -s gen:openapi",
+		"gen:openapi": "openapi-typescript ../api/shop.openapi.yaml --output src/lib/shop.openapi.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",
@@ -38,6 +40,7 @@
 		"globals": "^15.0.0",
 		"jsdom": "^25.0.1",
 		"lucide-svelte": "^0.469.0",
+		"openapi-typescript": "^7.4.4",
 		"prettier": "^3.3.2",
 		"prettier-plugin-svelte": "^3.2.6",
 		"svelte": "^5.0.0",
@@ -53,5 +56,8 @@
 	},
 	"overrides": {
 		"@polka/url": "1.0.0-next.28"
+	},
+	"dependencies": {
+		"openapi-fetch": "^0.13.3"
 	}
 }
