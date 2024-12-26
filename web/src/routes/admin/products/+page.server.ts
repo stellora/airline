@@ -1,17 +1,17 @@
+import { apiClient } from '$lib/api'
 import * as db from '$lib/server/database.js'
 import { fail } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load: PageServerLoad = () => {
+export const load: PageServerLoad = async () => {
 	return {
-		products: db.listProducts()
+		products: (await apiClient.GET('/products', { fetch })).data
 	}
 }
 
 export const actions: Actions = {
 	create: async ({ request }) => {
 		const data = await request.formData()
-
 		const title = data.get('title')
 		if (title === null || typeof title !== 'string') {
 			return fail(400, {
@@ -19,12 +19,13 @@ export const actions: Actions = {
 				error: 'title is required'
 			})
 		}
-		try {
-			db.createProduct(title)
-		} catch (error) {
+
+		const resp = await apiClient.POST('/products', { body: { title }, fetch })
+		if (!resp.response.ok) {
+			// TODO(sqs)
 			return fail(422, {
 				title,
-				error: error instanceof Error ? error.message : 'unknown error'
+				error: await resp.response.text()
 			})
 		}
 	},
