@@ -10,9 +10,9 @@ import (
 
 var (
 	airports = []api.Airport{
-		{Title: "Silverware"},
-		{Title: "Cookware"},
-		{Title: "Vegetables"},
+		{IataCode: "SFO"},
+		{IataCode: "Cookware"},
+		{IataCode: "Vegetables"},
 	}
 )
 
@@ -44,20 +44,20 @@ func (h *Handler) ListAirports(ctx context.Context, request api.ListAirportsRequ
 }
 
 func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRequestObject) (api.CreateAirportResponseObject, error) {
-	title := request.Body.Title
-	if title == "" {
-		return nil, fmt.Errorf("title must not be empty")
+	IataCode := request.Body.IataCode
+	if IataCode == "" {
+		return nil, fmt.Errorf("IataCode must not be empty")
 	}
 
 	for _, airport := range airports {
-		if airport.Title == title {
-			return nil, fmt.Errorf("title must be unique across all airports")
+		if airport.IataCode == IataCode {
+			return nil, fmt.Errorf("IataCode must be unique across all airports")
 		}
 	}
 
 	newAirport := api.Airport{
-		Id:    strconv.Itoa(len(airports) + 1),
-		Title: title,
+		Id:       strconv.Itoa(len(airports) + 1),
+		IataCode: IataCode,
 	}
 	airports = append(airports, newAirport)
 

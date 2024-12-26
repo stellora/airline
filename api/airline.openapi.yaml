@@ -50,6 +50,12 @@ paths:
           description: Airport created
         '400':
           description: Invalid request
+    delete:
+      operationId: deleteAllAirports
+      summary: Delete all airports
+      responses:
+        '204':
+          description: All airports deleted
   /airports/{id}:
     get:
       operationId: getAirport
@@ -94,7 +100,7 @@ paths:
           description: Flight not found
     delete:
       operationId: deleteAirport
-      summary: Delete a airport
+      summary: Delete an airport
       parameters:
         - name: id
           in: path

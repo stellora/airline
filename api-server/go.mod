@@ -5,6 +5,7 @@ go 1.23.4
 require (
 	github.com/oapi-codegen/oapi-codegen/v2 v2.4.2-0.20241128135601-9feb3033b612
 	github.com/oapi-codegen/runtime v1.1.1
+	modernc.org/sqlite v1.34.4
 )
 
 require (
@@ -75,7 +76,6 @@ require (
 	modernc.org/libc v1.55.3 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect
-	modernc.org/sqlite v1.34.4 // indirect
 	modernc.org/strutil v1.2.0 // indirect
 	modernc.org/token v1.1.0 // indirect
 )

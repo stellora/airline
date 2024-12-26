@@ -33,7 +33,8 @@ export interface paths {
         put?: never;
         /** Create a new airport */
         post: operations["createAirport"];
-        delete?: never;
+        /** Delete all airports */
+        delete: operations["deleteAllAirports"];
         options?: never;
         head?: never;
         patch?: never;
@@ -50,7 +51,7 @@ export interface paths {
         get: operations["getAirport"];
         put?: never;
         post?: never;
-        /** Delete a airport */
+        /** Delete an airport */
         delete: operations["deleteAirport"];
         options?: never;
         head?: never;
@@ -202,6 +203,24 @@ export interface operations {
             };
             /** @description Invalid request */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteAllAirports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All airports deleted */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };

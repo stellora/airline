@@ -23,6 +23,9 @@ WHERE id=?;
 DELETE FROM airports
 WHERE id=?;
 
+-- name: DeleteAllAirports :exec
+DELETE FROM airports;
+
 -------------------------------------------------------------------------------
 
 -- name: GetFlight :one
@@ -52,3 +55,6 @@ WHERE id=?;
 -- name: DeleteFlight :exec
 DELETE FROM flights
 WHERE id=?;
+
+-- name: DeleteAllFlights :exec
+DELETE FROM flights;

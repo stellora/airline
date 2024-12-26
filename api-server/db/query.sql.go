@@ -69,6 +69,24 @@ func (q *Queries) DeleteAirport(ctx context.Context, id int64) error {
 	return err
 }
 
+const deleteAllAirports = `-- name: DeleteAllAirports :exec
+DELETE FROM airports
+`
+
+func (q *Queries) DeleteAllAirports(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteAllAirports)
+	return err
+}
+
+const deleteAllFlights = `-- name: DeleteAllFlights :exec
+DELETE FROM flights
+`
+
+func (q *Queries) DeleteAllFlights(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteAllFlights)
+	return err
+}
+
 const deleteFlight = `-- name: DeleteFlight :exec
 DELETE FROM flights
 WHERE id=?

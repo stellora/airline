@@ -69,13 +69,16 @@ type UpdateFlightJSONRequestBody UpdateFlightJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Delete all airports
+	// (DELETE /airports)
+	DeleteAllAirports(w http.ResponseWriter, r *http.Request)
 	// List all airports
 	// (GET /airports)
 	ListAirports(w http.ResponseWriter, r *http.Request)
 	// Create a new airport
 	// (POST /airports)
 	CreateAirport(w http.ResponseWriter, r *http.Request)
-	// Delete a airport
+	// Delete an airport
 	// (DELETE /airports/{id})
 	DeleteAirport(w http.ResponseWriter, r *http.Request, id float32)
 	// Get airport by ID
@@ -118,6 +121,20 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// DeleteAllAirports operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAllAirports(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteAllAirports(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // ListAirports operation middleware
 func (siw *ServerInterfaceWrapper) ListAirports(w http.ResponseWriter, r *http.Request) {
@@ -498,6 +515,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	m.HandleFunc("DELETE "+options.BaseURL+"/airports", wrapper.DeleteAllAirports)
 	m.HandleFunc("GET "+options.BaseURL+"/airports", wrapper.ListAirports)
 	m.HandleFunc("POST "+options.BaseURL+"/airports", wrapper.CreateAirport)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airports/{id}", wrapper.DeleteAirport)
@@ -513,6 +531,21 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/health", wrapper.HealthCheck)
 
 	return m
+}
+
+type DeleteAllAirportsRequestObject struct {
+}
+
+type DeleteAllAirportsResponseObject interface {
+	VisitDeleteAllAirportsResponse(w http.ResponseWriter) error
+}
+
+type DeleteAllAirports204Response struct {
+}
+
+func (response DeleteAllAirports204Response) VisitDeleteAllAirportsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
 }
 
 type ListAirportsRequestObject struct {
@@ -795,13 +828,16 @@ func (response HealthCheck200JSONResponse) VisitHealthCheckResponse(w http.Respo
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// Delete all airports
+	// (DELETE /airports)
+	DeleteAllAirports(ctx context.Context, request DeleteAllAirportsRequestObject) (DeleteAllAirportsResponseObject, error)
 	// List all airports
 	// (GET /airports)
 	ListAirports(ctx context.Context, request ListAirportsRequestObject) (ListAirportsResponseObject, error)
 	// Create a new airport
 	// (POST /airports)
 	CreateAirport(ctx context.Context, request CreateAirportRequestObject) (CreateAirportResponseObject, error)
-	// Delete a airport
+	// Delete an airport
 	// (DELETE /airports/{id})
 	DeleteAirport(ctx context.Context, request DeleteAirportRequestObject) (DeleteAirportResponseObject, error)
 	// Get airport by ID
@@ -863,6 +899,30 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// DeleteAllAirports operation middleware
+func (sh *strictHandler) DeleteAllAirports(w http.ResponseWriter, r *http.Request) {
+	var request DeleteAllAirportsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteAllAirports(ctx, request.(DeleteAllAirportsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteAllAirports")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteAllAirportsResponseObject); ok {
+		if err := validResponse.VisitDeleteAllAirportsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // ListAirports operation middleware
