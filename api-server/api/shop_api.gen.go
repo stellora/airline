@@ -29,73 +29,73 @@ type Product struct {
 	Title      string      `json:"title"`
 }
 
-// PostCategoriesJSONBody defines parameters for PostCategories.
-type PostCategoriesJSONBody struct {
+// CreateCategoryJSONBody defines parameters for CreateCategory.
+type CreateCategoryJSONBody struct {
 	Title *string `json:"title,omitempty"`
 }
 
-// PostProductsJSONBody defines parameters for PostProducts.
-type PostProductsJSONBody struct {
+// CreateProductJSONBody defines parameters for CreateProduct.
+type CreateProductJSONBody struct {
 	Title *string `json:"title,omitempty"`
 }
 
-// PatchProductsIdJSONBody defines parameters for PatchProductsId.
-type PatchProductsIdJSONBody struct {
+// SetProductStarredJSONBody defines parameters for SetProductStarred.
+type SetProductStarredJSONBody struct {
 	Starred *bool `json:"starred,omitempty"`
 }
 
-// PutProductsProductIdCategoriesCategoryIdJSONBody defines parameters for PutProductsProductIdCategoriesCategoryId.
-type PutProductsProductIdCategoriesCategoryIdJSONBody struct {
-	Value *bool `json:"value,omitempty"`
+// UpdateProductCategoryMembershipJSONBody defines parameters for UpdateProductCategoryMembership.
+type UpdateProductCategoryMembershipJSONBody struct {
+	Value bool `json:"value"`
 }
 
-// PostCategoriesJSONRequestBody defines body for PostCategories for application/json ContentType.
-type PostCategoriesJSONRequestBody PostCategoriesJSONBody
+// CreateCategoryJSONRequestBody defines body for CreateCategory for application/json ContentType.
+type CreateCategoryJSONRequestBody CreateCategoryJSONBody
 
-// PostProductsJSONRequestBody defines body for PostProducts for application/json ContentType.
-type PostProductsJSONRequestBody PostProductsJSONBody
+// CreateProductJSONRequestBody defines body for CreateProduct for application/json ContentType.
+type CreateProductJSONRequestBody CreateProductJSONBody
 
-// PatchProductsIdJSONRequestBody defines body for PatchProductsId for application/json ContentType.
-type PatchProductsIdJSONRequestBody PatchProductsIdJSONBody
+// SetProductStarredJSONRequestBody defines body for SetProductStarred for application/json ContentType.
+type SetProductStarredJSONRequestBody SetProductStarredJSONBody
 
-// PutProductsProductIdCategoriesCategoryIdJSONRequestBody defines body for PutProductsProductIdCategoriesCategoryId for application/json ContentType.
-type PutProductsProductIdCategoriesCategoryIdJSONRequestBody PutProductsProductIdCategoriesCategoryIdJSONBody
+// UpdateProductCategoryMembershipJSONRequestBody defines body for UpdateProductCategoryMembership for application/json ContentType.
+type UpdateProductCategoryMembershipJSONRequestBody UpdateProductCategoryMembershipJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// List all categories
 	// (GET /categories)
-	GetCategories(w http.ResponseWriter, r *http.Request)
+	ListCategories(w http.ResponseWriter, r *http.Request)
 	// Create a new category
 	// (POST /categories)
-	PostCategories(w http.ResponseWriter, r *http.Request)
+	CreateCategory(w http.ResponseWriter, r *http.Request)
 	// List products in a category
 	// (GET /categories/{categoryId}/products)
-	GetCategoriesCategoryIdProducts(w http.ResponseWriter, r *http.Request, categoryId string)
+	ListProductsByCategory(w http.ResponseWriter, r *http.Request, categoryId string)
 	// Delete a category
 	// (DELETE /categories/{id})
-	DeleteCategoriesId(w http.ResponseWriter, r *http.Request, id string)
+	DeleteCategory(w http.ResponseWriter, r *http.Request, id string)
 	// Health check endpoint
 	// (GET /health)
-	GetHealth(w http.ResponseWriter, r *http.Request)
+	HealthCheck(w http.ResponseWriter, r *http.Request)
 	// Delete all products
 	// (DELETE /products)
-	DeleteProducts(w http.ResponseWriter, r *http.Request)
+	DeleteAllProducts(w http.ResponseWriter, r *http.Request)
 	// List all products
 	// (GET /products)
-	GetProducts(w http.ResponseWriter, r *http.Request)
+	ListProducts(w http.ResponseWriter, r *http.Request)
 	// Create a new product
 	// (POST /products)
-	PostProducts(w http.ResponseWriter, r *http.Request)
+	CreateProduct(w http.ResponseWriter, r *http.Request)
 	// Delete a product
 	// (DELETE /products/{id})
-	DeleteProductsId(w http.ResponseWriter, r *http.Request, id string)
-	// Update product starred status
+	DeleteProduct(w http.ResponseWriter, r *http.Request, id string)
+	// Set product starred status
 	// (PATCH /products/{id})
-	PatchProductsId(w http.ResponseWriter, r *http.Request, id string)
+	SetProductStarred(w http.ResponseWriter, r *http.Request, id string)
 	// Set product category membership
 	// (PUT /products/{productId}/categories/{categoryId})
-	PutProductsProductIdCategoriesCategoryId(w http.ResponseWriter, r *http.Request, productId string, categoryId string)
+	UpdateProductCategoryMembership(w http.ResponseWriter, r *http.Request, productId string, categoryId string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -107,11 +107,11 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// GetCategories operation middleware
-func (siw *ServerInterfaceWrapper) GetCategories(w http.ResponseWriter, r *http.Request) {
+// ListCategories operation middleware
+func (siw *ServerInterfaceWrapper) ListCategories(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetCategories(w, r)
+		siw.Handler.ListCategories(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -121,11 +121,11 @@ func (siw *ServerInterfaceWrapper) GetCategories(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r)
 }
 
-// PostCategories operation middleware
-func (siw *ServerInterfaceWrapper) PostCategories(w http.ResponseWriter, r *http.Request) {
+// CreateCategory operation middleware
+func (siw *ServerInterfaceWrapper) CreateCategory(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostCategories(w, r)
+		siw.Handler.CreateCategory(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -135,8 +135,8 @@ func (siw *ServerInterfaceWrapper) PostCategories(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
-// GetCategoriesCategoryIdProducts operation middleware
-func (siw *ServerInterfaceWrapper) GetCategoriesCategoryIdProducts(w http.ResponseWriter, r *http.Request) {
+// ListProductsByCategory operation middleware
+func (siw *ServerInterfaceWrapper) ListProductsByCategory(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -150,7 +150,7 @@ func (siw *ServerInterfaceWrapper) GetCategoriesCategoryIdProducts(w http.Respon
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetCategoriesCategoryIdProducts(w, r, categoryId)
+		siw.Handler.ListProductsByCategory(w, r, categoryId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -160,8 +160,8 @@ func (siw *ServerInterfaceWrapper) GetCategoriesCategoryIdProducts(w http.Respon
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteCategoriesId operation middleware
-func (siw *ServerInterfaceWrapper) DeleteCategoriesId(w http.ResponseWriter, r *http.Request) {
+// DeleteCategory operation middleware
+func (siw *ServerInterfaceWrapper) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -175,7 +175,7 @@ func (siw *ServerInterfaceWrapper) DeleteCategoriesId(w http.ResponseWriter, r *
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteCategoriesId(w, r, id)
+		siw.Handler.DeleteCategory(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -185,11 +185,11 @@ func (siw *ServerInterfaceWrapper) DeleteCategoriesId(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
-// GetHealth operation middleware
-func (siw *ServerInterfaceWrapper) GetHealth(w http.ResponseWriter, r *http.Request) {
+// HealthCheck operation middleware
+func (siw *ServerInterfaceWrapper) HealthCheck(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHealth(w, r)
+		siw.Handler.HealthCheck(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -199,11 +199,11 @@ func (siw *ServerInterfaceWrapper) GetHealth(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteProducts operation middleware
-func (siw *ServerInterfaceWrapper) DeleteProducts(w http.ResponseWriter, r *http.Request) {
+// DeleteAllProducts operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAllProducts(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteProducts(w, r)
+		siw.Handler.DeleteAllProducts(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -213,11 +213,11 @@ func (siw *ServerInterfaceWrapper) DeleteProducts(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
-// GetProducts operation middleware
-func (siw *ServerInterfaceWrapper) GetProducts(w http.ResponseWriter, r *http.Request) {
+// ListProducts operation middleware
+func (siw *ServerInterfaceWrapper) ListProducts(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetProducts(w, r)
+		siw.Handler.ListProducts(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -227,11 +227,11 @@ func (siw *ServerInterfaceWrapper) GetProducts(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r)
 }
 
-// PostProducts operation middleware
-func (siw *ServerInterfaceWrapper) PostProducts(w http.ResponseWriter, r *http.Request) {
+// CreateProduct operation middleware
+func (siw *ServerInterfaceWrapper) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostProducts(w, r)
+		siw.Handler.CreateProduct(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -241,8 +241,8 @@ func (siw *ServerInterfaceWrapper) PostProducts(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteProductsId operation middleware
-func (siw *ServerInterfaceWrapper) DeleteProductsId(w http.ResponseWriter, r *http.Request) {
+// DeleteProduct operation middleware
+func (siw *ServerInterfaceWrapper) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -256,7 +256,7 @@ func (siw *ServerInterfaceWrapper) DeleteProductsId(w http.ResponseWriter, r *ht
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteProductsId(w, r, id)
+		siw.Handler.DeleteProduct(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -266,8 +266,8 @@ func (siw *ServerInterfaceWrapper) DeleteProductsId(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r)
 }
 
-// PatchProductsId operation middleware
-func (siw *ServerInterfaceWrapper) PatchProductsId(w http.ResponseWriter, r *http.Request) {
+// SetProductStarred operation middleware
+func (siw *ServerInterfaceWrapper) SetProductStarred(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -281,7 +281,7 @@ func (siw *ServerInterfaceWrapper) PatchProductsId(w http.ResponseWriter, r *htt
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PatchProductsId(w, r, id)
+		siw.Handler.SetProductStarred(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -291,8 +291,8 @@ func (siw *ServerInterfaceWrapper) PatchProductsId(w http.ResponseWriter, r *htt
 	handler.ServeHTTP(w, r)
 }
 
-// PutProductsProductIdCategoriesCategoryId operation middleware
-func (siw *ServerInterfaceWrapper) PutProductsProductIdCategoriesCategoryId(w http.ResponseWriter, r *http.Request) {
+// UpdateProductCategoryMembership operation middleware
+func (siw *ServerInterfaceWrapper) UpdateProductCategoryMembership(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -315,7 +315,7 @@ func (siw *ServerInterfaceWrapper) PutProductsProductIdCategoriesCategoryId(w ht
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PutProductsProductIdCategoriesCategoryId(w, r, productId, categoryId)
+		siw.Handler.UpdateProductCategoryMembership(w, r, productId, categoryId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -445,249 +445,249 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
-	m.HandleFunc("GET "+options.BaseURL+"/categories", wrapper.GetCategories)
-	m.HandleFunc("POST "+options.BaseURL+"/categories", wrapper.PostCategories)
-	m.HandleFunc("GET "+options.BaseURL+"/categories/{categoryId}/products", wrapper.GetCategoriesCategoryIdProducts)
-	m.HandleFunc("DELETE "+options.BaseURL+"/categories/{id}", wrapper.DeleteCategoriesId)
-	m.HandleFunc("GET "+options.BaseURL+"/health", wrapper.GetHealth)
-	m.HandleFunc("DELETE "+options.BaseURL+"/products", wrapper.DeleteProducts)
-	m.HandleFunc("GET "+options.BaseURL+"/products", wrapper.GetProducts)
-	m.HandleFunc("POST "+options.BaseURL+"/products", wrapper.PostProducts)
-	m.HandleFunc("DELETE "+options.BaseURL+"/products/{id}", wrapper.DeleteProductsId)
-	m.HandleFunc("PATCH "+options.BaseURL+"/products/{id}", wrapper.PatchProductsId)
-	m.HandleFunc("PUT "+options.BaseURL+"/products/{productId}/categories/{categoryId}", wrapper.PutProductsProductIdCategoriesCategoryId)
+	m.HandleFunc("GET "+options.BaseURL+"/categories", wrapper.ListCategories)
+	m.HandleFunc("POST "+options.BaseURL+"/categories", wrapper.CreateCategory)
+	m.HandleFunc("GET "+options.BaseURL+"/categories/{categoryId}/products", wrapper.ListProductsByCategory)
+	m.HandleFunc("DELETE "+options.BaseURL+"/categories/{id}", wrapper.DeleteCategory)
+	m.HandleFunc("GET "+options.BaseURL+"/health", wrapper.HealthCheck)
+	m.HandleFunc("DELETE "+options.BaseURL+"/products", wrapper.DeleteAllProducts)
+	m.HandleFunc("GET "+options.BaseURL+"/products", wrapper.ListProducts)
+	m.HandleFunc("POST "+options.BaseURL+"/products", wrapper.CreateProduct)
+	m.HandleFunc("DELETE "+options.BaseURL+"/products/{id}", wrapper.DeleteProduct)
+	m.HandleFunc("PATCH "+options.BaseURL+"/products/{id}", wrapper.SetProductStarred)
+	m.HandleFunc("PUT "+options.BaseURL+"/products/{productId}/categories/{categoryId}", wrapper.UpdateProductCategoryMembership)
 
 	return m
 }
 
-type GetCategoriesRequestObject struct {
+type ListCategoriesRequestObject struct {
 }
 
-type GetCategoriesResponseObject interface {
-	VisitGetCategoriesResponse(w http.ResponseWriter) error
+type ListCategoriesResponseObject interface {
+	VisitListCategoriesResponse(w http.ResponseWriter) error
 }
 
-type GetCategories200JSONResponse []Category
+type ListCategories200JSONResponse []Category
 
-func (response GetCategories200JSONResponse) VisitGetCategoriesResponse(w http.ResponseWriter) error {
+func (response ListCategories200JSONResponse) VisitListCategoriesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostCategoriesRequestObject struct {
-	Body *PostCategoriesJSONRequestBody
+type CreateCategoryRequestObject struct {
+	Body *CreateCategoryJSONRequestBody
 }
 
-type PostCategoriesResponseObject interface {
-	VisitPostCategoriesResponse(w http.ResponseWriter) error
+type CreateCategoryResponseObject interface {
+	VisitCreateCategoryResponse(w http.ResponseWriter) error
 }
 
-type PostCategories201Response struct {
+type CreateCategory201Response struct {
 }
 
-func (response PostCategories201Response) VisitPostCategoriesResponse(w http.ResponseWriter) error {
+func (response CreateCategory201Response) VisitCreateCategoryResponse(w http.ResponseWriter) error {
 	w.WriteHeader(201)
 	return nil
 }
 
-type PostCategories400Response struct {
+type CreateCategory400Response struct {
 }
 
-func (response PostCategories400Response) VisitPostCategoriesResponse(w http.ResponseWriter) error {
+func (response CreateCategory400Response) VisitCreateCategoryResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
 }
 
-type GetCategoriesCategoryIdProductsRequestObject struct {
+type ListProductsByCategoryRequestObject struct {
 	CategoryId string `json:"categoryId"`
 }
 
-type GetCategoriesCategoryIdProductsResponseObject interface {
-	VisitGetCategoriesCategoryIdProductsResponse(w http.ResponseWriter) error
+type ListProductsByCategoryResponseObject interface {
+	VisitListProductsByCategoryResponse(w http.ResponseWriter) error
 }
 
-type GetCategoriesCategoryIdProducts200JSONResponse struct {
+type ListProductsByCategory200JSONResponse struct {
 	ProductsInCategory    *[]Product `json:"productsInCategory,omitempty"`
 	ProductsNotInCategory *[]Product `json:"productsNotInCategory,omitempty"`
 }
 
-func (response GetCategoriesCategoryIdProducts200JSONResponse) VisitGetCategoriesCategoryIdProductsResponse(w http.ResponseWriter) error {
+func (response ListProductsByCategory200JSONResponse) VisitListProductsByCategoryResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteCategoriesIdRequestObject struct {
+type DeleteCategoryRequestObject struct {
 	Id string `json:"id"`
 }
 
-type DeleteCategoriesIdResponseObject interface {
-	VisitDeleteCategoriesIdResponse(w http.ResponseWriter) error
+type DeleteCategoryResponseObject interface {
+	VisitDeleteCategoryResponse(w http.ResponseWriter) error
 }
 
-type DeleteCategoriesId204Response struct {
+type DeleteCategory204Response struct {
 }
 
-func (response DeleteCategoriesId204Response) VisitDeleteCategoriesIdResponse(w http.ResponseWriter) error {
+func (response DeleteCategory204Response) VisitDeleteCategoryResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type DeleteCategoriesId404Response struct {
+type DeleteCategory404Response struct {
 }
 
-func (response DeleteCategoriesId404Response) VisitDeleteCategoriesIdResponse(w http.ResponseWriter) error {
+func (response DeleteCategory404Response) VisitDeleteCategoryResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type GetHealthRequestObject struct {
+type HealthCheckRequestObject struct {
 }
 
-type GetHealthResponseObject interface {
-	VisitGetHealthResponse(w http.ResponseWriter) error
+type HealthCheckResponseObject interface {
+	VisitHealthCheckResponse(w http.ResponseWriter) error
 }
 
-type GetHealth200JSONResponse struct {
+type HealthCheck200JSONResponse struct {
 	Ok *bool `json:"ok,omitempty"`
 }
 
-func (response GetHealth200JSONResponse) VisitGetHealthResponse(w http.ResponseWriter) error {
+func (response HealthCheck200JSONResponse) VisitHealthCheckResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteProductsRequestObject struct {
+type DeleteAllProductsRequestObject struct {
 }
 
-type DeleteProductsResponseObject interface {
-	VisitDeleteProductsResponse(w http.ResponseWriter) error
+type DeleteAllProductsResponseObject interface {
+	VisitDeleteAllProductsResponse(w http.ResponseWriter) error
 }
 
-type DeleteProducts204Response struct {
+type DeleteAllProducts204Response struct {
 }
 
-func (response DeleteProducts204Response) VisitDeleteProductsResponse(w http.ResponseWriter) error {
+func (response DeleteAllProducts204Response) VisitDeleteAllProductsResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type GetProductsRequestObject struct {
+type ListProductsRequestObject struct {
 }
 
-type GetProductsResponseObject interface {
-	VisitGetProductsResponse(w http.ResponseWriter) error
+type ListProductsResponseObject interface {
+	VisitListProductsResponse(w http.ResponseWriter) error
 }
 
-type GetProducts200JSONResponse []Product
+type ListProducts200JSONResponse []Product
 
-func (response GetProducts200JSONResponse) VisitGetProductsResponse(w http.ResponseWriter) error {
+func (response ListProducts200JSONResponse) VisitListProductsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostProductsRequestObject struct {
-	Body *PostProductsJSONRequestBody
+type CreateProductRequestObject struct {
+	Body *CreateProductJSONRequestBody
 }
 
-type PostProductsResponseObject interface {
-	VisitPostProductsResponse(w http.ResponseWriter) error
+type CreateProductResponseObject interface {
+	VisitCreateProductResponse(w http.ResponseWriter) error
 }
 
-type PostProducts201Response struct {
+type CreateProduct201Response struct {
 }
 
-func (response PostProducts201Response) VisitPostProductsResponse(w http.ResponseWriter) error {
+func (response CreateProduct201Response) VisitCreateProductResponse(w http.ResponseWriter) error {
 	w.WriteHeader(201)
 	return nil
 }
 
-type PostProducts400Response struct {
+type CreateProduct400Response struct {
 }
 
-func (response PostProducts400Response) VisitPostProductsResponse(w http.ResponseWriter) error {
+func (response CreateProduct400Response) VisitCreateProductResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
 }
 
-type DeleteProductsIdRequestObject struct {
+type DeleteProductRequestObject struct {
 	Id string `json:"id"`
 }
 
-type DeleteProductsIdResponseObject interface {
-	VisitDeleteProductsIdResponse(w http.ResponseWriter) error
+type DeleteProductResponseObject interface {
+	VisitDeleteProductResponse(w http.ResponseWriter) error
 }
 
-type DeleteProductsId204Response struct {
+type DeleteProduct204Response struct {
 }
 
-func (response DeleteProductsId204Response) VisitDeleteProductsIdResponse(w http.ResponseWriter) error {
+func (response DeleteProduct204Response) VisitDeleteProductResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type DeleteProductsId404Response struct {
+type DeleteProduct404Response struct {
 }
 
-func (response DeleteProductsId404Response) VisitDeleteProductsIdResponse(w http.ResponseWriter) error {
+func (response DeleteProduct404Response) VisitDeleteProductResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type PatchProductsIdRequestObject struct {
+type SetProductStarredRequestObject struct {
 	Id   string `json:"id"`
-	Body *PatchProductsIdJSONRequestBody
+	Body *SetProductStarredJSONRequestBody
 }
 
-type PatchProductsIdResponseObject interface {
-	VisitPatchProductsIdResponse(w http.ResponseWriter) error
+type SetProductStarredResponseObject interface {
+	VisitSetProductStarredResponse(w http.ResponseWriter) error
 }
 
-type PatchProductsId200Response struct {
+type SetProductStarred200Response struct {
 }
 
-func (response PatchProductsId200Response) VisitPatchProductsIdResponse(w http.ResponseWriter) error {
+func (response SetProductStarred200Response) VisitSetProductStarredResponse(w http.ResponseWriter) error {
 	w.WriteHeader(200)
 	return nil
 }
 
-type PatchProductsId404Response struct {
+type SetProductStarred404Response struct {
 }
 
-func (response PatchProductsId404Response) VisitPatchProductsIdResponse(w http.ResponseWriter) error {
+func (response SetProductStarred404Response) VisitSetProductStarredResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type PutProductsProductIdCategoriesCategoryIdRequestObject struct {
+type UpdateProductCategoryMembershipRequestObject struct {
 	ProductId  string `json:"productId"`
 	CategoryId string `json:"categoryId"`
-	Body       *PutProductsProductIdCategoriesCategoryIdJSONRequestBody
+	Body       *UpdateProductCategoryMembershipJSONRequestBody
 }
 
-type PutProductsProductIdCategoriesCategoryIdResponseObject interface {
-	VisitPutProductsProductIdCategoriesCategoryIdResponse(w http.ResponseWriter) error
+type UpdateProductCategoryMembershipResponseObject interface {
+	VisitUpdateProductCategoryMembershipResponse(w http.ResponseWriter) error
 }
 
-type PutProductsProductIdCategoriesCategoryId200Response struct {
+type UpdateProductCategoryMembership200Response struct {
 }
 
-func (response PutProductsProductIdCategoriesCategoryId200Response) VisitPutProductsProductIdCategoriesCategoryIdResponse(w http.ResponseWriter) error {
+func (response UpdateProductCategoryMembership200Response) VisitUpdateProductCategoryMembershipResponse(w http.ResponseWriter) error {
 	w.WriteHeader(200)
 	return nil
 }
 
-type PutProductsProductIdCategoriesCategoryId404Response struct {
+type UpdateProductCategoryMembership404Response struct {
 }
 
-func (response PutProductsProductIdCategoriesCategoryId404Response) VisitPutProductsProductIdCategoriesCategoryIdResponse(w http.ResponseWriter) error {
+func (response UpdateProductCategoryMembership404Response) VisitUpdateProductCategoryMembershipResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -696,37 +696,37 @@ func (response PutProductsProductIdCategoriesCategoryId404Response) VisitPutProd
 type StrictServerInterface interface {
 	// List all categories
 	// (GET /categories)
-	GetCategories(ctx context.Context, request GetCategoriesRequestObject) (GetCategoriesResponseObject, error)
+	ListCategories(ctx context.Context, request ListCategoriesRequestObject) (ListCategoriesResponseObject, error)
 	// Create a new category
 	// (POST /categories)
-	PostCategories(ctx context.Context, request PostCategoriesRequestObject) (PostCategoriesResponseObject, error)
+	CreateCategory(ctx context.Context, request CreateCategoryRequestObject) (CreateCategoryResponseObject, error)
 	// List products in a category
 	// (GET /categories/{categoryId}/products)
-	GetCategoriesCategoryIdProducts(ctx context.Context, request GetCategoriesCategoryIdProductsRequestObject) (GetCategoriesCategoryIdProductsResponseObject, error)
+	ListProductsByCategory(ctx context.Context, request ListProductsByCategoryRequestObject) (ListProductsByCategoryResponseObject, error)
 	// Delete a category
 	// (DELETE /categories/{id})
-	DeleteCategoriesId(ctx context.Context, request DeleteCategoriesIdRequestObject) (DeleteCategoriesIdResponseObject, error)
+	DeleteCategory(ctx context.Context, request DeleteCategoryRequestObject) (DeleteCategoryResponseObject, error)
 	// Health check endpoint
 	// (GET /health)
-	GetHealth(ctx context.Context, request GetHealthRequestObject) (GetHealthResponseObject, error)
+	HealthCheck(ctx context.Context, request HealthCheckRequestObject) (HealthCheckResponseObject, error)
 	// Delete all products
 	// (DELETE /products)
-	DeleteProducts(ctx context.Context, request DeleteProductsRequestObject) (DeleteProductsResponseObject, error)
+	DeleteAllProducts(ctx context.Context, request DeleteAllProductsRequestObject) (DeleteAllProductsResponseObject, error)
 	// List all products
 	// (GET /products)
-	GetProducts(ctx context.Context, request GetProductsRequestObject) (GetProductsResponseObject, error)
+	ListProducts(ctx context.Context, request ListProductsRequestObject) (ListProductsResponseObject, error)
 	// Create a new product
 	// (POST /products)
-	PostProducts(ctx context.Context, request PostProductsRequestObject) (PostProductsResponseObject, error)
+	CreateProduct(ctx context.Context, request CreateProductRequestObject) (CreateProductResponseObject, error)
 	// Delete a product
 	// (DELETE /products/{id})
-	DeleteProductsId(ctx context.Context, request DeleteProductsIdRequestObject) (DeleteProductsIdResponseObject, error)
-	// Update product starred status
+	DeleteProduct(ctx context.Context, request DeleteProductRequestObject) (DeleteProductResponseObject, error)
+	// Set product starred status
 	// (PATCH /products/{id})
-	PatchProductsId(ctx context.Context, request PatchProductsIdRequestObject) (PatchProductsIdResponseObject, error)
+	SetProductStarred(ctx context.Context, request SetProductStarredRequestObject) (SetProductStarredResponseObject, error)
 	// Set product category membership
 	// (PUT /products/{productId}/categories/{categoryId})
-	PutProductsProductIdCategoriesCategoryId(ctx context.Context, request PutProductsProductIdCategoriesCategoryIdRequestObject) (PutProductsProductIdCategoriesCategoryIdResponseObject, error)
+	UpdateProductCategoryMembership(ctx context.Context, request UpdateProductCategoryMembershipRequestObject) (UpdateProductCategoryMembershipResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -758,23 +758,23 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
-// GetCategories operation middleware
-func (sh *strictHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
-	var request GetCategoriesRequestObject
+// ListCategories operation middleware
+func (sh *strictHandler) ListCategories(w http.ResponseWriter, r *http.Request) {
+	var request ListCategoriesRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetCategories(ctx, request.(GetCategoriesRequestObject))
+		return sh.ssi.ListCategories(ctx, request.(ListCategoriesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetCategories")
+		handler = middleware(handler, "ListCategories")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetCategoriesResponseObject); ok {
-		if err := validResponse.VisitGetCategoriesResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListCategoriesResponseObject); ok {
+		if err := validResponse.VisitListCategoriesResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -782,11 +782,11 @@ func (sh *strictHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// PostCategories operation middleware
-func (sh *strictHandler) PostCategories(w http.ResponseWriter, r *http.Request) {
-	var request PostCategoriesRequestObject
+// CreateCategory operation middleware
+func (sh *strictHandler) CreateCategory(w http.ResponseWriter, r *http.Request) {
+	var request CreateCategoryRequestObject
 
-	var body PostCategoriesJSONRequestBody
+	var body CreateCategoryJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -794,18 +794,18 @@ func (sh *strictHandler) PostCategories(w http.ResponseWriter, r *http.Request) 
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostCategories(ctx, request.(PostCategoriesRequestObject))
+		return sh.ssi.CreateCategory(ctx, request.(CreateCategoryRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostCategories")
+		handler = middleware(handler, "CreateCategory")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostCategoriesResponseObject); ok {
-		if err := validResponse.VisitPostCategoriesResponse(w); err != nil {
+	} else if validResponse, ok := response.(CreateCategoryResponseObject); ok {
+		if err := validResponse.VisitCreateCategoryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -813,25 +813,25 @@ func (sh *strictHandler) PostCategories(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// GetCategoriesCategoryIdProducts operation middleware
-func (sh *strictHandler) GetCategoriesCategoryIdProducts(w http.ResponseWriter, r *http.Request, categoryId string) {
-	var request GetCategoriesCategoryIdProductsRequestObject
+// ListProductsByCategory operation middleware
+func (sh *strictHandler) ListProductsByCategory(w http.ResponseWriter, r *http.Request, categoryId string) {
+	var request ListProductsByCategoryRequestObject
 
 	request.CategoryId = categoryId
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetCategoriesCategoryIdProducts(ctx, request.(GetCategoriesCategoryIdProductsRequestObject))
+		return sh.ssi.ListProductsByCategory(ctx, request.(ListProductsByCategoryRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetCategoriesCategoryIdProducts")
+		handler = middleware(handler, "ListProductsByCategory")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetCategoriesCategoryIdProductsResponseObject); ok {
-		if err := validResponse.VisitGetCategoriesCategoryIdProductsResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListProductsByCategoryResponseObject); ok {
+		if err := validResponse.VisitListProductsByCategoryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -839,25 +839,25 @@ func (sh *strictHandler) GetCategoriesCategoryIdProducts(w http.ResponseWriter, 
 	}
 }
 
-// DeleteCategoriesId operation middleware
-func (sh *strictHandler) DeleteCategoriesId(w http.ResponseWriter, r *http.Request, id string) {
-	var request DeleteCategoriesIdRequestObject
+// DeleteCategory operation middleware
+func (sh *strictHandler) DeleteCategory(w http.ResponseWriter, r *http.Request, id string) {
+	var request DeleteCategoryRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteCategoriesId(ctx, request.(DeleteCategoriesIdRequestObject))
+		return sh.ssi.DeleteCategory(ctx, request.(DeleteCategoryRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteCategoriesId")
+		handler = middleware(handler, "DeleteCategory")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteCategoriesIdResponseObject); ok {
-		if err := validResponse.VisitDeleteCategoriesIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteCategoryResponseObject); ok {
+		if err := validResponse.VisitDeleteCategoryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -865,23 +865,23 @@ func (sh *strictHandler) DeleteCategoriesId(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-// GetHealth operation middleware
-func (sh *strictHandler) GetHealth(w http.ResponseWriter, r *http.Request) {
-	var request GetHealthRequestObject
+// HealthCheck operation middleware
+func (sh *strictHandler) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	var request HealthCheckRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHealth(ctx, request.(GetHealthRequestObject))
+		return sh.ssi.HealthCheck(ctx, request.(HealthCheckRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHealth")
+		handler = middleware(handler, "HealthCheck")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetHealthResponseObject); ok {
-		if err := validResponse.VisitGetHealthResponse(w); err != nil {
+	} else if validResponse, ok := response.(HealthCheckResponseObject); ok {
+		if err := validResponse.VisitHealthCheckResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -889,23 +889,23 @@ func (sh *strictHandler) GetHealth(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// DeleteProducts operation middleware
-func (sh *strictHandler) DeleteProducts(w http.ResponseWriter, r *http.Request) {
-	var request DeleteProductsRequestObject
+// DeleteAllProducts operation middleware
+func (sh *strictHandler) DeleteAllProducts(w http.ResponseWriter, r *http.Request) {
+	var request DeleteAllProductsRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteProducts(ctx, request.(DeleteProductsRequestObject))
+		return sh.ssi.DeleteAllProducts(ctx, request.(DeleteAllProductsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteProducts")
+		handler = middleware(handler, "DeleteAllProducts")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteProductsResponseObject); ok {
-		if err := validResponse.VisitDeleteProductsResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteAllProductsResponseObject); ok {
+		if err := validResponse.VisitDeleteAllProductsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -913,23 +913,23 @@ func (sh *strictHandler) DeleteProducts(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// GetProducts operation middleware
-func (sh *strictHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
-	var request GetProductsRequestObject
+// ListProducts operation middleware
+func (sh *strictHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
+	var request ListProductsRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetProducts(ctx, request.(GetProductsRequestObject))
+		return sh.ssi.ListProducts(ctx, request.(ListProductsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetProducts")
+		handler = middleware(handler, "ListProducts")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetProductsResponseObject); ok {
-		if err := validResponse.VisitGetProductsResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListProductsResponseObject); ok {
+		if err := validResponse.VisitListProductsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -937,11 +937,11 @@ func (sh *strictHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// PostProducts operation middleware
-func (sh *strictHandler) PostProducts(w http.ResponseWriter, r *http.Request) {
-	var request PostProductsRequestObject
+// CreateProduct operation middleware
+func (sh *strictHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
+	var request CreateProductRequestObject
 
-	var body PostProductsJSONRequestBody
+	var body CreateProductJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -949,18 +949,18 @@ func (sh *strictHandler) PostProducts(w http.ResponseWriter, r *http.Request) {
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostProducts(ctx, request.(PostProductsRequestObject))
+		return sh.ssi.CreateProduct(ctx, request.(CreateProductRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostProducts")
+		handler = middleware(handler, "CreateProduct")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostProductsResponseObject); ok {
-		if err := validResponse.VisitPostProductsResponse(w); err != nil {
+	} else if validResponse, ok := response.(CreateProductResponseObject); ok {
+		if err := validResponse.VisitCreateProductResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -968,25 +968,25 @@ func (sh *strictHandler) PostProducts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// DeleteProductsId operation middleware
-func (sh *strictHandler) DeleteProductsId(w http.ResponseWriter, r *http.Request, id string) {
-	var request DeleteProductsIdRequestObject
+// DeleteProduct operation middleware
+func (sh *strictHandler) DeleteProduct(w http.ResponseWriter, r *http.Request, id string) {
+	var request DeleteProductRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteProductsId(ctx, request.(DeleteProductsIdRequestObject))
+		return sh.ssi.DeleteProduct(ctx, request.(DeleteProductRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteProductsId")
+		handler = middleware(handler, "DeleteProduct")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteProductsIdResponseObject); ok {
-		if err := validResponse.VisitDeleteProductsIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteProductResponseObject); ok {
+		if err := validResponse.VisitDeleteProductResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -994,13 +994,13 @@ func (sh *strictHandler) DeleteProductsId(w http.ResponseWriter, r *http.Request
 	}
 }
 
-// PatchProductsId operation middleware
-func (sh *strictHandler) PatchProductsId(w http.ResponseWriter, r *http.Request, id string) {
-	var request PatchProductsIdRequestObject
+// SetProductStarred operation middleware
+func (sh *strictHandler) SetProductStarred(w http.ResponseWriter, r *http.Request, id string) {
+	var request SetProductStarredRequestObject
 
 	request.Id = id
 
-	var body PatchProductsIdJSONRequestBody
+	var body SetProductStarredJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1008,18 +1008,18 @@ func (sh *strictHandler) PatchProductsId(w http.ResponseWriter, r *http.Request,
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PatchProductsId(ctx, request.(PatchProductsIdRequestObject))
+		return sh.ssi.SetProductStarred(ctx, request.(SetProductStarredRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PatchProductsId")
+		handler = middleware(handler, "SetProductStarred")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PatchProductsIdResponseObject); ok {
-		if err := validResponse.VisitPatchProductsIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(SetProductStarredResponseObject); ok {
+		if err := validResponse.VisitSetProductStarredResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1027,14 +1027,14 @@ func (sh *strictHandler) PatchProductsId(w http.ResponseWriter, r *http.Request,
 	}
 }
 
-// PutProductsProductIdCategoriesCategoryId operation middleware
-func (sh *strictHandler) PutProductsProductIdCategoriesCategoryId(w http.ResponseWriter, r *http.Request, productId string, categoryId string) {
-	var request PutProductsProductIdCategoriesCategoryIdRequestObject
+// UpdateProductCategoryMembership operation middleware
+func (sh *strictHandler) UpdateProductCategoryMembership(w http.ResponseWriter, r *http.Request, productId string, categoryId string) {
+	var request UpdateProductCategoryMembershipRequestObject
 
 	request.ProductId = productId
 	request.CategoryId = categoryId
 
-	var body PutProductsProductIdCategoriesCategoryIdJSONRequestBody
+	var body UpdateProductCategoryMembershipJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1042,18 +1042,18 @@ func (sh *strictHandler) PutProductsProductIdCategoriesCategoryId(w http.Respons
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PutProductsProductIdCategoriesCategoryId(ctx, request.(PutProductsProductIdCategoriesCategoryIdRequestObject))
+		return sh.ssi.UpdateProductCategoryMembership(ctx, request.(UpdateProductCategoryMembershipRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PutProductsProductIdCategoriesCategoryId")
+		handler = middleware(handler, "UpdateProductCategoryMembership")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PutProductsProductIdCategoriesCategoryIdResponseObject); ok {
-		if err := validResponse.VisitPutProductsProductIdCategoriesCategoryIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(UpdateProductCategoryMembershipResponseObject); ok {
+		if err := validResponse.VisitUpdateProductCategoryMembershipResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
