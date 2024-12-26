@@ -1,16 +1,19 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/stellora/shop/api-server/api"
+	"github.com/stellora/shop/api-server/db"
 )
 
 var (
-	addr = flag.String("addr", "localhost:"+defaultListenPort(), "HTTP listen address")
+	addr   = flag.String("addr", "localhost:"+defaultListenPort(), "HTTP listen address")
+	dbFile = flag.String("db", "shop.db", "database file path (sqlite3)")
 )
 
 func defaultListenPort() string {
@@ -22,7 +25,15 @@ func defaultListenPort() string {
 
 func main() {
 	flag.Parse()
-	handler := NewHandler()
+
+	ctx := context.Background()
+
+	db, queries, err := db.Open(ctx, *dbFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	handler := NewHandler(db, queries)
 	server := api.HandlerWithOptions(
 		api.NewStrictHandler(handler, nil),
 		api.StdHTTPServerOptions{},

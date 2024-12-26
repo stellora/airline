@@ -1,0 +1,10 @@
+{
+	"json.schemas": [
+		{
+			"fileMatch": [
+				"sqlc.json"
+			],
+			"url": "https://raw.githubusercontent.com/sqlc-dev/sqlc/refs/heads/main/internal/config/v_two.json"
+		}
+	]
+}
