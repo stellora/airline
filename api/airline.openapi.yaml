@@ -69,6 +69,29 @@ paths:
                 $ref: '#/components/schemas/Airport'
         '404':
           description: Airport not found
+    patch:
+      operationId: updateAirport
+      summary: Update airport
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                iataCode:
+                  type: string                
+      responses:
+        '204':
+          description: Flight updated
+        '404':
+          description: Flight not found
     delete:
       operationId: deleteAirport
       summary: Delete a airport
@@ -133,11 +156,11 @@ paths:
                   type: number
                 published:
                   type: boolean
+                  default: false
               required:
                 - number
                 - originAirport
                 - destinationAirport
-                - published
       responses:
         '201':
           description: Flight created
@@ -192,7 +215,6 @@ paths:
                   type: number
                 published:
                   type: boolean
-                
       responses:
         '204':
           description: Flight updated

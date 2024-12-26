@@ -54,6 +54,24 @@ export interface paths {
         delete: operations["deleteAirport"];
         options?: never;
         head?: never;
+        /** Update airport */
+        patch: operations["updateAirport"];
+        trace?: never;
+    };
+    "/airports/{id}/flights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List flights that depart from or arrive at an airport */
+        get: operations["listFlightsByAirport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -91,42 +109,8 @@ export interface paths {
         delete: operations["deleteFlight"];
         options?: never;
         head?: never;
-        /** Set flight published status */
-        patch: operations["setFlightPublished"];
-        trace?: never;
-    };
-    "/airports/{airportId}/flights": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List flights in a airport */
-        get: operations["listFlightsByAirport"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/flights/{flightId}/airports/{airportId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Set flight airport membership */
-        put: operations["updateFlightAirportMembership"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
+        /** Update flight */
+        patch: operations["updateFlight"];
         trace?: never;
     };
 }
@@ -134,14 +118,14 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Airport: {
-            id: string;
-            title: string;
+            id: number;
+            iataCode: string;
         };
         Flight: {
-            id: string;
-            title: string;
-            published: boolean;
-            airports?: components["schemas"]["Airport"][];
+            id: number;
+            number: string;
+            originAirport: components["schemas"]["Airport"];
+            destinationAirport: components["schemas"]["Airport"];
         };
     };
     responses: never;
@@ -204,7 +188,7 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    title: string;
+                    iataCode: string;
                 };
             };
         };
@@ -230,7 +214,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                id: number;
             };
             cookie?: never;
         };
@@ -259,7 +243,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                id: number;
             };
             cookie?: never;
         };
@@ -278,6 +262,61 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    updateAirport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    iataCode?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Flight updated */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Flight not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFlightsByAirport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Flights by airport */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Flight"][];
+                };
             };
         };
     };
@@ -311,7 +350,11 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    title: string;
+                    number: string;
+                    originAirport: number;
+                    destinationAirport: number;
+                    /** @default false */
+                    published?: boolean;
                 };
             };
         };
@@ -355,7 +398,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                id: number;
             };
             cookie?: never;
         };
@@ -384,7 +427,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                id: number;
             };
             cookie?: never;
         };
@@ -406,19 +449,22 @@ export interface operations {
             };
         };
     };
-    setFlightPublished: {
+    updateFlight: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                id: number;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
                 "application/json": {
-                    published: boolean;
+                    number?: string;
+                    originAirport?: number;
+                    destinationAirport?: number;
+                    published?: boolean;
                 };
             };
         };
@@ -431,65 +477,6 @@ export interface operations {
                 content?: never;
             };
             /** @description Flight not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    listFlightsByAirport: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                airportId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Flights categorization */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        flightsInAirport: components["schemas"]["Flight"][];
-                        flightsNotInAirport: components["schemas"]["Flight"][];
-                    };
-                };
-            };
-        };
-    };
-    updateFlightAirportMembership: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                flightId: string;
-                airportId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    value: boolean;
-                };
-            };
-        };
-        responses: {
-            /** @description Membership updated */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Flight or airport not found */
             404: {
                 headers: {
                     [name: string]: unknown;

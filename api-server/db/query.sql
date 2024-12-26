@@ -8,7 +8,7 @@ ORDER BY id ASC;
 
 -- name: CreateAirport :one
 INSERT INTO airports (
-  title
+  iata_code
 ) VALUES (
   ?
 )
@@ -16,7 +16,7 @@ RETURNING *;
 
 -- name: UpdateAirport :exec
 UPDATE airports SET
-title=?
+iata_code=?
 WHERE id=?;
 
 -- name: DeleteAirport :exec
@@ -35,32 +35,20 @@ ORDER BY id ASC;
 
 -- name: CreateFlight :one
 INSERT INTO flights (
-  title, published
+  number, origin_airport, destination_airport, published
 ) VALUES (
-  ?, ?
+  ?, ?, ?, ?
 )
 RETURNING *;
 
 -- name: UpdateFlight :exec
 UPDATE flights SET
-title=?,
+number=?,
+origin_airport=?,
+destination_airport=?,
 published=?
 WHERE id=?;
 
 -- name: DeleteFlight :exec
 DELETE FROM flights
 WHERE id=?;
-
--------------------------------------------------------------------------------
-
--- name: AddFlightToAirport :exec
-INSERT INTO flight_airports (
-  flight_id,
-  airport_id
-) VALUES (
-  ?, ?
-);
-
--- name: RemoveFlightFromAirport :exec
-DELETE FROM flight_airports
-WHERE flight_id = ? AND airport_id = ?;

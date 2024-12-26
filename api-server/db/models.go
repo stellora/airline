@@ -5,17 +5,14 @@
 package db
 
 type Airport struct {
-	ID    int64
-	Title string
+	ID       int64
+	IataCode string
 }
 
 type Flight struct {
-	ID      int64
-	Title   string
-	Published bool
-}
-
-type FlightAirport struct {
-	FlightID  int64
-	AirportID int64
+	ID                 int64
+	Number             string
+	OriginAirport      int64
+	DestinationAirport int64
+	Published          bool
 }
