@@ -11,11 +11,11 @@
 <li in:fade out:fade class="flex flex-col gap-4 border p-3 rounded-md">
 	<FlightTitle {flight} link class="text-lg font-bold leading-none" />
 	<div class="flex flex-wrap gap-2 items-center">
-		<form method="POST" action="?/setFlightStarred" use:enhance class="flex">
+		<form method="POST" action="?/setFlightPublished" use:enhance class="flex">
 			<input type="hidden" name="id" value={flight.id} />
-			<input type="hidden" name="starred" value={!flight.starred ? 'true' : 'false'} />
+			<input type="hidden" name="published" value={!flight.published ? 'true' : 'false'} />
 			<Button type="submit" variant="secondary" size="sm"
-				>{flight.starred ? 'Unstar' : 'Star'}</Button
+				>{flight.published ? 'Unstar' : 'Star'}</Button
 			>
 		</form>
 		<Button variant="secondary" size="sm" href={`/admin/flights/${flight.id}`}>Edit</Button>

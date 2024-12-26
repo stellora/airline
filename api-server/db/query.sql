@@ -35,7 +35,7 @@ ORDER BY id ASC;
 
 -- name: CreateFlight :one
 INSERT INTO flights (
-  title, starred
+  title, published
 ) VALUES (
   ?, ?
 )
@@ -44,7 +44,7 @@ RETURNING *;
 -- name: UpdateFlight :exec
 UPDATE flights SET
 title=?,
-starred=?
+published=?
 WHERE id=?;
 
 -- name: DeleteFlight :exec

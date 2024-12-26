@@ -23,7 +23,7 @@
 	{:else}
 		{flight.title}
 	{/if}
-	{#if flight.starred}
-		<Star fill="currentColor" class="inline" size="1.25ch" aria-label="Starred" />
+	{#if flight.published}
+		<Star fill="currentColor" class="inline" size="1.25ch" aria-label="Published" />
 	{/if}
 </svelte:element>

@@ -7,7 +7,7 @@ describe('FlightItem', () => {
 	const mockFlight: Flight = {
 		id: '1',
 		title: 'Test Flight',
-		starred: false
+		published: false
 	}
 
 	it('renders flight title correctly', () => {
@@ -20,13 +20,13 @@ describe('FlightItem', () => {
 			const { getByText, rerender } = render(FlightItem, { props: { flight: mockFlight } })
 			expect(getByText('Star')).toBeInTheDocument()
 
-			await rerender({ flight: { ...mockFlight, starred: true } })
+			await rerender({ flight: { ...mockFlight, published: true } })
 			expect(getByText('Unstar')).toBeInTheDocument()
 		})
 
 		it('includes correct form data for starring/unstarring', () => {
 			const { container } = render(FlightItem, { props: { flight: mockFlight } })
-			const starForm = container.querySelector('form[action="?/setFlightStarred"]')
+			const starForm = container.querySelector('form[action="?/setFlightPublished"]')
 			const inputs = starForm?.querySelectorAll('input')
 
 			expect(inputs?.[0]).toHaveValue('1')

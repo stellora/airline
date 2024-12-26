@@ -41,10 +41,10 @@ paths:
             schema:
               type: object
               properties:
-                title:
+                iataCode:
                   type: string
               required:
-                - title
+                - iataCode
       responses:
         '201':
           description: Airport created
@@ -59,7 +59,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: Airport found
@@ -77,13 +77,31 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: number
       responses:
         '204':
           description: Airport deleted
         '404':
           description: Airport not found
-
+  /airports/{id}/flights:
+    get:
+      operationId: listFlightsByAirport
+      summary: List flights that depart from or arrive at an airport
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Flights by airport
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
   /flights:
     get:
       operationId: listFlights
@@ -107,10 +125,19 @@ paths:
             schema:
               type: object
               properties:
-                title:
+                number:
                   type: string
+                originAirport:
+                  type: number
+                destinationAirport:
+                  type: number
+                published:
+                  type: boolean
               required:
-                - title
+                - number
+                - originAirport
+                - destinationAirport
+                - published
       responses:
         '201':
           description: Flight created
@@ -122,7 +149,6 @@ paths:
       responses:
         '204':
           description: All flights deleted
-
   /flights/{id}:
     get:
       operationId: getFlight
@@ -132,7 +158,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: Flight found
@@ -143,14 +169,14 @@ paths:
         '404':
           description: Flight not found
     patch:
-      operationId: setFlightStarred
-      summary: Set flight starred status
+      operationId: updateFlight
+      summary: Update flight
       parameters:
         - name: id
           in: path
           required: true
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
@@ -158,10 +184,15 @@ paths:
             schema:
               type: object
               properties:
-                starred:
+                number:
+                  type: string
+                originAirport:
+                  type: number
+                destinationAirport:
+                  type: number
+                published:
                   type: boolean
-              required:
-                - starred
+                
       responses:
         '204':
           description: Flight updated
@@ -175,102 +206,37 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: number
       responses:
         '204':
           description: Flight deleted
         '404':
           description: Flight not found
-
-  /airports/{airportId}/flights:
-    get:
-      operationId: listFlightsByAirport
-      summary: List flights in a airport
-      parameters:
-        - name: airportId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Flights categorization
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  flightsInAirport:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Flight'
-                  flightsNotInAirport:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Flight'
-                required:
-                  - flightsInAirport
-                  - flightsNotInAirport
-
-  /flights/{flightId}/airports/{airportId}:
-    put:
-      operationId: updateFlightAirportMembership
-      summary: Set flight airport membership
-      parameters:
-        - name: flightId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: airportId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                value:
-                  type: boolean
-              required:
-                - value
-      responses:
-        '204':
-          description: Membership updated
-        '404':
-          description: Flight or airport not found
-
 components:
   schemas:
     Airport:
       type: object
       properties:
         id:
-          type: string
-        title:
+          type: number
+        iataCode:
           type: string
       required:
         - id
-        - title
-
+        - iataCode
     Flight:
       type: object
       properties:
         id:
+          type: number
+        number:
           type: string
-        title:
-          type: string
-        starred:
-          type: boolean
-        airports:
-          type: array
-          items:
-            $ref: '#/components/schemas/Airport'
+        originAirport:
+          $ref: '#/components/schemas/Airport'
+        destinationAirport:
+          $ref: '#/components/schemas/Airport'
       required:
         - id
-        - title
-        - starred
+        - number
+        - originAirport
+        - destinationAirport

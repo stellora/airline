@@ -30,7 +30,7 @@ export const actions: Actions = {
 		}
 	},
 
-	setFlightStarred: async ({ request }) => {
+	setFlightPublished: async ({ request }) => {
 		const data = await request.formData()
 		const id = data.get('id')
 		if (!id || typeof id !== 'string') {
@@ -39,24 +39,24 @@ export const actions: Actions = {
 				error: 'id is required'
 			})
 		}
-		const starredStr = data.get('starred')
-		if (starredStr !== 'true' && starredStr !== 'false') {
+		const publishedStr = data.get('published')
+		if (publishedStr !== 'true' && publishedStr !== 'false') {
 			return fail(400, {
-				starred: undefined,
-				error: 'starred must be "true" or "false"'
+				published: undefined,
+				error: 'published must be "true" or "false"'
 			})
 		}
-		const starred = starredStr === 'true'
+		const published = publishedStr === 'true'
 
 		const resp = await apiClient.PATCH('/flights/{id}', {
 			params: { path: { id } },
-			body: { starred },
+			body: { published },
 			fetch
 		})
 		if (!resp.response.ok) {
 			// TODO(sqs)
 			return fail(422, {
-				starred: undefined,
+				published: undefined,
 				error: await resp.response.text()
 			})
 		}

@@ -177,40 +177,40 @@ func TestDeleteFlight(t *testing.T) {
 	checkFlightTitles(t, handler, []string{"Flight 2"})
 }
 
-func TestSetFlightStarred(t *testing.T) {
+func TestSetFlightPublished(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	flights = []api.Flight{
-		{Id: "1", Title: "Flight 1", Starred: false},
-		{Id: "2", Title: "Flight 2", Starred: false},
+		{Id: "1", Title: "Flight 1", Published: false},
+		{Id: "2", Title: "Flight 2", Published: false},
 	}
 
-	resp, err := handler.SetFlightStarred(ctx, api.SetFlightStarredRequestObject{
+	resp, err := handler.SetFlightPublished(ctx, api.SetFlightPublishedRequestObject{
 		Id: "1",
-		Body: &api.SetFlightStarredJSONRequestBody{
-			Starred: true,
+		Body: &api.SetFlightPublishedJSONRequestBody{
+			Published: true,
 		},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := api.SetFlightStarred204Response{}
+	want := api.SetFlightPublished204Response{}
 	if !reflect.DeepEqual(want, resp) {
 		t.Errorf("got %v, want %v", resp, want)
 	}
 
-	// Verify the flight was actually starred
+	// Verify the flight was actually published
 	listResp, err := handler.ListFlights(ctx, api.ListFlightsRequestObject{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	flights := listResp.(api.ListFlights200JSONResponse)
 	for _, p := range flights {
-		if p.Id == "1" && !p.Starred {
-			t.Error("Flight 1 should be starred")
+		if p.Id == "1" && !p.Published {
+			t.Error("Flight 1 should be published")
 		}
-		if p.Id == "2" && p.Starred {
-			t.Error("Flight 2 should not be starred")
+		if p.Id == "2" && p.Published {
+			t.Error("Flight 2 should not be published")
 		}
 	}
 }

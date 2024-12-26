@@ -33,10 +33,10 @@ test('star flight', async ({ page }) => {
 	const starButton = avocadoFlight.getByRole('button', { name: /Star|Unstar/ })
 	await starButton.click()
 	await expect(starButton).toHaveText('Unstar')
-	await expect(avocadoFlight.getByLabel('Starred')).toBeVisible()
+	await expect(avocadoFlight.getByLabel('Published')).toBeVisible()
 
 	// Unstar flight
 	await starButton.click()
 	await expect(starButton).toHaveText('Star')
-	await expect(avocadoFlight.getByLabel('Starred')).not.toBeVisible()
+	await expect(avocadoFlight.getByLabel('Published')).not.toBeVisible()
 })

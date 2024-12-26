@@ -1,7 +1,7 @@
 export type Flight = {
 	id: string
 	title: string
-	starred: boolean
+	published: boolean
 }
 
 export type Airport = {

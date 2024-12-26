@@ -7,7 +7,7 @@ describe('FlightTitle', () => {
 	const mockFlight: Flight = {
 		id: '1',
 		title: 'Test Flight',
-		starred: false
+		published: false
 	}
 
 	it('renders flight title correctly', () => {
@@ -16,10 +16,10 @@ describe('FlightTitle', () => {
 	})
 
 	describe('starring', () => {
-		it('shows star when flight is starred', () => {
-			const starredFlight = { ...mockFlight, starred: true }
-			const { getByLabelText } = render(FlightCard, { props: { flight: starredFlight } })
-			expect(getByLabelText('Starred')).toBeInTheDocument()
+		it('shows star when flight is published', () => {
+			const publishedFlight = { ...mockFlight, published: true }
+			const { getByLabelText } = render(FlightCard, { props: { flight: publishedFlight } })
+			expect(getByLabelText('Published')).toBeInTheDocument()
 		})
 	})
 })

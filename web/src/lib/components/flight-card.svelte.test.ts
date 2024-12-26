@@ -7,7 +7,7 @@ describe('FlightCard', () => {
 	const mockFlight: Flight = {
 		id: '1',
 		title: 'Test Flight',
-		starred: false
+		published: false
 	}
 
 	it('renders flight title correctly', () => {

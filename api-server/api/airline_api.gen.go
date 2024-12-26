@@ -25,7 +25,7 @@ type Airport struct {
 type Flight struct {
 	Airports *[]Airport `json:"airports,omitempty"`
 	Id         string      `json:"id"`
-	Starred    bool        `json:"starred"`
+	Published    bool        `json:"published"`
 	Title      string      `json:"title"`
 }
 
@@ -39,9 +39,9 @@ type CreateFlightJSONBody struct {
 	Title string `json:"title"`
 }
 
-// SetFlightStarredJSONBody defines parameters for SetFlightStarred.
-type SetFlightStarredJSONBody struct {
-	Starred bool `json:"starred"`
+// SetFlightPublishedJSONBody defines parameters for SetFlightPublished.
+type SetFlightPublishedJSONBody struct {
+	Published bool `json:"published"`
 }
 
 // UpdateFlightAirportMembershipJSONBody defines parameters for UpdateFlightAirportMembership.
@@ -55,8 +55,8 @@ type CreateAirportJSONRequestBody CreateAirportJSONBody
 // CreateFlightJSONRequestBody defines body for CreateFlight for application/json ContentType.
 type CreateFlightJSONRequestBody CreateFlightJSONBody
 
-// SetFlightStarredJSONRequestBody defines body for SetFlightStarred for application/json ContentType.
-type SetFlightStarredJSONRequestBody SetFlightStarredJSONBody
+// SetFlightPublishedJSONRequestBody defines body for SetFlightPublished for application/json ContentType.
+type SetFlightPublishedJSONRequestBody SetFlightPublishedJSONBody
 
 // UpdateFlightAirportMembershipJSONRequestBody defines body for UpdateFlightAirportMembership for application/json ContentType.
 type UpdateFlightAirportMembershipJSONRequestBody UpdateFlightAirportMembershipJSONBody
@@ -96,9 +96,9 @@ type ServerInterface interface {
 	// Get flight by ID
 	// (GET /flights/{id})
 	GetFlight(w http.ResponseWriter, r *http.Request, id string)
-	// Set flight starred status
+	// Set flight published status
 	// (PATCH /flights/{id})
-	SetFlightStarred(w http.ResponseWriter, r *http.Request, id string)
+	SetFlightPublished(w http.ResponseWriter, r *http.Request, id string)
 	// Set flight airport membership
 	// (PUT /flights/{flightId}/airports/{airportId})
 	UpdateFlightAirportMembership(w http.ResponseWriter, r *http.Request, flightId string, airportId string)
@@ -322,8 +322,8 @@ func (siw *ServerInterfaceWrapper) GetFlight(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r)
 }
 
-// SetFlightStarred operation middleware
-func (siw *ServerInterfaceWrapper) SetFlightStarred(w http.ResponseWriter, r *http.Request) {
+// SetFlightPublished operation middleware
+func (siw *ServerInterfaceWrapper) SetFlightPublished(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -337,7 +337,7 @@ func (siw *ServerInterfaceWrapper) SetFlightStarred(w http.ResponseWriter, r *ht
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.SetFlightStarred(w, r, id)
+		siw.Handler.SetFlightPublished(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -512,7 +512,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("POST "+options.BaseURL+"/flights", wrapper.CreateFlight)
 	m.HandleFunc("DELETE "+options.BaseURL+"/flights/{id}", wrapper.DeleteFlight)
 	m.HandleFunc("GET "+options.BaseURL+"/flights/{id}", wrapper.GetFlight)
-	m.HandleFunc("PATCH "+options.BaseURL+"/flights/{id}", wrapper.SetFlightStarred)
+	m.HandleFunc("PATCH "+options.BaseURL+"/flights/{id}", wrapper.SetFlightPublished)
 	m.HandleFunc("PUT "+options.BaseURL+"/flights/{flightId}/airports/{airportId}", wrapper.UpdateFlightAirportMembership)
 
 	return m
@@ -749,27 +749,27 @@ func (response GetFlight404Response) VisitGetFlightResponse(w http.ResponseWrite
 	return nil
 }
 
-type SetFlightStarredRequestObject struct {
+type SetFlightPublishedRequestObject struct {
 	Id   string `json:"id"`
-	Body *SetFlightStarredJSONRequestBody
+	Body *SetFlightPublishedJSONRequestBody
 }
 
-type SetFlightStarredResponseObject interface {
-	VisitSetFlightStarredResponse(w http.ResponseWriter) error
+type SetFlightPublishedResponseObject interface {
+	VisitSetFlightPublishedResponse(w http.ResponseWriter) error
 }
 
-type SetFlightStarred204Response struct {
+type SetFlightPublished204Response struct {
 }
 
-func (response SetFlightStarred204Response) VisitSetFlightStarredResponse(w http.ResponseWriter) error {
+func (response SetFlightPublished204Response) VisitSetFlightPublishedResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type SetFlightStarred404Response struct {
+type SetFlightPublished404Response struct {
 }
 
-func (response SetFlightStarred404Response) VisitSetFlightStarredResponse(w http.ResponseWriter) error {
+func (response SetFlightPublished404Response) VisitSetFlightPublishedResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -835,9 +835,9 @@ type StrictServerInterface interface {
 	// Get flight by ID
 	// (GET /flights/{id})
 	GetFlight(ctx context.Context, request GetFlightRequestObject) (GetFlightResponseObject, error)
-	// Set flight starred status
+	// Set flight published status
 	// (PATCH /flights/{id})
-	SetFlightStarred(ctx context.Context, request SetFlightStarredRequestObject) (SetFlightStarredResponseObject, error)
+	SetFlightPublished(ctx context.Context, request SetFlightPublishedRequestObject) (SetFlightPublishedResponseObject, error)
 	// Set flight airport membership
 	// (PUT /flights/{flightId}/airports/{airportId})
 	UpdateFlightAirportMembership(ctx context.Context, request UpdateFlightAirportMembershipRequestObject) (UpdateFlightAirportMembershipResponseObject, error)
@@ -1160,13 +1160,13 @@ func (sh *strictHandler) GetFlight(w http.ResponseWriter, r *http.Request, id st
 	}
 }
 
-// SetFlightStarred operation middleware
-func (sh *strictHandler) SetFlightStarred(w http.ResponseWriter, r *http.Request, id string) {
-	var request SetFlightStarredRequestObject
+// SetFlightPublished operation middleware
+func (sh *strictHandler) SetFlightPublished(w http.ResponseWriter, r *http.Request, id string) {
+	var request SetFlightPublishedRequestObject
 
 	request.Id = id
 
-	var body SetFlightStarredJSONRequestBody
+	var body SetFlightPublishedJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1174,18 +1174,18 @@ func (sh *strictHandler) SetFlightStarred(w http.ResponseWriter, r *http.Request
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.SetFlightStarred(ctx, request.(SetFlightStarredRequestObject))
+		return sh.ssi.SetFlightPublished(ctx, request.(SetFlightPublishedRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "SetFlightStarred")
+		handler = middleware(handler, "SetFlightPublished")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(SetFlightStarredResponseObject); ok {
-		if err := validResponse.VisitSetFlightStarredResponse(w); err != nil {
+	} else if validResponse, ok := response.(SetFlightPublishedResponseObject); ok {
+		if err := validResponse.VisitSetFlightPublishedResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

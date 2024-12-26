@@ -12,7 +12,7 @@ type Airport struct {
 type Flight struct {
 	ID      int64
 	Title   string
-	Starred bool
+	Published bool
 }
 
 type FlightAirport struct {

@@ -119,7 +119,7 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 	newFlight := api.Flight{
 		Id:      strconv.Itoa(len(flights) + 1),
 		Title:   request.Body.Title,
-		Starred: false,
+		Published: false,
 	}
 	flights = append(flights, newFlight)
 
@@ -148,11 +148,11 @@ func (h *Handler) DeleteFlight(ctx context.Context, request api.DeleteFlightRequ
 	return api.DeleteFlight204Response{}, nil
 }
 
-func (h *Handler) SetFlightStarred(ctx context.Context, request api.SetFlightStarredRequestObject) (api.SetFlightStarredResponseObject, error) {
+func (h *Handler) SetFlightPublished(ctx context.Context, request api.SetFlightPublishedRequestObject) (api.SetFlightPublishedResponseObject, error) {
 	for i := range flights {
 		if flights[i].Id == request.Id {
-			flights[i].Starred = request.Body.Starred
-			return api.SetFlightStarred204Response{}, nil
+			flights[i].Published = request.Body.Published
+			return api.SetFlightPublished204Response{}, nil
 		}
 	}
 	return nil, fmt.Errorf("flight with id %q not found", request.Id)

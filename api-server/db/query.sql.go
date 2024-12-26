@@ -48,22 +48,22 @@ func (q *Queries) CreateAirport(ctx context.Context, title string) (Airport, err
 
 const createFlight = `-- name: CreateFlight :one
 INSERT INTO flights (
-  title, starred
+  title, published
 ) VALUES (
   ?, ?
 )
-RETURNING id, title, starred
+RETURNING id, title, published
 `
 
 type CreateFlightParams struct {
 	Title   string
-	Starred bool
+	Published bool
 }
 
 func (q *Queries) CreateFlight(ctx context.Context, arg CreateFlightParams) (Flight, error) {
-	row := q.db.QueryRowContext(ctx, createFlight, arg.Title, arg.Starred)
+	row := q.db.QueryRowContext(ctx, createFlight, arg.Title, arg.Published)
 	var i Flight
-	err := row.Scan(&i.ID, &i.Title, &i.Starred)
+	err := row.Scan(&i.ID, &i.Title, &i.Published)
 	return i, err
 }
 
@@ -101,7 +101,7 @@ func (q *Queries) GetAirport(ctx context.Context, id int64) (Airport, error) {
 
 const getFlight = `-- name: GetFlight :one
 
-SELECT id, title, starred FROM flights
+SELECT id, title, published FROM flights
 WHERE id=? LIMIT 1
 `
 
@@ -109,7 +109,7 @@ WHERE id=? LIMIT 1
 func (q *Queries) GetFlight(ctx context.Context, id int64) (Flight, error) {
 	row := q.db.QueryRowContext(ctx, getFlight, id)
 	var i Flight
-	err := row.Scan(&i.ID, &i.Title, &i.Starred)
+	err := row.Scan(&i.ID, &i.Title, &i.Published)
 	return i, err
 }
 
@@ -142,7 +142,7 @@ func (q *Queries) ListAirports(ctx context.Context) ([]Airport, error) {
 }
 
 const listFlights = `-- name: ListFlights :many
-SELECT id, title, starred FROM flights
+SELECT id, title, published FROM flights
 ORDER BY id ASC
 `
 
@@ -155,7 +155,7 @@ func (q *Queries) ListFlights(ctx context.Context) ([]Flight, error) {
 	var items []Flight
 	for rows.Next() {
 		var i Flight
-		if err := rows.Scan(&i.ID, &i.Title, &i.Starred); err != nil {
+		if err := rows.Scan(&i.ID, &i.Title, &i.Published); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -203,17 +203,17 @@ func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) er
 const updateFlight = `-- name: UpdateFlight :exec
 UPDATE flights SET
 title=?,
-starred=?
+published=?
 WHERE id=?
 `
 
 type UpdateFlightParams struct {
 	Title   string
-	Starred bool
+	Published bool
 	ID      int64
 }
 
 func (q *Queries) UpdateFlight(ctx context.Context, arg UpdateFlightParams) error {
-	_, err := q.db.ExecContext(ctx, updateFlight, arg.Title, arg.Starred, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateFlight, arg.Title, arg.Published, arg.ID)
 	return err
 }

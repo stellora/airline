@@ -91,8 +91,8 @@ export interface paths {
         delete: operations["deleteFlight"];
         options?: never;
         head?: never;
-        /** Set flight starred status */
-        patch: operations["setFlightStarred"];
+        /** Set flight published status */
+        patch: operations["setFlightPublished"];
         trace?: never;
     };
     "/airports/{airportId}/flights": {
@@ -140,7 +140,7 @@ export interface components {
         Flight: {
             id: string;
             title: string;
-            starred: boolean;
+            published: boolean;
             airports?: components["schemas"]["Airport"][];
         };
     };
@@ -406,7 +406,7 @@ export interface operations {
             };
         };
     };
-    setFlightStarred: {
+    setFlightPublished: {
         parameters: {
             query?: never;
             header?: never;
@@ -418,7 +418,7 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    starred: boolean;
+                    published: boolean;
                 };
             };
         };
