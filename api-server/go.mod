@@ -1,4 +1,4 @@
-module github.com/stellora/shop/api-server
+module github.com/stellora/airline/api-server
 
 go 1.23.4
 

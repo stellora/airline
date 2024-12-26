@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/stellora/shop/api-server/api"
-	"github.com/stellora/shop/api-server/db"
+	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/db"
 )
 
 func NewHandler(db *sql.DB, queries *db.Queries) *Handler {

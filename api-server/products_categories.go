@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/stellora/shop/api-server/api"
+	"github.com/stellora/airline/api-server/api"
 )
 
 var (

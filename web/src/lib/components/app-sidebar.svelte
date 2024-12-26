@@ -36,7 +36,7 @@
 <Sidebar.Root collapsible="offcanvas" variant="inset">
 	<Sidebar.Content>
 		<Sidebar.Group>
-			<Sidebar.GroupLabel>Shop</Sidebar.GroupLabel>
+			<Sidebar.GroupLabel>Airline</Sidebar.GroupLabel>
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
 					{#each items as item (item.title)}

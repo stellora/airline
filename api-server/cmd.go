@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/stellora/shop/api-server/api"
-	"github.com/stellora/shop/api-server/db"
+	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/db"
 )
 
 var (
 	addr   = flag.String("addr", "localhost:"+defaultListenPort(), "HTTP listen address")
-	dbFile = flag.String("db", "shop.db", "database file path (sqlite3)")
+	dbFile = flag.String("db", "airline.db", "database file path (sqlite3)")
 )
 
 func defaultListenPort() string {

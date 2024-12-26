@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/stellora/shop/api-server/api"
+	"github.com/stellora/airline/api-server/api"
 )
 
 var (

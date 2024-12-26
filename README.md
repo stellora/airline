@@ -1,4 +1,4 @@
-# Shop (demo app)
+# Airline (demo app)
 
 ## Usage
 

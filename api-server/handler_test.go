@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stellora/shop/api-server/api"
+	"github.com/stellora/airline/api-server/api"
 )
 
 func handlerTest(t *testing.T) (context.Context, *Handler) {

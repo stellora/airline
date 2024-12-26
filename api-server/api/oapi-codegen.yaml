@@ -4,4 +4,4 @@ generate:
   std-http-server: true
   strict-server: true
   models: true
-output: shop_api.gen.go
+output: airline_api.gen.go

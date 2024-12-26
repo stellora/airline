@@ -1,5 +1,5 @@
 {
-	"name": "@stellora/shop-web",
+	"name": "@stellora/airline-web",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -19,7 +19,7 @@
 		"lint": "eslint . && prettier --check .",
 		"format": "prettier --write .",
 		"gen": "npm run -s gen:openapi",
-		"gen:openapi": "openapi-typescript ../api/shop.openapi.yaml --output src/lib/shop.openapi.ts"
+		"gen:openapi": "openapi-typescript ../api/airline.openapi.yaml --output src/lib/airline.openapi.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",

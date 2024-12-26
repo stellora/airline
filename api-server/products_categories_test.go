@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/stellora/shop/api-server/api"
+	"github.com/stellora/airline/api-server/api"
 )
 
 func TestUpdateProductCategoryMembership(t *testing.T) {
