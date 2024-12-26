@@ -50,6 +50,28 @@ func TestCreateCategory(t *testing.T) {
 	checkCategoryTitles(t, handler, []string{"New Category"})
 }
 
+func TestDeleteCategory(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	categories = []api.Category{
+		{Id: "1", Title: "Category 1"},
+		{Id: "2", Title: "Category 2"},
+	}
+
+	resp, err := handler.DeleteCategory(ctx, api.DeleteCategoryRequestObject{
+		Id: "1",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := api.DeleteCategory204Response{}
+	if !reflect.DeepEqual(want, resp) {
+		t.Errorf("got %v, want %v", resp, want)
+	}
+
+	checkCategoryTitles(t, handler, []string{"Category 2"})
+}
+
 func checkCategoryTitles(t *testing.T, handler *Handler, want []string) {
 	resp, err := handler.ListCategories(context.Background(), api.ListCategoriesRequestObject{})
 	if err != nil {
