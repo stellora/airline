@@ -4,8 +4,7 @@ import type { PluginOption } from 'vite'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-	plugins: [sveltekit() satisfies PluginOption as any, svelteTesting()],
-
+	plugins: [sveltekit() satisfies PluginOption as any, svelteTesting()], // eslint-disable-line @typescript-eslint/no-explicit-any
 	test: {
 		setupFiles: ['src/test/vitestSetup.ts'],
 		include: ['src/**/*.test.ts'],

@@ -13,7 +13,7 @@ const config = {
 		// TODO(sqs): can set to `true` when https://github.com/lucide-icons/lucide/issues/2312 is
 		// fixed.
 		runes: undefined
-	},
+	}
 }
 
 export default config
