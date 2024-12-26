@@ -1,22 +1,27 @@
-import * as db from '$lib/server/database.js'
-import { error, fail, redirect } from '@sveltejs/kit'
+import { apiClient } from '$lib/api'
+import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load: PageServerLoad = ({ params }) => {
-	const categories = db.listCategories()
-	const category = categories.find((c) => c.id === params.category)
-
+export const load: PageServerLoad = async ({ params }) => {
+	const category = (
+		await apiClient.GET('/categories/{id}', { params: { path: { id: params.category } }, fetch })
+	).data
 	if (!category) {
-		throw error(404, 'Category not found')
+		return fail(404)
 	}
-
-	const { productsInCategory, productsNotInCategory } = db.listCategoryProducts(category.id)
+	const { productsInCategory, productsNotInCategory } = (
+		await apiClient.GET('/categories/{categoryId}/products', {
+			params: { path: { categoryId: params.category } },
+			fetch
+		})
+	).data!
 	return {
 		category,
 		productsInCategory,
 		productsNotInCategory
 	}
 }
+
 export const actions: Actions = {
 	setProductInCategory: async ({ request }) => {
 		const data = await request.formData()
@@ -39,7 +44,17 @@ export const actions: Actions = {
 		}
 		const value = valueStr === 'true'
 
-		db.setProductInCategory(product, category, value)
+		const resp = await apiClient.PUT('/products/{productId}/categories/{categoryId}', {
+			params: { path: { productId: product, categoryId: category } },
+			body: { value },
+			fetch
+		})
+		if (!resp.response.ok) {
+			// TODO(sqs)
+			return fail(422, {
+				error: await resp.response.text()
+			})
+		}
 	},
 	delete: async ({ request }) => {
 		const data = await request.formData()
@@ -49,7 +64,15 @@ export const actions: Actions = {
 				error: 'id is required'
 			})
 		}
-		db.deleteCategory(id)
+		const resp = await apiClient.DELETE('/categories/{id}', {
+			params: { path: { id } },
+			fetch
+		})
+		if (!resp.response.ok) {
+			return fail(422, {
+				error: await resp.response.text()
+			})
+		}
 		return redirect(303, '/admin/categories')
 	}
 }

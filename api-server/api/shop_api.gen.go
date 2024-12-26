@@ -75,6 +75,9 @@ type ServerInterface interface {
 	// Delete a category
 	// (DELETE /categories/{id})
 	DeleteCategory(w http.ResponseWriter, r *http.Request, id string)
+	// Get category by ID
+	// (GET /categories/{id})
+	GetCategory(w http.ResponseWriter, r *http.Request, id string)
 	// Health check endpoint
 	// (GET /health)
 	HealthCheck(w http.ResponseWriter, r *http.Request)
@@ -179,6 +182,31 @@ func (siw *ServerInterfaceWrapper) DeleteCategory(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteCategory(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetCategory operation middleware
+func (siw *ServerInterfaceWrapper) GetCategory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCategory(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -477,6 +505,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("POST "+options.BaseURL+"/categories", wrapper.CreateCategory)
 	m.HandleFunc("GET "+options.BaseURL+"/categories/{categoryId}/products", wrapper.ListProductsByCategory)
 	m.HandleFunc("DELETE "+options.BaseURL+"/categories/{id}", wrapper.DeleteCategory)
+	m.HandleFunc("GET "+options.BaseURL+"/categories/{id}", wrapper.GetCategory)
 	m.HandleFunc("GET "+options.BaseURL+"/health", wrapper.HealthCheck)
 	m.HandleFunc("DELETE "+options.BaseURL+"/products", wrapper.DeleteAllProducts)
 	m.HandleFunc("GET "+options.BaseURL+"/products", wrapper.ListProducts)
@@ -569,6 +598,31 @@ type DeleteCategory404Response struct {
 }
 
 func (response DeleteCategory404Response) VisitDeleteCategoryResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type GetCategoryRequestObject struct {
+	Id string `json:"id"`
+}
+
+type GetCategoryResponseObject interface {
+	VisitGetCategoryResponse(w http.ResponseWriter) error
+}
+
+type GetCategory200JSONResponse Category
+
+func (response GetCategory200JSONResponse) VisitGetCategoryResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetCategory404Response struct {
+}
+
+func (response GetCategory404Response) VisitGetCategoryResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -760,6 +814,9 @@ type StrictServerInterface interface {
 	// Delete a category
 	// (DELETE /categories/{id})
 	DeleteCategory(ctx context.Context, request DeleteCategoryRequestObject) (DeleteCategoryResponseObject, error)
+	// Get category by ID
+	// (GET /categories/{id})
+	GetCategory(ctx context.Context, request GetCategoryRequestObject) (GetCategoryResponseObject, error)
 	// Health check endpoint
 	// (GET /health)
 	HealthCheck(ctx context.Context, request HealthCheckRequestObject) (HealthCheckResponseObject, error)
@@ -915,6 +972,32 @@ func (sh *strictHandler) DeleteCategory(w http.ResponseWriter, r *http.Request, 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(DeleteCategoryResponseObject); ok {
 		if err := validResponse.VisitDeleteCategoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetCategory operation middleware
+func (sh *strictHandler) GetCategory(w http.ResponseWriter, r *http.Request, id string) {
+	var request GetCategoryRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetCategory(ctx, request.(GetCategoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetCategory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetCategoryResponseObject); ok {
+		if err := validResponse.VisitGetCategoryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

@@ -46,7 +46,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get category by ID */
+        get: operations["getCategory"];
         put?: never;
         post?: never;
         /** Delete a category */
@@ -82,7 +83,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get product by ID */
+        get: operations["getProduct"];
         put?: never;
         post?: never;
         /** Delete a product */
@@ -223,6 +225,35 @@ export interface operations {
             };
         };
     };
+    getCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Category found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Category"];
+                };
+            };
+            /** @description Category not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     deleteCategory: {
         parameters: {
             query?: never;
@@ -312,6 +343,35 @@ export interface operations {
         responses: {
             /** @description All products deleted */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Product found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Product"];
+                };
+            };
+            /** @description Product not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

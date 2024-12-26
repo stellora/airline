@@ -8,6 +8,43 @@ import (
 	"github.com/stellora/shop/api-server/api"
 )
 
+func TestGetCategory(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	categories = []api.Category{
+		{Id: "A", Title: "Category A"},
+		{Id: "B", Title: "Category B"},
+	}
+
+	t.Run("exists", func(t *testing.T) {
+		resp, err := handler.GetCategory(ctx, api.GetCategoryRequestObject{
+			Id: "A",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		want := api.GetCategory200JSONResponse{
+			Id:    "A",
+			Title: "Category A",
+		}
+		if !reflect.DeepEqual(want, resp) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
+	})
+
+	t.Run("does not exist", func(t *testing.T) {
+		resp, err := handler.GetCategory(ctx, api.GetCategoryRequestObject{
+			Id: "999",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if want := (&api.GetCategory404Response{}); !reflect.DeepEqual(resp, want) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
+	})
+}
+
 func TestListCategories(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	categories = []api.Category{

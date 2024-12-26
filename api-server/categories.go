@@ -31,6 +31,14 @@ func init() {
 	}
 }
 
+func (h *Handler) GetCategory(ctx context.Context, request api.GetCategoryRequestObject) (api.GetCategoryResponseObject, error) {
+	category := getCategory(request.Id)
+	if category == nil {
+		return &api.GetCategory404Response{}, nil
+	}
+	return api.GetCategory200JSONResponse(*category), nil
+}
+
 func (h *Handler) ListCategories(ctx context.Context, request api.ListCategoriesRequestObject) (api.ListCategoriesResponseObject, error) {
 	return api.ListCategories200JSONResponse(categories), nil
 }

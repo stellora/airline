@@ -10,7 +10,7 @@
 <div class="flex flex-col gap-4 items-stretch w-full">
 	<div class="flex items-center gap-4">
 		<Button variant="outline" href="/admin/products">← Back</Button>
-		<ProductTitle product={data.productWithCategories.product} class="text-2xl font-bold" as="h1" />
+		<ProductTitle product={data.product} class="text-2xl font-bold" as="h1" />
 	</div>
 
 	<Card>
@@ -18,9 +18,9 @@
 			<CardTitle>In categories</CardTitle>
 		</CardHeader>
 		<CardContent>
-			{#if data.productWithCategories.categories.length > 0}
+			{#if data.product.categories && data.product.categories.length > 0}
 				<ul class="flex flex-wrap gap-2">
-					{#each data.productWithCategories.categories as category (category.id)}
+					{#each data.product.categories as category (category.id)}
 						<li class="p-2 border text-sm rounded">
 							{category.title}
 						</li>
@@ -43,7 +43,7 @@
 					}
 				}}
 			>
-				<input type="hidden" name="id" value={data.productWithCategories.product.id} />
+				<input type="hidden" name="id" value={data.product.id} />
 				<Button type="submit" variant="destructive">Delete product</Button>
 			</form>
 		</CardContent>

@@ -1,18 +1,21 @@
-import * as db from '$lib/server/database.js'
+import { apiClient } from '$lib/api'
 import { error, fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load: PageServerLoad = ({ params }) => {
-	const productWithCategories = db
-		.listProductsWithCategories()
-		.find(({ product }) => product.id === params.product)
-	if (!productWithCategories) {
+export const load: PageServerLoad = async ({ params }) => {
+	const resp = await apiClient.GET('/products/{id}', {
+		params: { path: { id: params.product } },
+		fetch
+	})
+	if (!resp.response.ok || !resp.data) {
+		// TODO(sqs)
 		throw error(404, 'Product not found')
 	}
 	return {
-		productWithCategories
+		product: resp.data
 	}
 }
+
 export const actions: Actions = {
 	delete: async ({ request }) => {
 		const data = await request.formData()
@@ -22,7 +25,17 @@ export const actions: Actions = {
 				error: 'id is required'
 			})
 		}
-		db.deleteProduct(id)
+
+		const resp = await apiClient.DELETE('/products/{id}', {
+			params: { path: { id } },
+			fetch
+		})
+		if (!resp.response.ok) {
+			// TODO(sqs)
+			return fail(422, {
+				error: await resp.response.text()
+			})
+		}
 		return redirect(303, '/admin/products')
 	}
 }
