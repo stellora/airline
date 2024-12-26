@@ -3,6 +3,6 @@ import type { PageServerLoad } from './$types'
 
 export const load: PageServerLoad = () => {
 	return {
-		products: db.listProducts()
+		productsWithCategories: db.listProductsWithCategories()
 	}
 }

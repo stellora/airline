@@ -8,8 +8,11 @@
 	<h1 class="text-4xl font-bold">Shop</h1>
 
 	<div class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4">
-		{#each data.products as product (product.id)}
-			<ProductCard {product} />
+		{#each data.productsWithCategories as productWithCategories (productWithCategories.product.id)}
+			<ProductCard
+				product={productWithCategories.product}
+				categories={productWithCategories.categories}
+			/>
 		{:else}
 			<p class="text-muted-foreground">No products yet.</p>
 		{/each}

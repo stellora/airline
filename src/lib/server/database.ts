@@ -140,3 +140,17 @@ export function listCategoryProducts(category: string): {
 		productsNotInCategory
 	}
 }
+
+export function listProductsWithCategories(): {
+	product: Product
+	categories: ProductCategory[]
+}[] {
+	return products.map((product) => ({
+		product,
+		categories: categories.filter((category) =>
+			productCategoryMemberships.some(
+				(membership) => membership.product === product.id && membership.category === category.id
+			)
+		)
+	}))
+}

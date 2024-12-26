@@ -24,7 +24,7 @@
 				<ul class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4">
 					{#each data.productsInCategory as product (product.id)}
 						<li class="p-3 border rounded-md flex items-center justify-between gap-2">
-							<ProductTitle class="w-full" {product} link />
+							<ProductTitle class="w-full" {product} />
 							<form
 								method="POST"
 								action="?/setProductInCategory"
