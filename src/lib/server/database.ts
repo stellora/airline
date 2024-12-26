@@ -88,4 +88,55 @@ export function deleteProduct(id: string): void {
 
 export function deleteAllProducts(): void {
 	products.length = 0
+	productCategoryMemberships.length = 0
+}
+
+const productCategoryMemberships: { product: string; category: string }[] = []
+
+export function setProductInCategory(product: string, category: string, value: boolean): void {
+	const productObj = products.find((p) => p.id === product)
+	if (!productObj) {
+		throw new Error(`product with id ${product} not found`)
+	}
+
+	const categoryObj = categories.find((c) => c.id === category)
+	if (!categoryObj) {
+		throw new Error(`category with id ${category} not found`)
+	}
+
+	const existsIndex = productCategoryMemberships.findIndex(
+		(m) => m.product === product && m.category === category
+	)
+	if (value) {
+		if (existsIndex === -1) {
+			productCategoryMemberships.push({ product, category })
+		}
+	} else {
+		if (existsIndex !== -1) {
+			productCategoryMemberships.splice(existsIndex, 1)
+		}
+	}
+}
+
+export function listCategoryProducts(category: string): {
+	productsInCategory: Product[]
+	productsNotInCategory: Product[]
+} {
+	const productsInCategory = products.filter((product) =>
+		productCategoryMemberships.some(
+			(membership) => membership.product === product.id && membership.category === category
+		)
+	)
+
+	const productsNotInCategory = products.filter(
+		(product) =>
+			!productCategoryMemberships.some(
+				(membership) => membership.product === product.id && membership.category === category
+			)
+	)
+
+	return {
+		productsInCategory,
+		productsNotInCategory
+	}
 }

@@ -38,14 +38,15 @@ export const actions: Actions = {
 				error: 'id is required'
 			})
 		}
-		const starred = data.get('starred')
-		if (starred !== 'true' && starred !== 'false') {
+		const starredStr = data.get('starred')
+		if (starredStr !== 'true' && starredStr !== 'false') {
 			return fail(400, {
-				starred,
+				starred: undefined,
 				error: 'starred must be "true" or "false"'
 			})
 		}
-		db.setProductStarred(id, starred === 'true')
+		const starred = starredStr === 'true'
+		db.setProductStarred(id, starred)
 	},
 
 	delete: async ({ request }) => {

@@ -10,13 +10,37 @@ export const load: PageServerLoad = ({ params }) => {
 		throw error(404, 'Category not found')
 	}
 
+	const { productsInCategory, productsNotInCategory } = db.listCategoryProducts(category.id)
 	return {
 		category,
-		productsInCategory: db.listProducts(),
-		productsNotInCategory: db.listProducts()
+		productsInCategory,
+		productsNotInCategory
 	}
 }
 export const actions: Actions = {
+	setProductInCategory: async ({ request }) => {
+		const data = await request.formData()
+
+		const category = data.get('category')
+		const product = data.get('product')
+		if (!category || typeof category !== 'string') {
+			return fail(400, { error: 'category is required' })
+		}
+		if (!product || typeof product !== 'string') {
+			return fail(400, { error: 'product is required' })
+		}
+
+		const valueStr = data.get('value')
+		if (valueStr !== 'true' && valueStr !== 'false') {
+			return fail(400, {
+				value: false,
+				error: 'value must be "true" or "false"'
+			})
+		}
+		const value = valueStr === 'true'
+
+		db.setProductInCategory(product, category, value)
+	},
 	delete: async ({ request }) => {
 		const data = await request.formData()
 		const id = data.get('id')

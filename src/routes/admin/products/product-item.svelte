@@ -18,21 +18,17 @@
 				>{product.starred ? 'Unstar' : 'Star'}</Button
 			>
 		</form>
-		<form method="POST" action="?/delete" use:enhance class="flex">
+		<form
+			method="POST"
+			action="?/delete"
+			use:enhance={({ cancel }) => {
+				if (!confirm('Really delete?')) {
+					cancel()
+				}
+			}}
+		>
 			<input type="hidden" name="id" value={product.id} />
-			<Button
-				type="submit"
-				variant="destructive"
-				size="sm"
-				onclick={async (event) => {
-					event.preventDefault()
-					if (confirm('Really delete?')) {
-						if (event.currentTarget instanceof HTMLButtonElement) {
-							event.currentTarget.form?.submit()
-						}
-					}
-				}}>Delete</Button
-			>
+			<Button type="submit" variant="destructive" size="sm">Delete</Button>
 		</form>
 	</div>
 </li>
