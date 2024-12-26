@@ -1,5 +1,5 @@
 {
-	"name": "storefront-app-sveltekit",
+	"name": "@stellora/shop-web",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
