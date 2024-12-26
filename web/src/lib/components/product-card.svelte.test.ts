@@ -1,4 +1,4 @@
-import type { Product, ProductCategory } from '$lib/types'
+import type { Category, Product } from '$lib/types'
 import { render } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
 import ProductCard from './product-card.svelte'
@@ -16,7 +16,7 @@ describe('ProductCard', () => {
 	})
 
 	it('renders categories when provided', () => {
-		const mockCategories: ProductCategory[] = [
+		const mockCategories: Category[] = [
 			{ id: '1', title: 'Category 1' },
 			{ id: '2', title: 'Category 2' }
 		]

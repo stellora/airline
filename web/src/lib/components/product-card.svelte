@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { Product, ProductCategory } from '$lib/types'
+	import type { Category, Product } from '$lib/types'
 	import Tag from 'lucide-svelte/icons/tag'
 	import ProductTitle from './product-title.svelte'
 
-	const { product, categories }: { product: Product; categories?: ProductCategory[] } = $props()
+	const { product, categories }: { product: Product; categories?: Category[] } = $props()
 </script>
 
 <li class="flex flex-col gap-4 border p-3 rounded-md min-h-32">

@@ -1,15 +1,15 @@
-import type { Product, ProductCategory } from '$lib/types'
+import type { Category, Product } from '$lib/types'
 
 const INITIAL_CATEGORIES = ['Silverware', 'Cookware', 'Vegetables'] as const
 
 type InitialCategory = (typeof INITIAL_CATEGORIES)[number]
 
-const categories: ProductCategory[] = INITIAL_CATEGORIES.map((title) => ({
+const categories: Category[] = INITIAL_CATEGORIES.map((title) => ({
 	id: crypto.randomUUID(),
 	title
 }))
 
-export function listCategories(): ProductCategory[] {
+export function listCategories(): Category[] {
 	return categories
 }
 
@@ -166,7 +166,7 @@ export function listCategoryProducts(category: string): {
 
 export function listProductsWithCategories(): {
 	product: Product
-	categories: ProductCategory[]
+	categories: Category[]
 }[] {
 	return products.map((product) => ({
 		product,

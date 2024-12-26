@@ -4,7 +4,7 @@ export type Product = {
 	starred: boolean
 }
 
-export type ProductCategory = {
+export type Category = {
 	id: string
 	title: string
 }

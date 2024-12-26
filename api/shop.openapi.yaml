@@ -16,3 +16,202 @@ paths:
                 properties:
                   ok:
                     type: boolean
+  /categories:
+    get:
+      summary: List all categories
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      summary: Create a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        '201':
+          description: Category created
+        '400':
+          description: Invalid request
+  /categories/{id}:
+    delete:
+      summary: Delete a category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Category deleted
+        '404':
+          description: Category not found
+
+  /products:
+    get:
+      summary: List all products
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        '201':
+          description: Product created
+        '400':
+          description: Invalid request
+    delete:
+      summary: Delete all products
+      responses:
+        '204':
+          description: All products deleted
+
+  /products/{id}:
+    patch:
+      summary: Update product starred status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                starred:
+                  type: boolean
+      responses:
+        '200':
+          description: Product updated
+        '404':
+          description: Product not found
+    delete:
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Product deleted
+        '404':
+          description: Product not found
+
+  /categories/{categoryId}/products:
+    get:
+      summary: List products in a category
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Products categorization
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  productsInCategory:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  productsNotInCategory:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+
+  /products/{productId}/categories/{categoryId}:
+    put:
+      summary: Set product category membership
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: boolean
+      responses:
+        '200':
+          description: Membership updated
+        '404':
+          description: Product or category not found
+
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+      required:
+        - id
+        - title
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        starred:
+          type: boolean
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+      required:
+        - id
+        - title
+        - starred
