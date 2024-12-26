@@ -126,7 +126,7 @@ paths:
               required:
                 - starred
       responses:
-        '200':
+        '204':
           description: Product updated
         '404':
           description: Product not found
@@ -202,7 +202,7 @@ paths:
               required:
                 - value
       responses:
-        '200':
+        '204':
           description: Membership updated
         '404':
           description: Product or category not found

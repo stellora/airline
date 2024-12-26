@@ -72,5 +72,5 @@ func (h *Handler) UpdateProductCategoryMembership(ctx context.Context, request a
 		}
 	}
 
-	return api.UpdateProductCategoryMembership200Response{}, nil
+	return api.UpdateProductCategoryMembership204Response{}, nil
 }

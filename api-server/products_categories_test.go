@@ -32,7 +32,7 @@ func TestUpdateProductCategoryMembership(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if want := (api.UpdateProductCategoryMembership200Response{}); !reflect.DeepEqual(want, resp) {
+		if want := (api.UpdateProductCategoryMembership204Response{}); !reflect.DeepEqual(want, resp) {
 			t.Errorf("got %v, want %v", resp, want)
 		}
 
@@ -61,7 +61,7 @@ func TestUpdateProductCategoryMembership(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if want := (api.UpdateProductCategoryMembership200Response{}); !reflect.DeepEqual(want, resp) {
+		if want := (api.UpdateProductCategoryMembership204Response{}); !reflect.DeepEqual(want, resp) {
 			t.Errorf("got %v, want %v", resp, want)
 		}
 

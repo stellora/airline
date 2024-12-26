@@ -118,7 +118,7 @@ func (h *Handler) SetProductStarred(ctx context.Context, request api.SetProductS
 	for i := range products {
 		if products[i].Id == request.Id {
 			products[i].Starred = request.Body.Starred
-			return api.SetProductStarred200Response{}, nil
+			return api.SetProductStarred204Response{}, nil
 		}
 	}
 	return nil, fmt.Errorf("product with id %q not found", request.Id)

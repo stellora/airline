@@ -140,7 +140,7 @@ func TestSetProductStarred(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := api.SetProductStarred200Response{}
+	want := api.SetProductStarred204Response{}
 	if !reflect.DeepEqual(want, resp) {
 		t.Errorf("got %v, want %v", resp, want)
 	}

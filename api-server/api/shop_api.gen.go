@@ -650,11 +650,11 @@ type SetProductStarredResponseObject interface {
 	VisitSetProductStarredResponse(w http.ResponseWriter) error
 }
 
-type SetProductStarred200Response struct {
+type SetProductStarred204Response struct {
 }
 
-func (response SetProductStarred200Response) VisitSetProductStarredResponse(w http.ResponseWriter) error {
-	w.WriteHeader(200)
+func (response SetProductStarred204Response) VisitSetProductStarredResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
 	return nil
 }
 
@@ -676,11 +676,11 @@ type UpdateProductCategoryMembershipResponseObject interface {
 	VisitUpdateProductCategoryMembershipResponse(w http.ResponseWriter) error
 }
 
-type UpdateProductCategoryMembership200Response struct {
+type UpdateProductCategoryMembership204Response struct {
 }
 
-func (response UpdateProductCategoryMembership200Response) VisitUpdateProductCategoryMembershipResponse(w http.ResponseWriter) error {
-	w.WriteHeader(200)
+func (response UpdateProductCategoryMembership204Response) VisitUpdateProductCategoryMembershipResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
 	return nil
 }
 
