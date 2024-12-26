@@ -65,7 +65,7 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
       responses:
         '200':
           description: Airport found
@@ -83,7 +83,7 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
       requestBody:
         required: true
         content:
@@ -106,7 +106,7 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
       responses:
         '204':
           description: Airport deleted
@@ -121,7 +121,7 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
       responses:
         '200':
           description: Flights by airport
@@ -157,9 +157,9 @@ paths:
                 number:
                   type: string
                 originAirport:
-                  type: number
+                  type: integer
                 destinationAirport:
-                  type: number
+                  type: integer
                 published:
                   type: boolean
                   default: false
@@ -187,7 +187,7 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
       responses:
         '200':
           description: Flight found
@@ -205,7 +205,7 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
       requestBody:
         required: true
         content:
@@ -216,9 +216,9 @@ paths:
                 number:
                   type: string
                 originAirport:
-                  type: number
+                  type: integer
                 destinationAirport:
-                  type: number
+                  type: integer
                 published:
                   type: boolean
       responses:
@@ -234,7 +234,7 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
       responses:
         '204':
           description: Flight deleted
@@ -246,7 +246,7 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: integer
         iataCode:
           type: string
       required:
@@ -256,15 +256,18 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: integer
         number:
           type: string
         originAirport:
           $ref: '#/components/schemas/Airport'
         destinationAirport:
           $ref: '#/components/schemas/Airport'
+        published:
+          type: boolean
       required:
         - id
         - number
         - originAirport
         - destinationAirport
+        - published

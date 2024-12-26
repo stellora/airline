@@ -17,16 +17,17 @@ import (
 
 // Airport defines model for Airport.
 type Airport struct {
-	IataCode string  `json:"iataCode"`
-	Id       float32 `json:"id"`
+	IataCode string `json:"iataCode"`
+	Id       int    `json:"id"`
 }
 
 // Flight defines model for Flight.
 type Flight struct {
 	DestinationAirport Airport `json:"destinationAirport"`
-	Id                 float32 `json:"id"`
+	Id                 int     `json:"id"`
 	Number             string  `json:"number"`
 	OriginAirport      Airport `json:"originAirport"`
+	Published          bool    `json:"published"`
 }
 
 // CreateAirportJSONBody defines parameters for CreateAirport.
@@ -41,18 +42,18 @@ type UpdateAirportJSONBody struct {
 
 // CreateFlightJSONBody defines parameters for CreateFlight.
 type CreateFlightJSONBody struct {
-	DestinationAirport float32 `json:"destinationAirport"`
-	Number             string  `json:"number"`
-	OriginAirport      float32 `json:"originAirport"`
-	Published          *bool   `json:"published,omitempty"`
+	DestinationAirport int    `json:"destinationAirport"`
+	Number             string `json:"number"`
+	OriginAirport      int    `json:"originAirport"`
+	Published          *bool  `json:"published,omitempty"`
 }
 
 // UpdateFlightJSONBody defines parameters for UpdateFlight.
 type UpdateFlightJSONBody struct {
-	DestinationAirport *float32 `json:"destinationAirport,omitempty"`
-	Number             *string  `json:"number,omitempty"`
-	OriginAirport      *float32 `json:"originAirport,omitempty"`
-	Published          *bool    `json:"published,omitempty"`
+	DestinationAirport *int    `json:"destinationAirport,omitempty"`
+	Number             *string `json:"number,omitempty"`
+	OriginAirport      *int    `json:"originAirport,omitempty"`
+	Published          *bool   `json:"published,omitempty"`
 }
 
 // CreateAirportJSONRequestBody defines body for CreateAirport for application/json ContentType.
@@ -80,16 +81,16 @@ type ServerInterface interface {
 	CreateAirport(w http.ResponseWriter, r *http.Request)
 	// Delete an airport
 	// (DELETE /airports/{id})
-	DeleteAirport(w http.ResponseWriter, r *http.Request, id float32)
+	DeleteAirport(w http.ResponseWriter, r *http.Request, id int)
 	// Get airport by ID
 	// (GET /airports/{id})
-	GetAirport(w http.ResponseWriter, r *http.Request, id float32)
+	GetAirport(w http.ResponseWriter, r *http.Request, id int)
 	// Update airport
 	// (PATCH /airports/{id})
-	UpdateAirport(w http.ResponseWriter, r *http.Request, id float32)
+	UpdateAirport(w http.ResponseWriter, r *http.Request, id int)
 	// List flights that depart from or arrive at an airport
 	// (GET /airports/{id}/flights)
-	ListFlightsByAirport(w http.ResponseWriter, r *http.Request, id float32)
+	ListFlightsByAirport(w http.ResponseWriter, r *http.Request, id int)
 	// Delete all flights
 	// (DELETE /flights)
 	DeleteAllFlights(w http.ResponseWriter, r *http.Request)
@@ -101,13 +102,13 @@ type ServerInterface interface {
 	CreateFlight(w http.ResponseWriter, r *http.Request)
 	// Delete a flight
 	// (DELETE /flights/{id})
-	DeleteFlight(w http.ResponseWriter, r *http.Request, id float32)
+	DeleteFlight(w http.ResponseWriter, r *http.Request, id int)
 	// Get flight by ID
 	// (GET /flights/{id})
-	GetFlight(w http.ResponseWriter, r *http.Request, id float32)
+	GetFlight(w http.ResponseWriter, r *http.Request, id int)
 	// Update flight
 	// (PATCH /flights/{id})
-	UpdateFlight(w http.ResponseWriter, r *http.Request, id float32)
+	UpdateFlight(w http.ResponseWriter, r *http.Request, id int)
 	// Health check endpoint
 	// (GET /health)
 	HealthCheck(w http.ResponseWriter, r *http.Request)
@@ -170,7 +171,7 @@ func (siw *ServerInterfaceWrapper) DeleteAirport(w http.ResponseWriter, r *http.
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id float32
+	var id int
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -195,7 +196,7 @@ func (siw *ServerInterfaceWrapper) GetAirport(w http.ResponseWriter, r *http.Req
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id float32
+	var id int
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -220,7 +221,7 @@ func (siw *ServerInterfaceWrapper) UpdateAirport(w http.ResponseWriter, r *http.
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id float32
+	var id int
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -245,7 +246,7 @@ func (siw *ServerInterfaceWrapper) ListFlightsByAirport(w http.ResponseWriter, r
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id float32
+	var id int
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -312,7 +313,7 @@ func (siw *ServerInterfaceWrapper) DeleteFlight(w http.ResponseWriter, r *http.R
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id float32
+	var id int
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -337,7 +338,7 @@ func (siw *ServerInterfaceWrapper) GetFlight(w http.ResponseWriter, r *http.Requ
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id float32
+	var id int
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -362,7 +363,7 @@ func (siw *ServerInterfaceWrapper) UpdateFlight(w http.ResponseWriter, r *http.R
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id float32
+	var id int
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -589,7 +590,7 @@ func (response CreateAirport400Response) VisitCreateAirportResponse(w http.Respo
 }
 
 type DeleteAirportRequestObject struct {
-	Id float32 `json:"id"`
+	Id int `json:"id"`
 }
 
 type DeleteAirportResponseObject interface {
@@ -613,7 +614,7 @@ func (response DeleteAirport404Response) VisitDeleteAirportResponse(w http.Respo
 }
 
 type GetAirportRequestObject struct {
-	Id float32 `json:"id"`
+	Id int `json:"id"`
 }
 
 type GetAirportResponseObject interface {
@@ -638,7 +639,7 @@ func (response GetAirport404Response) VisitGetAirportResponse(w http.ResponseWri
 }
 
 type UpdateAirportRequestObject struct {
-	Id   float32 `json:"id"`
+	Id   int `json:"id"`
 	Body *UpdateAirportJSONRequestBody
 }
 
@@ -663,7 +664,7 @@ func (response UpdateAirport404Response) VisitUpdateAirportResponse(w http.Respo
 }
 
 type ListFlightsByAirportRequestObject struct {
-	Id float32 `json:"id"`
+	Id int `json:"id"`
 }
 
 type ListFlightsByAirportResponseObject interface {
@@ -735,7 +736,7 @@ func (response CreateFlight400Response) VisitCreateFlightResponse(w http.Respons
 }
 
 type DeleteFlightRequestObject struct {
-	Id float32 `json:"id"`
+	Id int `json:"id"`
 }
 
 type DeleteFlightResponseObject interface {
@@ -759,7 +760,7 @@ func (response DeleteFlight404Response) VisitDeleteFlightResponse(w http.Respons
 }
 
 type GetFlightRequestObject struct {
-	Id float32 `json:"id"`
+	Id int `json:"id"`
 }
 
 type GetFlightResponseObject interface {
@@ -784,7 +785,7 @@ func (response GetFlight404Response) VisitGetFlightResponse(w http.ResponseWrite
 }
 
 type UpdateFlightRequestObject struct {
-	Id   float32 `json:"id"`
+	Id   int `json:"id"`
 	Body *UpdateFlightJSONRequestBody
 }
 
@@ -981,7 +982,7 @@ func (sh *strictHandler) CreateAirport(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteAirport operation middleware
-func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, id float32) {
+func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, id int) {
 	var request DeleteAirportRequestObject
 
 	request.Id = id
@@ -1007,7 +1008,7 @@ func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, i
 }
 
 // GetAirport operation middleware
-func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, id float32) {
+func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, id int) {
 	var request GetAirportRequestObject
 
 	request.Id = id
@@ -1033,7 +1034,7 @@ func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, id f
 }
 
 // UpdateAirport operation middleware
-func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, id float32) {
+func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, id int) {
 	var request UpdateAirportRequestObject
 
 	request.Id = id
@@ -1066,7 +1067,7 @@ func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, i
 }
 
 // ListFlightsByAirport operation middleware
-func (sh *strictHandler) ListFlightsByAirport(w http.ResponseWriter, r *http.Request, id float32) {
+func (sh *strictHandler) ListFlightsByAirport(w http.ResponseWriter, r *http.Request, id int) {
 	var request ListFlightsByAirportRequestObject
 
 	request.Id = id
@@ -1171,7 +1172,7 @@ func (sh *strictHandler) CreateFlight(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteFlight operation middleware
-func (sh *strictHandler) DeleteFlight(w http.ResponseWriter, r *http.Request, id float32) {
+func (sh *strictHandler) DeleteFlight(w http.ResponseWriter, r *http.Request, id int) {
 	var request DeleteFlightRequestObject
 
 	request.Id = id
@@ -1197,7 +1198,7 @@ func (sh *strictHandler) DeleteFlight(w http.ResponseWriter, r *http.Request, id
 }
 
 // GetFlight operation middleware
-func (sh *strictHandler) GetFlight(w http.ResponseWriter, r *http.Request, id float32) {
+func (sh *strictHandler) GetFlight(w http.ResponseWriter, r *http.Request, id int) {
 	var request GetFlightRequestObject
 
 	request.Id = id
@@ -1223,7 +1224,7 @@ func (sh *strictHandler) GetFlight(w http.ResponseWriter, r *http.Request, id fl
 }
 
 // UpdateFlight operation middleware
-func (sh *strictHandler) UpdateFlight(w http.ResponseWriter, r *http.Request, id float32) {
+func (sh *strictHandler) UpdateFlight(w http.ResponseWriter, r *http.Request, id int) {
 	var request UpdateFlightRequestObject
 
 	request.Id = id

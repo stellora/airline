@@ -1,21 +1,33 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import * as Sidebar from '$lib/components/ui/sidebar'
-	import Boxes from 'lucide-svelte/icons/boxes'
-	import House from 'lucide-svelte/icons/house'
-	import Tag from 'lucide-svelte/icons/tag'
+	import Info from 'lucide-svelte/icons/info'
+	import MapPin from 'lucide-svelte/icons/map-pin'
+	import Plane from 'lucide-svelte/icons/plane'
+	import TicketsPlane from 'lucide-svelte/icons/tickets-plane'
+	import User from 'lucide-svelte/icons/user'
 
 	type Item = {
 		title: string
 		url: string
-		icon: typeof House
+		icon: typeof TicketsPlane
 	}
 
 	const items: Item[] = [
 		{
-			title: 'Home',
+			title: 'Book flights',
 			url: '/',
-			icon: House
+			icon: TicketsPlane
+		},
+		{
+			title: 'My bookings',
+			url: '/bookings',
+			icon: User
+		},
+		{
+			title: 'Flight status',
+			url: '/flight-status',
+			icon: Info
 		}
 	]
 
@@ -23,12 +35,12 @@
 		{
 			title: 'Flights',
 			url: '/admin/flights',
-			icon: Boxes
+			icon: Plane
 		},
 		{
 			title: 'Airports',
 			url: '/admin/airports',
-			icon: Tag
+			icon: MapPin
 		}
 	]
 </script>
@@ -36,7 +48,7 @@
 <Sidebar.Root collapsible="offcanvas" variant="inset">
 	<Sidebar.Content>
 		<Sidebar.Group>
-			<Sidebar.GroupLabel>Airline</Sidebar.GroupLabel>
+			<Sidebar.GroupLabel>Stellora Airlines</Sidebar.GroupLabel>
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
 					{#each items as item (item.title)}
@@ -54,8 +66,9 @@
 				</Sidebar.Menu>
 			</Sidebar.GroupContent>
 		</Sidebar.Group>
+		<Sidebar.Separator />
 		<Sidebar.Group>
-			<Sidebar.GroupLabel>Admin</Sidebar.GroupLabel>
+			<Sidebar.GroupLabel>Administration</Sidebar.GroupLabel>
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
 					{#each adminItems as item (item.title)}

@@ -127,6 +127,7 @@ export interface components {
             number: string;
             originAirport: components["schemas"]["Airport"];
             destinationAirport: components["schemas"]["Airport"];
+            published: boolean;
         };
     };
     responses: never;

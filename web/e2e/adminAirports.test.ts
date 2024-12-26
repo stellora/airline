@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test('airport list has expected title and initial flights', async ({ page }) => {
 	await page.goto('/admin/airports')
 	await expect(page.locator('h1')).toContainText('Airports')
-	await expect(page.getByText('Cookware')).toBeVisible()
+	await expect(page.getByText('AMS')).toBeVisible()
 })
 
 test('add and delete airport', async ({ page }) => {
@@ -26,9 +26,9 @@ test('add and delete airport', async ({ page }) => {
 
 test('airport detail page', async ({ page }) => {
 	await page.goto('/admin/airports')
-	await page.getByRole('link', { name: 'Cookware' }).click()
+	await page.getByRole('link', { name: 'AMS' }).click()
 
-	await expect(page.getByText('Cookware')).toBeVisible()
+	await expect(page.getByText('AMS')).toBeVisible()
 
 	// Add flight to airport
 	const select = page.locator('select[name="flight"]')

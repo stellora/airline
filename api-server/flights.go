@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/stellora/airline/api-server/api"
 )
@@ -22,7 +21,7 @@ var (
 	}
 )
 
-func getFlight(id string) *api.Flight {
+func getFlight(id int) *api.Flight {
 	for i := range flights {
 		if flights[i].Id == id {
 			return &flights[i]
@@ -33,14 +32,8 @@ func getFlight(id string) *api.Flight {
 
 func init() {
 	for i := range flights {
-		flights[i].Id = strconv.Itoa(i + 1)
+		flights[i].Id = i + 1
 	}
-}
-
-func (h *Handler) DeleteAllFlights(ctx context.Context, request api.DeleteAllFlightsRequestObject) (api.DeleteAllFlightsResponseObject, error) {
-	flights = []api.Flight{}
-	flightAirportMemberships = nil
-	return api.DeleteAllFlights204Response{}, nil
 }
 
 func (h *Handler) GetFlight(ctx context.Context, request api.GetFlightRequestObject) (api.GetFlightResponseObject, error) {
@@ -117,13 +110,34 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 	}
 
 	newFlight := api.Flight{
-		Id:      strconv.Itoa(len(flights) + 1),
-		Title:   request.Body.Title,
+		Id:        len(flights) + 1,
+		Title:     request.Body.Title,
 		Published: false,
 	}
 	flights = append(flights, newFlight)
 
 	return api.CreateFlight201Response{}, nil
+}
+
+func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequestObject) (api.UpdateFlightResponseObject, error) {
+	flight := getFlight(request.Id)
+	if flight == nil {
+		return &api.UpdateFlight404Response{}, nil
+	}
+
+	if request.Body.Number != nil {
+		flight.Number = *request.Body.Number
+	}
+	if request.Body.OriginAirport != nil {
+		flight.OriginAirport = api.Airport{Id: *request.Body.OriginAirport}
+	}
+	if request.Body.DestinationAirport != nil {
+		flight.DestinationAirport = api.Airport{Id: *request.Body.DestinationAirport}
+	}
+	if request.Body.Published != nil {
+		flight.Published = *request.Body.Published
+	}
+	return api.UpdateFlight204Response{}, nil
 }
 
 func (h *Handler) DeleteFlight(ctx context.Context, request api.DeleteFlightRequestObject) (api.DeleteFlightResponseObject, error) {
@@ -134,26 +148,10 @@ func (h *Handler) DeleteFlight(ctx context.Context, request api.DeleteFlightRequ
 			break
 		}
 	}
-
-	// Remove all airport memberships of this flight
-	newMemberships := []flightAirportMembership{}
-	for _, membership := range flightAirportMemberships {
-		if membership.flight != request.Id {
-			newMemberships = append(newMemberships, membership)
-		}
-	}
-
-	flightAirportMemberships = newMemberships
-
 	return api.DeleteFlight204Response{}, nil
 }
 
-func (h *Handler) SetFlightPublished(ctx context.Context, request api.SetFlightPublishedRequestObject) (api.SetFlightPublishedResponseObject, error) {
-	for i := range flights {
-		if flights[i].Id == request.Id {
-			flights[i].Published = request.Body.Published
-			return api.SetFlightPublished204Response{}, nil
-		}
-	}
-	return nil, fmt.Errorf("flight with id %q not found", request.Id)
+func (h *Handler) DeleteAllFlights(ctx context.Context, request api.DeleteAllFlightsRequestObject) (api.DeleteAllFlightsResponseObject, error) {
+	flights = []api.Flight{}
+	return api.DeleteAllFlights204Response{}, nil
 }
