@@ -31,8 +31,14 @@ func TestDeleteAllProducts(t *testing.T) {
 func TestListProducts(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	products = []api.Product{
-		{Title: "Product 1"},
-		{Title: "Product 2"},
+		{Id: "1", Title: "Product 1"},
+		{Id: "2", Title: "Product 2"},
+	}
+	categories = []api.Category{
+		{Id: "A", Title: "Category A"},
+	}
+	productCategoryMemberships = []productCategoryMembership{
+		{product: "1", category: "A"},
 	}
 
 	resp, err := handler.ListProducts(ctx, api.ListProductsRequestObject{})
@@ -41,8 +47,12 @@ func TestListProducts(t *testing.T) {
 	}
 
 	want := api.ListProducts200JSONResponse{
-		api.Product{Title: "Product 1"},
-		api.Product{Title: "Product 2"},
+		api.Product{
+			Id:         "1",
+			Title:      "Product 1",
+			Categories: &[]api.Category{{Id: "A", Title: "Category A"}},
+		},
+		api.Product{Id: "2", Title: "Product 2", Categories: &[]api.Category{}},
 	}
 	if !reflect.DeepEqual(want, resp) {
 		t.Errorf("got %v, want %v", resp, want)

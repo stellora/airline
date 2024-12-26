@@ -16,6 +16,15 @@ var (
 	}
 )
 
+func getCategory(id string) *api.Category {
+	for i := range categories {
+		if categories[i].Id == id {
+			return &categories[i]
+		}
+	}
+	return nil
+}
+
 func init() {
 	for i := range categories {
 		categories[i].Id = strconv.Itoa(i + 1)

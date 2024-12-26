@@ -35,7 +35,19 @@ func (h *Handler) DeleteAllProducts(ctx context.Context, request api.DeleteAllPr
 }
 
 func (h *Handler) ListProducts(ctx context.Context, request api.ListProductsRequestObject) (api.ListProductsResponseObject, error) {
-	return api.ListProducts200JSONResponse(products), nil
+	productsWithCategories := products
+	for i := range productsWithCategories {
+		categories := []api.Category{}
+		for _, membership := range productCategoryMemberships {
+			if membership.product == productsWithCategories[i].Id {
+				if category := getCategory(membership.category); category != nil {
+					categories = append(categories, *category)
+				}
+			}
+		}
+		productsWithCategories[i].Categories = &categories
+	}
+	return api.ListProducts200JSONResponse(productsWithCategories), nil
 }
 
 func (h *Handler) ListProductsByCategory(ctx context.Context, request api.ListProductsByCategoryRequestObject) (api.ListProductsByCategoryResponseObject, error) {
