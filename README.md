@@ -1,1 +1,1 @@
-# storefront-app-sveltekit
+# Storefront SvelteKit frontend
