@@ -30,6 +30,17 @@ type Flight struct {
 	Published          bool    `json:"published"`
 }
 
+// AirportSpec defines model for airportSpec.
+type AirportSpec struct {
+	union json.RawMessage
+}
+
+// AirportSpec0 defines model for .
+type AirportSpec0 = int
+
+// AirportSpec1 defines model for .
+type AirportSpec1 = string
+
 // CreateAirportJSONBody defines parameters for CreateAirport.
 type CreateAirportJSONBody struct {
 	IataCode string `json:"iataCode"`
@@ -42,10 +53,10 @@ type UpdateAirportJSONBody struct {
 
 // CreateFlightJSONBody defines parameters for CreateFlight.
 type CreateFlightJSONBody struct {
-	DestinationAirport int    `json:"destinationAirport"`
-	Number             string `json:"number"`
-	OriginAirport      int    `json:"originAirport"`
-	Published          *bool  `json:"published,omitempty"`
+	DestinationAirport AirportSpec `json:"destinationAirport"`
+	Number             string      `json:"number"`
+	OriginAirport      AirportSpec `json:"originAirport"`
+	Published          *bool       `json:"published,omitempty"`
 }
 
 // UpdateFlightJSONBody defines parameters for UpdateFlight.
@@ -67,6 +78,68 @@ type CreateFlightJSONRequestBody CreateFlightJSONBody
 
 // UpdateFlightJSONRequestBody defines body for UpdateFlight for application/json ContentType.
 type UpdateFlightJSONRequestBody UpdateFlightJSONBody
+
+// AsAirportSpec0 returns the union data inside the AirportSpec as a AirportSpec0
+func (t AirportSpec) AsAirportSpec0() (AirportSpec0, error) {
+	var body AirportSpec0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAirportSpec0 overwrites any union data inside the AirportSpec as the provided AirportSpec0
+func (t *AirportSpec) FromAirportSpec0(v AirportSpec0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAirportSpec0 performs a merge with any union data inside the AirportSpec, using the provided AirportSpec0
+func (t *AirportSpec) MergeAirportSpec0(v AirportSpec0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAirportSpec1 returns the union data inside the AirportSpec as a AirportSpec1
+func (t AirportSpec) AsAirportSpec1() (AirportSpec1, error) {
+	var body AirportSpec1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAirportSpec1 overwrites any union data inside the AirportSpec as the provided AirportSpec1
+func (t *AirportSpec) FromAirportSpec1(v AirportSpec1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAirportSpec1 performs a merge with any union data inside the AirportSpec, using the provided AirportSpec1
+func (t *AirportSpec) MergeAirportSpec1(v AirportSpec1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AirportSpec) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AirportSpec) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {

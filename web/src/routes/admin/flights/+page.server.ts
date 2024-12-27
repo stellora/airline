@@ -3,7 +3,7 @@ import { fail } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async () => {
-	const flights = apiClient.GET('/flights', { fetch }).then((resp) => resp.data)
+	const flights = apiClient.GET('/flights', { fetch }).then((resp) => resp.data!)
 	return {
 		flights: await flights
 	}
@@ -12,6 +12,7 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
 	create: async ({ request }) => {
 		const data = await request.formData()
+
 		const number = data.get('number')
 		if (number === null || typeof number !== 'string') {
 			return fail(400, {
@@ -20,7 +21,25 @@ export const actions: Actions = {
 			})
 		}
 
-		const resp = await apiClient.POST('/flights', { body: { number }, fetch })
+		const originAirport = data.get('originAirport')
+		const destinationAirport = data.get('destinationAirport')
+		if (
+			originAirport === null ||
+			destinationAirport === null ||
+			typeof originAirport !== 'string' ||
+			typeof destinationAirport !== 'string'
+		) {
+			return fail(400, {
+				originAirport,
+				destinationAirport,
+				error: 'airport code is required'
+			})
+		}
+
+		const resp = await apiClient.POST('/flights', {
+			body: { number, originAirport, destinationAirport },
+			fetch
+		})
 		if (!resp.response.ok) {
 			// TODO(sqs)
 			return fail(422, {

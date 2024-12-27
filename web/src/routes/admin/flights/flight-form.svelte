@@ -16,15 +16,42 @@
 	>
 		<Input
 			type="text"
-			name="title"
-			placeholder="New flight..."
-			value={form?.title ?? ''}
+			name="number"
+			placeholder="Flight number"
+			value={form?.number ?? ''}
 			autocomplete="off"
-			class="flex-1"
 			required
-			aria-label="Flight title"
+			class="w-32"
+			aria-label="Flight number"
 			aria-required="true"
 		/>
+		<div class="flex gap-1 items-center">
+			<Input
+				type="text"
+				name="originAirport"
+				placeholder="From"
+				value={form?.originAirport ?? ''}
+				autocomplete="off"
+				required
+				maxlength={3}
+				class="w-24"
+				aria-label="Origin airport IATA code"
+				aria-required="true"
+			/>
+			&ndash;
+			<Input
+				type="text"
+				name="destinationAirport"
+				placeholder="To"
+				value={form?.destinationAirport ?? ''}
+				autocomplete="off"
+				required
+				maxlength={3}
+				class="w-24"
+				aria-label="Destination airport IATA code"
+				aria-required="true"
+			/>
+		</div>
 		<Button type="submit" variant="secondary" aria-label="Add flight">Add</Button>
 	</form>
 

@@ -118,6 +118,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        airportSpec: number | string;
         Airport: {
             id: number;
             iataCode: string;
@@ -371,8 +372,8 @@ export interface operations {
             content: {
                 "application/json": {
                     number: string;
-                    originAirport: number;
-                    destinationAirport: number;
+                    originAirport: components["schemas"]["airportSpec"];
+                    destinationAirport: components["schemas"]["airportSpec"];
                     /** @default false */
                     published?: boolean;
                 };

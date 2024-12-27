@@ -157,9 +157,9 @@ paths:
                 number:
                   type: string
                 originAirport:
-                  type: integer
+                  $ref: '#/components/schemas/airportSpec'
                 destinationAirport:
-                  type: integer
+                  $ref: '#/components/schemas/airportSpec'
                 published:
                   type: boolean
                   default: false
@@ -242,6 +242,13 @@ paths:
           description: Flight not found
 components:
   schemas:
+    airportSpec:
+      oneOf:
+        - type: integer
+        - type: string
+          pattern: '^[A-Z]{3}$'
+          minLength: 3
+          maxLength: 3
     Airport:
       type: object
       properties:
