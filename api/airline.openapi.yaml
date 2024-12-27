@@ -259,10 +259,25 @@ components:
           type: string
         iataCode:
           type: string
+        point:
+          $ref: '#/components/schemas/Point'
       required:
         - id
         - name
         - iataCode
+        - point
+    Point:
+      type: object
+      properties:
+        longitude:
+          type: number
+          format: double
+        latitude:
+          type: number
+          format: double
+      required:
+        - longitude
+        - latitude
     Flight:
       type: object
       properties:
@@ -274,6 +289,9 @@ components:
           $ref: '#/components/schemas/Airport'
         destinationAirport:
           $ref: '#/components/schemas/Airport'
+        distanceMiles:
+          type: number
+          format: double
         published:
           type: boolean
       required:
@@ -281,4 +299,5 @@ components:
         - number
         - originAirport
         - destinationAirport
+        - distanceMiles
         - published

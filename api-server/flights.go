@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/stellora/airline/api-server/api"
+	"github.com/tidwall/geodesic"
 )
 
 func getFlight(id int) *api.Flight {
@@ -21,29 +22,31 @@ func (h *Handler) GetFlight(ctx context.Context, request api.GetFlightRequestObj
 	if flight == nil {
 		return &api.GetFlight404Response{}, nil
 	}
-	populateFlightAirports(flight)
+	enrichFlight(flight)
 	return api.GetFlight200JSONResponse(*flight), nil
-}
-
-func populateFlightAirports(flight *api.Flight) {
-	flight.OriginAirport = *getAirport(flight.OriginAirport.Id)
-	flight.DestinationAirport = *getAirport(flight.DestinationAirport.Id)
 }
 
 func copyFlights(flights []*api.Flight) []api.Flight {
 	copies := make([]api.Flight, len(flights))
 	for i, flight := range flights {
 		copies[i] = *flight
+		enrichFlight(&copies[i])
 	}
 	return copies
 }
 
+func enrichFlight(flight *api.Flight) {
+	flight.OriginAirport = *getAirport(flight.OriginAirport.Id)
+	flight.DestinationAirport = *getAirport(flight.DestinationAirport.Id)
+
+	var distanceMeters float64
+	geodesic.WGS84.Inverse(flight.OriginAirport.Point.Latitude, flight.OriginAirport.Point.Longitude, flight.DestinationAirport.Point.Latitude, flight.DestinationAirport.Point.Longitude, &distanceMeters, nil, nil)
+	const metersPerMile = 0.000621371192237334
+	flight.DistanceMiles = distanceMeters * metersPerMile
+}
+
 func (h *Handler) ListFlights(ctx context.Context, request api.ListFlightsRequestObject) (api.ListFlightsResponseObject, error) {
-	flights := copyFlights(flights)
-	for i := range flights {
-		populateFlightAirports(&flights[i])
-	}
-	return api.ListFlights200JSONResponse(flights), nil
+	return api.ListFlights200JSONResponse(copyFlights(flights)), nil
 }
 
 func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequestObject) (api.CreateFlightResponseObject, error) {

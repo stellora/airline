@@ -13,6 +13,8 @@
 		<FlightTitle flight={data.flight} class="text-2xl font-bold" as="h1" />
 	</div>
 
+	<p class="text-muted-foreground">{Math.round(data.flight.distanceMiles)} miles</p>
+
 	<Card class="border-destructive self-start">
 		<CardContent class="flex gap-4">
 			<form method="POST" action="?/setFlightPublished" use:enhance>

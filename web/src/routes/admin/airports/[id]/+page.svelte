@@ -30,6 +30,10 @@
 						{#each flights as flight (flight.id)}
 							<li class="p-3 border rounded-md flex items-center justify-between gap-2">
 								<FlightTitle class="w-full" link {flight} />
+								<span class="text-muted-foreground whitespace-nowrap text-sm">
+									{Math.round(flight.distanceMiles)}
+									miles
+								</span>
 							</li>
 						{/each}
 					</ul>

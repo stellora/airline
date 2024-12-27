@@ -124,12 +124,21 @@ export interface components {
             id: number;
             name: string;
             iataCode: string;
+            point: components["schemas"]["Point"];
+        };
+        Point: {
+            /** Format: double */
+            longitude: number;
+            /** Format: double */
+            latitude: number;
         };
         Flight: {
             id: number;
             number: string;
             originAirport: components["schemas"]["Airport"];
             destinationAirport: components["schemas"]["Airport"];
+            /** Format: double */
+            distanceMiles: number;
             published: boolean;
         };
     };

@@ -20,15 +20,23 @@ type Airport struct {
 	IataCode string `json:"iataCode"`
 	Id       int    `json:"id"`
 	Name     string `json:"name"`
+	Point    Point  `json:"point"`
 }
 
 // Flight defines model for Flight.
 type Flight struct {
 	DestinationAirport Airport `json:"destinationAirport"`
+	DistanceMiles      float64 `json:"distanceMiles"`
 	Id                 int     `json:"id"`
 	Number             string  `json:"number"`
 	OriginAirport      Airport `json:"originAirport"`
 	Published          bool    `json:"published"`
+}
+
+// Point defines model for Point.
+type Point struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
 }
 
 // AirportSpec defines model for airportSpec.

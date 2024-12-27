@@ -5,6 +5,8 @@ go 1.23.4
 require (
 	github.com/oapi-codegen/oapi-codegen/v2 v2.4.2-0.20241128135601-9feb3033b612
 	github.com/oapi-codegen/runtime v1.1.1
+	github.com/sqlc-dev/sqlc v1.27.1-0.20241224195846-86c1d772487d
+	github.com/tidwall/geodesic v1.52.4
 	modernc.org/sqlite v1.34.4
 )
 
@@ -48,7 +50,6 @@ require (
 	github.com/speakeasy-api/openapi-overlay v0.9.0 // indirect
 	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/sqlc-dev/sqlc v1.27.1-0.20241224195846-86c1d772487d // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/tetratelabs/wazero v1.8.2 // indirect
 	github.com/vmware-labs/yaml-jsonpath v0.3.2 // indirect

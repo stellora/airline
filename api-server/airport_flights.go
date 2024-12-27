@@ -10,9 +10,9 @@ func (h *Handler) ListFlightsByAirport(ctx context.Context, request api.ListFlig
 	airportId := request.Id
 
 	var flightsByAirport []api.Flight
-	for _, flight := range flights {
+	for _, flight := range copyFlights(flights) {
 		if flight.OriginAirport.Id == airportId || flight.DestinationAirport.Id == airportId {
-			flightsByAirport = append(flightsByAirport, *flight)
+			flightsByAirport = append(flightsByAirport, flight)
 		}
 	}
 	return api.ListFlightsByAirport200JSONResponse(flightsByAirport), nil
