@@ -9,4 +9,5 @@
 	<h1 class="text-2xl font-bold">Flights</h1>
 	<FlightForm {form} />
 	<FlightList flights={data.flights} />
+	{data.asdf}
 </div>

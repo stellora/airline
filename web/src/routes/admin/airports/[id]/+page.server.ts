@@ -2,7 +2,7 @@ import { apiClient } from '$lib/api'
 import { error, fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, parent }) => {
 	const id = Number.parseInt(params.id)
 	const airport = (await apiClient.GET('/airports/{id}', { params: { path: { id } }, fetch })).data
 	if (!airport) {
@@ -16,7 +16,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		.then((resp) => resp.data)
 	return {
 		airport,
-		flights
+		flights,
+		breadcrumbs: [parent().then((parent) => parent.breadcrumbs), airport.iataCode]
 	}
 }
 
