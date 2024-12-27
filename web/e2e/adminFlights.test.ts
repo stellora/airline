@@ -1,42 +1,62 @@
-import { expect, test } from '@playwright/test'
+import { expect, Page, test } from '@playwright/test'
 
 test('flight list has expected title and initial flights', async ({ page }) => {
 	await page.goto('/admin/flights')
 	await expect(page.locator('h1')).toContainText('Flights')
-	await expect(page.getByText('Avocado')).toBeVisible()
+	await expect(page.getByText('UA1 SFO–SIN')).toBeVisible()
 })
 
 test('add and delete flight', async ({ page }) => {
+	await addFlight(page, 'ST123', 'SFO', 'SIN')
+	await gotoAdminFlightPage(page, 'ST123')
+
+	// Delete flight
+	const deleteButton = page.getByRole('button', { name: 'Delete flight' })
+	page.on('dialog', (dialog) => dialog.accept())
+	await deleteButton.click()
+	await expect(page).toHaveURL(/\/admin\/flights$/)
+	await expect(page.getByText('ST123 SFO–LAX')).not.toBeVisible()
+})
+
+test('publish flight', async ({ page }) => {
+	await addFlight(page, 'ST456', 'SIN', 'SFO')
+	await gotoAdminFlightPage(page, 'ST456')
+
+	// Initially unpublished
+	const flightNumber = page.locator('span', { hasText: 'ST456' })
+	await expect(flightNumber).toHaveCSS('text-decoration-style', 'dotted')
+
+	// Publish flight
+	const publishButton = page.getByRole('button', { name: /Publish|Unpublish/ })
+	await expect(publishButton).toHaveText('Publish')
+	await publishButton.click()
+	await expect(flightNumber).not.toHaveCSS('text-decoration-style', 'dotted')
+
+	// Unpublish flight
+	await expect(publishButton).toHaveText('Unpublish')
+	await publishButton.click()
+	await expect(flightNumber).toHaveCSS('text-decoration-style', 'dotted')
+})
+
+async function addFlight(
+	page: Page,
+	number: string,
+	originIataCode: string,
+	destinationIataCode: string
+): Promise<void> {
 	await page.goto('/admin/flights')
 
 	// Add flight
-	const input = page.getByPlaceholder('New flight...')
-	await input.fill('Test Flight')
-	const addButton = page.getByRole('button', { name: 'Add' })
+	await page.getByLabel('Flight number').fill(number)
+	await page.getByLabel('Origin airport IATA code').fill(originIataCode)
+	await page.getByLabel('Destination airport IATA code').fill(destinationIataCode)
+	const addButton = page.getByRole('button', { name: 'Add flight' })
 	await addButton.click()
-	await expect(page.getByText('Test Flight')).toBeVisible()
 
-	// Delete flight
-	const flightItem = page.locator('li', { hasText: 'Test Flight' })
-	const deleteButton = flightItem.getByRole('button', { name: 'Delete' })
-	page.on('dialog', (dialog) => dialog.accept())
-	await deleteButton.click()
-	await expect(page.getByText('Test Flight')).not.toBeVisible()
-})
+	await expect(page.getByText(`${number} ${originIataCode}–${destinationIataCode}`)).toBeVisible()
+}
 
-test('star flight', async ({ page }) => {
+async function gotoAdminFlightPage(page: Page, number: string): Promise<void> {
 	await page.goto('/admin/flights')
-
-	const avocadoFlight = page.locator('li', { hasText: 'Avocado' })
-
-	// Star flight
-	const starButton = avocadoFlight.getByRole('button', { name: /Star|Unstar/ })
-	await starButton.click()
-	await expect(starButton).toHaveText('Unstar')
-	await expect(avocadoFlight.getByLabel('Published')).toBeVisible()
-
-	// Unstar flight
-	await starButton.click()
-	await expect(starButton).toHaveText('Star')
-	await expect(avocadoFlight.getByLabel('Published')).not.toBeVisible()
-})
+	await page.getByRole('link', { name: number }).click()
+}
