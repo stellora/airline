@@ -3,13 +3,13 @@
 	import type { AdminBreadcrumbEntry } from './admin-breadcrumb'
 	import AdminBreadcrumbItem from './admin-breadcrumb-item.svelte'
 
-	let { breadcrumbs }: { breadcrumbs: AdminBreadcrumbEntry } = $props()
+	let { entries }: { entries: AdminBreadcrumbEntry[] } = $props()
 </script>
 
 <Breadcrumb.Root>
 	<Breadcrumb.List>
-		{#each breadcrumbs as crumb, index (index)}
-			<AdminBreadcrumbItem {crumb} isLast={index === breadcrumbs.length - 1} />
+		{#each entries as entry, index (index)}
+			<AdminBreadcrumbItem {entry} isLast={index === entries.length - 1} />
 		{/each}
 	</Breadcrumb.List>
 </Breadcrumb.Root>

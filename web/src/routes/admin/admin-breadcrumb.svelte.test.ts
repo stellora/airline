@@ -4,20 +4,21 @@ import AdminBreadcrumb from './admin-breadcrumb.svelte'
 
 describe('AdminBreadcrumb', () => {
 	it('renders breadcrumbs correctly', async () => {
-		render(AdminBreadcrumb, { props: { breadcrumbs: ['A', 'B', 'C'] } })
+		render(AdminBreadcrumb, { props: { entries: ['A', 'B', 'C'] } })
 		expect(readBreadcrumbs()).toStrictEqual('A>B>C')
 	})
 
 	it('renders loading state for async breadcrumbs', () => {
-		const breadcrumbs = [Promise.resolve('A'), Promise.resolve('B')]
-		render(AdminBreadcrumb, { props: { breadcrumbs } })
+		render(AdminBreadcrumb, {
+			props: { entries: [Promise.resolve('A'), Promise.resolve('B')] }
+		})
 		expect(screen.getAllByTestId('breadcrumb-ellipsis')).toHaveLength(2)
 		expect(readBreadcrumbs()).toStrictEqual('...>...')
 	})
 
 	it('renders mixed sync and async breadcrumbs', async () => {
 		render(AdminBreadcrumb, {
-			props: { breadcrumbs: ['A', Promise.resolve([Promise.resolve(['B', 'C']), 'D']), 'E'] }
+			props: { entries: ['A', Promise.resolve([Promise.resolve(['B', 'C']), 'D']), 'E'] }
 		})
 
 		for (const item of ['A', 'B', 'C', 'D', 'E']) {
@@ -27,11 +28,10 @@ describe('AdminBreadcrumb', () => {
 	})
 
 	it('renders separators between items except last', async () => {
-		const breadcrumbs = ['A', 'B', 'C']
-		render(AdminBreadcrumb, { props: { breadcrumbs } })
-
+		const entries = ['A', 'B', 'C']
+		render(AdminBreadcrumb, { props: { entries } })
 		const separators = screen.getAllByRole('separator', { hidden: true })
-		expect(separators).toHaveLength(breadcrumbs.length - 1)
+		expect(separators).toHaveLength(entries.length - 1)
 	})
 })
 

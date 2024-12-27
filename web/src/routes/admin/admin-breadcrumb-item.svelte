@@ -1,13 +1,15 @@
 <script lang="ts">
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
-	import type { BreadcrumbItem } from './admin-breadcrumb'
+	import type { AdminBreadcrumbEntry } from './admin-breadcrumb'
 
-	let { crumb, isLast }: { crumb: BreadcrumbItem | Promise<BreadcrumbItem>; isLast: boolean } =
-		$props()
+	let {
+		entry,
+		isLast
+	}: { entry: AdminBreadcrumbEntry | Promise<AdminBreadcrumbEntry>; isLast: boolean } = $props()
 </script>
 
 <Breadcrumb.Item>
-	{#await crumb}
+	{#await entry}
 		<Breadcrumb.BreadcrumbEllipsis data-testid="breadcrumb-ellipsis" />
 	{:then value}
 		<Breadcrumb.Page>{value}</Breadcrumb.Page>
