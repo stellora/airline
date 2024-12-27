@@ -5,6 +5,7 @@
 @layer base {
 	body {
 		font-family:
+			'SF Pro Display',
 			system-ui,
 			-apple-system,
 			BlinkMacSystemFont,

@@ -2,10 +2,14 @@
 	import { enhance } from '$app/forms'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
-	import type { Flight } from '$lib/types'
+	import type { ComponentProps } from 'svelte'
 	import { fade } from 'svelte/transition'
 
-	const { flight }: { flight: Flight } = $props()
+	const {
+		flight
+	}: {
+		flight: ComponentProps<typeof FlightTitle>['flight']
+	} = $props()
 </script>
 
 <li in:fade out:fade class="flex flex-col gap-4 border p-3 rounded-md">
@@ -15,7 +19,7 @@
 			<input type="hidden" name="id" value={flight.id} />
 			<input type="hidden" name="published" value={!flight.published ? 'true' : 'false'} />
 			<Button type="submit" variant="secondary" size="sm"
-				>{flight.published ? 'Unstar' : 'Star'}</Button
+				>{flight.published ? 'Unpublish' : 'Publish'}</Button
 			>
 		</form>
 		<Button variant="secondary" size="sm" href={`/admin/flights/${flight.id}`}>Edit</Button>

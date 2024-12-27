@@ -1,10 +1,4 @@
-export type Flight = {
-	id: string
-	title: string
-	published: boolean
-}
+import type { components } from './airline.openapi';
 
-export type Airport = {
-	id: string
-	title: string
-}
+export type Airport = components['schemas']['Airport']
+export type Flight = components['schemas']['Flight']
