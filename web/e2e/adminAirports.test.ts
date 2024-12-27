@@ -10,18 +10,18 @@ test('add and delete airport', async ({ page }) => {
 	await page.goto('/admin/airports')
 
 	// Add airport
-	const input = page.getByPlaceholder('New airport...')
-	await input.fill('Test Airport')
+	const input = page.getByPlaceholder('IATA code')
+	await input.fill('AAA')
 	const addButton = page.getByRole('button', { name: 'Add' })
 	await addButton.click()
-	await expect(page.getByText('Test Airport')).toBeVisible()
+	await expect(page.getByText('AAA')).toBeVisible()
 
 	// Delete airport
-	await page.getByRole('link', { name: 'Test Airport' }).click()
+	await page.getByRole('link', { name: 'AAA' }).click()
 	const deleteButton = page.getByRole('button', { name: 'Delete' })
 	page.on('dialog', (dialog) => dialog.accept())
 	await deleteButton.click()
-	await expect(page.getByText('Test Airport')).not.toBeVisible()
+	await expect(page.getByText('AAA')).not.toBeVisible()
 })
 
 test('airport detail page', async ({ page }) => {
@@ -43,5 +43,5 @@ test('airport detail page', async ({ page }) => {
 		.getByRole('button', { name: 'Remove from airport' })
 	page.on('dialog', (dialog) => dialog.accept())
 	await removeButton.click()
-	await expect(page.getByTestId('flights-in-airport')).not.toContainText('Fork')
+	await expect(page.getByTestId('flights-by-airport')).not.toContainText('Fork')
 })

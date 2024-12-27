@@ -5,23 +5,23 @@ import AirportForm from './airport-form.svelte'
 describe('AirportForm', () => {
 	it('renders form elements', () => {
 		render(AirportForm)
-		expect(screen.getByPlaceholderText('New airport...')).toBeInTheDocument()
+		expect(screen.getByPlaceholderText('IATA code')).toBeInTheDocument()
 		expect(screen.getByRole('button', { name: 'Add airport' })).toBeInTheDocument()
 	})
 
 	it('displays error message when form.error exists', () => {
-		render(AirportForm, { props: { form: { title: '', error: 'Test error message' } } })
+		render(AirportForm, { props: { form: { iataCode: '', error: 'Test error message' } } })
 		expect(screen.getByText('Test error message', { exact: false })).toBeInTheDocument()
 	})
 
 	it('preserves input value from form data', () => {
-		render(AirportForm, { props: { form: { title: 'Test Airport', error: '' } } })
-		expect(screen.getByPlaceholderText('New airport...')).toHaveValue('Test Airport')
+		render(AirportForm, { props: { form: { iataCode: 'AAA', error: '' } } })
+		expect(screen.getByPlaceholderText('IATA code')).toHaveValue('AAA')
 	})
 
 	it('requires title input', () => {
 		render(AirportForm)
-		const input = screen.getByPlaceholderText('New airport...')
+		const input = screen.getByPlaceholderText('IATA code')
 		expect(input).toHaveAttribute('required')
 	})
 

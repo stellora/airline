@@ -16,7 +16,7 @@
 					<Button
 						variant="link"
 						href={`/admin/airports/${airport.id}`}
-						class="block p-4 h-[unset] w-full">{airport.title}</Button
+						class="block p-4 h-[unset] w-full">{airport.iataCode}</Button
 					>
 				</li>
 			{/each}

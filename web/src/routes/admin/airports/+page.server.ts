@@ -11,19 +11,19 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
 	create: async ({ request }) => {
 		const data = await request.formData()
-		const title = data.get('title')
-		if (title === null || typeof title !== 'string') {
+		const iataCode = data.get('iataCode')
+		if (iataCode === null || typeof iataCode !== 'string') {
 			return fail(400, {
-				title,
-				error: 'title is required'
+				iataCode: iataCode,
+				error: 'iataCode is required'
 			})
 		}
 
-		const resp = await apiClient.POST('/airports', { body: { title }, fetch })
+		const resp = await apiClient.POST('/airports', { body: { iataCode }, fetch })
 		if (!resp.response.ok) {
 			// TODO(sqs)
 			return fail(422, {
-				title,
+				iataCode: iataCode,
 				error: await resp.response.text()
 			})
 		}

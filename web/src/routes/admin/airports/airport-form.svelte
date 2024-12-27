@@ -16,13 +16,13 @@
 	>
 		<Input
 			type="text"
-			name="title"
-			placeholder="New airport..."
-			value={form?.title ?? ''}
+			name="iataCode"
+			placeholder="IATA code"
+			value={form?.iataCode ?? ''}
 			autocomplete="off"
 			class="flex-1"
 			required
-			aria-label="Airport title"
+			aria-label="Airport IATA code"
 			aria-required="true"
 		/>
 		<Button type="submit" variant="secondary" aria-label="Add airport">Add</Button>
