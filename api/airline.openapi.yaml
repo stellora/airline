@@ -255,10 +255,13 @@ components:
       properties:
         id:
           type: integer
+        name:
+          type: string
         iataCode:
           type: string
       required:
         - id
+        - name
         - iataCode
     Flight:
       type: object

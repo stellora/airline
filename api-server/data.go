@@ -7,38 +7,6 @@ var (
 	flights  []*api.Flight
 )
 
-func getAirport(id int) *api.Airport {
-	for _, airport := range airports {
-		if airport.Id == id {
-			return airport
-		}
-	}
-	return nil
-}
-
-func getAirportBySpec(spec api.AirportSpec) *api.Airport {
-	if id, err := spec.AsAirportSpec0(); err == nil {
-		return getAirport(id)
-	}
-	if iataCode, err := spec.AsAirportSpec1(); err == nil {
-		for _, airport := range airports {
-			if airport.IataCode == iataCode {
-				return airport
-			}
-		}
-	}
-	return nil
-}
-
-func getFlight(id int) *api.Flight {
-	for _, flight := range flights {
-		if flight.Id == id {
-			return flight
-		}
-	}
-	return nil
-}
-
 func init() {
 	initialAirports := []string{"SFO", "EWR", "SIN"}
 	for _, iataCode := range initialAirports {

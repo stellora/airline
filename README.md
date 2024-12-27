@@ -16,3 +16,7 @@ pnpm -C web dev
 ## Development
 
 - Codegen: `pnpm -C web gen && (cd api-server && go generate ./...)`
+
+## Data
+
+- [Airports data](https://ourairports.com/data/) from OurAirports

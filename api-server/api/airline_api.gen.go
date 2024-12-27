@@ -19,6 +19,7 @@ import (
 type Airport struct {
 	IataCode string `json:"iataCode"`
 	Id       int    `json:"id"`
+	Name     string `json:"name"`
 }
 
 // Flight defines model for Flight.

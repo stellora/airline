@@ -7,6 +7,15 @@ import (
 	"github.com/stellora/airline/api-server/api"
 )
 
+func getFlight(id int) *api.Flight {
+	for _, flight := range flights {
+		if flight.Id == id {
+			return flight
+		}
+	}
+	return nil
+}
+
 func (h *Handler) GetFlight(ctx context.Context, request api.GetFlightRequestObject) (api.GetFlightResponseObject, error) {
 	flight := getFlight(request.Id)
 	if flight == nil {

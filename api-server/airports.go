@@ -3,9 +3,35 @@ package main
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/extdata"
 )
+
+func getAirport(id int) *api.Airport {
+	for _, airport := range airports {
+		if airport.Id == id {
+			enrichAirport(airport)
+			return airport
+		}
+	}
+	return nil
+}
+
+func getAirportBySpec(spec api.AirportSpec) *api.Airport {
+	if id, err := spec.AsAirportSpec0(); err == nil {
+		return getAirport(id)
+	}
+	if iataCode, err := spec.AsAirportSpec1(); err == nil {
+		for _, airport := range airports {
+			if airport.IataCode == iataCode {
+				return airport
+			}
+		}
+	}
+	return nil
+}
 
 func (h *Handler) GetAirport(ctx context.Context, request api.GetAirportRequestObject) (api.GetAirportResponseObject, error) {
 	airport := getAirport(request.Id)
@@ -19,8 +45,17 @@ func copyAirports(airports []*api.Airport) []api.Airport {
 	copies := make([]api.Airport, len(airports))
 	for i, airport := range airports {
 		copies[i] = *airport
+		enrichAirport(&copies[i])
 	}
 	return copies
+}
+
+func enrichAirport(airport *api.Airport) {
+	airportData := lookupAirport(airport.IataCode)
+	if airportData == nil {
+		return
+	}
+	airport.Name = airportData.Name
 }
 
 func (h *Handler) ListAirports(ctx context.Context, request api.ListAirportsRequestObject) (api.ListAirportsResponseObject, error) {
@@ -82,4 +117,14 @@ func newAirportSpec(id int, iataCode string) api.AirportSpec {
 		spec.FromAirportSpec1(iataCode)
 	}
 	return spec
+}
+
+func lookupAirport(iataCode string) *extdata.Airport {
+	iataCode = strings.ToUpper(iataCode)
+	for _, airport := range extdata.Airports.Airports {
+		if airport.IATACode == iataCode {
+			return &airport
+		}
+	}
+	return nil
 }

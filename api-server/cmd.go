@@ -9,6 +9,7 @@ import (
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
+	"github.com/stellora/airline/api-server/extdata"
 )
 
 var (
@@ -30,6 +31,10 @@ func main() {
 
 	db, queries, err := db.Open(ctx, *dbFile)
 	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := extdata.LoadAirports(); err != nil {
 		log.Fatal(err)
 	}
 
