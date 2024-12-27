@@ -1,23 +1,19 @@
 <script lang="ts">
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
-	import AdminBreadcrumbItem from './admin-breadcrumb-item.svelte'
+	import type { BreadcrumbItem } from './admin-breadcrumb'
 
-	type BreadcrumbEntry = string | Promise<BreadcrumbEntry[]>
-	let { item }: { item: string | BreadcrumbEntry[] } = $props()
+	let { crumb, isLast }: { crumb: BreadcrumbItem | Promise<BreadcrumbItem>; isLast: boolean } =
+		$props()
 </script>
 
-{#if typeof item === 'string'}
-	<Breadcrumb.Item>
-		<Breadcrumb.Page>{item}</Breadcrumb.Page>
-	</Breadcrumb.Item>
-	<Breadcrumb.Separator />
-{:else}
-	{#each item as crumb (crumb)}
-		{#await crumb}
-			<Breadcrumb.BreadcrumbEllipsis />
-		{:then crumb}
-			<AdminBreadcrumbItem item={crumb} />
-		{/await}
-	{/each}
+<Breadcrumb.Item>
+	{#await crumb}
+		<Breadcrumb.BreadcrumbEllipsis data-testid="breadcrumb-ellipsis" />
+	{:then value}
+		<Breadcrumb.Page>{value}</Breadcrumb.Page>
+	{/await}
+</Breadcrumb.Item>
+
+{#if !isLast}
+	<Breadcrumb.Separator role="separator" />
 {/if}
-<!-- TODO!(sqs): this is messy with admin-breadcrumb -->
