@@ -20,7 +20,8 @@
 			placeholder="IATA code"
 			value={form?.iataCode ?? ''}
 			autocomplete="off"
-			class="flex-1"
+			class="w-24"
+			maxlength={3}
 			required
 			aria-label="Airport IATA code"
 			aria-required="true"

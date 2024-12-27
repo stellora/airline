@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import * as Sidebar from '$lib/components/ui/sidebar'
+	import CircleUser from 'lucide-svelte/icons/circle-user'
 	import Info from 'lucide-svelte/icons/info'
 	import MapPin from 'lucide-svelte/icons/map-pin'
 	import Plane from 'lucide-svelte/icons/plane'
+	import Spline from 'lucide-svelte/icons/spline'
 	import TicketsPlane from 'lucide-svelte/icons/tickets-plane'
 	import User from 'lucide-svelte/icons/user'
+	import Users from 'lucide-svelte/icons/users'
 
 	type Item = {
 		title: string
@@ -35,12 +38,22 @@
 		{
 			title: 'Flights',
 			url: '/admin/flights',
-			icon: Plane
+			icon: Spline
 		},
 		{
 			title: 'Airports',
 			url: '/admin/airports',
 			icon: MapPin
+		},
+		{
+			title: 'Aircraft',
+			url: '/admin/aircraft',
+			icon: Plane
+		},
+		{
+			title: 'Passengers',
+			url: '/admin/passengers',
+			icon: Users
 		}
 	]
 </script>
@@ -87,4 +100,10 @@
 			</Sidebar.GroupContent>
 		</Sidebar.Group>
 	</Sidebar.Content>
+	<Sidebar.Separator />
+	<Sidebar.Footer
+		><div class="text-muted-foreground text-sm flex items-center gap-1.5">
+			<CircleUser size="2.5ch" /> <strong>sqs</strong>
+		</div></Sidebar.Footer
+	>
 </Sidebar.Root>

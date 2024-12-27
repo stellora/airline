@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
+	import { Card, CardContent } from '$lib/components/ui/card'
 
 	let { data } = $props()
 </script>
@@ -13,27 +13,15 @@
 		<FlightTitle flight={data.flight} class="text-2xl font-bold" as="h1" />
 	</div>
 
-	<Card>
-		<CardHeader>
-			<CardTitle>In airports</CardTitle>
-		</CardHeader>
-		<CardContent>
-			{#if data.flight.airports && data.flight.airports.length > 0}
-				<ul class="flex flex-wrap gap-2">
-					{#each data.flight.airports as airport (airport.id)}
-						<li class="p-2 border text-sm rounded">
-							{airport.title}
-						</li>
-					{/each}
-				</ul>
-			{:else}
-				<p class="text-muted-foreground">No airports associated with this flight.</p>
-			{/if}
-		</CardContent>
-	</Card>
-
 	<Card class="border-destructive self-start">
-		<CardContent>
+		<CardContent class="flex gap-4">
+			<form method="POST" action="?/setFlightPublished" use:enhance>
+				<input type="hidden" name="id" value={data.flight.id} />
+				<input type="hidden" name="published" value={data.flight.published ? 'false' : 'true'} />
+				<Button type="submit" variant={data.flight.published ? 'outline' : 'default'}>
+					{data.flight.published ? 'Unpublish' : 'Publish'}
+				</Button>
+			</form>
 			<form
 				method="POST"
 				action="?/delete"
