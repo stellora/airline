@@ -5,7 +5,9 @@ import FlightForm from './flight-form.svelte'
 describe('FlightForm', () => {
 	it('renders form elements', () => {
 		render(FlightForm)
-		expect(screen.getByPlaceholderText('New flight...')).toBeInTheDocument()
+		expect(screen.getByPlaceholderText('Flight number')).toBeInTheDocument()
+		expect(screen.getByPlaceholderText('From')).toBeInTheDocument()
+		expect(screen.getByPlaceholderText('To')).toBeInTheDocument()
 		expect(screen.getByRole('button', { name: 'Add flight' })).toBeInTheDocument()
 	})
 
@@ -14,20 +16,32 @@ describe('FlightForm', () => {
 		expect(screen.getByText('Test error message', { exact: false })).toBeInTheDocument()
 	})
 
-	it('preserves input value from form data', () => {
-		render(FlightForm, { props: { form: { title: 'Test Flight', error: '' } } })
-		expect(screen.getByPlaceholderText('New flight...')).toHaveValue('Test Flight')
+	it('preserves input values from form data', () => {
+		render(FlightForm, {
+			props: {
+				form: {
+					number: 'AB123',
+					originAirport: 'LAX',
+					destinationAirport: 'JFK',
+					error: ''
+				}
+			}
+		})
+		expect(screen.getByPlaceholderText('Flight number')).toHaveValue('AB123')
+		expect(screen.getByPlaceholderText('From')).toHaveValue('LAX')
+		expect(screen.getByPlaceholderText('To')).toHaveValue('JFK')
 	})
 
-	it('requires title input', () => {
+	it('requires all inputs', () => {
 		render(FlightForm)
-		const input = screen.getByPlaceholderText('New flight...')
-		expect(input).toHaveAttribute('required')
+		expect(screen.getByPlaceholderText('Flight number')).toHaveAttribute('required')
+		expect(screen.getByPlaceholderText('From')).toHaveAttribute('required')
+		expect(screen.getByPlaceholderText('To')).toHaveAttribute('required')
 	})
 
 	it('has correct form action and method', () => {
 		render(FlightForm)
-		const form = screen.queryByTestId('flight-form')
+		const form = screen.getByTestId('flight-form')
 		expect(form).toHaveAttribute('action', '?/create')
 		expect(form).toHaveAttribute('method', 'POST')
 	})

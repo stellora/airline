@@ -16,7 +16,7 @@ export const actions: Actions = {
 		const number = data.get('number')
 		if (number === null || typeof number !== 'string') {
 			return fail(400, {
-				number,
+				number: '',
 				error: 'flight number is required'
 			})
 		}
