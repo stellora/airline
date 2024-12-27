@@ -17,10 +17,12 @@ import (
 
 // Airport defines model for Airport.
 type Airport struct {
+	Country  string `json:"country"`
 	IataCode string `json:"iataCode"`
 	Id       int    `json:"id"`
 	Name     string `json:"name"`
 	Point    Point  `json:"point"`
+	Region   string `json:"region"`
 }
 
 // Flight defines model for Flight.

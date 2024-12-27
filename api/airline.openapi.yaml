@@ -259,12 +259,18 @@ components:
           type: string
         iataCode:
           type: string
+        country:
+          type: string
+        region:
+          type: string        
         point:
           $ref: '#/components/schemas/Point'
       required:
         - id
         - name
         - iataCode
+        - country
+        - region
         - point
     Point:
       type: object

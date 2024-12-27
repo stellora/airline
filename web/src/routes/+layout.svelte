@@ -9,7 +9,7 @@
 
 <Sidebar.Provider>
 	<AppSidebar />
-	<Sidebar.Inset class="p-4">
+	<Sidebar.Inset>
 		<Sidebar.Trigger mobileOnly={true} class="mb-2" />
 		<Tooltip.Provider delayDuration={0}>
 			{@render children?.()}

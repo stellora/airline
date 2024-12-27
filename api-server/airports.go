@@ -57,6 +57,8 @@ func enrichAirport(airport *api.Airport) {
 	}
 	airport.Name = airportData.Name
 	airport.Point = api.Point{Latitude: airportData.LatitudeDeg, Longitude: airportData.LongitudeDeg}
+	airport.Country = string(airportData.ISOCountry)
+	airport.Region = string(airportData.Municipality)
 }
 
 func (h *Handler) ListAirports(ctx context.Context, request api.ListAirportsRequestObject) (api.ListAirportsResponseObject, error) {

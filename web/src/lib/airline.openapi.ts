@@ -124,6 +124,8 @@ export interface components {
             id: number;
             name: string;
             iataCode: string;
+            country: string;
+            region: string;
             point: components["schemas"]["Point"];
         };
         Point: {

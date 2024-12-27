@@ -7,6 +7,7 @@
 	const {
 		airport,
 		link = false,
+		tooltip = true,
 		class: className,
 		as = 'abbr'
 	}: (
@@ -19,12 +20,13 @@
 				link: true
 		  }
 	) & {
+		tooltip?: boolean
 		class?: HTMLAttributes<never>['class']
 		as?: 'abbr'
 	} = $props()
 </script>
 
-<Tooltip.Root>
+<Tooltip.Root disabled={!tooltip}>
 	<Tooltip.Trigger>
 		{#snippet child({ props })}
 			<svelte:element

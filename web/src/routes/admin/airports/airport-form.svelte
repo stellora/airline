@@ -25,6 +25,10 @@
 			required
 			aria-label="Airport IATA code"
 			aria-required="true"
+			pattern={`[A-Z]{3,3}`}
+			oninput={(ev) => {
+				ev.currentTarget.value = ev.currentTarget.value.toUpperCase()
+			}}
 		/>
 		<Button type="submit" variant="secondary" aria-label="Add airport">Add</Button>
 	</form>
