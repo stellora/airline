@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -94,23 +95,46 @@ func TestCreateFlight(t *testing.T) {
 		{Id: 2, IataCode: "BBB"},
 	}
 
-	resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
-		Body: &api.CreateFlightJSONRequestBody{
-			Number:             "ST1",
-			OriginAirport:      1,
-			DestinationAirport: 2,
-		},
+	t.Run("with airport IDs", func(t *testing.T) {
+		flights = nil
+		resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
+			Body: &api.CreateFlightJSONRequestBody{
+				Number:             "ST1",
+				OriginAirport:      newAirportSpec(1, ""),
+				DestinationAirport: newAirportSpec(2, ""),
+			},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		want := api.CreateFlight201Response{}
+		if !reflect.DeepEqual(want, resp) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
+
+		checkFlightTitles(t, handler, []string{"ST1 AAA-BBB"})
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
 
-	want := api.CreateFlight201Response{}
-	if !reflect.DeepEqual(want, resp) {
-		t.Errorf("got %v, want %v", resp, want)
-	}
+	t.Run("with airport IATA codes", func(t *testing.T) {
+		flights = nil
+		resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
+			Body: &api.CreateFlightJSONRequestBody{
+				Number:             "ST1",
+				OriginAirport:      newAirportSpec(0, "AAA"),
+				DestinationAirport: newAirportSpec(0, "BBB"),
+			},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := api.CreateFlight201Response{}
+		if !reflect.DeepEqual(want, resp) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
 
-	checkFlightNumbers(t, handler, []string{"ST1"})
+		checkFlightTitles(t, handler, []string{"ST1 AAA-BBB"})
+	})
 }
 
 func TestUpdateFlight(t *testing.T) {
@@ -222,6 +246,23 @@ func checkFlightNumbers(t *testing.T, handler *Handler, want []string) {
 	for i, flight := range flights {
 		if flight.Number != want[i] {
 			t.Errorf("got %q, want %q", flight.Number, want[i])
+		}
+	}
+}
+
+func checkFlightTitles(t *testing.T, handler *Handler, want []string) {
+	resp, err := handler.ListFlights(context.Background(), api.ListFlightsRequestObject{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	flights := resp.(api.ListFlights200JSONResponse)
+	if len(flights) != len(want) {
+		t.Errorf("got %d flights, want %d", len(flights), len(want))
+	}
+	for i, flight := range flights {
+		title := fmt.Sprintf("%s %s-%s", flight.Number, flight.OriginAirport.IataCode, flight.DestinationAirport.IataCode)
+		if title != want[i] {
+			t.Errorf("got %q, want %q", title, want[i])
 		}
 	}
 }

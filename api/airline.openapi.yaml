@@ -243,6 +243,7 @@ paths:
 components:
   schemas:
     airportSpec:
+      title: AirportSpec
       oneOf:
         - type: integer
         - type: string

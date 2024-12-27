@@ -73,3 +73,13 @@ func (h *Handler) DeleteAllAirports(ctx context.Context, request api.DeleteAllAi
 	airports = []*api.Airport{}
 	return api.DeleteAllAirports204Response{}, nil
 }
+
+func newAirportSpec(id int, iataCode string) api.AirportSpec {
+	var spec api.AirportSpec
+	if id != 0 {
+		spec.FromAirportSpec0(id)
+	} else {
+		spec.FromAirportSpec1(iataCode)
+	}
+	return spec
+}

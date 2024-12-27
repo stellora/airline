@@ -41,18 +41,21 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 	if request.Body.Number == "" {
 		return nil, fmt.Errorf("number must not be empty")
 	}
-	if request.Body.OriginAirport == 0 {
-		return nil, fmt.Errorf("originAirport must not be empty")
+
+	originAirport := getAirportBySpec(request.Body.OriginAirport)
+	if originAirport == nil {
+		return nil, fmt.Errorf("originAirport not found")
 	}
-	if request.Body.DestinationAirport == 0 {
-		return nil, fmt.Errorf("destinationAirport must not be empty")
+	destinationAirport := getAirportBySpec(request.Body.DestinationAirport)
+	if destinationAirport == nil {
+		return nil, fmt.Errorf("destinationAirport not found")
 	}
 
 	flights = append(flights, &api.Flight{
 		Id:                 len(flights) + 1,
 		Number:             request.Body.Number,
-		OriginAirport:      api.Airport{Id: request.Body.OriginAirport},
-		DestinationAirport: api.Airport{Id: request.Body.DestinationAirport},
+		OriginAirport:      *originAirport,
+		DestinationAirport: *destinationAirport,
 		Published:          request.Body.Published != nil && *request.Body.Published,
 	})
 	return api.CreateFlight201Response{}, nil
