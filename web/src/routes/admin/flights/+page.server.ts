@@ -3,28 +3,28 @@ import { fail } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async () => {
-	const flights = (await apiClient.GET('/flights', { fetch })).data!
+	const flights = apiClient.GET('/flights', { fetch }).then((resp) => resp.data)
 	return {
-		flights
+		flights: await flights
 	}
 }
 
 export const actions: Actions = {
 	create: async ({ request }) => {
 		const data = await request.formData()
-		const title = data.get('title')
-		if (title === null || typeof title !== 'string') {
+		const number = data.get('number')
+		if (number === null || typeof number !== 'string') {
 			return fail(400, {
-				title,
-				error: 'title is required'
+				number,
+				error: 'flight number is required'
 			})
 		}
 
-		const resp = await apiClient.POST('/flights', { body: { title }, fetch })
+		const resp = await apiClient.POST('/flights', { body: { number }, fetch })
 		if (!resp.response.ok) {
 			// TODO(sqs)
 			return fail(422, {
-				title,
+				number,
 				error: await resp.response.text()
 			})
 		}
@@ -32,13 +32,15 @@ export const actions: Actions = {
 
 	setFlightPublished: async ({ request }) => {
 		const data = await request.formData()
-		const id = data.get('id')
-		if (!id || typeof id !== 'string') {
+		const idStr = data.get('id')
+		if (!idStr || typeof idStr !== 'string') {
 			return fail(400, {
-				id,
+				id: idStr,
 				error: 'id is required'
 			})
 		}
+		const id = Number.parseInt(idStr)
+
 		const publishedStr = data.get('published')
 		if (publishedStr !== 'true' && publishedStr !== 'false') {
 			return fail(400, {
@@ -64,12 +66,13 @@ export const actions: Actions = {
 
 	delete: async ({ request }) => {
 		const data = await request.formData()
-		const id = data.get('id')
-		if (!id || typeof id !== 'string') {
+		const idStr = data.get('id')
+		if (!idStr || typeof idStr !== 'string') {
 			return fail(400, {
 				error: 'id is required'
 			})
 		}
+		const id = Number.parseInt(idStr)
 
 		const resp = await apiClient.DELETE('/flights/{id}', {
 			params: { path: { id } },
