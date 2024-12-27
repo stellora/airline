@@ -122,6 +122,7 @@ export interface components {
         airportSpec: number | string;
         Airport: {
             id: number;
+            name: string;
             iataCode: string;
         };
         Flight: {

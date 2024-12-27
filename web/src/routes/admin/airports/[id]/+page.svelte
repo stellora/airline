@@ -11,6 +11,7 @@
 	<div class="flex items-center gap-4">
 		<Button variant="outline" href="/admin/airports">← Back</Button>
 		<h1 class="text-2xl font-bold">{data.airport.iataCode}</h1>
+		<p class="text-muted-foreground">{data.airport.name}</p>
 	</div>
 
 	<Card>
