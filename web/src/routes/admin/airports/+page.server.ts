@@ -1,6 +1,7 @@
 import { apiClient } from '$lib/api'
 import { fail } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
+import { breadcrumbEntry } from '../admin-breadcrumb'
 
 export const load: PageServerLoad = async () => {
 	return {

@@ -1,5 +1,6 @@
 import { apiClient } from '$lib/api'
 import { error, fail, redirect } from '@sveltejs/kit'
+import { breadcrumbEntry } from '../../admin-breadcrumb'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params, parent }) => {
@@ -17,7 +18,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 	return {
 		airport,
 		flights,
-		breadcrumbs: [parent().then((parent) => parent.breadcrumbs), airport.iataCode]
+		...(await breadcrumbEntry(parent, airport.iataCode)) // TODO!(sqS): make this a promise
 	}
 }
 
