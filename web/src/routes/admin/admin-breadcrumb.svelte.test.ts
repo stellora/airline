@@ -24,7 +24,7 @@ describe('AdminBreadcrumb', () => {
 		for (const item of ['A', 'B', 'C', 'D', 'E']) {
 			expect(await screen.findByText(item)).toBeInTheDocument()
 		}
-		expect(readBreadcrumbs()).toStrictEqual(['A', 'B', 'C', 'D', 'E'])
+		expect(readBreadcrumbs()).toStrictEqual('A>B>C>D>E')
 	})
 
 	it('renders separators between items except last', async () => {
@@ -40,10 +40,7 @@ function readBreadcrumbs(): string {
 	const root = screen.getByRole('navigation', { name: 'breadcrumb' })
 	const items = root.querySelectorAll('li')
 	for (const item of items) {
-		if (
-			item.firstElementChild instanceof HTMLElement &&
-			item.firstElementChild.dataset.testid === 'breadcrumb-ellipsis'
-		) {
+		if (item.dataset.testid === 'breadcrumb-ellipsis') {
 			labels.push('...')
 		} else if (item.role === 'separator') {
 			labels.push('>')
