@@ -6,8 +6,10 @@
 # Install dependencies and verify tests pass.
 pnpm -C web install
 pnpm -C web test
+(cd api-server && go test ./...)
 
-# Start a dev server.
+# Start a dev server by running both commands in separate windows:
+(cd api-server && go run .)
 pnpm -C web dev
 ```
 
