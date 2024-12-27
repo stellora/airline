@@ -58,7 +58,7 @@
 	]
 </script>
 
-<Sidebar.Root collapsible="offcanvas" variant="inset">
+<Sidebar.Root collapsible="offcanvas" variant="sidebar">
 	<Sidebar.Content>
 		<Sidebar.Group>
 			<Sidebar.GroupLabel>Stellora Airlines</Sidebar.GroupLabel>
