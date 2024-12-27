@@ -19,7 +19,7 @@
 	} = $props()
 </script>
 
-<svelte:element this={as} class={cn(className, 'flex items-baseline gap-1.5')}>
+<svelte:element this={as} class={cn(className, 'flex items-baseline gap-1.5 font-mono')}>
 	<span
 		class={{
 			'underline decoration-dotted decoration-2 decoration-muted-foreground italic text-muted-foreground':

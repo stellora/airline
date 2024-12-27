@@ -3,7 +3,6 @@
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
-	import X from 'lucide-svelte/icons/x'
 
 	let { data } = $props()
 </script>
@@ -25,32 +24,11 @@
 				{#if flights && flights.length > 0}
 					<ul
 						class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4"
-						data-testid="flights-in-airport"
+						data-testid="flights-to-from-airport"
 					>
 						{#each flights as flight (flight.id)}
 							<li class="p-3 border rounded-md flex items-center justify-between gap-2">
 								<FlightTitle class="w-full" link {flight} />
-								<form
-									method="POST"
-									action="?/setFlightInAirport"
-									use:enhance={({ cancel }) => {
-										if (!confirm('Really remove from airport?')) {
-											cancel()
-										}
-									}}
-								>
-									<input type="hidden" name="airport" value={data.airport.id} />
-									<input type="hidden" name="flight" value={flight.id} />
-									<input type="hidden" name="value" value="false" />
-									<Button
-										type="submit"
-										variant="ghost"
-										size="iconSm"
-										aria-label="Remove from airport"
-									>
-										<X />
-									</Button>
-								</form>
 							</li>
 						{/each}
 					</ul>

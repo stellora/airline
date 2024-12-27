@@ -26,22 +26,8 @@ test('add and delete airport', async ({ page }) => {
 
 test('airport detail page', async ({ page }) => {
 	await page.goto('/admin/airports')
-	await page.getByRole('link', { name: 'AMS' }).click()
+	await page.getByRole('link', { name: 'SFO' }).click()
 
-	await expect(page.getByText('AMS')).toBeVisible()
-
-	// Add flight to airport
-	const select = page.locator('select[name="flight"]')
-	await select.selectOption({ label: 'Fork' })
-	await page.getByRole('button', { name: 'Add flight to airport' }).click()
-	await expect(page.getByTestId('flights-in-airport')).toContainText('Fork')
-
-	// Remove flight from airport
-	const removeButton = page
-		.getByTestId('flights-in-airport')
-		.locator('li', { hasText: 'Fork' })
-		.getByRole('button', { name: 'Remove from airport' })
-	page.on('dialog', (dialog) => dialog.accept())
-	await removeButton.click()
-	await expect(page.getByTestId('flights-by-airport')).not.toContainText('Fork')
+	await expect(page.getByText('SFO')).toBeVisible()
+	await expect(page.getByTestId('flights-to-from-airport')).toContainText('UA1')
 })
