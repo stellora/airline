@@ -48,6 +48,10 @@ paths:
       responses:
         '201':
           description: Airport created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
         '400':
           description: Invalid request
     delete:
@@ -94,10 +98,14 @@ paths:
                 iataCode:
                   type: string                
       responses:
-        '204':
-          description: Flight updated
+        '200':
+          description: Airport updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
         '404':
-          description: Flight not found
+          description: Airport not found
     delete:
       operationId: deleteAirport
       summary: Delete an airport
@@ -170,6 +178,10 @@ paths:
       responses:
         '201':
           description: Flight created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
         '400':
           description: Invalid request
     delete:
@@ -222,8 +234,12 @@ paths:
                 published:
                   type: boolean
       responses:
-        '204':
+        '200':
           description: Flight updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
         '404':
           description: Flight not found
     delete:

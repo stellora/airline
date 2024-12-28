@@ -83,11 +83,12 @@ func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRe
 	if info := extdata.Airports.AirportByIATACode(request.Body.IataCode); info != nil {
 		params.OadbID = sql.NullInt64{Int64: int64(info.Airport.ID), Valid: true}
 	}
-	if _, err := h.queries.CreateAirport(ctx, params); err != nil {
+	created, err := h.queries.CreateAirport(ctx, params)
+	if err != nil {
 		log.Println(err) // TODO(sqs): return error
 		return api.CreateAirport400Response{}, nil
 	}
-	return api.CreateAirport201Response{}, nil
+	return api.CreateAirport201JSONResponse(fromDBAirport(created)), nil
 }
 
 func (h *Handler) UpdateAirport(ctx context.Context, request api.UpdateAirportRequestObject) (api.UpdateAirportResponseObject, error) {
@@ -98,13 +99,14 @@ func (h *Handler) UpdateAirport(ctx context.Context, request api.UpdateAirportRe
 		params.IataCode = sql.NullString{String: *request.Body.IataCode, Valid: true}
 	}
 
-	if _, err := h.queries.UpdateAirport(ctx, params); err != nil {
+	updated, err := h.queries.UpdateAirport(ctx, params)
+	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateAirport404Response{}, nil
 		}
 		return nil, err
 	}
-	return api.UpdateAirport204Response{}, nil
+	return api.UpdateAirport200JSONResponse(fromDBAirport(updated)), nil
 }
 
 func (h *Handler) DeleteAirport(ctx context.Context, request api.DeleteAirportRequestObject) (api.DeleteAirportResponseObject, error) {

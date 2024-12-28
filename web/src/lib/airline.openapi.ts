@@ -214,7 +214,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Airport"];
+                };
             };
             /** @description Invalid request */
             400: {
@@ -316,14 +318,16 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Flight updated */
-            204: {
+            /** @description Airport updated */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Airport"];
+                };
             };
-            /** @description Flight not found */
+            /** @description Airport not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -398,7 +402,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Flight"];
+                };
             };
             /** @description Invalid request */
             400: {
@@ -504,11 +510,13 @@ export interface operations {
         };
         responses: {
             /** @description Flight updated */
-            204: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Flight"];
+                };
             };
             /** @description Flight not found */
             404: {

@@ -38,7 +38,7 @@ INSERT INTO flights (
 ) VALUES (
   ?, ?, ?, ?
 )
-RETURNING id, number, origin_airport_id, destination_airport_id, published
+RETURNING id
 `
 
 type CreateFlightParams struct {
@@ -48,22 +48,16 @@ type CreateFlightParams struct {
 	Published            bool
 }
 
-func (q *Queries) CreateFlight(ctx context.Context, arg CreateFlightParams) (Flight, error) {
+func (q *Queries) CreateFlight(ctx context.Context, arg CreateFlightParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createFlight,
 		arg.Number,
 		arg.OriginAirportID,
 		arg.DestinationAirportID,
 		arg.Published,
 	)
-	var i Flight
-	err := row.Scan(
-		&i.ID,
-		&i.Number,
-		&i.OriginAirportID,
-		&i.DestinationAirportID,
-		&i.Published,
-	)
-	return i, err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const deleteAirport = `-- name: DeleteAirport :exec
@@ -266,7 +260,7 @@ const updateAirport = `-- name: UpdateAirport :one
 UPDATE airports SET
 iata_code = COALESCE(?2, iata_code)
 WHERE id=?
-RETURNING id
+RETURNING id, iata_code, oadb_id
 `
 
 type UpdateAirportParams struct {
@@ -274,11 +268,11 @@ type UpdateAirportParams struct {
 	ID       int64
 }
 
-func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) (int64, error) {
+func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) (Airport, error) {
 	row := q.db.QueryRowContext(ctx, updateAirport, arg.IataCode, arg.ID)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+	var i Airport
+	err := row.Scan(&i.ID, &i.IataCode, &i.OadbID)
+	return i, err
 }
 
 const updateFlight = `-- name: UpdateFlight :one

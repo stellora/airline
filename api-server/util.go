@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/stellora/airline/api-server/db"
+	"github.com/stellora/airline/api-server/api"
 )
 
 func mapSlice[T any, U any](fn func(T) U, slice []T) []U {
@@ -23,41 +23,36 @@ func parseFlightTitle(title string) (flightNumber, originIATACode, destinationIA
 	return
 }
 
-func insertAirportsWithIATACodes(ctx context.Context, queries *db.Queries, iataCodes ...string) (ids []int64, err error) {
-	ids = make([]int64, len(iataCodes))
+func insertAirportsWithIATACodes(ctx context.Context, handler *Handler, iataCodes ...string) (ids []int, err error) {
+	ids = make([]int, len(iataCodes))
 	for i, iataCode := range iataCodes {
-		v, err := queries.CreateAirport(context.Background(), db.CreateAirportParams{IataCode: iataCode})
-		if err != nil {
-			return nil, err
-		}
-		ids[i] = v.ID
-	}
-	return ids, nil
-}
-
-func insertFlights(ctx context.Context, queries *db.Queries, flightTitles ...string) (ids []int64, err error) {
-	ids = make([]int64, len(flightTitles))
-	for i, flight := range flightTitles {
-		flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
-
-		originAirport, err := queries.GetAirportByIATACode(ctx, originIATACode)
-		if err != nil {
-			return nil, err
-		}
-		destinationAirport, err := queries.GetAirportByIATACode(ctx, destinationIATACode)
-		if err != nil {
-			return nil, err
-		}
-
-		v, err := queries.CreateFlight(ctx, db.CreateFlightParams{
-			Number:               flightNumber,
-			OriginAirportID:      originAirport.ID,
-			DestinationAirportID: destinationAirport.ID,
+		v, err := handler.CreateAirport(ctx, api.CreateAirportRequestObject{
+			Body: &api.CreateAirportJSONRequestBody{IataCode: iataCode},
 		})
 		if err != nil {
 			return nil, err
 		}
-		ids[i] = v.ID
+		ids[i] = v.(api.CreateAirport201JSONResponse).Id
+	}
+	return ids, nil
+}
+
+func insertFlights(ctx context.Context, handler *Handler, flightTitles ...string) (ids []int, err error) {
+	ids = make([]int, len(flightTitles))
+	for i, flight := range flightTitles {
+		flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
+
+		v, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
+			Body: &api.CreateFlightJSONRequestBody{
+				Number:             flightNumber,
+				OriginAirport:      newAirportSpec(0, originIATACode),
+				DestinationAirport: newAirportSpec(0, destinationIATACode),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+		ids[i] = v.(api.CreateFlight201JSONResponse).Id
 	}
 	return ids, nil
 }

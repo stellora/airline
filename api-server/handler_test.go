@@ -20,18 +20,18 @@ func ptrTo[T any](v T) *T {
 	return &v
 }
 
-func insertAirportsWithIATACodesT(t *testing.T, queries *db.Queries, iataCodes ...string) (ids []int64) {
+func insertAirportsWithIATACodesT(t *testing.T, handler *Handler, iataCodes ...string) (ids []int) {
 	t.Helper()
-	ids, err := insertAirportsWithIATACodes(context.Background(), queries, iataCodes...)
+	ids, err := insertAirportsWithIATACodes(context.Background(), handler, iataCodes...)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return ids
 }
 
-func insertFlightsT(t *testing.T, queries *db.Queries, flightTitles ...string) (ids []int64) {
+func insertFlightsT(t *testing.T, handler *Handler, flightTitles ...string) (ids []int) {
 	t.Helper()
-	ids, err := insertFlights(context.Background(), queries, flightTitles...)
+	ids, err := insertFlights(context.Background(), handler, flightTitles...)
 	if err != nil {
 		t.Fatal(err)
 	}

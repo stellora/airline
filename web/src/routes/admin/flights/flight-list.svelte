@@ -27,7 +27,9 @@
 						<Table.Cell
 							><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
 								airport={flight.destinationAirport}
-							/></Table.Cell
+							/>
+							<span class="text-muted-foreground">{Math.round(flight.distanceMiles)}mi</span
+							></Table.Cell
 						>
 						<Table.Cell class="text-right">
 							<Button

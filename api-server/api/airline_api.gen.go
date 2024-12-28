@@ -657,12 +657,13 @@ type CreateAirportResponseObject interface {
 	VisitCreateAirportResponse(w http.ResponseWriter) error
 }
 
-type CreateAirport201Response struct {
-}
+type CreateAirport201JSONResponse Airport
 
-func (response CreateAirport201Response) VisitCreateAirportResponse(w http.ResponseWriter) error {
+func (response CreateAirport201JSONResponse) VisitCreateAirportResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type CreateAirport400Response struct {
@@ -731,12 +732,13 @@ type UpdateAirportResponseObject interface {
 	VisitUpdateAirportResponse(w http.ResponseWriter) error
 }
 
-type UpdateAirport204Response struct {
-}
+type UpdateAirport200JSONResponse Airport
 
-func (response UpdateAirport204Response) VisitUpdateAirportResponse(w http.ResponseWriter) error {
-	w.WriteHeader(204)
-	return nil
+func (response UpdateAirport200JSONResponse) VisitUpdateAirportResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type UpdateAirport404Response struct {
@@ -803,12 +805,13 @@ type CreateFlightResponseObject interface {
 	VisitCreateFlightResponse(w http.ResponseWriter) error
 }
 
-type CreateFlight201Response struct {
-}
+type CreateFlight201JSONResponse Flight
 
-func (response CreateFlight201Response) VisitCreateFlightResponse(w http.ResponseWriter) error {
+func (response CreateFlight201JSONResponse) VisitCreateFlightResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type CreateFlight400Response struct {
@@ -877,12 +880,13 @@ type UpdateFlightResponseObject interface {
 	VisitUpdateFlightResponse(w http.ResponseWriter) error
 }
 
-type UpdateFlight204Response struct {
-}
+type UpdateFlight200JSONResponse Flight
 
-func (response UpdateFlight204Response) VisitUpdateFlightResponse(w http.ResponseWriter) error {
-	w.WriteHeader(204)
-	return nil
+func (response UpdateFlight200JSONResponse) VisitUpdateFlightResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type UpdateFlight404Response struct {

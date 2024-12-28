@@ -25,7 +25,7 @@ RETURNING *;
 UPDATE airports SET
 iata_code = COALESCE(sqlc.narg('iata_code'), iata_code)
 WHERE id=?
-RETURNING id;
+RETURNING *;
 
 -- name: DeleteAirport :exec
 DELETE FROM airports
@@ -50,7 +50,7 @@ INSERT INTO flights (
 ) VALUES (
   ?, ?, ?, ?
 )
-RETURNING *;
+RETURNING id;
 
 -- name: UpdateFlight :one
 UPDATE flights SET

@@ -76,15 +76,21 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 		return nil, fmt.Errorf("looking up destinationAirport: %w", err)
 	}
 
-	if _, err := h.queries.CreateFlight(ctx, db.CreateFlightParams{
+	created, err := h.queries.CreateFlight(ctx, db.CreateFlightParams{
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
 		DestinationAirportID: destinationAirport.ID,
 		Published:            request.Body.Published != nil && *request.Body.Published,
-	}); err != nil {
+	})
+	if err != nil {
 		return nil, err
 	}
-	return api.CreateFlight201Response{}, nil
+
+	flight, err := h.queries.GetFlight(ctx, created)
+	if err != nil {
+		return nil, err
+	}
+	return api.CreateFlight201JSONResponse(fromDBFlight(flight)), nil
 }
 
 func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequestObject) (api.UpdateFlightResponseObject, error) {
@@ -110,7 +116,15 @@ func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequ
 		}
 		return nil, err
 	}
-	return api.UpdateFlight204Response{}, nil
+
+	flight, err := h.queries.GetFlight(ctx, int64(request.Id))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.UpdateFlight404Response{}, nil
+		}
+		return nil, err
+	}
+	return api.UpdateFlight200JSONResponse(fromDBFlight(flight)), nil
 }
 
 func (h *Handler) DeleteFlight(ctx context.Context, request api.DeleteFlightRequestObject) (api.DeleteFlightResponseObject, error) {

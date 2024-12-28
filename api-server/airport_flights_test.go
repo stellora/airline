@@ -9,8 +9,8 @@ import (
 
 func TestListFlightsByAirport(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	insertAirportsWithIATACodesT(t, handler.queries, "AAA", "BBB", "CCC")
-	insertFlightsT(t, handler.queries, "ST1 AAA-BBB", "ST2 BBB-AAA", "ST3 CCC-BBB")
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
+	insertFlightsT(t, handler, "ST1 AAA-BBB", "ST2 BBB-AAA", "ST3 CCC-BBB")
 
 	resp, err := handler.ListFlightsByAirport(ctx, api.ListFlightsByAirportRequestObject{
 		Id: 1,

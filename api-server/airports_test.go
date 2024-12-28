@@ -10,7 +10,7 @@ import (
 
 func TestGetAirport(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	insertAirportsWithIATACodesT(t, handler.queries, "AAA", "BBB")
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 
 	t.Run("exists", func(t *testing.T) {
 		resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
@@ -44,7 +44,7 @@ func TestGetAirport(t *testing.T) {
 
 func TestListAirports(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	ids := insertAirportsWithIATACodesT(t, handler.queries, "AAA", "BBB")
+	ids := insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 
 	resp, err := handler.ListAirports(ctx, api.ListAirportsRequestObject{})
 	if err != nil {
@@ -72,7 +72,10 @@ func TestCreateAirport(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := api.CreateAirport201Response{}
+	want := api.CreateAirport201JSONResponse{
+		Id:       1,
+		IataCode: "AAA",
+	}
 	if !reflect.DeepEqual(want, resp) {
 		t.Errorf("got %v, want %v", resp, want)
 	}
@@ -82,7 +85,7 @@ func TestCreateAirport(t *testing.T) {
 
 func TestDeleteAirport(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	insertAirportsWithIATACodesT(t, handler.queries, "AAA", "BBB")
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 
 	resp, err := handler.DeleteAirport(ctx, api.DeleteAirportRequestObject{
 		Id: 1,
@@ -101,7 +104,7 @@ func TestDeleteAirport(t *testing.T) {
 
 func TestDeleteAllAirports(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	insertAirportsWithIATACodesT(t, handler.queries, "AAA", "BBB")
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 
 	resp, err := handler.DeleteAllAirports(ctx, api.DeleteAllAirportsRequestObject{})
 	if err != nil {
