@@ -118,6 +118,18 @@ func (q *Queries) GetAirport(ctx context.Context, id int64) (Airport, error) {
 	return i, err
 }
 
+const getAirportByIATACode = `-- name: GetAirportByIATACode :one
+SELECT id, iata_code, oadb_id FROM airports
+WHERE iata_code=? LIMIT 1
+`
+
+func (q *Queries) GetAirportByIATACode(ctx context.Context, iataCode string) (Airport, error) {
+	row := q.db.QueryRowContext(ctx, getAirportByIATACode, iataCode)
+	var i Airport
+	err := row.Scan(&i.ID, &i.IataCode, &i.OadbID)
+	return i, err
+}
+
 const getFlight = `-- name: GetFlight :one
 
 SELECT id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id FROM flights_view

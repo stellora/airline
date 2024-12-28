@@ -111,17 +111,16 @@ func (h *Handler) UpdateAirport(ctx context.Context, request api.UpdateAirportRe
 }
 
 func (h *Handler) DeleteAirport(ctx context.Context, request api.DeleteAirportRequestObject) (api.DeleteAirportResponseObject, error) {
-	// Find and remove the airport
-	for i, airport := range airports {
-		if airport.Id == request.Id {
-			airports = append(airports[:i], airports[i+1:]...)
-			break
-		}
+	if err := h.queries.DeleteAirport(ctx, int64(request.Id)); err != nil {
+		// TODO(sqs): check if it was actually deleted
+		return nil, err
 	}
 	return api.DeleteAirport204Response{}, nil
 }
 
 func (h *Handler) DeleteAllAirports(ctx context.Context, request api.DeleteAllAirportsRequestObject) (api.DeleteAllAirportsResponseObject, error) {
-	airports = []*api.Airport{}
+	if err := h.queries.DeleteAllAirports(ctx); err != nil {
+		return nil, err
+	}
 	return api.DeleteAllAirports204Response{}, nil
 }

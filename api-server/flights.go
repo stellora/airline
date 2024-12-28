@@ -122,17 +122,16 @@ func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequ
 }
 
 func (h *Handler) DeleteFlight(ctx context.Context, request api.DeleteFlightRequestObject) (api.DeleteFlightResponseObject, error) {
-	// Find and remove the flight
-	for i, flight := range flights {
-		if flight.Id == request.Id {
-			flights = append(flights[:i], flights[i+1:]...)
-			break
-		}
+	if err := h.queries.DeleteFlight(ctx, int64(request.Id)); err != nil {
+		// TODO(sqs): check if it was actually deleted
+		return nil, err
 	}
 	return api.DeleteFlight204Response{}, nil
 }
 
 func (h *Handler) DeleteAllFlights(ctx context.Context, request api.DeleteAllFlightsRequestObject) (api.DeleteAllFlightsResponseObject, error) {
-	flights = []*api.Flight{}
+	if err := h.queries.DeleteAllFlights(ctx); err != nil {
+		return nil, err
+	}
 	return api.DeleteAllFlights204Response{}, nil
 }

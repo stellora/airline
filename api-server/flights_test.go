@@ -4,10 +4,49 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/db"
 )
+
+// parseFlightNumberAndRoute parses a string of the form "UA123 SFO-JFK".
+func parseFlightNumberAndRoute(str string) (flightNumber, originIATACode, destinationIATACode string) {
+	var route string
+	flightNumber, route, _ = strings.Cut(str, " ")
+	originIATACode, destinationIATACode, _ = strings.Cut(route, "-")
+	return
+}
+
+func insertFlights(t *testing.T, queries *db.Queries, flightsNumberAndRoute ...string) (ids []int64) {
+	t.Helper()
+	ctx := context.Background()
+	ids = make([]int64, len(flightsNumberAndRoute))
+	for i, flight := range flightsNumberAndRoute {
+		flightNumber, originIATACode, destinationIATACode := parseFlightNumberAndRoute(flight)
+
+		originAirport, err := queries.GetAirportByIATACode(ctx, originIATACode)
+		if err != nil {
+			t.Fatal(err)
+		}
+		destinationAirport, err := queries.GetAirportByIATACode(ctx, destinationIATACode)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		v, err := queries.CreateFlight(context.Background(), db.CreateFlightParams{
+			Number:               flightNumber,
+			OriginAirportID:      originAirport.ID,
+			DestinationAirportID: destinationAirport.ID,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		ids[i] = v.ID
+	}
+	return ids
+}
 
 func TestGetFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)

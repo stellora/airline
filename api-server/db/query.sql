@@ -4,6 +4,10 @@
 SELECT * FROM airports
 WHERE id=? LIMIT 1;
 
+-- name: GetAirportByIATACode :one
+SELECT * FROM airports
+WHERE iata_code=? LIMIT 1;
+
 -- name: ListAirports :many
 SELECT * FROM airports
 ORDER BY id ASC;
