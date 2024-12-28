@@ -262,46 +262,52 @@ func (q *Queries) ListFlightsByAirport(ctx context.Context, airport int64) ([]Fl
 	return items, nil
 }
 
-const updateAirport = `-- name: UpdateAirport :exec
+const updateAirport = `-- name: UpdateAirport :one
 UPDATE airports SET
-iata_code=?
+iata_code = COALESCE(?2, iata_code)
 WHERE id=?
+RETURNING id
 `
 
 type UpdateAirportParams struct {
-	IataCode string
+	IataCode sql.NullString
 	ID       int64
 }
 
-func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) error {
-	_, err := q.db.ExecContext(ctx, updateAirport, arg.IataCode, arg.ID)
-	return err
+func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, updateAirport, arg.IataCode, arg.ID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
-const updateFlight = `-- name: UpdateFlight :exec
+const updateFlight = `-- name: UpdateFlight :one
 UPDATE flights SET
-number=?,
-origin_airport_id=?,
-destination_airport_id=?,
-published=?
+number = COALESCE(?2, number),
+origin_airport_id = COALESCE(?3, origin_airport_id),
+destination_airport_id = COALESCE(?4, destination_airport_id),
+published = COALESCE(?5, published)
 WHERE id=?
+RETURNING id
 `
 
 type UpdateFlightParams struct {
-	Number               string
-	OriginAirportID      int64
-	DestinationAirportID int64
-	Published            bool
+	Number               sql.NullString
+	OriginAirportID      sql.NullInt64
+	DestinationAirportID sql.NullInt64
+	Published            sql.NullBool
 	ID                   int64
 }
 
-func (q *Queries) UpdateFlight(ctx context.Context, arg UpdateFlightParams) error {
-	_, err := q.db.ExecContext(ctx, updateFlight,
+func (q *Queries) UpdateFlight(ctx context.Context, arg UpdateFlightParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, updateFlight,
 		arg.Number,
 		arg.OriginAirportID,
 		arg.DestinationAirportID,
 		arg.Published,
 		arg.ID,
 	)
-	return err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }

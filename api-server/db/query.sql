@@ -21,10 +21,11 @@ INSERT INTO airports (
 )
 RETURNING *;
 
--- name: UpdateAirport :exec
+-- name: UpdateAirport :one
 UPDATE airports SET
-iata_code=?
-WHERE id=?;
+iata_code = COALESCE(sqlc.narg('iata_code'), iata_code)
+WHERE id=?
+RETURNING id;
 
 -- name: DeleteAirport :exec
 DELETE FROM airports
@@ -51,13 +52,14 @@ INSERT INTO flights (
 )
 RETURNING *;
 
--- name: UpdateFlight :exec
+-- name: UpdateFlight :one
 UPDATE flights SET
-number=?,
-origin_airport_id=?,
-destination_airport_id=?,
-published=?
-WHERE id=?;
+number = COALESCE(sqlc.narg('number'), number),
+origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
+destination_airport_id = COALESCE(sqlc.narg('destination_airport_id'), destination_airport_id),
+published = COALESCE(sqlc.narg('published'), published)
+WHERE id=?
+RETURNING id;
 
 -- name: DeleteFlight :exec
 DELETE FROM flights

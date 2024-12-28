@@ -12,22 +12,14 @@ import (
 	"github.com/stellora/airline/api-server/extdata"
 )
 
-func getAirport(id int) *api.Airport {
-	panic("TODO!(sqs)")
-}
-
-func getAirportBySpec(spec api.AirportSpec) *api.Airport {
+func getAirportBySpec(ctx context.Context, queries *db.Queries, spec api.AirportSpec) (db.Airport, error) {
 	if id, err := spec.AsAirportSpec0(); err == nil {
-		return getAirport(id)
+		return queries.GetAirport(ctx, int64(id))
 	}
 	if iataCode, err := spec.AsAirportSpec1(); err == nil {
-		for _, airport := range airports {
-			if airport.IataCode == iataCode {
-				return airport
-			}
-		}
+		return queries.GetAirportByIATACode(ctx, iataCode)
 	}
-	return nil
+	panic("invalid AirportSpec")
 }
 
 func newAirportSpec(id int, iataCode string) api.AirportSpec {
@@ -99,13 +91,18 @@ func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRe
 }
 
 func (h *Handler) UpdateAirport(ctx context.Context, request api.UpdateAirportRequestObject) (api.UpdateAirportResponseObject, error) {
-	airport := getAirport(request.Id)
-	if airport == nil {
-		return &api.UpdateAirport404Response{}, nil
+	params := db.UpdateAirportParams{
+		ID: int64(request.Id),
+	}
+	if request.Body.IataCode != nil {
+		params.IataCode = sql.NullString{String: *request.Body.IataCode, Valid: true}
 	}
 
-	if request.Body.IataCode != nil {
-		airport.IataCode = *request.Body.IataCode
+	if _, err := h.queries.UpdateAirport(ctx, params); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.UpdateAirport404Response{}, nil
+		}
+		return nil, err
 	}
 	return api.UpdateAirport204Response{}, nil
 }

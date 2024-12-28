@@ -2,21 +2,14 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
 	"github.com/tidwall/geodesic"
 )
-
-func getFlight(id int) *api.Flight {
-	for _, flight := range flights {
-		if flight.Id == id {
-			return flight
-		}
-	}
-	return nil
-}
 
 func fromDBFlight(a db.FlightsView) api.Flight {
 	b := api.Flight{
@@ -45,35 +38,21 @@ func fromDBFlight(a db.FlightsView) api.Flight {
 }
 
 func (h *Handler) GetFlight(ctx context.Context, request api.GetFlightRequestObject) (api.GetFlightResponseObject, error) {
-	flight := getFlight(request.Id)
-	if flight == nil {
-		return &api.GetFlight404Response{}, nil
+	flight, err := h.queries.GetFlight(ctx, int64(request.Id))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.GetFlight404Response{}, nil
+		}
 	}
-	enrichFlight(flight)
-	return api.GetFlight200JSONResponse(*flight), nil
-}
-
-func copyFlights(flights []*api.Flight) []api.Flight {
-	copies := make([]api.Flight, len(flights))
-	for i, flight := range flights {
-		copies[i] = *flight
-		enrichFlight(&copies[i])
-	}
-	return copies
-}
-
-func enrichFlight(flight *api.Flight) {
-	flight.OriginAirport = *getAirport(flight.OriginAirport.Id)
-	flight.DestinationAirport = *getAirport(flight.DestinationAirport.Id)
-
-	var distanceMeters float64
-	geodesic.WGS84.Inverse(flight.OriginAirport.Point.Latitude, flight.OriginAirport.Point.Longitude, flight.DestinationAirport.Point.Latitude, flight.DestinationAirport.Point.Longitude, &distanceMeters, nil, nil)
-	const metersPerMile = 0.000621371192237334
-	flight.DistanceMiles = distanceMeters * metersPerMile
+	return api.GetFlight200JSONResponse(fromDBFlight(flight)), nil
 }
 
 func (h *Handler) ListFlights(ctx context.Context, request api.ListFlightsRequestObject) (api.ListFlightsResponseObject, error) {
-	return api.ListFlights200JSONResponse(copyFlights(flights)), nil
+	flights, err := h.queries.ListFlights(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return api.ListFlights200JSONResponse(mapSlice(fromDBFlight, flights)), nil
 }
 
 func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequestObject) (api.CreateFlightResponseObject, error) {
@@ -81,42 +60,55 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 		return nil, fmt.Errorf("number must not be empty")
 	}
 
-	originAirport := getAirportBySpec(request.Body.OriginAirport)
-	if originAirport == nil {
-		return nil, fmt.Errorf("originAirport not found")
+	// TODO(sqs): return HTTP 400 errors with error msg
+	originAirport, err := getAirportBySpec(ctx, h.queries, request.Body.OriginAirport)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("originAirport %q not found", request.Body.OriginAirport)
+		}
+		return nil, fmt.Errorf("looking up originAirport: %w", err)
 	}
-	destinationAirport := getAirportBySpec(request.Body.DestinationAirport)
-	if destinationAirport == nil {
-		return nil, fmt.Errorf("destinationAirport not found")
+	destinationAirport, err := getAirportBySpec(ctx, h.queries, request.Body.DestinationAirport)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("destinationAirport %q not found", request.Body.DestinationAirport)
+		}
+		return nil, fmt.Errorf("looking up destinationAirport: %w", err)
 	}
 
-	flights = append(flights, &api.Flight{
-		Id:                 len(flights) + 1,
-		Number:             request.Body.Number,
-		OriginAirport:      *originAirport,
-		DestinationAirport: *destinationAirport,
-		Published:          request.Body.Published != nil && *request.Body.Published,
-	})
+	if _, err := h.queries.CreateFlight(ctx, db.CreateFlightParams{
+		Number:               request.Body.Number,
+		OriginAirportID:      originAirport.ID,
+		DestinationAirportID: destinationAirport.ID,
+		Published:            request.Body.Published != nil && *request.Body.Published,
+	}); err != nil {
+		return nil, err
+	}
 	return api.CreateFlight201Response{}, nil
 }
 
 func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequestObject) (api.UpdateFlightResponseObject, error) {
-	flight := getFlight(request.Id)
-	if flight == nil {
-		return &api.UpdateFlight404Response{}, nil
+	params := db.UpdateFlightParams{
+		ID: int64(request.Id),
 	}
-
 	if request.Body.Number != nil {
-		flight.Number = *request.Body.Number
+		params.Number = sql.NullString{String: *request.Body.Number, Valid: true}
 	}
 	if request.Body.OriginAirport != nil {
-		flight.OriginAirport = api.Airport{Id: *request.Body.OriginAirport}
+		params.OriginAirportID = sql.NullInt64{Int64: int64(*request.Body.OriginAirport), Valid: true}
 	}
 	if request.Body.DestinationAirport != nil {
-		flight.DestinationAirport = api.Airport{Id: *request.Body.DestinationAirport}
+		params.DestinationAirportID = sql.NullInt64{Int64: int64(*request.Body.DestinationAirport), Valid: true}
 	}
 	if request.Body.Published != nil {
-		flight.Published = *request.Body.Published
+		params.Published = sql.NullBool{Bool: *request.Body.Published, Valid: true}
+	}
+
+	if _, err := h.queries.UpdateFlight(ctx, params); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.UpdateFlight404Response{}, nil
+		}
+		return nil, err
 	}
 	return api.UpdateFlight204Response{}, nil
 }

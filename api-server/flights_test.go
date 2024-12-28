@@ -50,14 +50,8 @@ func insertFlights(t *testing.T, queries *db.Queries, flightsNumberAndRoute ...s
 
 func TestGetFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []*api.Flight{
-		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
-		{Id: 2, Number: "ST2", OriginAirport: api.Airport{Id: 2}, DestinationAirport: api.Airport{Id: 1}},
-	}
-	airports = []*api.Airport{
-		{Id: 1, IataCode: "AAA"},
-		{Id: 2, IataCode: "BBB"},
-	}
+	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+	insertFlights(t, handler.queries, "ST1 AAA-BBB", "ST2 BBB-AAA")
 
 	t.Run("exists", func(t *testing.T) {
 		resp, err := handler.GetFlight(ctx, api.GetFlightRequestObject{
