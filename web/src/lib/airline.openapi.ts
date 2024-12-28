@@ -114,6 +114,23 @@ export interface paths {
         patch: operations["updateFlight"];
         trace?: never;
     };
+    "/routes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all routes */
+        get: operations["listRoutes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -142,6 +159,11 @@ export interface components {
             /** Format: double */
             distanceMiles: number;
             published: boolean;
+        };
+        Route: {
+            originAirport: components["schemas"]["Airport"];
+            destinationAirport: components["schemas"]["Airport"];
+            flightsCount: number;
         };
     };
     responses: never;
@@ -524,6 +546,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    listRoutes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of routes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Route"][];
+                };
             };
         };
     };

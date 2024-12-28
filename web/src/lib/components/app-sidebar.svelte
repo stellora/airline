@@ -9,6 +9,7 @@
 	import TicketsPlane from 'lucide-svelte/icons/tickets-plane'
 	import User from 'lucide-svelte/icons/user'
 	import Users from 'lucide-svelte/icons/users'
+	import Waypoints from 'lucide-svelte/icons/waypoints'
 
 	type Item = {
 		title: string
@@ -39,6 +40,11 @@
 			title: 'Flights',
 			url: '/admin/flights',
 			icon: Spline
+		},
+		{
+			title: 'Routes',
+			url: '/admin/routes',
+			icon: Waypoints
 		},
 		{
 			title: 'Airports',
