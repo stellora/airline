@@ -1,5 +1,5 @@
 import { apiClient } from '$lib/api'
-import { fail } from '@sveltejs/kit'
+import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async () => {
@@ -40,12 +40,13 @@ export const actions: Actions = {
 			body: { number, originAirport, destinationAirport },
 			fetch
 		})
-		if (!resp.response.ok) {
+		if (!resp.response.ok || !resp.data) {
 			// TODO(sqs)
 			return fail(422, {
 				number,
 				error: await resp.response.text()
 			})
 		}
+		redirect(303, `/admin/flights/${resp.data.id}`)
 	}
 }

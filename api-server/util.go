@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"strings"
 
 	"github.com/stellora/airline/api-server/api"
@@ -41,12 +42,12 @@ func insertFlights(ctx context.Context, handler *Handler, flightTitles ...string
 	ids = make([]int, len(flightTitles))
 	for i, flight := range flightTitles {
 		flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
-
 		v, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 			Body: &api.CreateFlightJSONRequestBody{
 				Number:             flightNumber,
 				OriginAirport:      newAirportSpec(0, originIATACode),
 				DestinationAirport: newAirportSpec(0, destinationIATACode),
+				Published:          ptrTo(true),
 			},
 		})
 		if err != nil {
@@ -55,4 +56,8 @@ func insertFlights(ctx context.Context, handler *Handler, flightTitles ...string
 		ids[i] = v.(api.CreateFlight201JSONResponse).Id
 	}
 	return ids, nil
+}
+
+func ptrTo[T any](v T) *T {
+	return &v
 }

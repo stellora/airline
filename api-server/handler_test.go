@@ -16,10 +16,6 @@ func handlerTest(t *testing.T) (context.Context, *Handler) {
 	return ctx, NewHandler(db, queries)
 }
 
-func ptrTo[T any](v T) *T {
-	return &v
-}
-
 func insertAirportsWithIATACodesT(t *testing.T, handler *Handler, iataCodes ...string) (ids []int) {
 	t.Helper()
 	ids, err := insertAirportsWithIATACodes(context.Background(), handler, iataCodes...)
