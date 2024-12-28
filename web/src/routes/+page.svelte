@@ -11,7 +11,7 @@
 			{#each data.flights as flight (flight.id)}
 				<FlightCard {flight} />
 			{:else}
-				<p class="text-muted-foreground">No flights yet.</p>
+				<p class="text-muted-foreground">No flights found.</p>
 			{/each}
 		{/if}
 	</div>

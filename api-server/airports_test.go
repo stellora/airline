@@ -6,25 +6,11 @@ import (
 	"testing"
 
 	"github.com/stellora/airline/api-server/api"
-	"github.com/stellora/airline/api-server/db"
 )
-
-func insertAirportsWithIATACodes(t *testing.T, queries *db.Queries, iataCodes ...string) (ids []int64) {
-	t.Helper()
-	ids = make([]int64, len(iataCodes))
-	for i, iataCode := range iataCodes {
-		v, err := queries.CreateAirport(context.Background(), db.CreateAirportParams{IataCode: iataCode})
-		if err != nil {
-			t.Fatal(err)
-		}
-		ids[i] = v.ID
-	}
-	return ids
-}
 
 func TestGetAirport(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+	insertAirportsWithIATACodesT(t, handler.queries, "AAA", "BBB")
 
 	t.Run("exists", func(t *testing.T) {
 		resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
@@ -58,7 +44,7 @@ func TestGetAirport(t *testing.T) {
 
 func TestListAirports(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	ids := insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+	ids := insertAirportsWithIATACodesT(t, handler.queries, "AAA", "BBB")
 
 	resp, err := handler.ListAirports(ctx, api.ListAirportsRequestObject{})
 	if err != nil {
@@ -96,7 +82,7 @@ func TestCreateAirport(t *testing.T) {
 
 func TestDeleteAirport(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+	insertAirportsWithIATACodesT(t, handler.queries, "AAA", "BBB")
 
 	resp, err := handler.DeleteAirport(ctx, api.DeleteAirportRequestObject{
 		Id: 1,
@@ -115,7 +101,7 @@ func TestDeleteAirport(t *testing.T) {
 
 func TestDeleteAllAirports(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+	insertAirportsWithIATACodesT(t, handler.queries, "AAA", "BBB")
 
 	resp, err := handler.DeleteAllAirports(ctx, api.DeleteAllAirportsRequestObject{})
 	if err != nil {

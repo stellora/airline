@@ -2,7 +2,7 @@
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
-	import * as Table from '$lib/components/ui/table/index.js'
+	import * as Table from '$lib/components/ui/table'
 	import AirportForm from './airport-form.svelte'
 
 	let { data, form } = $props()
@@ -43,7 +43,7 @@
 					{/each}
 				</Table.Body>
 			{:else}
-				<Table.Caption>No airports found</Table.Caption>
+				<Table.Caption class="mb-4">No airports found</Table.Caption>
 			{/if}
 		</Table.Root>
 	</Card>
