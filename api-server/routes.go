@@ -9,9 +9,17 @@ import (
 
 func fromDBRoute(a db.ListRoutesRow) api.Route {
 	return api.Route{
-		OriginAirport:      fromDBAirport(a.OriginAirport),
-		DestinationAirport: fromDBAirport(a.DestinationAirport),
-		FlightsCount:       int(a.FlightsCount),
+		OriginAirport: fromDBAirport(db.Airport{
+			ID:       a.OriginAirportID,
+			IataCode: a.OriginAirportIataCode,
+			OadbID:   a.OriginAirportOadbID,
+		}),
+		DestinationAirport: fromDBAirport(db.Airport{
+			ID:       a.DestinationAirportID,
+			IataCode: a.DestinationAirportIataCode,
+			OadbID:   a.DestinationAirportOadbID,
+		}),
+		FlightsCount: int(a.FlightsCount),
 	}
 }
 

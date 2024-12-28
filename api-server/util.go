@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"strings"
 
 	"github.com/stellora/airline/api-server/api"

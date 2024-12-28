@@ -79,6 +79,10 @@ ORDER BY id ASC;
 ------------------------------------------------------------------------------- routes
 
 -- name: ListRoutes :many
-SELECT flights_view.origin_airport_id, flights_view.destination_airport_id, COUNT(*) AS flights_count
+SELECT flights_view.origin_airport_id, flights_view.destination_airport_id,
+  flights_view.origin_airport_iata_code, flights_view.origin_airport_oadb_id,
+  flights_view.destination_airport_iata_code, flights_view.destination_airport_oadb_id,
+  COUNT(*) AS flights_count
 FROM flights_view
-GROUP BY flights_view.origin_airport_id, flights_view.destination_airport_id;
+GROUP BY flights_view.origin_airport_id, flights_view.destination_airport_id
+ORDER BY flights_count DESC, flights_view.origin_airport_id ASC, flights_view.destination_airport_id ASC;

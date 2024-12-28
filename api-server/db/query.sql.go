@@ -258,15 +258,23 @@ func (q *Queries) ListFlightsByAirport(ctx context.Context, airport int64) ([]Fl
 
 const listRoutes = `-- name: ListRoutes :many
 
-SELECT flights_view.origin_airport_id, flights_view.destination_airport_id, COUNT(*) AS flights_count
+SELECT flights_view.origin_airport_id, flights_view.destination_airport_id,
+  flights_view.origin_airport_iata_code, flights_view.origin_airport_oadb_id,
+  flights_view.destination_airport_iata_code, flights_view.destination_airport_oadb_id,
+  COUNT(*) AS flights_count
 FROM flights_view
 GROUP BY flights_view.origin_airport_id, flights_view.destination_airport_id
+ORDER BY flights_count DESC, flights_view.origin_airport_id ASC, flights_view.destination_airport_id ASC
 `
 
 type ListRoutesRow struct {
-	OriginAirportID      int64
-	DestinationAirportID int64
-	FlightsCount         int64
+	OriginAirportID            int64
+	DestinationAirportID       int64
+	OriginAirportIataCode      string
+	OriginAirportOadbID        sql.NullInt64
+	DestinationAirportIataCode string
+	DestinationAirportOadbID   sql.NullInt64
+	FlightsCount               int64
 }
 
 // ----------------------------------------------------------------------------- routes
@@ -279,7 +287,15 @@ func (q *Queries) ListRoutes(ctx context.Context) ([]ListRoutesRow, error) {
 	var items []ListRoutesRow
 	for rows.Next() {
 		var i ListRoutesRow
-		if err := rows.Scan(&i.OriginAirportID, &i.DestinationAirportID, &i.FlightsCount); err != nil {
+		if err := rows.Scan(
+			&i.OriginAirportID,
+			&i.DestinationAirportID,
+			&i.OriginAirportIataCode,
+			&i.OriginAirportOadbID,
+			&i.DestinationAirportIataCode,
+			&i.DestinationAirportOadbID,
+			&i.FlightsCount,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

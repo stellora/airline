@@ -27,7 +27,7 @@ func TestGetFlight(t *testing.T) {
 			Number:             "ST1",
 			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
 			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
-			Published:          false,
+			Published:          true,
 		}
 		if !reflect.DeepEqual(want, resp) {
 			t.Errorf("got %v, want %v", resp, want)
@@ -63,12 +63,14 @@ func TestListFlights(t *testing.T) {
 			Number:             "ST1",
 			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
 			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
+			Published:          true,
 		},
 		api.Flight{
 			Id:                 2,
 			Number:             "ST2",
 			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
 			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
+			Published:          true,
 		},
 	}
 	if !reflect.DeepEqual(want, resp) {

@@ -20,8 +20,8 @@ func TestListFlightsByAirport(t *testing.T) {
 	}
 
 	want := api.ListFlightsByAirport200JSONResponse{
-		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1, IataCode: "AAA"}, DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"}},
-		{Id: 2, Number: "ST2", OriginAirport: api.Airport{Id: 2, IataCode: "BBB"}, DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"}},
+		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1, IataCode: "AAA"}, DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"}, Published: true},
+		{Id: 2, Number: "ST2", OriginAirport: api.Airport{Id: 2, IataCode: "BBB"}, DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"}, Published: true},
 	}
 	if !reflect.DeepEqual(want, resp) {
 		t.Errorf("got %v, want %v", resp, want)
