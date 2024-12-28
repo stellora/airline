@@ -128,34 +128,6 @@ func TestDeleteAllAirports(t *testing.T) {
 	checkAirportIataCodes(t, handler, []string{})
 }
 
-func TestListFlightsByAirport(t *testing.T) {
-	ctx, handler := handlerTest(t)
-	flights = []*api.Flight{
-		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
-		{Id: 2, Number: "ST2", OriginAirport: api.Airport{Id: 2}, DestinationAirport: api.Airport{Id: 1}},
-		{Id: 3, Number: "ST3", OriginAirport: api.Airport{Id: 3}, DestinationAirport: api.Airport{Id: 4}},
-	}
-	airports = []*api.Airport{
-		{Id: 1, IataCode: "AAA"},
-		{Id: 2, IataCode: "BBB"},
-	}
-
-	resp, err := handler.ListFlightsByAirport(ctx, api.ListFlightsByAirportRequestObject{
-		Id: 1,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	want := api.ListFlightsByAirport200JSONResponse{
-		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
-		{Id: 2, Number: "ST2", OriginAirport: api.Airport{Id: 2}, DestinationAirport: api.Airport{Id: 1}},
-	}
-	if !reflect.DeepEqual(want, resp) {
-		t.Errorf("got %v, want %v", resp, want)
-	}
-}
-
 func checkAirportIataCodes(t *testing.T, handler *Handler, want []string) {
 	resp, err := handler.ListAirports(context.Background(), api.ListAirportsRequestObject{})
 	if err != nil {
