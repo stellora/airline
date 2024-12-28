@@ -15,13 +15,13 @@ INSERT INTO airports (
 ) VALUES (
   ?
 )
-RETURNING id, iata_code
+RETURNING id, iata_code, oadb_id
 `
 
 func (q *Queries) CreateAirport(ctx context.Context, iataCode string) (Airport, error) {
 	row := q.db.QueryRowContext(ctx, createAirport, iataCode)
 	var i Airport
-	err := row.Scan(&i.ID, &i.IataCode)
+	err := row.Scan(&i.ID, &i.IataCode, &i.OadbID)
 	return i, err
 }
 
@@ -98,14 +98,14 @@ func (q *Queries) DeleteFlight(ctx context.Context, id int64) error {
 }
 
 const getAirport = `-- name: GetAirport :one
-SELECT id, iata_code FROM airports
+SELECT id, iata_code, oadb_id FROM airports
 WHERE id=? LIMIT 1
 `
 
 func (q *Queries) GetAirport(ctx context.Context, id int64) (Airport, error) {
 	row := q.db.QueryRowContext(ctx, getAirport, id)
 	var i Airport
-	err := row.Scan(&i.ID, &i.IataCode)
+	err := row.Scan(&i.ID, &i.IataCode, &i.OadbID)
 	return i, err
 }
 
@@ -130,7 +130,7 @@ func (q *Queries) GetFlight(ctx context.Context, id int64) (Flight, error) {
 }
 
 const listAirports = `-- name: ListAirports :many
-SELECT id, iata_code FROM airports
+SELECT id, iata_code, oadb_id FROM airports
 ORDER BY id ASC
 `
 
@@ -143,7 +143,7 @@ func (q *Queries) ListAirports(ctx context.Context) ([]Airport, error) {
 	var items []Airport
 	for rows.Next() {
 		var i Airport
-		if err := rows.Scan(&i.ID, &i.IataCode); err != nil {
+		if err := rows.Scan(&i.ID, &i.IataCode, &i.OadbID); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

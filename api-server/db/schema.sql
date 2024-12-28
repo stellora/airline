@@ -10,5 +10,6 @@ CREATE TABLE IF NOT EXISTS flights (
 
 CREATE TABLE IF NOT EXISTS airports (
   id INTEGER PRIMARY KEY,
-  iata_code TEXT NOT NULL
+  iata_code TEXT NOT NULL,
+  oadb_id INTEGER
 );

@@ -4,9 +4,14 @@
 
 package db
 
+import (
+	"database/sql"
+)
+
 type Airport struct {
 	ID       int64
 	IataCode string
+	OadbID   sql.NullInt64
 }
 
 type Flight struct {

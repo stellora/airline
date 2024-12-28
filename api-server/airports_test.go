@@ -6,14 +6,25 @@ import (
 	"testing"
 
 	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/db"
 )
+
+func insertAirportsWithIATACodes(t *testing.T, queries *db.Queries, iataCodes ...string) (ids []int64) {
+	t.Helper()
+	ids = make([]int64, len(iataCodes))
+	for i, iataCode := range iataCodes {
+		v, err := queries.CreateAirport(context.Background(), iataCode)
+		if err != nil {
+			t.Fatal(err)
+		}
+		ids[i] = v.ID
+	}
+	return ids
+}
 
 func TestGetAirport(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	airports = []*api.Airport{
-		{Id: 1, IataCode: "AAA"},
-		{Id: 2, IataCode: "BBB"},
-	}
+	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
 
 	t.Run("exists", func(t *testing.T) {
 		resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
@@ -47,10 +58,7 @@ func TestGetAirport(t *testing.T) {
 
 func TestListAirports(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	airports = []*api.Airport{
-		{IataCode: "AAA"},
-		{IataCode: "BBB"},
-	}
+	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
 
 	resp, err := handler.ListAirports(ctx, api.ListAirportsRequestObject{})
 	if err != nil {
@@ -71,7 +79,7 @@ func TestCreateAirport(t *testing.T) {
 
 	resp, err := handler.CreateAirport(ctx, api.CreateAirportRequestObject{
 		Body: &api.CreateAirportJSONRequestBody{
-			IataCode: "New Airport",
+			IataCode: "AAA",
 		},
 	})
 	if err != nil {
@@ -83,15 +91,12 @@ func TestCreateAirport(t *testing.T) {
 		t.Errorf("got %v, want %v", resp, want)
 	}
 
-	checkAirportIataCodes(t, handler, []string{"New Airport"})
+	checkAirportIATACodes(t, handler, []string{"AAA"})
 }
 
 func TestDeleteAirport(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	airports = []*api.Airport{
-		{Id: 1, IataCode: "AAA"},
-		{Id: 2, IataCode: "BBB"},
-	}
+	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
 
 	resp, err := handler.DeleteAirport(ctx, api.DeleteAirportRequestObject{
 		Id: 1,
@@ -105,14 +110,14 @@ func TestDeleteAirport(t *testing.T) {
 		t.Errorf("got %v, want %v", resp, want)
 	}
 
-	checkAirportIataCodes(t, handler, []string{"BBB"})
+	checkAirportIATACodes(t, handler, []string{"BBB"})
 }
 
 func TestDeleteAllAirports(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	airports = []*api.Airport{
-		{IataCode: "AAA"},
-		{IataCode: "BBB"},
+		{Id: 1, IataCode: "AAA"},
+		{Id: 2, IataCode: "BBB"},
 	}
 
 	resp, err := handler.DeleteAllAirports(ctx, api.DeleteAllAirportsRequestObject{})
@@ -125,10 +130,10 @@ func TestDeleteAllAirports(t *testing.T) {
 		t.Errorf("got %v, want %v", resp, want)
 	}
 
-	checkAirportIataCodes(t, handler, []string{})
+	checkAirportIATACodes(t, handler, []string{})
 }
 
-func checkAirportIataCodes(t *testing.T, handler *Handler, want []string) {
+func checkAirportIATACodes(t *testing.T, handler *Handler, want []string) {
 	resp, err := handler.ListAirports(context.Background(), api.ListAirportsRequestObject{})
 	if err != nil {
 		t.Fatal(err)

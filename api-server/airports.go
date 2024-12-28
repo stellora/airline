@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/db"
 	"github.com/stellora/airline/api-server/extdata"
 )
 
@@ -33,12 +36,33 @@ func getAirportBySpec(spec api.AirportSpec) *api.Airport {
 	return nil
 }
 
-func (h *Handler) GetAirport(ctx context.Context, request api.GetAirportRequestObject) (api.GetAirportResponseObject, error) {
-	airport := getAirport(request.Id)
-	if airport == nil {
-		return &api.GetAirport404Response{}, nil
+func fromDBAirport(a db.Airport) api.Airport {
+	b := api.Airport{
+		Id:       int(a.ID),
+		IataCode: a.IataCode,
 	}
-	return api.GetAirport200JSONResponse(*airport), nil
+	if a.OadbID.Valid {
+		info := extdata.Airports.AirportByOAID(int(a.OadbID.Int64))
+		b.Name = info.Airport.Name
+		b.Country = string(info.Country.Code)
+		b.Region = info.Region.Name
+		b.Point = api.Point{
+			Latitude:  info.Airport.LatitudeDeg,
+			Longitude: info.Airport.LongitudeDeg,
+		}
+	}
+	// TODO(sqs): handle case where there is no oadb_id or the OA database has no airport with the ID
+	return b
+}
+
+func (h *Handler) GetAirport(ctx context.Context, request api.GetAirportRequestObject) (api.GetAirportResponseObject, error) {
+	airport, err := h.queries.GetAirport(ctx, int64(request.Id))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.GetAirport404Response{}, nil
+		}
+	}
+	return api.GetAirport200JSONResponse(fromDBAirport(airport)), nil
 }
 
 func copyAirports(airports []*api.Airport) []api.Airport {

@@ -69,3 +69,50 @@ type AirportsDataset struct {
 	Regions   map[ISORegion]Region
 	Airports  []Airport
 }
+
+type AirportInfo struct {
+	Airport Airport
+	Region  Region
+	Country Country
+}
+
+// AirportByOAID returns the airport with the given ourairports.com ID (the (Airport).ID value).
+func (db *AirportsDataset) AirportByOAID(oaID int) *AirportInfo {
+	// TODO(sqs): use binary search
+	for _, a := range db.Airports {
+		if a.ID == oaID {
+			info := db.AirportInfo(a)
+			return &info
+		}
+	}
+	return nil
+}
+
+// AirportByOAID returns the airport with the given IATA code (the (Airport).IATACode value).
+func (db *AirportsDataset) AirportByIATACode(iataCode string) *AirportInfo {
+	for _, a := range db.Airports {
+		if a.IATACode == iataCode {
+			info := db.AirportInfo(a)
+			return &info
+		}
+	}
+	return nil
+}
+
+func (db *AirportsDataset) AirportInfo(airport Airport) AirportInfo {
+	region, ok := db.Regions[airport.ISORegion]
+	if !ok {
+		panic("region not found: " + airport.ISORegion)
+	}
+
+	country, ok := db.Countries[airport.ISOCountry]
+	if !ok {
+		panic("country not found: " + airport.ISOCountry)
+	}
+
+	return AirportInfo{
+		Airport: airport,
+		Region:  region,
+		Country: country,
+	}
+}

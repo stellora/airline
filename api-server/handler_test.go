@@ -4,18 +4,16 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/db"
 )
 
 func handlerTest(t *testing.T) (context.Context, *Handler) {
-	clearDatabase()
-	t.Cleanup(clearDatabase)
-	return context.Background(), NewHandler(nil, nil)
-}
-
-func clearDatabase() {
-	flights = []*api.Flight{}
-	airports = []*api.Airport{}
+	ctx := context.Background()
+	db, queries, err := db.Open(ctx, ":memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return ctx, NewHandler(db, queries)
 }
 
 func ptrTo[T any](v T) *T {
