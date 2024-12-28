@@ -1,15 +1,15 @@
 import { render, screen } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
-import AdminBreadcrumb from './admin-breadcrumb.svelte'
+import Breadcrumbs from './breadcrumbs.svelte'
 
-describe('AdminBreadcrumb', () => {
+describe('Breadcrumbs', () => {
 	it('renders breadcrumbs correctly', async () => {
-		render(AdminBreadcrumb, { props: { entries: ['A', 'B', 'C'] } })
+		render(Breadcrumbs, { props: { entries: ['A', 'B', 'C'] } })
 		expect(readBreadcrumbs()).toStrictEqual('A>B>C')
 	})
 
 	it('renders loading state for async breadcrumbs', () => {
-		render(AdminBreadcrumb, {
+		render(Breadcrumbs, {
 			props: { entries: [Promise.resolve('A'), Promise.resolve('B')] }
 		})
 		expect(screen.getAllByTestId('breadcrumb-ellipsis')).toHaveLength(2)
@@ -17,7 +17,7 @@ describe('AdminBreadcrumb', () => {
 	})
 
 	it('renders mixed sync and async breadcrumbs', async () => {
-		render(AdminBreadcrumb, {
+		render(Breadcrumbs, {
 			props: { entries: ['A', Promise.resolve([Promise.resolve(['B', 'C']), 'D']), 'E'] }
 		})
 
@@ -29,7 +29,7 @@ describe('AdminBreadcrumb', () => {
 
 	it('renders separators between items except last', async () => {
 		const entries = ['A', 'B', 'C']
-		render(AdminBreadcrumb, { props: { entries } })
+		render(Breadcrumbs, { props: { entries } })
 		const separators = screen.getAllByRole('separator', { hidden: true })
 		expect(separators).toHaveLength(entries.length - 1)
 	})

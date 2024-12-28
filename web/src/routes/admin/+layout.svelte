@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state'
-	import AdminBreadcrumb from './admin-breadcrumb.svelte'
+	import { Breadcrumbs } from '$lib/components/breadcrumbs'
 
 	let { children } = $props()
 </script>
 
-<AdminBreadcrumb entries={page.data.breadcrumbs} />
+<Breadcrumbs entries={page.data.breadcrumbs} />
 {@render children?.()}
