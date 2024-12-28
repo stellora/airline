@@ -1,19 +1,25 @@
 import { apiClient } from '$lib/api'
 import { breadcrumbEntry } from '$lib/components/breadcrumbs'
+import { flightTitle } from '$lib/flight-helpers'
 import { error } from '@sveltejs/kit'
 import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ params, parent }) => {
 	const id = Number.parseInt(params.id)
-	const airport = (await apiClient.GET('/airports/{id}', { params: { path: { id } }, fetch })).data
-	if (!airport) {
-		error(404)
+	const resp = await apiClient.GET('/flights/{id}', {
+		params: { path: { id } },
+		fetch
+	})
+	if (!resp.response.ok || !resp.data) {
+		// TODO(sqs)
+		throw error(404, 'Flight not found')
 	}
+	const flight = resp.data
 	return {
-		airport,
+		flight,
 		...(await breadcrumbEntry(parent, {
-			url: `/admin/airports/${airport.id}`,
-			title: airport.iataCode
+			url: `/admin/flights/${flight.id}`,
+			title: flightTitle(flight)
 		}))
 	}
 }

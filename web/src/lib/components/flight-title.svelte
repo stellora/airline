@@ -8,6 +8,7 @@
 		flight,
 		link = false,
 		class: className,
+		subtitleClass,
 		as = 'h2'
 	}: {
 		flight: Pick<Flight, 'id' | 'number' | 'published'> & {
@@ -16,6 +17,7 @@
 		}
 		link?: boolean
 		class?: HTMLAttributes<never>['class']
+		subtitleClass?: HTMLAttributes<never>['class']
 		as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'span'
 	} = $props()
 </script>
@@ -35,7 +37,7 @@
 		{/if}
 	</span>
 
-	<span class="text-muted-foreground text-sm whitespace-nowrap"
+	<span class={cn('text-muted-foreground text-sm whitespace-nowrap', subtitleClass)}
 		><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
 			airport={flight.destinationAirport}
 		/></span

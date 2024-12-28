@@ -9,8 +9,12 @@
 
 <div class="flex flex-col gap-4 items-stretch w-full">
 	<div class="flex items-center gap-4">
-		<Button variant="outline" href="/admin/flights">← Back</Button>
-		<FlightTitle flight={data.flight} class="text-2xl font-bold" as="h1" />
+		<FlightTitle
+			flight={data.flight}
+			class="text-4xl font-bold"
+			subtitleClass="text-base"
+			as="h1"
+		/>
 	</div>
 
 	<p class="text-muted-foreground">{Math.round(data.flight.distanceMiles)} miles</p>

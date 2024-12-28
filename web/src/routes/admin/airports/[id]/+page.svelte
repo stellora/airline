@@ -8,9 +8,8 @@
 </script>
 
 <div class="flex flex-col gap-4 items-stretch w-full">
-	<div class="flex items-center gap-4">
-		<Button variant="outline" href="/admin/airports">← Back</Button>
-		<h1 class="text-2xl font-bold">{data.airport.iataCode}</h1>
+	<div class="flex items-baseline gap-2">
+		<h1 class="text-4xl font-bold font-mono">{data.airport.iataCode}</h1>
 		<p class="text-muted-foreground">{data.airport.name}</p>
 	</div>
 

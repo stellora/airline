@@ -1,20 +1,9 @@
 import { apiClient } from '$lib/api'
-import { error, fail, redirect } from '@sveltejs/kit'
+import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
-	const id = Number.parseInt(params.id)
-	const resp = await apiClient.GET('/flights/{id}', {
-		params: { path: { id } },
-		fetch
-	})
-	if (!resp.response.ok || !resp.data) {
-		// TODO(sqs)
-		throw error(404, 'Flight not found')
-	}
-	return {
-		flight: resp.data
-	}
+	return {}
 }
 
 export const actions: Actions = {

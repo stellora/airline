@@ -2,5 +2,5 @@ import { breadcrumbEntry } from '$lib/components/breadcrumbs'
 import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async () => {
-	return { ...(await breadcrumbEntry(null, 'Admin')) }
+	return { ...(await breadcrumbEntry(null, { url: '/admin', title: 'Admin' })) }
 }

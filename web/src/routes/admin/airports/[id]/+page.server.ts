@@ -1,14 +1,9 @@
 import { apiClient } from '$lib/api'
-import { breadcrumbEntry } from '$lib/components/breadcrumbs'
-import { error, fail, redirect } from '@sveltejs/kit'
+import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params, parent }) => {
 	const id = Number.parseInt(params.id)
-	const airport = (await apiClient.GET('/airports/{id}', { params: { path: { id } }, fetch })).data
-	if (!airport) {
-		error(404)
-	}
 	const flights = apiClient
 		.GET('/airports/{id}/flights', {
 			params: { path: { id } },
@@ -16,9 +11,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 		})
 		.then((resp) => resp.data)
 	return {
-		airport,
-		flights,
-		...(await breadcrumbEntry(parent, airport.iataCode))
+		flights
 	}
 }
 

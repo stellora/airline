@@ -1,4 +1,4 @@
-type Item = string
+type Item = string | { url: string; title: string }
 export type BreadcrumbEntry = Item | Promise<Item> | Promise<BreadcrumbEntry[]>
 
 /**
