@@ -1,3 +1,5 @@
+------------------------------------------------------------------------------- airports
+
 -- name: GetAirport :one
 SELECT * FROM airports
 WHERE id=? LIMIT 1;
@@ -8,9 +10,10 @@ ORDER BY id ASC;
 
 -- name: CreateAirport :one
 INSERT INTO airports (
-  iata_code
+  iata_code,
+  oadb_id
 ) VALUES (
-  ?
+  ?, ?
 )
 RETURNING *;
 
@@ -26,19 +29,19 @@ WHERE id=?;
 -- name: DeleteAllAirports :exec
 DELETE FROM airports;
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------------- flights
 
 -- name: GetFlight :one
-SELECT * FROM flights
+SELECT * FROM flights_view
 WHERE id=? LIMIT 1;
 
 -- name: ListFlights :many
-SELECT * FROM flights
+SELECT * FROM flights_view
 ORDER BY id ASC;
 
 -- name: CreateFlight :one
 INSERT INTO flights (
-  number, origin_airport, destination_airport, published
+  number, origin_airport_id, destination_airport_id, published
 ) VALUES (
   ?, ?, ?, ?
 )
@@ -47,8 +50,8 @@ RETURNING *;
 -- name: UpdateFlight :exec
 UPDATE flights SET
 number=?,
-origin_airport=?,
-destination_airport=?,
+origin_airport_id=?,
+destination_airport_id=?,
 published=?
 WHERE id=?;
 
@@ -58,3 +61,11 @@ WHERE id=?;
 
 -- name: DeleteAllFlights :exec
 DELETE FROM flights;
+
+------------------------------------------------------------------------------- airport_flights
+
+-- name: ListFlightsByAirport :many
+SELECT *
+FROM flights_view
+WHERE origin_airport_id=:airport OR destination_airport_id=:airport
+ORDER BY id ASC;

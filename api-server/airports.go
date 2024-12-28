@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
-	"strings"
+	"log"
+	"regexp"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
@@ -13,13 +13,7 @@ import (
 )
 
 func getAirport(id int) *api.Airport {
-	for _, airport := range airports {
-		if airport.Id == id {
-			enrichAirport(airport)
-			return airport
-		}
-	}
-	return nil
+	panic("TODO!(sqs)")
 }
 
 func getAirportBySpec(spec api.AirportSpec) *api.Airport {
@@ -34,6 +28,16 @@ func getAirportBySpec(spec api.AirportSpec) *api.Airport {
 		}
 	}
 	return nil
+}
+
+func newAirportSpec(id int, iataCode string) api.AirportSpec {
+	var spec api.AirportSpec
+	if id != 0 {
+		spec.FromAirportSpec0(id)
+	} else {
+		spec.FromAirportSpec1(iataCode)
+	}
+	return spec
 }
 
 func fromDBAirport(a db.Airport) api.Airport {
@@ -65,46 +69,32 @@ func (h *Handler) GetAirport(ctx context.Context, request api.GetAirportRequestO
 	return api.GetAirport200JSONResponse(fromDBAirport(airport)), nil
 }
 
-func copyAirports(airports []*api.Airport) []api.Airport {
-	copies := make([]api.Airport, len(airports))
-	for i, airport := range airports {
-		copies[i] = *airport
-		enrichAirport(&copies[i])
-	}
-	return copies
-}
-
-func enrichAirport(airport *api.Airport) {
-	airportData := lookupAirport(airport.IataCode)
-	if airportData == nil {
-		return
-	}
-	airport.Name = airportData.Name
-	airport.Point = api.Point{Latitude: airportData.LatitudeDeg, Longitude: airportData.LongitudeDeg}
-	airport.Country = string(airportData.ISOCountry)
-	airport.Region = string(airportData.Municipality)
-}
-
 func (h *Handler) ListAirports(ctx context.Context, request api.ListAirportsRequestObject) (api.ListAirportsResponseObject, error) {
-	return api.ListAirports200JSONResponse(copyAirports(airports)), nil
+	airports, err := h.queries.ListAirports(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return api.ListAirports200JSONResponse(mapSlice(fromDBAirport, airports)), nil
 }
+
+var validIATACode = regexp.MustCompile(`^[A-Z]{3}$`)
 
 func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRequestObject) (api.CreateAirportResponseObject, error) {
-	IataCode := request.Body.IataCode
-	if IataCode == "" {
-		return nil, fmt.Errorf("iataCode must not be empty")
+	if !validIATACode.MatchString(request.Body.IataCode) {
+		log.Println("invalid IATA") // TODO(sqs): return error
+		return api.CreateAirport400Response{}, nil
 	}
 
-	for _, airport := range airports {
-		if airport.IataCode == IataCode {
-			return nil, fmt.Errorf("iataCode must be unique across all airports")
-		}
+	params := db.CreateAirportParams{
+		IataCode: request.Body.IataCode,
 	}
-
-	airports = append(airports, &api.Airport{
-		Id:       len(airports) + 1,
-		IataCode: IataCode,
-	})
+	if info := extdata.Airports.AirportByIATACode(request.Body.IataCode); info != nil {
+		params.OadbID = sql.NullInt64{Int64: int64(info.Airport.ID), Valid: true}
+	}
+	if _, err := h.queries.CreateAirport(ctx, params); err != nil {
+		log.Println(err) // TODO(sqs): return error
+		return api.CreateAirport400Response{}, nil
+	}
 	return api.CreateAirport201Response{}, nil
 }
 
@@ -134,24 +124,4 @@ func (h *Handler) DeleteAirport(ctx context.Context, request api.DeleteAirportRe
 func (h *Handler) DeleteAllAirports(ctx context.Context, request api.DeleteAllAirportsRequestObject) (api.DeleteAllAirportsResponseObject, error) {
 	airports = []*api.Airport{}
 	return api.DeleteAllAirports204Response{}, nil
-}
-
-func newAirportSpec(id int, iataCode string) api.AirportSpec {
-	var spec api.AirportSpec
-	if id != 0 {
-		spec.FromAirportSpec0(id)
-	} else {
-		spec.FromAirportSpec1(iataCode)
-	}
-	return spec
-}
-
-func lookupAirport(iataCode string) *extdata.Airport {
-	iataCode = strings.ToUpper(iataCode)
-	for _, airport := range extdata.Airports.Airports {
-		if airport.IATACode == iataCode {
-			return &airport
-		}
-	}
-	return nil
 }

@@ -9,11 +9,9 @@ import (
 func (h *Handler) ListFlightsByAirport(ctx context.Context, request api.ListFlightsByAirportRequestObject) (api.ListFlightsByAirportResponseObject, error) {
 	airportId := request.Id
 
-	var flightsByAirport []api.Flight
-	for _, flight := range copyFlights(flights) {
-		if flight.OriginAirport.Id == airportId || flight.DestinationAirport.Id == airportId {
-			flightsByAirport = append(flightsByAirport, flight)
-		}
+	flights, err := h.queries.ListFlightsByAirport(ctx, int64(airportId))
+	if err != nil {
+		return nil, err
 	}
-	return api.ListFlightsByAirport200JSONResponse(flightsByAirport), nil
+	return api.ListFlightsByAirport200JSONResponse(mapSlice(fromDBFlight, flights)), nil
 }

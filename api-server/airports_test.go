@@ -13,7 +13,7 @@ func insertAirportsWithIATACodes(t *testing.T, queries *db.Queries, iataCodes ..
 	t.Helper()
 	ids = make([]int64, len(iataCodes))
 	for i, iataCode := range iataCodes {
-		v, err := queries.CreateAirport(context.Background(), iataCode)
+		v, err := queries.CreateAirport(context.Background(), db.CreateAirportParams{IataCode: iataCode})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -140,7 +140,7 @@ func checkAirportIATACodes(t *testing.T, handler *Handler, want []string) {
 	}
 	airports := resp.(api.ListAirports200JSONResponse)
 	if len(airports) != len(want) {
-		t.Errorf("got %d airports, want %d", len(airports), len(want))
+		t.Fatalf("got %d airports, want %d", len(airports), len(want))
 	}
 	for i, airport := range airports {
 		if airport.IataCode != want[i] {

@@ -15,9 +15,21 @@ type Airport struct {
 }
 
 type Flight struct {
-	ID                 int64
-	Number             string
-	OriginAirport      int64
-	DestinationAirport int64
-	Published          bool
+	ID                   int64
+	Number               string
+	OriginAirportID      int64
+	DestinationAirportID int64
+	Published            bool
+}
+
+type FlightsView struct {
+	ID                         int64
+	Number                     string
+	OriginAirportID            int64
+	DestinationAirportID       int64
+	Published                  bool
+	OriginAirportIataCode      string
+	OriginAirportOadbID        sql.NullInt64
+	DestinationAirportIataCode string
+	DestinationAirportOadbID   sql.NullInt64
 }
