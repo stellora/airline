@@ -206,6 +206,9 @@ type ServerInterface interface {
 	// List all routes
 	// (GET /routes)
 	ListRoutes(w http.ResponseWriter, r *http.Request)
+	// Get route by IATA codes of origin and destination airports
+	// (GET /routes/{route})
+	GetRoute(w http.ResponseWriter, r *http.Request, route string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -504,6 +507,31 @@ func (siw *ServerInterfaceWrapper) ListRoutes(w http.ResponseWriter, r *http.Req
 	handler.ServeHTTP(w, r)
 }
 
+// GetRoute operation middleware
+func (siw *ServerInterfaceWrapper) GetRoute(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "route" -------------
+	var route string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "route", r.PathValue("route"), &route, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "route", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetRoute(w, r, route)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -639,6 +667,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("PATCH "+options.BaseURL+"/flights/{id}", wrapper.UpdateFlight)
 	m.HandleFunc("GET "+options.BaseURL+"/health", wrapper.HealthCheck)
 	m.HandleFunc("GET "+options.BaseURL+"/routes", wrapper.ListRoutes)
+	m.HandleFunc("GET "+options.BaseURL+"/routes/{route}", wrapper.GetRoute)
 
 	return m
 }
@@ -956,6 +985,23 @@ func (response ListRoutes200JSONResponse) VisitListRoutesResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetRouteRequestObject struct {
+	Route string `json:"route"`
+}
+
+type GetRouteResponseObject interface {
+	VisitGetRouteResponse(w http.ResponseWriter) error
+}
+
+type GetRoute200JSONResponse Route
+
+func (response GetRoute200JSONResponse) VisitGetRouteResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Delete all airports
@@ -1003,6 +1049,9 @@ type StrictServerInterface interface {
 	// List all routes
 	// (GET /routes)
 	ListRoutes(ctx context.Context, request ListRoutesRequestObject) (ListRoutesResponseObject, error)
+	// Get route by IATA codes of origin and destination airports
+	// (GET /routes/{route})
+	GetRoute(ctx context.Context, request GetRouteRequestObject) (GetRouteResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -1429,6 +1478,32 @@ func (sh *strictHandler) ListRoutes(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ListRoutesResponseObject); ok {
 		if err := validResponse.VisitListRoutesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetRoute operation middleware
+func (sh *strictHandler) GetRoute(w http.ResponseWriter, r *http.Request, route string) {
+	var request GetRouteRequestObject
+
+	request.Route = route
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetRoute(ctx, request.(GetRouteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetRoute")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetRouteResponseObject); ok {
+		if err := validResponse.VisitGetRouteResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

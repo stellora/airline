@@ -256,6 +256,51 @@ func (q *Queries) ListFlightsByAirport(ctx context.Context, airport int64) ([]Fl
 	return items, nil
 }
 
+const listFlightsByRoute = `-- name: ListFlightsByRoute :many
+SELECT id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
+FROM flights_view
+WHERE origin_airport_id=?1 OR destination_airport_id=?2
+ORDER BY id ASC
+`
+
+type ListFlightsByRouteParams struct {
+	OriginAirport      int64
+	DestinationAirport int64
+}
+
+func (q *Queries) ListFlightsByRoute(ctx context.Context, arg ListFlightsByRouteParams) ([]FlightsView, error) {
+	rows, err := q.db.QueryContext(ctx, listFlightsByRoute, arg.OriginAirport, arg.DestinationAirport)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FlightsView
+	for rows.Next() {
+		var i FlightsView
+		if err := rows.Scan(
+			&i.ID,
+			&i.Number,
+			&i.OriginAirportID,
+			&i.DestinationAirportID,
+			&i.Published,
+			&i.OriginAirportIataCode,
+			&i.OriginAirportOadbID,
+			&i.DestinationAirportIataCode,
+			&i.DestinationAirportOadbID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listRoutes = `-- name: ListRoutes :many
 
 SELECT flights_view.origin_airport_id, flights_view.destination_airport_id,

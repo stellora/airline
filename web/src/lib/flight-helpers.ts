@@ -1,5 +1,12 @@
-import type { Flight } from './types'
+import type { Airport, Flight } from './types'
 
 export function flightTitle(flight: Flight): string {
-	return `${flight.number} ${flight.originAirport.iataCode}–${flight.destinationAirport.iataCode}`
+	return `${flight.number} ${flightRoute(flight.originAirport, flight.destinationAirport)}`
+}
+
+export function flightRoute(
+	origin: Pick<Airport, 'iataCode'>,
+	destination: Pick<Airport, 'iataCode'>
+): string {
+	return `${origin.iataCode}–${destination.iataCode}`
 }
