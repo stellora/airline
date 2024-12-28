@@ -256,6 +256,43 @@ func (q *Queries) ListFlightsByAirport(ctx context.Context, airport int64) ([]Fl
 	return items, nil
 }
 
+const listRoutes = `-- name: ListRoutes :many
+
+SELECT flights_view.origin_airport_id, flights_view.destination_airport_id, COUNT(*) AS flights_count
+FROM flights_view
+GROUP BY flights_view.origin_airport_id, flights_view.destination_airport_id
+`
+
+type ListRoutesRow struct {
+	OriginAirportID      int64
+	DestinationAirportID int64
+	FlightsCount         int64
+}
+
+// ----------------------------------------------------------------------------- routes
+func (q *Queries) ListRoutes(ctx context.Context) ([]ListRoutesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listRoutes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListRoutesRow
+	for rows.Next() {
+		var i ListRoutesRow
+		if err := rows.Scan(&i.OriginAirportID, &i.DestinationAirportID, &i.FlightsCount); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateAirport = `-- name: UpdateAirport :one
 UPDATE airports SET
 iata_code = COALESCE(?2, iata_code)

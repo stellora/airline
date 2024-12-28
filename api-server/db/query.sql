@@ -75,3 +75,10 @@ SELECT *
 FROM flights_view
 WHERE origin_airport_id=:airport OR destination_airport_id=:airport
 ORDER BY id ASC;
+
+------------------------------------------------------------------------------- routes
+
+-- name: ListRoutes :many
+SELECT flights_view.origin_airport_id, flights_view.destination_airport_id, COUNT(*) AS flights_count
+FROM flights_view
+GROUP BY flights_view.origin_airport_id, flights_view.destination_airport_id;

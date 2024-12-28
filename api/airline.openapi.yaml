@@ -256,6 +256,20 @@ paths:
           description: Flight deleted
         '404':
           description: Flight not found
+  /routes:
+    get:
+      operationId: listRoutes
+      summary: List all routes
+      responses:
+        '200':
+          description: List of routes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+
 components:
   schemas:
     airportSpec:
@@ -323,3 +337,17 @@ components:
         - destinationAirport
         - distanceMiles
         - published
+    Route:
+      type: object
+      properties:
+        originAirport:
+          $ref: '#/components/schemas/Airport'
+        destinationAirport:
+          $ref: '#/components/schemas/Airport'
+        flightsCount:
+          type: integer
+      required:
+        - originAirport
+        - destinationAirport
+        - flightsCount
+      
