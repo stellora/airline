@@ -58,7 +58,7 @@ number = COALESCE(sqlc.narg('number'), number),
 origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
 destination_airport_id = COALESCE(sqlc.narg('destination_airport_id'), destination_airport_id),
 published = COALESCE(sqlc.narg('published'), published)
-WHERE id=?
+WHERE id=sqlc.arg('id')
 RETURNING id;
 
 -- name: DeleteFlight :exec

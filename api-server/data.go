@@ -1,12 +1,5 @@
 package main
 
-import "github.com/stellora/airline/api-server/api"
-
-var (
-	airports []*api.Airport
-	flights  []*api.Flight
-)
-
 // TODO!(sqs): add sample data
 func init() {
 	// initialAirports := []string{"SFO", "EWR", "SIN"}

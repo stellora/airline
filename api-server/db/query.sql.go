@@ -283,11 +283,11 @@ func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) (i
 
 const updateFlight = `-- name: UpdateFlight :one
 UPDATE flights SET
-number = COALESCE(?2, number),
-origin_airport_id = COALESCE(?3, origin_airport_id),
-destination_airport_id = COALESCE(?4, destination_airport_id),
-published = COALESCE(?5, published)
-WHERE id=?
+number = COALESCE(?1, number),
+origin_airport_id = COALESCE(?2, origin_airport_id),
+destination_airport_id = COALESCE(?3, destination_airport_id),
+published = COALESCE(?4, published)
+WHERE id=?5
 RETURNING id
 `
 

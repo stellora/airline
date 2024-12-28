@@ -11,20 +11,20 @@ import (
 	"github.com/stellora/airline/api-server/db"
 )
 
-// parseFlightNumberAndRoute parses a string of the form "UA123 SFO-JFK".
-func parseFlightNumberAndRoute(str string) (flightNumber, originIATACode, destinationIATACode string) {
+// parseFlightTitle parses a flight title of the form "UA123 SFO-JFK".
+func parseFlightTitle(title string) (flightNumber, originIATACode, destinationIATACode string) {
 	var route string
-	flightNumber, route, _ = strings.Cut(str, " ")
+	flightNumber, route, _ = strings.Cut(title, " ")
 	originIATACode, destinationIATACode, _ = strings.Cut(route, "-")
 	return
 }
 
-func insertFlights(t *testing.T, queries *db.Queries, flightsNumberAndRoute ...string) (ids []int64) {
+func insertFlights(t *testing.T, queries *db.Queries, flightTitles ...string) (ids []int64) {
 	t.Helper()
 	ctx := context.Background()
-	ids = make([]int64, len(flightsNumberAndRoute))
-	for i, flight := range flightsNumberAndRoute {
-		flightNumber, originIATACode, destinationIATACode := parseFlightNumberAndRoute(flight)
+	ids = make([]int64, len(flightTitles))
+	for i, flight := range flightTitles {
+		flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
 
 		originAirport, err := queries.GetAirportByIATACode(ctx, originIATACode)
 		if err != nil {
@@ -88,14 +88,8 @@ func TestGetFlight(t *testing.T) {
 
 func TestListFlights(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []*api.Flight{
-		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
-		{Id: 2, Number: "ST2", OriginAirport: api.Airport{Id: 2}, DestinationAirport: api.Airport{Id: 1}},
-	}
-	airports = []*api.Airport{
-		{Id: 1, IataCode: "AAA"},
-		{Id: 2, IataCode: "BBB"},
-	}
+	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+	insertFlights(t, handler.queries, "ST1 AAA-BBB", "ST2 BBB-AAA")
 
 	resp, err := handler.ListFlights(ctx, api.ListFlightsRequestObject{})
 	if err != nil {
@@ -122,14 +116,10 @@ func TestListFlights(t *testing.T) {
 }
 
 func TestCreateFlight(t *testing.T) {
-	ctx, handler := handlerTest(t)
-	airports = []*api.Airport{
-		{Id: 1, IataCode: "AAA"},
-		{Id: 2, IataCode: "BBB"},
-	}
-
 	t.Run("with airport IDs", func(t *testing.T) {
-		flights = nil
+		ctx, handler := handlerTest(t)
+		insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+
 		resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 			Body: &api.CreateFlightJSONRequestBody{
 				Number:             "ST1",
@@ -150,7 +140,9 @@ func TestCreateFlight(t *testing.T) {
 	})
 
 	t.Run("with airport IATA codes", func(t *testing.T) {
-		flights = nil
+		ctx, handler := handlerTest(t)
+		insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+
 		resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 			Body: &api.CreateFlightJSONRequestBody{
 				Number:             "ST1",
@@ -172,13 +164,8 @@ func TestCreateFlight(t *testing.T) {
 
 func TestUpdateFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []*api.Flight{
-		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
-	}
-	airports = []*api.Airport{
-		{Id: 1, IataCode: "AAA"},
-		{Id: 2, IataCode: "BBB"},
-	}
+	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+	insertFlights(t, handler.queries, "ST1 AAA-BBB")
 
 	{
 		// Update the flight
@@ -221,13 +208,8 @@ func TestUpdateFlight(t *testing.T) {
 
 func TestDeleteFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []*api.Flight{
-		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
-	}
-	airports = []*api.Airport{
-		{Id: 1, IataCode: "AAA"},
-		{Id: 2, IataCode: "BBB"},
-	}
+	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+	insertFlights(t, handler.queries, "ST1 AAA-BBB")
 
 	resp, err := handler.DeleteFlight(ctx, api.DeleteFlightRequestObject{
 		Id: 1,
@@ -246,13 +228,8 @@ func TestDeleteFlight(t *testing.T) {
 
 func TestDeleteAllFlights(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	flights = []*api.Flight{
-		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1}, DestinationAirport: api.Airport{Id: 2}},
-	}
-	airports = []*api.Airport{
-		{Id: 1, IataCode: "AAA"},
-		{Id: 2, IataCode: "BBB"},
-	}
+	insertAirportsWithIATACodes(t, handler.queries, "AAA", "BBB")
+	insertFlights(t, handler.queries, "ST1 AAA-BBB", "ST2 BBB-AAA")
 
 	resp, err := handler.DeleteAllFlights(ctx, api.DeleteAllFlightsRequestObject{})
 	if err != nil {
