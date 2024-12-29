@@ -12,8 +12,8 @@
 	</h1>
 	<Card>
 		<GreatCircleRoute
-			origin={data.route.originAirport}
-			destination={data.route.destinationAirport}
+			origin={data.route.originAirport.point}
+			destination={data.route.destinationAirport.point}
 		/>
 	</Card>
 </div>
