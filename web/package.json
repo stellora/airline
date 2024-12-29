@@ -20,7 +20,7 @@
 		"format": "prettier --write .",
 		"gen": "npm run -s gen:openapi",
 		"gen:openapi": "openapi-typescript ../api/airline.openapi.yaml --output src/lib/airline.openapi.ts",
-		"gen-online:world-map": "node --experimental-strip-types src/lib/components/maps/generate.ts > src/lib/components/maps/world-map.geojson"
+		"gen-online:world-map": "node --experimental-strip-types src/lib/components/maps/generate.ts > src/lib/components/maps/world-map.geojson.json"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",

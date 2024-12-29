@@ -59,7 +59,7 @@ async function run() {
 		}
 	}
 
-	process.stdout.write(JSON.stringify(output, null, 2))
+	process.stdout.write(JSON.stringify(output))
 	process.stdout.write('\n')
 }
 

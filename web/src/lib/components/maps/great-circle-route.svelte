@@ -1,10 +1,13 @@
 <script lang="ts">
 	import type { Point } from '$lib/types'
-	import WorldMapSVG from './world-map.svg?raw'
+	import type { FeatureCollection } from 'geojson'
+	import _worldMapGeoJSONData from './world-map.geojson.json'
+
+	const worldMapGeoJSONData = _worldMapGeoJSONData as FeatureCollection
 
 	const { origin, destination }: { origin: Point; destination: Point } = $props()
 
-	let mapWrapper: HTMLDivElement
+	let mapWrapper: HTMLElement | undefined
 
 	const width = 960
 	const height = 500
@@ -13,7 +16,7 @@
 	 * Returns the [x, y] coordinates of the given longitude and latitude using a simple equirectangular
 	 * projection.
 	 */
-	export function project(lon: number, lat: number): [number, number] {
+	function project(lon: number, lat: number): [number, number] {
 		const x = (lon + 180) * (width / 360)
 		const y = (90 - lat) * (height / 180)
 		return [x, y]
@@ -31,12 +34,8 @@
 		return path
 	}
 
-	const svgPaths = []
-	const omitAntarctica = false
-	for (const feature of geojsonFeatures) {
-		if (omitAntarctica && feature.properties?.GEOUNIT === 'Antarctica') {
-			continue
-		}
+	const svgElements = []
+	for (const feature of worldMapGeoJSONData.features) {
 		const polygons =
 			feature.geometry.type === 'Polygon'
 				? [feature.geometry.coordinates]
@@ -45,17 +44,11 @@
 					: []
 		for (const polygon of polygons) {
 			const path = coordsToSVGPath(polygon)
-			svgPaths.push(
+			svgElements.push(
 				`<path d="${path}" fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5"/>`
 			)
 		}
 	}
-
-	const svgContent = `
-	<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-		${svgPaths.join('\n')}
-	</svg>
-`
 
 	$effect(() => {
 		const svg = mapWrapper?.querySelector('svg')
@@ -78,7 +71,7 @@
 			}
 
 			// Calculate intermediate points for great circle route.
-			const numPoints = 100
+			const numPoints = 50
 			let pathData = [`M ${x1} ${y1}`]
 			for (let i = 1; i <= numPoints; i++) {
 				const f = i / numPoints
@@ -121,10 +114,16 @@
 			}
 		}
 	})
+
+	const svgContent = `
+	<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+		${svgElements.join('\n')}
+	</svg>
+`
 </script>
 
 <div class="map-wrapper h-auto" bind:this={mapWrapper}>
-	{@html WorldMapSVG}
+	{@html svgContent}
 </div>
 
 <style>
