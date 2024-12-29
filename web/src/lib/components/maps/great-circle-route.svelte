@@ -10,16 +10,55 @@
 	$effect(() => {
 		const svg = mapWrapper?.querySelector('svg')
 		if (svg) {
-			const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+			const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
 			const [x1, y1] = project(origin.longitude, origin.latitude)
 			const [x2, y2] = project(destination.longitude, destination.latitude)
-			line.setAttribute('x1', `${x1}px`)
-			line.setAttribute('y1', `${y1}px`)
-			line.setAttribute('x2', `${x2}px`)
-			line.setAttribute('y2', `${y2}px`)
-			line.setAttribute('stroke', 'hsla(var(--primary))')
-			line.setAttribute('stroke-width', '2')
-			svg.appendChild(line)
+
+			// Add start and end points
+			for (const [x, y] of [
+				[x1, y1],
+				[x2, y2]
+			]) {
+				const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+				point.setAttribute('cx', x.toString())
+				point.setAttribute('cy', y.toString())
+				point.setAttribute('r', '2')
+				point.setAttribute('fill', 'var(--map-point)')
+				svg.appendChild(point)
+			}
+
+			// Calculate intermediate points for great circle route.
+			const numPoints = 100
+			let pathData = [`M ${x1} ${y1}`]
+			for (let i = 1; i <= numPoints; i++) {
+				const f = i / numPoints
+				const lat1 = (origin.latitude * Math.PI) / 180
+				const lon1 = (origin.longitude * Math.PI) / 180
+				const lat2 = (destination.latitude * Math.PI) / 180
+				const lon2 = (destination.longitude * Math.PI) / 180
+
+				const d = Math.acos(
+					Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)
+				)
+				const A = Math.sin((1 - f) * d) / Math.sin(d)
+				const B = Math.sin(f * d) / Math.sin(d)
+
+				const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2)
+				const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2)
+				const z = A * Math.sin(lat1) + B * Math.sin(lat2)
+
+				const lat = (Math.atan2(z, Math.sqrt(x * x + y * y)) * 180) / Math.PI
+				const lon = (Math.atan2(y, x) * 180) / Math.PI
+
+				const [px, py] = project(lon, lat)
+				pathData.push(`L ${px} ${py}`)
+			}
+
+			path.setAttribute('d', pathData.join(' '))
+			path.setAttribute('fill', 'none')
+			path.setAttribute('stroke', 'var(--map-line)')
+			path.setAttribute('stroke-width', '0.75')
+			svg.appendChild(path)
 
 			const zoom = true
 			if (zoom) {
@@ -43,8 +82,8 @@
 		width: 100%;
 		height: auto;
 
-		--land-color: hsl(var(--foreground) / 50%);
-		--border-color: hsl(var(--muted-foreground));
+		--land-color: hsl(var(--map-land));
+		--border-color: hsl(var(--map-border));
 
 		> :global(path) {
 			stroke-linejoin: bevel;

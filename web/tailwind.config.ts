@@ -57,6 +57,12 @@ const config: Config = {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				map: {
+					point: 'hsl(var(--map-point))',
+					line: 'hsl(var(--map-line))',
+					land: 'hsl(var(--map-land))',
+					border: 'hsl(var(--map-border))'
 				}
 			},
 			borderRadius: {

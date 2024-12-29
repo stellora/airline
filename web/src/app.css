@@ -18,6 +18,10 @@
 		color-scheme: light dark;
 
 		--radius: 0.5rem;
+		--map-point: red;
+		--map-line: red;
+		--map-land: var(--foreground) / 50%;
+		--map-border: var(--muted-foreground);
 	}
 
 	:root {
