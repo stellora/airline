@@ -47,6 +47,42 @@ func TestParseRoute(t *testing.T) {
 	}
 }
 
+func TestGetRoute(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
+	insertFlightsT(t, handler, "ST1 AAA-BBB", "ST2 BBB-AAA", "ST3 AAA-BBB")
+
+	t.Run("has flights", func(t *testing.T) {
+		resp, err := handler.GetRoute(ctx, api.GetRouteRequestObject{Route: "AAA-BBB"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got, want := resp.(api.GetRoute200JSONResponse).FlightsCount, 2; got != want {
+			t.Errorf("got FlightsCount %d, want %d", got, want)
+		}
+	})
+
+	t.Run("valid airports but no flights", func(t *testing.T) {
+		resp, err := handler.GetRoute(ctx, api.GetRouteRequestObject{Route: "AAA-CCC"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := resp.(*api.GetRoute404Response); !ok {
+			t.Errorf("got %T", resp)
+		}
+	})
+
+	t.Run("invalid airports", func(t *testing.T) {
+		resp, err := handler.GetRoute(ctx, api.GetRouteRequestObject{Route: "AAA-XXX"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := resp.(*api.GetRoute404Response); !ok {
+			t.Errorf("got %T", resp)
+		}
+	})
+}
+
 func TestListRoutes(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")

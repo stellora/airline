@@ -9,9 +9,9 @@ export const load: PageServerLoad = async ({ parent, params, url }) => {
 		.then((resp) => resp.data!)
 	return {
 		route,
-		...breadcrumbEntry(parent, {
+		...(await breadcrumbEntry(parent, {
 			url: url.pathname,
 			title: flightRoute(route.originAirport, route.destinationAirport)
-		})
+		}))
 	}
 }
