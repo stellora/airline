@@ -19,7 +19,8 @@
 		"lint": "eslint . && prettier --check .",
 		"format": "prettier --write .",
 		"gen": "npm run -s gen:openapi",
-		"gen:openapi": "openapi-typescript ../api/airline.openapi.yaml --output src/lib/airline.openapi.ts"
+		"gen:openapi": "openapi-typescript ../api/airline.openapi.yaml --output src/lib/airline.openapi.ts",
+		"gen-online:world-map": "node src/lib/components/maps/generate.js > src/lib/components/maps/world-map.svg"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",

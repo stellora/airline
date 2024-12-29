@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Point } from '$lib/types'
-	import WorldMapSVG from './web-mercator-world-map.svg?raw'
+	import WorldMapSVG from './world-map.svg?raw'
 
 	const { origin, destination }: { origin: Point; destination: Point } = $props()
 </script>
@@ -11,9 +11,7 @@
 
 <style>
 	.map-wrapper :global(svg) {
-		--water-color: hsl(var(--background));
-		--land-color: hsl(var(--primary));
-		--land-border-color: hsl(var(--ring));
-		--water-border-color: hsl(var(--border));
+		--land-color: hsl(var(--foreground) / 50%);
+		--border-color: hsla(var(--border) / 50%);
 	}
 </style>

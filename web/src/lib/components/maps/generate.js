@@ -1,54 +1,61 @@
 async function run() {
-	const geojsonURL =
-		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_110m_admin_0_countries.geojson'
-	const resp = await fetch(geojsonURL)
-	if (!resp.ok) {
-		throw new Error(`Error fetching GeoJSON data: HTTP ${resp.status} ${resp.statusText}`)
+	const geojsonFeatures = []
+
+	const geojsonURLs =[
+		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_110m_admin_0_countries_lakes.geojson',
+		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_110m_admin_1_states_provinces_lakes.geojson',
+	]
+	for (const url of geojsonURLs) {
+		const resp = await fetch(url)
+		if (!resp.ok) {
+			throw new Error(`Error fetching GeoJSON data: ${resp.status} ${resp.statusText}`)
+		}
+		const geojsonData = await resp.json()
+
+		// Skip USA from countries data because we add the more granular state-level data in the 2nd
+		// data file.
+		if (url.endsWith('countries_lakes.geojson')) {
+			const filteredFeatures = geojsonData.features.filter((feature) => {
+				return feature.properties.GEOUNIT !== 'United States of America'
+			})
+			geojsonData.features = filteredFeatures
+		}
+
+		geojsonFeatures.push(...geojsonData.features)
 	}
-	const geojsonData = await resp.json()
+	
 
 	const width = 960
 	const height = 500
-
-	function createProjectionMatrix() {
-		return {
-			project: function (lon, lat) {
-				// Simple equirectangular projection
+	function project(lon, lat) {
+				// Simple equirectangular projection.
 				const x = (lon + 180) * (width / 360)
 				const y = (90 - lat) * (height / 180)
-				return [x, y]
+				return [x, y].map((v) => v.toFixed(1))
 			}
-		}
-	}
-
-	function coordsToSVGPath(coords, projection) {
+	function coordsToSVGPath(coords) {
 		let path = ''
 		for (const ring of coords) {
 			for (const [j, coord] of ring.entries()) {
-				const [x, y] = projection.project(coord[0], coord[1])
+				const [x, y] = project(coord[0], coord[1])
 				path += `${j === 0 ? 'M' : 'L'}${x},${y}`
 			}
-			path += 'Z' // Close the path
+			path += 'Z'
 		}
 		return path
 	}
 
-
-	// Create the map
-	const projection = createProjectionMatrix()
-
 	const svgPaths = []
-
-	for (const feature of geojsonData.features) {
-		if (feature.geometry.type === 'Polygon') {
-			const path = coordsToSVGPath(feature.geometry.coordinates, projection)
-			svgPaths.push(`<path d="${path}" fill="#ccc" stroke="#fff" stroke-width="0.5"/>`)
-		} else if (feature.geometry.type === 'MultiPolygon') {
-			for (const polygon of feature.geometry.coordinates) {
-				const path = coordsToSVGPath(polygon, projection)
-				svgPaths.push(`<path d="${path}" fill="#ccc" stroke="#fff" stroke-width="0.5"/>`)
-			}
+	const omitAntarctica=false
+	for (const feature of geojsonFeatures) {
+		if (omitAntarctica && feature.properties.GEOUNIT==='Antarctica') {
+			continue
 		}
+		const polygons = feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates] : feature.geometry.type === 'MultiPolygon'? feature.geometry.coordinates:[]
+			for (const polygon of polygons) {
+				const path = coordsToSVGPath(polygon)
+				svgPaths.push(`<path d="${path}" fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5"/>`)
+			}
 	}
 
 	const svgContent= `
