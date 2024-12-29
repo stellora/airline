@@ -174,12 +174,14 @@ export interface components {
             originAirport: components["schemas"]["Airport"];
             destinationAirport: components["schemas"]["Airport"];
             /** Format: double */
-            distanceMiles: number;
+            distanceMiles?: number;
             published: boolean;
         };
         Route: {
             originAirport: components["schemas"]["Airport"];
             destinationAirport: components["schemas"]["Airport"];
+            /** Format: double */
+            distanceMiles?: number;
             flightsCount: number;
         };
     };
@@ -605,6 +607,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Route"];
                 };
+            };
+            /** @description Route not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

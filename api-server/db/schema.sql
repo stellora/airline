@@ -23,3 +23,11 @@ SELECT flights.*,
 FROM flights
 JOIN airports origin_airport ON origin_airport.id=flights.origin_airport_id
 JOIN airports destination_airport ON destination_airport.id=flights.destination_airport_id;
+
+CREATE VIEW IF NOT EXISTS routes AS
+SELECT origin_airport_id, destination_airport_id,
+  origin_airport_iata_code, origin_airport_oadb_id,
+  destination_airport_iata_code, destination_airport_oadb_id,
+  COUNT(*) AS flights_count
+FROM flights_view
+GROUP BY origin_airport_id, destination_airport_id;

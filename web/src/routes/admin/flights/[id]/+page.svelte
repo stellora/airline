@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
+	import Distance from '$lib/components/distance.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent } from '$lib/components/ui/card'
@@ -17,7 +18,9 @@
 		/>
 	</div>
 
-	<p class="text-muted-foreground">{Math.round(data.flight.distanceMiles)} miles</p>
+	<p class="text-muted-foreground">
+		<Distance distanceMiles={data.flight.distanceMiles} />
+	</p>
 
 	<Card class="border-destructive self-start">
 		<CardContent class="flex gap-4">

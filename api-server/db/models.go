@@ -33,3 +33,13 @@ type FlightsView struct {
 	DestinationAirportIataCode string
 	DestinationAirportOadbID   sql.NullInt64
 }
+
+type Route struct {
+	OriginAirportID            int64
+	DestinationAirportID       int64
+	OriginAirportIataCode      string
+	OriginAirportOadbID        sql.NullInt64
+	DestinationAirportIataCode string
+	DestinationAirportOadbID   sql.NullInt64
+	FlightsCount               int64
+}

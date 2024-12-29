@@ -15,7 +15,7 @@ pnpm -C web dev
 
 ## Development
 
-- Codegen: `pnpm -C web gen && (cd api-server && go generate ./...)`
+See `mise run` for development commands.
 
 ## Data
 

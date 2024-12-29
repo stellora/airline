@@ -27,12 +27,12 @@ type Airport struct {
 
 // Flight defines model for Flight.
 type Flight struct {
-	DestinationAirport Airport `json:"destinationAirport"`
-	DistanceMiles      float64 `json:"distanceMiles"`
-	Id                 int     `json:"id"`
-	Number             string  `json:"number"`
-	OriginAirport      Airport `json:"originAirport"`
-	Published          bool    `json:"published"`
+	DestinationAirport Airport  `json:"destinationAirport"`
+	DistanceMiles      *float64 `json:"distanceMiles,omitempty"`
+	Id                 int      `json:"id"`
+	Number             string   `json:"number"`
+	OriginAirport      Airport  `json:"originAirport"`
+	Published          bool     `json:"published"`
 }
 
 // Point defines model for Point.
@@ -43,9 +43,10 @@ type Point struct {
 
 // Route defines model for Route.
 type Route struct {
-	DestinationAirport Airport `json:"destinationAirport"`
-	FlightsCount       int     `json:"flightsCount"`
-	OriginAirport      Airport `json:"originAirport"`
+	DestinationAirport Airport  `json:"destinationAirport"`
+	DistanceMiles      *float64 `json:"distanceMiles,omitempty"`
+	FlightsCount       int      `json:"flightsCount"`
+	OriginAirport      Airport  `json:"originAirport"`
 }
 
 // AirportSpec defines model for airportSpec.
@@ -1000,6 +1001,14 @@ func (response GetRoute200JSONResponse) VisitGetRouteResponse(w http.ResponseWri
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type GetRoute404Response struct {
+}
+
+func (response GetRoute404Response) VisitGetRouteResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
 }
 
 // StrictServerInterface represents all server handlers.

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AirportCode from '$lib/components/airport-code.svelte'
+	import Distance from '$lib/components/distance.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
@@ -28,7 +29,8 @@
 							><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
 								airport={flight.destinationAirport}
 							/>
-							<span class="text-muted-foreground">{Math.round(flight.distanceMiles)}mi</span
+							<span class="text-muted-foreground">
+								<Distance distanceMiles={flight.distanceMiles} /></span
 							></Table.Cell
 						>
 						<Table.Cell class="text-right">

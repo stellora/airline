@@ -8,32 +8,25 @@ import (
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
-	"github.com/tidwall/geodesic"
 )
 
 func fromDBFlight(a db.FlightsView) api.Flight {
 	b := api.Flight{
-		Id:        int(a.ID),
-		Number:    a.Number,
+		Id:     int(a.ID),
+		Number: a.Number,
+		OriginAirport: fromDBAirport(db.Airport{
+			ID:       a.OriginAirportID,
+			IataCode: a.OriginAirportIataCode,
+			OadbID:   a.OriginAirportOadbID,
+		}),
+		DestinationAirport: fromDBAirport(db.Airport{
+			ID:       a.DestinationAirportID,
+			IataCode: a.DestinationAirportIataCode,
+			OadbID:   a.DestinationAirportOadbID,
+		}),
 		Published: a.Published,
 	}
-
-	b.OriginAirport = fromDBAirport(db.Airport{
-		ID:       a.OriginAirportID,
-		IataCode: a.OriginAirportIataCode,
-		OadbID:   a.OriginAirportOadbID,
-	})
-	b.DestinationAirport = fromDBAirport(db.Airport{
-		ID:       a.DestinationAirportID,
-		IataCode: a.DestinationAirportIataCode,
-		OadbID:   a.DestinationAirportOadbID,
-	})
-
-	var distanceMeters float64
-	geodesic.WGS84.Inverse(b.OriginAirport.Point.Latitude, b.OriginAirport.Point.Longitude, b.DestinationAirport.Point.Latitude, b.DestinationAirport.Point.Longitude, &distanceMeters, nil, nil)
-	const metersPerMile = 0.000621371192237334
-	b.DistanceMiles = distanceMeters * metersPerMile
-
+	b.DistanceMiles = distanceMilesBetweenAirports(b.OriginAirport, b.DestinationAirport)
 	return b
 }
 

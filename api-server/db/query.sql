@@ -78,14 +78,14 @@ ORDER BY id ASC;
 
 ------------------------------------------------------------------------------- routes
 
+-- name: GetRouteByIATACodes :one
+SELECT * FROM routes
+WHERE origin_airport_iata_code=:origin_airport_iata_code AND destination_airport_iata_code=:destination_airport_iata_code
+LIMIT 1;
+
 -- name: ListRoutes :many
-SELECT flights_view.origin_airport_id, flights_view.destination_airport_id,
-  flights_view.origin_airport_iata_code, flights_view.origin_airport_oadb_id,
-  flights_view.destination_airport_iata_code, flights_view.destination_airport_oadb_id,
-  COUNT(*) AS flights_count
-FROM flights_view
-GROUP BY flights_view.origin_airport_id, flights_view.destination_airport_id
-ORDER BY flights_count DESC, flights_view.origin_airport_id ASC, flights_view.destination_airport_id ASC;
+SELECT * FROM routes
+ORDER BY flights_count DESC, origin_airport_id ASC, destination_airport_id ASC;
 
 -- name: ListFlightsByRoute :many
 SELECT *

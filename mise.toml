@@ -1,0 +1,14 @@
+[tasks.codegen]
+run = "pnpm -C web gen && (cd api-server && go generate ./...)"
+
+[tasks.dev]
+run = "mise watch dev:api-server ::: dev:web"
+
+[tasks."dev:api-server"]
+run = "go run ."
+dir = "api-server"
+sources = ["api-server/**/*.go"]
+
+[tasks."dev:web"]
+run = "pnpm run dev"
+dir = "web"

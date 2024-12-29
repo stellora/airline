@@ -148,6 +148,34 @@ func (q *Queries) GetFlight(ctx context.Context, id int64) (FlightsView, error) 
 	return i, err
 }
 
+const getRouteByIATACodes = `-- name: GetRouteByIATACodes :one
+
+SELECT origin_airport_id, destination_airport_id, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, flights_count FROM routes
+WHERE origin_airport_iata_code=?1 AND destination_airport_iata_code=?2
+LIMIT 1
+`
+
+type GetRouteByIATACodesParams struct {
+	OriginAirportIataCode      string
+	DestinationAirportIataCode string
+}
+
+// ----------------------------------------------------------------------------- routes
+func (q *Queries) GetRouteByIATACodes(ctx context.Context, arg GetRouteByIATACodesParams) (Route, error) {
+	row := q.db.QueryRowContext(ctx, getRouteByIATACodes, arg.OriginAirportIataCode, arg.DestinationAirportIataCode)
+	var i Route
+	err := row.Scan(
+		&i.OriginAirportID,
+		&i.DestinationAirportID,
+		&i.OriginAirportIataCode,
+		&i.OriginAirportOadbID,
+		&i.DestinationAirportIataCode,
+		&i.DestinationAirportOadbID,
+		&i.FlightsCount,
+	)
+	return i, err
+}
+
 const listAirports = `-- name: ListAirports :many
 SELECT id, iata_code, oadb_id FROM airports
 ORDER BY id ASC
@@ -302,36 +330,19 @@ func (q *Queries) ListFlightsByRoute(ctx context.Context, arg ListFlightsByRoute
 }
 
 const listRoutes = `-- name: ListRoutes :many
-
-SELECT flights_view.origin_airport_id, flights_view.destination_airport_id,
-  flights_view.origin_airport_iata_code, flights_view.origin_airport_oadb_id,
-  flights_view.destination_airport_iata_code, flights_view.destination_airport_oadb_id,
-  COUNT(*) AS flights_count
-FROM flights_view
-GROUP BY flights_view.origin_airport_id, flights_view.destination_airport_id
-ORDER BY flights_count DESC, flights_view.origin_airport_id ASC, flights_view.destination_airport_id ASC
+SELECT origin_airport_id, destination_airport_id, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, flights_count FROM routes
+ORDER BY flights_count DESC, origin_airport_id ASC, destination_airport_id ASC
 `
 
-type ListRoutesRow struct {
-	OriginAirportID            int64
-	DestinationAirportID       int64
-	OriginAirportIataCode      string
-	OriginAirportOadbID        sql.NullInt64
-	DestinationAirportIataCode string
-	DestinationAirportOadbID   sql.NullInt64
-	FlightsCount               int64
-}
-
-// ----------------------------------------------------------------------------- routes
-func (q *Queries) ListRoutes(ctx context.Context) ([]ListRoutesRow, error) {
+func (q *Queries) ListRoutes(ctx context.Context) ([]Route, error) {
 	rows, err := q.db.QueryContext(ctx, listRoutes)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListRoutesRow
+	var items []Route
 	for rows.Next() {
-		var i ListRoutesRow
+		var i Route
 		if err := rows.Scan(
 			&i.OriginAirportID,
 			&i.DestinationAirportID,

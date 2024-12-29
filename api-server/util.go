@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/stellora/airline/api-server/api"
+	"github.com/tidwall/geodesic"
 )
 
 func mapSlice[T any, U any](fn func(T) U, slice []T) []U {
@@ -55,6 +56,16 @@ func insertFlights(ctx context.Context, handler *Handler, flightTitles ...string
 		ids[i] = v.(api.CreateFlight201JSONResponse).Id
 	}
 	return ids, nil
+}
+
+func distanceMilesBetweenAirports(a, b api.Airport) *float64 {
+	if (a.Point != api.Point{} && b.Point != api.Point{}) {
+		var distanceMeters float64
+		geodesic.WGS84.Inverse(a.Point.Latitude, a.Point.Longitude, b.Point.Latitude, b.Point.Longitude, &distanceMeters, nil, nil)
+		const metersPerMile = 0.000621371192237334
+		return ptrTo(distanceMeters * metersPerMile)
+	}
+	return nil
 }
 
 func ptrTo[T any](v T) *T {

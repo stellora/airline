@@ -287,7 +287,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Route'
-
+        '404':
+          description: Route not found
 components:
   schemas:
     airportSpec:
@@ -353,7 +354,6 @@ components:
         - number
         - originAirport
         - destinationAirport
-        - distanceMiles
         - published
     Route:
       type: object
@@ -362,6 +362,9 @@ components:
           $ref: '#/components/schemas/Airport'
         destinationAirport:
           $ref: '#/components/schemas/Airport'
+        distanceMiles:
+          type: number
+          format: double
         flightsCount:
           type: integer
       required:
