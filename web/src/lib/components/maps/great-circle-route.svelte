@@ -15,6 +15,9 @@
 	const centerLat = 0
 	const centerLong = -122
 
+	// TODO!(sqs): use https://www.d3indepth.com/geographic/
+	// https://connorrothschild.github.io/v4/post/svelte-and-d3
+
 	/**
 	 * Returns the [x, y] coordinates of the given longitude and latitude using a simple equirectangular
 	 * projection.
