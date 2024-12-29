@@ -1,4 +1,6 @@
 <script lang="ts">
+	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
+	import { Card } from '$lib/components/ui/card'
 	import { flightRoute } from '$lib/flight-helpers.js'
 
 	let { data } = $props()
@@ -8,4 +10,10 @@
 	<h1 class="text-4xl font-bold">
 		{flightRoute(data.route.originAirport, data.route.destinationAirport)}
 	</h1>
+	<Card>
+		<GreatCircleRoute
+			origin={data.route.originAirport}
+			destination={data.route.destinationAirport}
+		/>
+	</Card>
 </div>
