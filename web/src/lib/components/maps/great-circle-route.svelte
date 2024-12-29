@@ -12,7 +12,7 @@
 	const width = 960
 	const height = 500
 
-	const centerLat = 37
+	const centerLat = 0
 	const centerLong = -122
 
 	/**
@@ -24,15 +24,20 @@
 		const y = (90 - (lat - centerLat)) * (height / 180)
 		return [x, y]
 	}
-	function coordsToSVGPath(coords: number[][][]): string {
+	function coordsToSVGPath(coords: number[][][]): { path: string; wrapsX: boolean } {
 		let path = ''
+		let wrapsX = false
+
 		for (const ring of coords) {
 			for (const [j, coord] of ring.entries()) {
-				const [x, y] = project(coord[0], coord[1]).map((n) => n.toFixed(1))
+				const [x, y] = project(coord[0], coord[1])
+				if (x < 0 || x > width) {
+					wrapsX = true
+				}
 				path += `${j === 0 ? 'M' : 'L'}${x},${y}`
 			}
 		}
-		return path
+		return { path, wrapsX: wrapsX }
 	}
 
 	const svgElements = []
@@ -44,9 +49,10 @@
 					? feature.geometry.coordinates
 					: []
 		for (const polygon of polygons) {
-			const path = coordsToSVGPath(polygon)
+			const { path, wrapsX: wraps } = coordsToSVGPath(polygon)
+			if (wraps) console.log('WRAPS', feature.properties?.ISO_A2)
 			svgElements.push(
-				`<path d="${path}" fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5"/>`
+				`<path d="${path}" fill="${wraps ? 'green' : 'var(--land-color)'}" stroke="var(--border-color)" stroke-width="0.5"/>`
 			)
 		}
 	}
