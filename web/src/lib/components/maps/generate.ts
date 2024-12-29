@@ -1,18 +1,7 @@
-const width = 960
-const height = 500
-
-/**
- * Returns the [x, y] coordinates of the given longitude and latitude using a simple equirectangular
- * projection.
- */
-export function project(lon: number, lat: number): [number, number] {
-	const x = (lon + 180) * (width / 360)
-	const y = (90 - lat) * (height / 180)
-	return [x, y]
-}
+import type { BBox, FeatureCollection } from 'geojson'
 
 async function run() {
-	const geojsonFeatures = []
+	const output: FeatureCollection = { type: 'FeatureCollection', features: [] }
 
 	const geojsonURLs = [
 		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_110m_admin_0_countries_lakes.geojson',
@@ -23,7 +12,7 @@ async function run() {
 		if (!resp.ok) {
 			throw new Error(`Error fetching GeoJSON data: ${resp.status} ${resp.statusText}`)
 		}
-		const geojsonData: any = await resp.json()
+		const geojsonData: FeatureCollection = await resp.json()
 
 		// Skip USA from countries data because we add the more granular state-level data in the 2nd
 		// data file.
@@ -34,52 +23,47 @@ async function run() {
 			geojsonData.features = filteredFeatures
 		}
 
-		geojsonFeatures.push(...geojsonData.features)
+		output.features.push(...geojsonData.features)
 	}
 
-	function coordsToSVGPath(coords: number[][][]): string {
-		let path = ''
-		for (const ring of coords) {
-			for (const [j, coord] of ring.entries()) {
-				const [x, y] = project(coord[0], coord[1]).map((n) => n.toFixed(1))
-				path += `${j === 0 ? 'M' : 'L'}${x},${y}`
+	// Filter out unneeded data to cut bundle size.
+	for (const feature of output.features) {
+		if (feature.type === 'Feature') {
+			if (feature.properties) {
+				feature.properties = {
+					ISO_A2: feature.properties.ISO_A2
+				}
 			}
-			path += 'Z'
 		}
-		return path
 	}
 
-	const svgPaths = []
-	const omitAntarctica = false
-	for (const feature of geojsonFeatures) {
-		if (omitAntarctica && feature.properties.GEOUNIT === 'Antarctica') {
-			continue
-		}
-		const polygons =
+	// Reduce precision to cut bundle size.
+	function round(n: number): number {
+		return Number(n.toFixed(1))
+	}
+	for (const feature of output.features) {
+		const coordinates =
 			feature.geometry.type === 'Polygon'
 				? [feature.geometry.coordinates]
 				: feature.geometry.type === 'MultiPolygon'
 					? feature.geometry.coordinates
 					: []
-		for (const polygon of polygons) {
-			const path = coordsToSVGPath(polygon)
-			svgPaths.push(
-				`<path d="${path}" fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5"/>`
-			)
+		for (const shape of coordinates) {
+			for (const [i, point] of shape.entries()) {
+				shape[i] = point.map((coord) => coord.map(round))
+			}
+		}
+
+		if (feature.bbox) {
+			feature.bbox = feature.bbox.map(round) as BBox
 		}
 	}
 
-	const svgContent = `
-	<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-		${svgPaths.join('\n')}
-	</svg>
-`
-	console.log(svgContent)
+	process.stdout.write(JSON.stringify(output, null, 2))
+	process.stdout.write('\n')
 }
 
-if (typeof process !== 'undefined' && process.env.GENERATE) {
-	run().catch((error) => {
-		console.error(error)
-		process.exit(1)
-	})
-}
+run().catch((error) => {
+	console.error(error)
+	process.exit(1)
+})
