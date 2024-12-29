@@ -20,3 +20,8 @@ See `mise run` for development commands.
 ## Data
 
 - [Airports data](https://ourairports.com/data/) from OurAirports
+
+## Style guide
+
+- Offer both light and dark themes.
+- Always render flight numbers (e.g., `UA123`) and IATA airport codes (e.g., `SFO`) in monospace (`font-mono` class).
