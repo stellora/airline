@@ -7,11 +7,9 @@ async function run() {
 	}
 	const geojsonData = await resp.json()
 
-	// Define map projection parameters
 	const width = 960
 	const height = 500
 
-	// Create projection matrix
 	function createProjectionMatrix() {
 		return {
 			project: function (lon, lat) {
@@ -23,46 +21,41 @@ async function run() {
 		}
 	}
 
-	// Convert coordinates to SVG path
 	function coordsToSVGPath(coords, projection) {
 		let path = ''
-		coords.forEach((ring, i) => {
-			ring.forEach((coord, j) => {
+		for (const ring of coords) {
+			for (const [j, coord] of ring.entries()) {
 				const [x, y] = projection.project(coord[0], coord[1])
 				path += `${j === 0 ? 'M' : 'L'}${x},${y}`
-			})
+			}
 			path += 'Z' // Close the path
-		})
+		}
 		return path
 	}
 
-	// Generate SVG
-	function generateSVG(geoData, projection) {
-		let svgPaths = ''
-
-		geoData.features.forEach((feature) => {
-			if (feature.geometry.type === 'Polygon') {
-				const path = coordsToSVGPath(feature.geometry.coordinates, projection)
-				svgPaths += `<path d="${path}" fill="#ccc" stroke="#fff" stroke-width="0.5"/>`
-			} else if (feature.geometry.type === 'MultiPolygon') {
-				feature.geometry.coordinates.forEach((polygon) => {
-					const path = coordsToSVGPath(polygon, projection)
-					svgPaths += `<path d="${path}" fill="#ccc" stroke="#fff" stroke-width="0.5"/>`
-				})
-			}
-		})
-
-		return `
-        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-            ${svgPaths}
-        </svg>
-    `
-	}
 
 	// Create the map
 	const projection = createProjectionMatrix()
-	const svgContent = generateSVG(geojsonData, projection)
 
+	const svgPaths = []
+
+	for (const feature of geojsonData.features) {
+		if (feature.geometry.type === 'Polygon') {
+			const path = coordsToSVGPath(feature.geometry.coordinates, projection)
+			svgPaths.push(`<path d="${path}" fill="#ccc" stroke="#fff" stroke-width="0.5"/>`)
+		} else if (feature.geometry.type === 'MultiPolygon') {
+			for (const polygon of feature.geometry.coordinates) {
+				const path = coordsToSVGPath(polygon, projection)
+				svgPaths.push(`<path d="${path}" fill="#ccc" stroke="#fff" stroke-width="0.5"/>`)
+			}
+		}
+	}
+
+	const svgContent= `
+	<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+		${svgPaths.join('\n')}
+	</svg>
+`
 	console.log(svgContent)
 }
 
