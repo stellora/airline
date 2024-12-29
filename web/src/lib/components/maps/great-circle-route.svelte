@@ -1,40 +1,53 @@
 <script lang="ts">
 	import type { Point } from '$lib/types'
 	import * as d3 from 'd3'
-	import type { FeatureCollection } from 'geojson'
+	import type { Feature, FeatureCollection, LineString } from 'geojson'
 	import _worldMapGeoJSONData from './world-map.geojson.json'
 
-	const worldMapGeoJSONData = _worldMapGeoJSONData as FeatureCollection
+	// TODO!(sqs): inefficient
+	const worldMapGeoJSONData = JSON.parse(JSON.stringify(_worldMapGeoJSONData)) as FeatureCollection
 
 	const { origin, destination }: { origin: Point; destination: Point } = $props()
 
-	let mapWrapper: HTMLElement | undefined
-
 	const width = 960
 	const height = 500
-
-	const centerLat = 0
-	const centerLong = -122
 
 	// TODO!(sqs): use https://www.d3indepth.com/geographic/
 	// https://connorrothschild.github.io/v4/post/svelte-and-d3
 	//
 	// TODO!(sqs): use topojson, more efficient https://github.com/topojson/topojson
 
-	const geoPath = d3.geoPath(d3.geoEquirectangular().rotate([60, 0, 0]), null)
+	const greatCircleLine: Feature<LineString> = {
+		type: 'Feature',
+		properties: null,
+		geometry: {
+			type: 'LineString',
+			coordinates: [
+				[origin.longitude, origin.latitude],
+				[destination.longitude, destination.latitude]
+			]
+		}
+	}
+
+	const projection = d3
+		.geoEquirectangular()
+		// .fitExtent(
+		// 	[
+		// 		[0, 0],
+		// 		[width, height]
+		// 	],
+		// 	greatCircleLine
+		// )
+		.center([
+			greatCircleLine.geometry.coordinates[0][0],
+			greatCircleLine.geometry.coordinates[0][1]
+		])
+	const geoPath = d3.geoPath(projection, null)
+
+	// TODO!(sqs): figure out how to rotate
 
 	worldMapGeoJSONData.features.push(
-		{
-			type: 'Feature',
-			properties: null,
-			geometry: {
-				type: 'LineString',
-				coordinates: [
-					[origin.longitude, origin.latitude],
-					[destination.longitude, destination.latitude]
-				]
-			}
-		},
+		greatCircleLine,
 		{
 			type: 'Feature',
 			properties: null,
@@ -74,7 +87,7 @@
 `
 </script>
 
-<div class="map-wrapper h-auto" bind:this={mapWrapper}>
+<div class="map-wrapper h-auto">
 	{@html svgContent}
 </div>
 
