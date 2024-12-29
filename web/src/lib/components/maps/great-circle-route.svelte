@@ -20,11 +20,10 @@
 	 * projection.
 	 */
 	function project(lon: number, lat: number): [number, number] {
-		const x = (lon + 180) * (width / 360)
-		const y = (90 - lat) * (height / 180)
+		const x = (lon - centerLong + 180) * (width / 360)
+		const y = (90 - (lat - centerLat)) * (height / 180)
 		return [x, y]
 	}
-
 	function coordsToSVGPath(coords: number[][][]): string {
 		let path = ''
 		for (const ring of coords) {
@@ -32,7 +31,6 @@
 				const [x, y] = project(coord[0], coord[1]).map((n) => n.toFixed(1))
 				path += `${j === 0 ? 'M' : 'L'}${x},${y}`
 			}
-			path += 'Z'
 		}
 		return path
 	}
