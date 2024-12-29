@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Point } from '$lib/types'
+	import * as d3 from 'd3'
 	import type { FeatureCollection } from 'geojson'
 	import _worldMapGeoJSONData from './world-map.geojson.json'
 
@@ -17,113 +18,54 @@
 
 	// TODO!(sqs): use https://www.d3indepth.com/geographic/
 	// https://connorrothschild.github.io/v4/post/svelte-and-d3
+	//
+	// TODO!(sqs): use topojson, more efficient https://github.com/topojson/topojson
 
-	/**
-	 * Returns the [x, y] coordinates of the given longitude and latitude using a simple equirectangular
-	 * projection.
-	 */
-	function project(lon: number, lat: number): [number, number] {
-		const x = (lon - centerLong + 180) * (width / 360)
-		const y = (90 - (lat - centerLat)) * (height / 180)
-		return [x, y]
-	}
-	function coordsToSVGPath(coords: number[][][]): { path: string; wrapsX: boolean } {
-		let path = ''
-		let wrapsX = false
+	const geoPath = d3.geoPath(d3.geoEquirectangular().rotate([60, 0, 0]), null)
 
-		for (const ring of coords) {
-			for (const [j, coord] of ring.entries()) {
-				const [x, y] = project(coord[0], coord[1])
-				if (x < 0 || x > width) {
-					wrapsX = true
-				}
-				path += `${j === 0 ? 'M' : 'L'}${x},${y}`
+	worldMapGeoJSONData.features.push(
+		{
+			type: 'Feature',
+			properties: null,
+			geometry: {
+				type: 'LineString',
+				coordinates: [
+					[origin.longitude, origin.latitude],
+					[destination.longitude, destination.latitude]
+				]
+			}
+		},
+		{
+			type: 'Feature',
+			properties: null,
+			geometry: {
+				type: 'Point',
+				coordinates: [origin.longitude, origin.latitude]
+			}
+		},
+		{
+			type: 'Feature',
+			properties: null,
+			geometry: {
+				type: 'Point',
+				coordinates: [destination.longitude, destination.latitude]
 			}
 		}
-		return { path, wrapsX: wrapsX }
-	}
+	)
 
 	const svgElements = []
 	for (const feature of worldMapGeoJSONData.features) {
-		const polygons =
-			feature.geometry.type === 'Polygon'
-				? [feature.geometry.coordinates]
-				: feature.geometry.type === 'MultiPolygon'
-					? feature.geometry.coordinates
-					: []
-		for (const polygon of polygons) {
-			const { path, wrapsX: wraps } = coordsToSVGPath(polygon)
-			if (wraps) console.log('WRAPS', feature.properties?.ISO_A2)
+		const p = geoPath(feature)
+		if (feature.geometry.type === 'LineString') {
+			svgElements.push(`<path d="${p}" fill="none" stroke="var(--map-line)" stroke-width="0.5"/>`)
+		} else if (feature.geometry.type === 'Point') {
+			svgElements.push(`<path d="${p}" fill="var(--map-point)" />`)
+		} else if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
 			svgElements.push(
-				`<path d="${path}" fill="${wraps ? 'green' : 'var(--land-color)'}" stroke="var(--border-color)" stroke-width="0.5"/>`
+				`<path d="${p}" fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5"/>`
 			)
 		}
 	}
-
-	$effect(() => {
-		const svg = mapWrapper?.querySelector('svg')
-		if (svg) {
-			const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-			const [x1, y1] = project(origin.longitude, origin.latitude)
-			const [x2, y2] = project(destination.longitude, destination.latitude)
-
-			// Add start and end points
-			for (const [x, y] of [
-				[x1, y1],
-				[x2, y2]
-			]) {
-				const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-				point.setAttribute('cx', x.toString())
-				point.setAttribute('cy', y.toString())
-				point.setAttribute('r', '2')
-				point.setAttribute('fill', 'var(--map-point)')
-				svg.appendChild(point)
-			}
-
-			// Calculate intermediate points for great circle route.
-			const numPoints = 50
-			let pathData = [`M ${x1} ${y1}`]
-			for (let i = 1; i <= numPoints; i++) {
-				const f = i / numPoints
-				const lat1 = (origin.latitude * Math.PI) / 180
-				const lon1 = (origin.longitude * Math.PI) / 180
-				const lat2 = (destination.latitude * Math.PI) / 180
-				const lon2 = (destination.longitude * Math.PI) / 180
-
-				const d = Math.acos(
-					Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)
-				)
-				const A = Math.sin((1 - f) * d) / Math.sin(d)
-				const B = Math.sin(f * d) / Math.sin(d)
-
-				const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2)
-				const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2)
-				const z = A * Math.sin(lat1) + B * Math.sin(lat2)
-
-				const lat = (Math.atan2(z, Math.sqrt(x * x + y * y)) * 180) / Math.PI
-				const lon = (Math.atan2(y, x) * 180) / Math.PI
-
-				const [px, py] = project(lon, lat)
-				pathData.push(`L ${px} ${py}`)
-			}
-
-			path.setAttribute('d', pathData.join(' '))
-			path.setAttribute('fill', 'none')
-			path.setAttribute('stroke', 'var(--map-line)')
-			path.setAttribute('stroke-width', '0.75')
-			svg.appendChild(path)
-
-			const zoom = false
-			if (zoom) {
-				const padding = 25
-				const width = Math.abs(x2 - x1) + padding * 2
-				const height = Math.abs(y2 - y1) + padding * 2
-				const minX = Math.min(x1, x2) - padding
-				const minY = Math.min(y1, y2) - padding
-				svg.setAttribute('viewBox', `${minX} ${minY} ${width} ${height}`)
-			}
-		}
-	})
 
 	const svgContent = `
 	<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
