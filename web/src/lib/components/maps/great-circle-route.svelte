@@ -103,7 +103,7 @@
 			path.setAttribute('stroke-width', '0.75')
 			svg.appendChild(path)
 
-			const zoom = true
+			const zoom = false
 			if (zoom) {
 				const padding = 25
 				const width = Math.abs(x2 - x1) + padding * 2
