@@ -12,8 +12,8 @@
 	const width = 960
 	const height = 500
 
-	const centerLat = 0
-	const centerLong = 0
+	const centerLat = 37
+	const centerLong = -122
 
 	/**
 	 * Returns the [x, y] coordinates of the given longitude and latitude using a simple equirectangular
