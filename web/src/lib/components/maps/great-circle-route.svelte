@@ -11,6 +11,7 @@
 
 	let containerRef: HTMLDivElement | undefined
 	let width = $state(960)
+	let height = $derived(width / 1.92)
 
 	$effect(() => {
 		if (!containerRef) return
@@ -26,8 +27,6 @@
 	// TODO!(sqs): use topojson, more efficient https://github.com/topojson/topojson
 
 	function makeSVG(): string {
-		const height = width / 1.92
-
 		const greatCircleLine: Feature<LineString> = {
 			type: 'Feature',
 			properties: null,
@@ -41,14 +40,14 @@
 		}
 
 		const lineCentroid = d3.geoCentroid(greatCircleLine)
-		const padding = 50
+		const padding = [0.08 * width, 0.08 * height]
 		const projection = d3
 			.geoEquirectangular()
 			.rotate([-1 * lineCentroid[0], 0])
 			.fitExtent(
 				[
-					[padding, padding],
-					[width - padding, height - padding]
+					[padding[0], padding[1]],
+					[width - padding[0], height - padding[1]]
 				],
 				greatCircleLine
 			)
@@ -88,17 +87,15 @@
 			}
 		}
 
-		const svgContent = `
-	<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-		${svgElements.join('\n')}
-	</svg>`
-		return svgContent
+		return svgElements.join('\n')
 	}
 	const svgContent = $derived(makeSVG())
 </script>
 
 <div class="map-wrapper h-auto" bind:this={containerRef}>
-	{@html svgContent}
+	<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
+		{@html svgContent}
+	</svg>
 </div>
 
 <style>
