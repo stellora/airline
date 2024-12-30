@@ -3,7 +3,8 @@
 	import { debounce } from '$lib/utils'
 	import * as d3 from 'd3'
 	import type { Feature, FeatureCollection, LineString } from 'geojson'
-	import worldMapGeoJSONData from './world-map.geojson.json'
+	import { feature as topojsonToGeoJSON } from 'topojson-client'
+	import worldTopoJSONData from './world.topojson.json'
 
 	const { origin, destination }: { origin: Point; destination: Point } = $props()
 
@@ -19,7 +20,10 @@
 		}
 	}
 	const featureCollections: FeatureCollection[] = [
-		worldMapGeoJSONData as FeatureCollection,
+		topojsonToGeoJSON(
+			worldTopoJSONData as unknown as TopoJSON.Topology,
+			'world'
+		) as unknown as FeatureCollection,
 		{
 			type: 'FeatureCollection',
 			features: [

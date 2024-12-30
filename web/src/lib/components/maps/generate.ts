@@ -1,4 +1,4 @@
-import type { BBox, FeatureCollection } from 'geojson'
+import type { FeatureCollection } from 'geojson'
 
 async function run() {
 	const output: FeatureCollection = { type: 'FeatureCollection', features: [] }
@@ -41,28 +41,6 @@ async function run() {
 					ISO_A2: feature.properties.ISO_A2
 				}
 			}
-		}
-	}
-
-	// Reduce precision to cut bundle size.
-	function round(n: number): number {
-		return Number(n.toFixed(4))
-	}
-	for (const feature of output.features) {
-		const coordinates =
-			feature.geometry.type === 'Polygon'
-				? [feature.geometry.coordinates]
-				: feature.geometry.type === 'MultiPolygon'
-					? feature.geometry.coordinates
-					: []
-		for (const shape of coordinates) {
-			for (const [i, point] of shape.entries()) {
-				shape[i] = point.map((coord) => coord.map(round))
-			}
-		}
-
-		if (feature.bbox) {
-			feature.bbox = feature.bbox.map(round) as BBox
 		}
 	}
 
