@@ -11,9 +11,6 @@
 		{flightRoute(data.route.originAirport, data.route.destinationAirport)}
 	</h1>
 	<Card class="max-w-[960px]">
-		<GreatCircleRoute
-			origin={data.route.originAirport}
-			destination={data.route.destinationAirport}
-		/>
+		<GreatCircleRoute routes={[[data.route.originAirport, data.route.destinationAirport]]} />
 	</Card>
 </div>

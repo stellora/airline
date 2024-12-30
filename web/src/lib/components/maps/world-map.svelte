@@ -73,7 +73,7 @@
 		{#each featureCollections as collection}
 			{#each collection.features as feature}
 				{@const path = geoPath(feature)}
-				{#if path === null}{:else if feature.geometry.type === 'LineString'}
+				{#if path === null}{:else if feature.geometry.type === 'LineString' || feature.geometry.type === 'MultiLineString'}
 					<path d={path} fill="none" stroke="var(--map-line)" stroke-width="2.5" />
 				{:else if feature.geometry.type === 'Point'}
 					{#if feature.properties?.label}

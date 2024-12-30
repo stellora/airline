@@ -1,43 +1,44 @@
 <script lang="ts">
 	import type { Airport } from '$lib/types'
-	import type { Feature, LineString } from 'geojson'
+	import type { Feature, MultiLineString, Point } from 'geojson'
 	import WorldMap from './world-map.svelte'
 
-	const { origin, destination }: { origin: Airport; destination: Airport } = $props()
+	const { routes }: { routes: [Airport, Airport][] } = $props()
 
-	const greatCircleLine: Feature<LineString> = {
+	const greatCircleLines: Feature<MultiLineString> = {
 		type: 'Feature',
 		properties: null,
 		geometry: {
-			type: 'LineString',
-			coordinates: [
+			type: 'MultiLineString',
+			coordinates: routes.map(([origin, destination]) => [
 				[origin.point.longitude, origin.point.latitude],
 				[destination.point.longitude, destination.point.latitude]
-			]
+			])
 		}
+	}
+
+	const airports: Record<string, Airport> = {}
+	for (const [origin, destination] of routes) {
+		airports[origin.iataCode] = origin
+		airports[destination.iataCode] = destination
 	}
 </script>
 
 <WorldMap
 	features={[
-		greatCircleLine,
-		{
-			type: 'Feature',
-			properties: { label: origin.iataCode },
-			geometry: {
-				type: 'Point',
-				coordinates: [origin.point.longitude, origin.point.latitude]
-			}
-		},
-		{
-			type: 'Feature',
-			properties: { label: destination.iataCode },
-			geometry: {
-				type: 'Point',
-				coordinates: [destination.point.longitude, destination.point.latitude]
-			}
-		}
+		greatCircleLines,
+		...Object.values(airports).map(
+			(airport) =>
+				({
+					type: 'Feature',
+					properties: { label: airport.iataCode },
+					geometry: {
+						type: 'Point',
+						coordinates: [airport.point.longitude, airport.point.latitude]
+					}
+				}) satisfies Feature<Point>
+		)
 	]}
-	center={greatCircleLine}
-	fit={greatCircleLine}
+	center={greatCircleLines}
+	fit={greatCircleLines}
 />
