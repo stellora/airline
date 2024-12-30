@@ -3,10 +3,44 @@
 	import { debounce } from '$lib/utils'
 	import * as d3 from 'd3'
 	import type { Feature, FeatureCollection, LineString } from 'geojson'
-	import _worldMapGeoJSONData from './world-map.geojson.json'
+	import worldMapGeoJSONData from './world-map.geojson.json'
 
-	// TODO!(sqs): inefficient
-	const worldMapGeoJSONData = JSON.parse(JSON.stringify(_worldMapGeoJSONData)) as FeatureCollection
+	const greatCircleLine: Feature<LineString> = {
+		type: 'Feature',
+		properties: null,
+		geometry: {
+			type: 'LineString',
+			coordinates: [
+				[origin.longitude, origin.latitude],
+				[destination.longitude, destination.latitude]
+			]
+		}
+	}
+	const featureCollections: FeatureCollection[] = [
+		worldMapGeoJSONData,
+		{
+			type: 'FeatureCollection',
+			features: [
+				greatCircleLine,
+				{
+					type: 'Feature',
+					properties: null,
+					geometry: {
+						type: 'Point',
+						coordinates: [origin.longitude, origin.latitude]
+					}
+				},
+				{
+					type: 'Feature',
+					properties: null,
+					geometry: {
+						type: 'Point',
+						coordinates: [destination.longitude, destination.latitude]
+					}
+				}
+			]
+		}
+	]
 
 	const { origin, destination }: { origin: Point; destination: Point } = $props()
 
@@ -30,18 +64,6 @@
 	// TODO!(sqs): use topojson, more efficient https://github.com/topojson/topojson
 
 	function makeSVG(): string {
-		const greatCircleLine: Feature<LineString> = {
-			type: 'Feature',
-			properties: null,
-			geometry: {
-				type: 'LineString',
-				coordinates: [
-					[origin.longitude, origin.latitude],
-					[destination.longitude, destination.latitude]
-				]
-			}
-		}
-
 		const lineCentroid = d3.geoCentroid(greatCircleLine)
 		const padding = [0.08 * width, 0.08 * height]
 		const projection = d3
@@ -60,40 +82,25 @@
 			])
 		const geoPath = d3.geoPath(projection, null)
 
-		worldMapGeoJSONData.features.push(
-			greatCircleLine,
-			{
-				type: 'Feature',
-				properties: null,
-				geometry: {
-					type: 'Point',
-					coordinates: [origin.longitude, origin.latitude]
-				}
-			},
-			{
-				type: 'Feature',
-				properties: null,
-				geometry: {
-					type: 'Point',
-					coordinates: [destination.longitude, destination.latitude]
-				}
-			}
-		)
-
 		const svgElements = []
-		for (const feature of worldMapGeoJSONData.features) {
-			const p = geoPath(feature)
-			if (p === null) {
-				continue
-			}
-			if (feature.geometry.type === 'LineString') {
-				svgElements.push(`<path d="${p}" fill="none" stroke="var(--map-line)" stroke-width="1"/>`)
-			} else if (feature.geometry.type === 'Point') {
-				svgElements.push(`<path d="${p}" fill="var(--map-point)" />`)
-			} else if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
-				svgElements.push(
-					`<path d="${p}" fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5"/>`
-				)
+		for (const collection of featureCollections) {
+			for (const feature of collection.features) {
+				const p = geoPath(feature)
+				if (p === null) {
+					continue
+				}
+				if (feature.geometry.type === 'LineString') {
+					svgElements.push(`<path d="${p}" fill="none" stroke="var(--map-line)" stroke-width="1"/>`)
+				} else if (feature.geometry.type === 'Point') {
+					svgElements.push(`<path d="${p}" fill="var(--map-point)" />`)
+				} else if (
+					feature.geometry.type === 'Polygon' ||
+					feature.geometry.type === 'MultiPolygon'
+				) {
+					svgElements.push(
+						`<path d="${p}" fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5"/>`
+					)
+				}
 			}
 		}
 
