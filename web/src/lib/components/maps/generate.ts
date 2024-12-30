@@ -39,7 +39,7 @@ async function run() {
 
 	// Reduce precision to cut bundle size.
 	function round(n: number): number {
-		return Number(n.toFixed(1))
+		return Number(n.toFixed(6))
 	}
 	for (const feature of output.features) {
 		const coordinates =
