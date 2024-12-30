@@ -51,6 +51,10 @@
 				],
 				greatCircleLine
 			)
+			.clipExtent([
+				[0, 0],
+				[width, height]
+			])
 		const geoPath = d3.geoPath(projection, null)
 
 		worldMapGeoJSONData.features.push(
@@ -76,6 +80,9 @@
 		const svgElements = []
 		for (const feature of worldMapGeoJSONData.features) {
 			const p = geoPath(feature)
+			if (p === null) {
+				continue
+			}
 			if (feature.geometry.type === 'LineString') {
 				svgElements.push(`<path d="${p}" fill="none" stroke="var(--map-line)" stroke-width="0.5"/>`)
 			} else if (feature.geometry.type === 'Point') {
