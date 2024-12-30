@@ -98,6 +98,15 @@
 					<path d={path} fill="none" stroke="var(--map-line)" stroke-width="1" />
 				{:else if feature.geometry.type === 'Point'}
 					<path d={path} fill="var(--map-point)" />
+					<text
+						x={geoPath.centroid(feature)[0]}
+						y={geoPath.centroid(feature)[1] - 10}
+						text-anchor="middle"
+						fill="var(--map-point)"
+						font-size="12"
+					>
+						ABC
+					</text>
 				{:else if feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon'}
 					<path d={path} fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5" />
 				{/if}
