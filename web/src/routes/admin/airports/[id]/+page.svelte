@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms'
 	import Distance from '$lib/components/distance.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
+	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
 
@@ -18,6 +19,13 @@
 		<CardHeader>
 			<CardTitle>Flights to/from {data.airport.iataCode}</CardTitle>
 		</CardHeader>
+		{#await data.flights then flights}
+			{#if flights && flights.length > 0}
+				<GreatCircleRoute
+					routes={flights.map((flight) => [flight.originAirport, flight.destinationAirport])}
+				/>
+			{/if}
+		{/await}
 		<CardContent>
 			{#await data.flights}
 				<div class="text-muted-foreground">Loading...</div>
