@@ -105,21 +105,22 @@
 				{:else if feature.geometry.type === 'Point'}
 					{#if feature.properties?.label}
 						{@const [x, y] = geoPath.centroid(feature)}
-						{@const charWidth = 7.5}
-						{@const charHeight = 14.5}
+						{@const charWidth = 9.5}
+						<!-- 7 -->
+						{@const charHeight = 11}
+						<!-- 12 -->
 						{@const size = [feature.properties?.label.length * charWidth, charHeight]}
-						{@const padding = [3, 3]}
-						<g class="font-mono text-xs leading-none">
+						{@const padding = [5, 4]}
+						<g class="font-mono text-base leading-none">
 							<rect
-								x={x - size[0] / 2 - padding[0]}
-								y={y - size[1] / 2 - padding[1]}
+								x={x - 0.5 * size[0] - padding[0]}
+								y={y - 0.5 * size[1] - padding[1]}
 								width={size[0] + 2 * padding[0]}
 								height={size[1] + 2 * padding[1]}
 								fill="var(--map-point)"
-								stroke-width="1"
 								rx="2"
 							/>
-							<text {x} y={y + size[1] * 0.25} text-anchor="middle" fill="var(--map-point-text)">
+							<text {x} y={y + 0.5 * size[1]} text-anchor="middle" fill="var(--map-point-text)">
 								{feature.properties?.label}
 							</text>
 						</g>
