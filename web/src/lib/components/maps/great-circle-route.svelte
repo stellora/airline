@@ -45,6 +45,7 @@
 	]
 	const lineCentroid = d3.geoCentroid(greatCircleLine)
 
+	// Dynamically scale SVG.
 	let containerRef: HTMLDivElement | undefined
 	let width = $state(960)
 	let height = $derived(width / 1.92)
@@ -64,7 +65,7 @@
 	//
 	// TODO!(sqs): use topojson, more efficient https://github.com/topojson/topojson
 
-	function makeSVG(): string {
+	const geoPath = $derived.by(() => {
 		const padding = [0.08 * width, 0.08 * height]
 		const projection = d3
 			.geoEquirectangular()
@@ -80,38 +81,24 @@
 				[0, 0],
 				[width, height]
 			])
-		const geoPath = d3.geoPath(projection, null)
-
-		const svgElements = []
-		for (const collection of featureCollections) {
-			for (const feature of collection.features) {
-				const p = geoPath(feature)
-				if (p === null) {
-					continue
-				}
-				if (feature.geometry.type === 'LineString') {
-					svgElements.push(`<path d="${p}" fill="none" stroke="var(--map-line)" stroke-width="1"/>`)
-				} else if (feature.geometry.type === 'Point') {
-					svgElements.push(`<path d="${p}" fill="var(--map-point)" />`)
-				} else if (
-					feature.geometry.type === 'Polygon' ||
-					feature.geometry.type === 'MultiPolygon'
-				) {
-					svgElements.push(
-						`<path d="${p}" fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5"/>`
-					)
-				}
-			}
-		}
-
-		return svgElements.join('\n')
-	}
-	const svgContent = $derived(makeSVG())
+		return d3.geoPath(projection, null)
+	})
 </script>
 
 <div class="map-wrapper h-auto" bind:this={containerRef}>
 	<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
-		{@html svgContent}
+		{#each featureCollections as collection}
+			{#each collection.features as feature}
+				{@const path = geoPath(feature)}
+				{#if path === null}{:else if feature.geometry.type === 'LineString'}
+					<path d={path} fill="none" stroke="var(--map-line)" stroke-width="1" />
+				{:else if feature.geometry.type === 'Point'}
+					<path d={path} fill="var(--map-point)" />
+				{:else if feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon'}
+					<path d={path} fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5" />
+				{/if}
+			{/each}
+		{/each}
 	</svg>
 </div>
 
