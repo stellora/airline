@@ -9,7 +9,7 @@ describe('FlightItem', () => {
 		number: 'ST1',
 		originAirport: { iataCode: 'AAA' },
 		destinationAirport: { iataCode: 'BBB' },
-		published: false
+		published: false,
 	}
 
 	it('renders flight number correctly', () => {

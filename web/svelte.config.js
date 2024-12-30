@@ -6,14 +6,14 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
 	},
 
 	compilerOptions: {
 		// TODO(sqs): can set to `true` when https://github.com/lucide-icons/lucide/issues/2312 is
 		// fixed.
-		runes: undefined
-	}
+		runes: undefined,
+	},
 }
 
 export default config

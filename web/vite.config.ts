@@ -8,6 +8,6 @@ export default defineConfig({
 	test: {
 		setupFiles: ['src/test/vitestSetup.ts'],
 		include: ['src/**/*.test.ts'],
-		environmentMatchGlobs: [['src/**/*.svelte.test.ts', 'jsdom']]
-	}
+		environmentMatchGlobs: [['src/**/*.svelte.test.ts', 'jsdom']],
+	},
 })

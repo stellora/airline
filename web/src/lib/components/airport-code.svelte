@@ -9,7 +9,7 @@
 		link = false,
 		tooltip = true,
 		class: className,
-		as = 'abbr'
+		as = 'abbr',
 	}: (
 		| {
 				airport: Pick<Airport, 'name' | 'iataCode'>
@@ -32,7 +32,7 @@
 			<svelte:element
 				this={as}
 				class={cn(className, 'font-mono hover:underline hover:decoration-dotted', {
-					'cursor-help': !link
+					'cursor-help': !link,
 				})}
 				{...props}
 			>

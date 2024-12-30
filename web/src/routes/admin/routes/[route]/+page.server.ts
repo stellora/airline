@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ parent, params, url }) => {
 		route,
 		...(await breadcrumbEntry(parent, {
 			url: url.pathname,
-			title: flightRoute(route.originAirport, route.destinationAirport)
-		}))
+			title: flightRoute(route.originAirport, route.destinationAirport),
+		})),
 	}
 }

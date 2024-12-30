@@ -5,7 +5,7 @@ import type { Actions, PageServerLoad } from './$types'
 export const load: PageServerLoad = async () => {
 	const flights = apiClient.GET('/flights', { fetch }).then((resp) => resp.data!)
 	return {
-		flights: await flights
+		flights: await flights,
 	}
 }
 
@@ -17,7 +17,7 @@ export const actions: Actions = {
 		if (number === null || typeof number !== 'string') {
 			return fail(400, {
 				number: '',
-				error: 'flight number is required'
+				error: 'flight number is required',
 			})
 		}
 
@@ -32,21 +32,21 @@ export const actions: Actions = {
 			return fail(400, {
 				originAirport,
 				destinationAirport,
-				error: 'airport code is required'
+				error: 'airport code is required',
 			})
 		}
 
 		const resp = await apiClient.POST('/flights', {
 			body: { number, originAirport, destinationAirport },
-			fetch
+			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {
 			// TODO(sqs)
 			return fail(422, {
 				number,
-				error: await resp.response.text()
+				error: await resp.response.text(),
 			})
 		}
 		redirect(303, `/admin/flights/${resp.data.id}`)
-	}
+	},
 }

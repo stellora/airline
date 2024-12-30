@@ -6,7 +6,7 @@ export type BreadcrumbEntry = Item | Promise<Item> | Promise<BreadcrumbEntry[]>
  */
 export async function breadcrumbEntry(
 	parent: (() => Promise<{ breadcrumbs: BreadcrumbEntry[] }>) | null,
-	item: Item | Promise<Item>
+	item: Item | Promise<Item>,
 ): Promise<{ breadcrumbs: BreadcrumbEntry[] }> {
 	const parentBreadcrumbs = parent ? await parent().then(({ breadcrumbs }) => breadcrumbs) : null
 	return { breadcrumbs: parentBreadcrumbs ? [...parentBreadcrumbs, item] : [item] }

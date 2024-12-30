@@ -8,7 +8,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 	const id = Number.parseInt(params.id)
 	const resp = await apiClient.GET('/flights/{id}', {
 		params: { path: { id } },
-		fetch
+		fetch,
 	})
 	if (!resp.response.ok || !resp.data) {
 		// TODO(sqs)
@@ -19,7 +19,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 		flight,
 		...(await breadcrumbEntry(parent, {
 			url: `/admin/flights/${flight.id}`,
-			title: flightTitle(flight)
-		}))
+			title: flightTitle(flight),
+		})),
 	}
 }

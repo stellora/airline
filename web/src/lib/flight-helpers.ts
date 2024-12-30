@@ -6,7 +6,7 @@ export function flightTitle(flight: Flight): string {
 
 export function flightRoute(
 	origin: Pick<Airport, 'iataCode'>,
-	destination: Pick<Airport, 'iataCode'>
+	destination: Pick<Airport, 'iataCode'>,
 ): string {
 	return `${origin.iataCode}–${destination.iataCode}`
 }

@@ -10,7 +10,7 @@ describe('Breadcrumbs', () => {
 
 	it('renders loading state for async breadcrumbs', () => {
 		render(Breadcrumbs, {
-			props: { entries: [Promise.resolve('A'), Promise.resolve('B')] }
+			props: { entries: [Promise.resolve('A'), Promise.resolve('B')] },
 		})
 		expect(screen.getAllByTestId('breadcrumb-ellipsis')).toHaveLength(2)
 		expect(readBreadcrumbs()).toStrictEqual('...>...')
@@ -18,7 +18,7 @@ describe('Breadcrumbs', () => {
 
 	it('renders mixed sync and async breadcrumbs', async () => {
 		render(Breadcrumbs, {
-			props: { entries: ['A', Promise.resolve([Promise.resolve(['B', 'C']), 'D']), 'E'] }
+			props: { entries: ['A', Promise.resolve([Promise.resolve(['B', 'C']), 'D']), 'E'] },
 		})
 
 		for (const item of ['A', 'B', 'C', 'D', 'E']) {

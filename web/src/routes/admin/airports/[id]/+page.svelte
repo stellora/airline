@@ -21,9 +21,11 @@
 		</CardHeader>
 		{#await data.flights then flights}
 			{#if flights && flights.length > 0}
-				<GreatCircleRoute
-					routes={flights.map((flight) => [flight.originAirport, flight.destinationAirport])}
-				/>
+				<div class="max-w-[600px]">
+					<GreatCircleRoute
+						routes={flights.map((flight) => [flight.originAirport, flight.destinationAirport])}
+					/>
+				</div>
 			{/if}
 		{/await}
 		<CardContent>

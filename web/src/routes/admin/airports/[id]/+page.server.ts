@@ -7,11 +7,11 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 	const flights = apiClient
 		.GET('/airports/{id}/flights', {
 			params: { path: { id } },
-			fetch
+			fetch,
 		})
 		.then((resp) => resp.data)
 	return {
-		flights
+		flights,
 	}
 }
 
@@ -21,19 +21,19 @@ export const actions: Actions = {
 		const idStr = data.get('id')
 		if (!idStr || typeof idStr !== 'string') {
 			return fail(400, {
-				error: 'id is required'
+				error: 'id is required',
 			})
 		}
 		const id = Number.parseInt(idStr)
 		const resp = await apiClient.DELETE('/airports/{id}', {
 			params: { path: { id } },
-			fetch
+			fetch,
 		})
 		if (!resp.response.ok) {
 			return fail(422, {
-				error: await resp.response.text()
+				error: await resp.response.text(),
 			})
 		}
 		return redirect(303, '/admin/airports')
-	}
+	},
 }

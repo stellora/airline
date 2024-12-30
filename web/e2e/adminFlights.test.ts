@@ -42,7 +42,7 @@ async function addFlight(
 	page: Page,
 	number: string,
 	originIataCode: string,
-	destinationIataCode: string
+	destinationIataCode: string,
 ): Promise<void> {
 	await page.goto('/admin/flights')
 

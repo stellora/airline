@@ -23,9 +23,9 @@ describe('FlightForm', () => {
 					number: 'AB123',
 					originAirport: 'LAX',
 					destinationAirport: 'JFK',
-					error: ''
-				}
-			}
+					error: '',
+				},
+			},
 		})
 		expect(screen.getByPlaceholderText('Flight number')).toHaveValue('AB123')
 		expect(screen.getByPlaceholderText('From')).toHaveValue('LAX')

@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function debounce<T extends (...args: any[]) => void>(
 	fn: T,
-	delay: number
+	delay: number,
 ): (...args: Parameters<T>) => void {
 	let timeoutId: ReturnType<typeof setTimeout> | null = null
 	return (...args: Parameters<T>) => {

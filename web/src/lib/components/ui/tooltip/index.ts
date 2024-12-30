@@ -17,5 +17,5 @@ export {
 	Portal as TooltipPortal,
 	Provider as TooltipProvider,
 	Trigger as TooltipTrigger,
-	Trigger
+	Trigger,
 }

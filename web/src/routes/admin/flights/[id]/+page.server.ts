@@ -13,7 +13,7 @@ export const actions: Actions = {
 		if (!idStr || typeof idStr !== 'string') {
 			return fail(400, {
 				id: idStr,
-				error: 'id is required'
+				error: 'id is required',
 			})
 		}
 		const id = Number.parseInt(idStr)
@@ -22,7 +22,7 @@ export const actions: Actions = {
 		if (publishedStr !== 'true' && publishedStr !== 'false') {
 			return fail(400, {
 				published: undefined,
-				error: 'published must be "true" or "false"'
+				error: 'published must be "true" or "false"',
 			})
 		}
 		const published = publishedStr === 'true'
@@ -30,13 +30,13 @@ export const actions: Actions = {
 		const resp = await apiClient.PATCH('/flights/{id}', {
 			params: { path: { id } },
 			body: { published },
-			fetch
+			fetch,
 		})
 		if (!resp.response.ok) {
 			// TODO(sqs)
 			return fail(422, {
 				published: undefined,
-				error: await resp.response.text()
+				error: await resp.response.text(),
 			})
 		}
 	},
@@ -45,21 +45,21 @@ export const actions: Actions = {
 		const idStr = data.get('id')
 		if (!idStr || typeof idStr !== 'string') {
 			return fail(400, {
-				error: 'id is required'
+				error: 'id is required',
 			})
 		}
 		const id = Number.parseInt(idStr)
 
 		const resp = await apiClient.DELETE('/flights/{id}', {
 			params: { path: { id } },
-			fetch
+			fetch,
 		})
 		if (!resp.response.ok) {
 			// TODO(sqs)
 			return fail(422, {
-				error: await resp.response.text()
+				error: await resp.response.text(),
 			})
 		}
 		return redirect(303, '/admin/flights')
-	}
+	},
 }

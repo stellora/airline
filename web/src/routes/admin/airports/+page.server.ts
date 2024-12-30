@@ -4,7 +4,7 @@ import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async () => {
 	return {
-		airports: (await apiClient.GET('/airports', { fetch })).data
+		airports: (await apiClient.GET('/airports', { fetch })).data,
 	}
 }
 
@@ -15,7 +15,7 @@ export const actions: Actions = {
 		if (iataCode === null || typeof iataCode !== 'string') {
 			return fail(400, {
 				iataCode: iataCode,
-				error: 'iataCode is required'
+				error: 'iataCode is required',
 			})
 		}
 
@@ -24,8 +24,8 @@ export const actions: Actions = {
 			// TODO(sqs)
 			return fail(422, {
 				iataCode: iataCode,
-				error: await resp.response.text()
+				error: await resp.response.text(),
 			})
 		}
-	}
+	},
 }

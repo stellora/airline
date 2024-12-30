@@ -4,7 +4,7 @@
 	import { fade } from 'svelte/transition'
 
 	const {
-		flight
+		flight,
 	}: {
 		flight: ComponentProps<typeof FlightTitle>['flight']
 	} = $props()

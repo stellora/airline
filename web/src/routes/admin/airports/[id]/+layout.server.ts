@@ -13,7 +13,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 		airport,
 		...(await breadcrumbEntry(parent, {
 			url: `/admin/airports/${airport.id}`,
-			title: airport.iataCode
-		}))
+			title: airport.iataCode,
+		})),
 	}
 }

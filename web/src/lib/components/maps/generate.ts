@@ -5,7 +5,7 @@ async function run() {
 
 	const geojsonURLs = [
 		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_50m_admin_0_countries_lakes.geojson',
-		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_50m_admin_1_states_provinces_lakes.geojson'
+		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_50m_admin_1_states_provinces_lakes.geojson',
 	]
 	for (const url of geojsonURLs) {
 		const resp = await fetch(url)
@@ -38,7 +38,7 @@ async function run() {
 		if (feature.type === 'Feature') {
 			if (feature.properties) {
 				feature.properties = {
-					ISO_A2: feature.properties.ISO_A2
+					ISO_A2: feature.properties.ISO_A2,
 				}
 			}
 		}

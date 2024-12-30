@@ -12,9 +12,9 @@
 			type: 'MultiLineString',
 			coordinates: routes.map(([origin, destination]) => [
 				[origin.point.longitude, origin.point.latitude],
-				[destination.point.longitude, destination.point.latitude]
-			])
-		}
+				[destination.point.longitude, destination.point.latitude],
+			]),
+		},
 	}
 
 	const airports: Record<string, Airport> = {}
@@ -34,10 +34,10 @@
 					properties: { label: airport.iataCode },
 					geometry: {
 						type: 'Point',
-						coordinates: [airport.point.longitude, airport.point.latitude]
-					}
-				}) satisfies Feature<Point>
-		)
+						coordinates: [airport.point.longitude, airport.point.latitude],
+					},
+				}) satisfies Feature<Point>,
+		),
 	]}
 	center={greatCircleLines}
 	fit={greatCircleLines}

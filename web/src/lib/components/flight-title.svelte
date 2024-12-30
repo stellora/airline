@@ -9,7 +9,7 @@
 		link = false,
 		class: className,
 		subtitleClass,
-		as = 'h2'
+		as = 'h2',
 	}: {
 		flight: Pick<Flight, 'id' | 'number' | 'published'> & {
 			originAirport: Exclude<Flight['originAirport'], 'name' | 'iataCode'>
@@ -27,7 +27,7 @@
 		class={{
 			'underline decoration-dotted decoration-2 decoration-muted-foreground italic text-muted-foreground':
 				!flight.published,
-			'font-mono': true
+			'font-mono': true,
 		}}
 	>
 		{#if link}

@@ -7,7 +7,7 @@
 		SIDEBAR_COOKIE_MAX_AGE,
 		SIDEBAR_COOKIE_NAME,
 		SIDEBAR_WIDTH,
-		SIDEBAR_WIDTH_ICON
+		SIDEBAR_WIDTH_ICON,
 	} from './constants'
 	import { setSidebar } from './context.svelte'
 
@@ -38,7 +38,7 @@
 
 			// This sets the cookie to keep the sidebar state.
 			document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
-		}
+		},
 	})
 </script>
 
@@ -49,7 +49,7 @@
 		style="--sidebar-width: {SIDEBAR_WIDTH}; --sidebar-width-icon: {SIDEBAR_WIDTH_ICON}; {style}"
 		class={cn(
 			'group/sidebar-wrapper has-[[data-variant=inset]]:bg-sidebar flex min-h-svh w-full',
-			className
+			className,
 		)}
 		bind:this={ref}
 		{...restProps}

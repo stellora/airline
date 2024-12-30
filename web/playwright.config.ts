@@ -3,11 +3,11 @@ import { defineConfig } from '@playwright/test'
 export default defineConfig({
 	webServer: {
 		command: 'npm run build && npm run preview',
-		port: 4173
+		port: 4173,
 	},
 	use: {
-		browserName: 'chromium'
+		browserName: 'chromium',
 	},
 	testDir: 'e2e',
-	timeout: 2500
+	timeout: 2500,
 })

@@ -21,46 +21,46 @@
 		{
 			title: 'Book flights',
 			url: '/',
-			icon: TicketsPlane
+			icon: TicketsPlane,
 		},
 		{
 			title: 'My bookings',
 			url: '/bookings',
-			icon: User
+			icon: User,
 		},
 		{
 			title: 'Flight status',
 			url: '/flight-status',
-			icon: Info
-		}
+			icon: Info,
+		},
 	]
 
 	const adminItems: Item[] = [
 		{
 			title: 'Flights',
 			url: '/admin/flights',
-			icon: Spline
+			icon: Spline,
 		},
 		{
 			title: 'Routes',
 			url: '/admin/routes',
-			icon: Waypoints
+			icon: Waypoints,
 		},
 		{
 			title: 'Airports',
 			url: '/admin/airports',
-			icon: MapPin
+			icon: MapPin,
 		},
 		{
 			title: 'Aircraft',
 			url: '/admin/aircraft',
-			icon: Plane
+			icon: Plane,
 		},
 		{
 			title: 'Passengers',
 			url: '/admin/passengers',
-			icon: Users
-		}
+			icon: Users,
+		},
 	]
 </script>
 

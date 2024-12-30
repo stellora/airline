@@ -14,7 +14,7 @@
 		const resizeObserver = new ResizeObserver(
 			debounce((entries) => {
 				width = entries[0].contentRect.width
-			}, 25)
+			}, 25),
 		)
 		resizeObserver.observe(containerRef)
 		return () => resizeObserver.disconnect()
@@ -23,18 +23,18 @@
 	const {
 		features,
 		center: centerFeature,
-		fit: fitFeature
+		fit: fitFeature,
 	}: { features: Feature[]; center?: Feature; fit?: Feature } = $props()
 
 	const featureCollections: FeatureCollection[] = [
 		topojsonToGeoJSON(
 			worldTopoJSONData as unknown as TopoJSON.Topology,
-			'world'
+			'world',
 		) as unknown as FeatureCollection,
 		{
 			type: 'FeatureCollection',
-			features
-		}
+			features,
+		},
 	]
 
 	const centerCentroid = centerFeature && d3.geoCentroid(centerFeature)
@@ -55,13 +55,13 @@
 				.fitExtent(
 					[
 						[padding[0], padding[1]],
-						[width - padding[0], height - padding[1]]
+						[width - padding[0], height - padding[1]],
 					],
-					fitFeature
+					fitFeature,
 				)
 				.clipExtent([
 					[0, 0],
-					[width, height]
+					[width, height],
 				])
 		}
 		return d3.geoPath(projection, null)
@@ -84,7 +84,7 @@
 						<!-- 12 -->
 						{@const size = [feature.properties?.label.length * charWidth, charHeight]}
 						{@const padding = [5, 4]}
-						<g class="font-mono text-base leading-none">
+						<g class="font-mono text-base leading-none hover:font-bold">
 							<rect
 								x={x - 0.5 * size[0] - padding[0]}
 								y={y - 0.5 * size[1] - padding[1]}

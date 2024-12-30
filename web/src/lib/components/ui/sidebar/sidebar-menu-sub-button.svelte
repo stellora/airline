@@ -25,12 +25,12 @@
 			size === 'sm' && 'text-xs',
 			size === 'md' && 'text-sm',
 			'group-data-[collapsible=icon]:hidden',
-			className
+			className,
 		),
 		'data-sidebar': 'menu-sub-button',
 		'data-size': size,
 		'data-active': isActive,
-		...restProps
+		...restProps,
 	})
 </script>
 
