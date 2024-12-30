@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Point } from '$lib/types'
+	import { debounce } from '$lib/utils'
 	import * as d3 from 'd3'
 	import type { Feature, FeatureCollection, LineString } from 'geojson'
 	import _worldMapGeoJSONData from './world-map.geojson.json'
@@ -15,9 +16,11 @@
 
 	$effect(() => {
 		if (!containerRef) return
-		const resizeObserver = new ResizeObserver((entries) => {
-			width = entries[0].contentRect.width
-		})
+		const resizeObserver = new ResizeObserver(
+			debounce((entries) => {
+				width = entries[0].contentRect.width
+			}, 25)
+		)
 		resizeObserver.observe(containerRef)
 		return () => resizeObserver.disconnect()
 	})
@@ -84,7 +87,7 @@
 				continue
 			}
 			if (feature.geometry.type === 'LineString') {
-				svgElements.push(`<path d="${p}" fill="none" stroke="var(--map-line)" stroke-width="0.5"/>`)
+				svgElements.push(`<path d="${p}" fill="none" stroke="var(--map-line)" stroke-width="1"/>`)
 			} else if (feature.geometry.type === 'Point') {
 				svgElements.push(`<path d="${p}" fill="var(--map-point)" />`)
 			} else if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
