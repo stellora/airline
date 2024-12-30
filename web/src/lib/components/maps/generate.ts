@@ -4,8 +4,8 @@ async function run() {
 	const output: FeatureCollection = { type: 'FeatureCollection', features: [] }
 
 	const geojsonURLs = [
-		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_110m_admin_0_countries_lakes.geojson',
-		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_110m_admin_1_states_provinces_lakes.geojson'
+		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_50m_admin_0_countries_lakes.geojson',
+		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_50m_admin_1_states_provinces_lakes.geojson'
 	]
 	for (const url of geojsonURLs) {
 		const resp = await fetch(url)
@@ -14,13 +14,20 @@ async function run() {
 		}
 		const geojsonData: FeatureCollection = await resp.json()
 
+		// Only use USA from states-provinces data because we don't need granular data for other
+		// countries.
+		if (url.endsWith('states_provinces_lakes.geojson')) {
+			geojsonData.features = geojsonData.features.filter((feature) => {
+				return feature.properties?.geonunit === 'United States of America'
+			})
+		}
+
 		// Skip USA from countries data because we add the more granular state-level data in the 2nd
 		// data file.
 		if (url.endsWith('countries_lakes.geojson')) {
-			const filteredFeatures = geojsonData.features.filter((feature: any) => {
-				return feature.properties.GEOUNIT !== 'United States of America'
+			geojsonData.features = geojsonData.features.filter((feature) => {
+				return feature.properties?.GEOUNIT !== 'United States of America'
 			})
-			geojsonData.features = filteredFeatures
 		}
 
 		output.features.push(...geojsonData.features)
@@ -39,7 +46,7 @@ async function run() {
 
 	// Reduce precision to cut bundle size.
 	function round(n: number): number {
-		return Number(n.toFixed(6))
+		return Number(n.toFixed(4))
 	}
 	for (const feature of output.features) {
 		const coordinates =

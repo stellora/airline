@@ -31,14 +31,16 @@
 
 	// Find midpoint longitude of the great circle line.
 	const lineCentroid = d3.geoCentroid(greatCircleLine)
-	const projection = d3.geoEquirectangular().rotate([lineCentroid[0], 0])
-	// .fitExtent(
-	// 	[
-	// 		[width * 0.1, height * 0.1],
-	// 		[width * 0.9, height * 0.9]
-	// 	],
-	// 	greatCircleLine
-	// )
+	const projection = d3
+		.geoEquirectangular()
+		.rotate([-1 * lineCentroid[0], 0])
+		.fitExtent(
+			[
+				[width * 0.1, height * 0.1],
+				[width * 0.9, height * 0.9]
+			],
+			greatCircleLine
+		)
 	const geoPath = d3.geoPath(projection, null)
 
 	// TODO!(sqs): figure out how to rotate
