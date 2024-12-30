@@ -5,6 +5,8 @@
 	import type { Feature, FeatureCollection, LineString } from 'geojson'
 	import worldMapGeoJSONData from './world-map.geojson.json'
 
+	const { origin, destination }: { origin: Point; destination: Point } = $props()
+
 	const greatCircleLine: Feature<LineString> = {
 		type: 'Feature',
 		properties: null,
@@ -17,7 +19,7 @@
 		}
 	}
 	const featureCollections: FeatureCollection[] = [
-		worldMapGeoJSONData,
+		worldMapGeoJSONData as FeatureCollection,
 		{
 			type: 'FeatureCollection',
 			features: [
@@ -41,13 +43,11 @@
 			]
 		}
 	]
-
-	const { origin, destination }: { origin: Point; destination: Point } = $props()
+	const lineCentroid = d3.geoCentroid(greatCircleLine)
 
 	let containerRef: HTMLDivElement | undefined
 	let width = $state(960)
 	let height = $derived(width / 1.92)
-
 	$effect(() => {
 		if (!containerRef) return
 		const resizeObserver = new ResizeObserver(
@@ -58,13 +58,13 @@
 		resizeObserver.observe(containerRef)
 		return () => resizeObserver.disconnect()
 	})
+
 	// TODO!(sqs): use https://www.d3indepth.com/geographic/
 	// https://connorrothschild.github.io/v4/post/svelte-and-d3
 	//
 	// TODO!(sqs): use topojson, more efficient https://github.com/topojson/topojson
 
 	function makeSVG(): string {
-		const lineCentroid = d3.geoCentroid(greatCircleLine)
 		const padding = [0.08 * width, 0.08 * height]
 		const projection = d3
 			.geoEquirectangular()
