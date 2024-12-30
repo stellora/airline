@@ -10,10 +10,12 @@
 	<h1 class="text-4xl font-bold">
 		{flightRoute(data.route.originAirport, data.route.destinationAirport)}
 	</h1>
-	<Card class="max-w-[800px]">
+	<Card class="max-w-[960px]">
 		<GreatCircleRoute
 			origin={data.route.originAirport.point}
+			originLabel={data.route.originAirport.iataCode}
 			destination={data.route.destinationAirport.point}
+			destinationLabel={data.route.destinationAirport.iataCode}
 		/>
 	</Card>
 </div>

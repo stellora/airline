@@ -6,7 +6,13 @@
 	import { feature as topojsonToGeoJSON } from 'topojson-client'
 	import worldTopoJSONData from './world.topojson.json'
 
-	const { origin, destination }: { origin: Point; destination: Point } = $props()
+	const {
+		origin,
+		originLabel,
+		destination,
+		destinationLabel
+	}: { origin: Point; originLabel?: string; destination: Point; destinationLabel?: string } =
+		$props()
 
 	const greatCircleLine: Feature<LineString> = {
 		type: 'Feature',
@@ -30,7 +36,7 @@
 				greatCircleLine,
 				{
 					type: 'Feature',
-					properties: null,
+					properties: { label: originLabel },
 					geometry: {
 						type: 'Point',
 						coordinates: [origin.longitude, origin.latitude]
@@ -38,7 +44,7 @@
 				},
 				{
 					type: 'Feature',
-					properties: null,
+					properties: { label: destinationLabel },
 					geometry: {
 						type: 'Point',
 						coordinates: [destination.longitude, destination.latitude]
@@ -95,18 +101,31 @@
 			{#each collection.features as feature}
 				{@const path = geoPath(feature)}
 				{#if path === null}{:else if feature.geometry.type === 'LineString'}
-					<path d={path} fill="none" stroke="var(--map-line)" stroke-width="1" />
+					<path d={path} fill="none" stroke="var(--map-line)" stroke-width="2.5" />
 				{:else if feature.geometry.type === 'Point'}
-					<path d={path} fill="var(--map-point)" />
-					<text
-						x={geoPath.centroid(feature)[0]}
-						y={geoPath.centroid(feature)[1] - 10}
-						text-anchor="middle"
-						fill="var(--map-point)"
-						font-size="12"
-					>
-						ABC
-					</text>
+					{#if feature.properties?.label}
+						{@const [x, y] = geoPath.centroid(feature)}
+						{@const charWidth = 7.5}
+						{@const charHeight = 14.5}
+						{@const size = [feature.properties?.label.length * charWidth, charHeight]}
+						{@const padding = [3, 3]}
+						<g class="font-mono text-xs leading-none">
+							<rect
+								x={x - size[0] / 2 - padding[0]}
+								y={y - size[1] / 2 - padding[1]}
+								width={size[0] + 2 * padding[0]}
+								height={size[1] + 2 * padding[1]}
+								fill="var(--map-point)"
+								stroke-width="1"
+								rx="2"
+							/>
+							<text {x} y={y + size[1] * 0.25} text-anchor="middle" fill="var(--map-point-text)">
+								{feature.properties?.label}
+							</text>
+						</g>
+					{:else}
+						<path d={path} fill="var(--map-point)" />
+					{/if}
 				{:else if feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon'}
 					<path d={path} fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5" />
 				{/if}

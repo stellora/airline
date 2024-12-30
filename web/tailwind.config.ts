@@ -60,6 +60,7 @@ const config: Config = {
 				},
 				map: {
 					point: 'hsl(var(--map-point))',
+					pointText: 'hsl(var(--map-point-text))',
 					line: 'hsl(var(--map-line))',
 					land: 'hsl(var(--map-land))',
 					border: 'hsl(var(--map-border))'
