@@ -12,10 +12,8 @@
 	</h1>
 	<Card class="max-w-[960px]">
 		<GreatCircleRoute
-			origin={data.route.originAirport.point}
-			originLabel={data.route.originAirport.iataCode}
-			destination={data.route.destinationAirport.point}
-			destinationLabel={data.route.destinationAirport.iataCode}
+			origin={data.route.originAirport}
+			destination={data.route.destinationAirport}
 		/>
 	</Card>
 </div>
