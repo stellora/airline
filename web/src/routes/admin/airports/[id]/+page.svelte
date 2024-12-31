@@ -5,15 +5,20 @@
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
+	import Page from '$lib/components/ui/page/page.svelte'
 
 	let { data } = $props()
 </script>
 
-<div class="flex flex-col gap-4 items-stretch w-full">
-	<div class="flex items-baseline gap-2">
-		<h1 class="text-4xl font-bold font-mono">{data.airport.iataCode}</h1>
-		<p class="text-muted-foreground">{data.airport.name}</p>
-	</div>
+<Page title={`${data.airport.iataCode}: ${data.airport.name}`}>
+	{#snippet titleElement()}
+		<div class="flex items-baseline gap-2">
+			<h1 class="text-4xl font-bold">
+				{data.airport.iataCode}
+			</h1>
+			<span class="text-muted-foreground">{data.airport.name}</span>
+		</div>
+	{/snippet}
 
 	<Card>
 		<CardHeader>
@@ -69,4 +74,4 @@
 			</form>
 		</CardContent>
 	</Card>
-</div>
+</Page>

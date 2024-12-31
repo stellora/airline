@@ -2,14 +2,14 @@
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
+	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
 	import AirportForm from './airport-form.svelte'
 
 	let { data, form } = $props()
 </script>
 
-<div class="flex flex-col gap-4 items-stretch w-full">
-	<h1 class="text-2xl font-bold">Airports</h1>
+<Page title="Airports">
 	<AirportForm {form} />
 	<Card>
 		<Table.Root>
@@ -47,4 +47,4 @@
 			{/if}
 		</Table.Root>
 	</Card>
-</div>
+</Page>

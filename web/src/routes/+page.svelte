@@ -1,11 +1,11 @@
 <script lang="ts">
 	import FlightCard from '$lib/components/flight-card.svelte'
+	import Page from '$lib/components/ui/page/page.svelte'
 
 	let { data } = $props()
 </script>
 
-<div class="flex flex-col gap-10 items-stretch w-full">
-	<h1 class="text-4xl font-bold">Book flights</h1>
+<Page title="Book flights">
 	<div class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4">
 		{#if data.flights}
 			{#each data.flights as flight (flight.id)}
@@ -15,4 +15,4 @@
 			{/each}
 		{/if}
 	</div>
-</div>
+</Page>

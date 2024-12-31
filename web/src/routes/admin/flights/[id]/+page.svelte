@@ -4,20 +4,17 @@
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
+	import Page from '$lib/components/ui/page/page.svelte'
+	import { flightTitle } from '$lib/flight-helpers'
 	import FlightEditForm from './flight-edit-form.svelte'
 
 	let { data, form } = $props()
 </script>
 
-<div class="flex flex-col gap-4 items-stretch w-full">
-	<div class="flex items-center gap-4">
-		<FlightTitle
-			flight={data.flight}
-			class="text-4xl font-bold"
-			subtitleClass="text-base"
-			as="h1"
-		/>
-	</div>
+<Page title={flightTitle(data.flight)}>
+	{#snippet titleElement(className)}
+		<FlightTitle flight={data.flight} class={className} subtitleClass="text-base" as="h1" />
+	{/snippet}
 
 	<div class="flex flex-wrap-reverse gap-4">
 		<Card class="flex-grow-[1]">
@@ -54,4 +51,4 @@
 			</form>
 		</CardContent>
 	</Card>
-</div>
+</Page>

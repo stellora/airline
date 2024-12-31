@@ -4,10 +4,10 @@
 	import Distance from '$lib/components/distance.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent } from '$lib/components/ui/card'
+	import Page from '$lib/components/ui/page/page.svelte'
 </script>
 
-<div class="flex flex-col gap-4 items-stretch w-full">
-	<h1 class="text-4xl font-bold">Routes</h1>
+<Page title="Routes">
 	<Card>
 		<CardContent>
 			{#await data.routes}
@@ -45,4 +45,4 @@
 			{/await}
 		</CardContent>
 	</Card>
-</div>
+</Page>
