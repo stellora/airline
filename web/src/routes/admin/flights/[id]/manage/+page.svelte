@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import FlightTitle from '$lib/components/flight-title.svelte'
-	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
 	import { Button } from '$lib/components/ui/button'
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
+	import { Card } from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { flightTitle } from '$lib/flight-helpers'
 
@@ -20,36 +19,27 @@
 			as="h1"
 		/>
 	{/snippet}
+	{#snippet actions()}
+		<form method="POST" action="?/setFlightPublished" use:enhance>
+			<input type="hidden" name="id" value={data.flight.id} />
+			<input type="hidden" name="published" value={data.flight.published ? 'false' : 'true'} />
+			<Button type="submit" variant={data.flight.published ? 'outline' : 'default'}>
+				{data.flight.published ? 'Unpublish' : 'Publish'}
+			</Button>
+		</form>
+		<form
+			method="POST"
+			action="?/delete"
+			use:enhance={({ cancel }) => {
+				if (!confirm('Really delete?')) {
+					cancel()
+				}
+			}}
+		>
+			<input type="hidden" name="id" value={data.flight.id} />
+			<Button type="submit" variant="destructive">Delete flight...</Button>
+		</form>
+	{/snippet}
 
-	<div class="flex flex-wrap-reverse gap-4">
-		<Card class="flex-grow-[1]">
-			<CardHeader>
-				<CardTitle>Flight</CardTitle>
-			</CardHeader>
-		</Card>
-	</div>
-
-	<Card class="border-destructive self-start">
-		<CardContent class="flex gap-4">
-			<form method="POST" action="?/setFlightPublished" use:enhance>
-				<input type="hidden" name="id" value={data.flight.id} />
-				<input type="hidden" name="published" value={data.flight.published ? 'false' : 'true'} />
-				<Button type="submit" variant={data.flight.published ? 'outline' : 'default'}>
-					{data.flight.published ? 'Unpublish' : 'Publish'}
-				</Button>
-			</form>
-			<form
-				method="POST"
-				action="?/delete"
-				use:enhance={({ cancel }) => {
-					if (!confirm('Really delete?')) {
-						cancel()
-					}
-				}}
-			>
-				<input type="hidden" name="id" value={data.flight.id} />
-				<Button type="submit" variant="destructive">Delete flight</Button>
-			</form>
-		</CardContent>
-	</Card>
+	<Card></Card>
 </Page>

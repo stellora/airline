@@ -106,7 +106,7 @@
 	{#if $message}
 		<Alert variant="destructive" aria-live="polite">
 			<CircleAlert class="size-5" />
-			<AlertTitle>Error creating flight</AlertTitle>
+			<AlertTitle>Error</AlertTitle>
 			<AlertDescription>{$message}</AlertDescription>
 		</Alert>
 	{/if}

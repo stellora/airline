@@ -35,6 +35,7 @@
 		{:else}
 			<h1 class="text-4xl font-bold">{title}</h1>
 		{/if}
+		<div class="flex-1"></div>
 		{@render actions?.()}
 	</header>
 
