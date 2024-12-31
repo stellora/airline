@@ -19,7 +19,10 @@
 
 <FormPrimitive.FieldErrors
 	bind:ref
-	class={cn('text-destructive text-sm font-medium [&>*]:mb-4', className)}
+	class={cn(
+		'text-destructive text-sm font-medium [&>*]:mb-4 [&:not([data-fs-error])]:hidden',
+		className,
+	)}
 	{...restProps}
 >
 	{#snippet children({ errors, errorProps })}
@@ -27,7 +30,7 @@
 			{@render childrenProp({ errors, errorProps })}
 		{:else}
 			{#each errors as error}
-				<Alert {...errorProps} variant="destructive" size="sm" class={cn(errorClasses, 'w-fit')}>
+				<Alert {...errorProps} variant="destructive" size="sm" class={cn(errorClasses)}>
 					<CircleAlert class="size-5" />
 					<AlertDescription>{error}</AlertDescription>
 				</Alert>

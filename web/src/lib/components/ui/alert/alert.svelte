@@ -10,7 +10,7 @@
 					'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
 			},
 			size: {
-				default: 'p-4 [&>svg]:left-4 [&>svg]:top-4 [&>svg~*]:pl-7',
+				default: 'p-4 [&>svg]:left-4 [&>svg]:top-4 [&>svg~*]:pl-8',
 				sm: 'p-2 [&>svg]:left-2 [&>svg]:top-2 [&>svg~*]:pl-6',
 			},
 		},
