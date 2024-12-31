@@ -23,7 +23,7 @@
 	method="POST"
 	action="?/create"
 	use:enhance
-	class="flex flex-col gap-4 items-start"
+	class="flex flex-col gap-6 items-start"
 	data-testid="flight-form"
 >
 	<Form.Field {form} name="number">
@@ -77,7 +77,7 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
-	<Form.Button class="self-start">Create flight</Form.Button>
+	<Form.Button>Create flight</Form.Button>
 	{#if $message}
 		<Alert variant="destructive" aria-live="polite">
 			<CircleAlert class="size-5" />
