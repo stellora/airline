@@ -27,17 +27,19 @@
 							{flight.number}
 						</Table.Cell>
 						<Table.Cell class="flex items-center gap-2"
-							><span
-								><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
-									airport={flight.destinationAirport}
-								/></span
-							>
-							<div class="border rounded">
-								<FlightSparkRoute {flight} width={100} height={25} />
+							><div class="inline-flex flex-col gap-1">
+								<span
+									><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
+										airport={flight.destinationAirport}
+									/></span
+								>
+								<span class="text-muted-foreground text-xs">
+									<Distance distanceMiles={flight.distanceMiles} /></span
+								>
 							</div>
-							<span class="text-muted-foreground text-xs">
-								<Distance distanceMiles={flight.distanceMiles} /></span
-							>
+							<div class="border rounded">
+								<FlightSparkRoute {flight} width={100} height={36} />
+							</div>
 						</Table.Cell>
 						<Table.Cell class="text-right">
 							<Button

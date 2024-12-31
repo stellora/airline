@@ -10,14 +10,13 @@
 		drawBorders: drawBordersArg = 'auto',
 		...restProps
 	}: {
-		flight: Pick<Flight, 'originAirport' | 'destinationAirport'> &
-			Omit<
-				ComponentProps<typeof WorldMap>,
-				'features' | 'center' | 'fit' | 'detailLevel' | 'drawBorders'
-			> & {
-				drawBorders?: boolean | 'auto'
-			}
-	} = $props()
+		flight: Pick<Flight, 'originAirport' | 'destinationAirport'>
+	} & Omit<
+		ComponentProps<typeof WorldMap>,
+		'features' | 'center' | 'fit' | 'detailLevel' | 'drawBorders'
+	> & {
+			drawBorders?: boolean | 'auto'
+		} = $props()
 
 	const line: Feature<LineString> = {
 		type: 'Feature',

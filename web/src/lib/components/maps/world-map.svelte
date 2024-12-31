@@ -96,7 +96,12 @@
 </script>
 
 <div class="map-wrapper" bind:this={containerRef}>
-	<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
+	<svg
+		width={widthArg === 'auto' ? undefined : width}
+		height={heightArg === 'auto' ? undefined : height}
+		viewBox="0 0 {width} {height}"
+		xmlns="http://www.w3.org/2000/svg"
+	>
 		{#each featureCollections as collection}
 			{#each collection.features as feature}
 				{@const path = geoPath(feature)}
