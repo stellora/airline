@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
-	import Distance from '$lib/components/distance.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
 	import { Button } from '$lib/components/ui/button'
-	import { Card, CardContent } from '$lib/components/ui/card'
+	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
+	import FlightEditForm from './flight-edit-form.svelte'
 
-	let { data } = $props()
+	let { data, form } = $props()
 </script>
 
 <div class="flex flex-col gap-4 items-stretch w-full">
@@ -20,10 +20,13 @@
 	</div>
 
 	<div class="flex flex-wrap-reverse gap-4">
-		<Card>
-			<Distance distanceMiles={data.flight.distanceMiles} />
+		<Card class="flex-grow-[1]">
+			<CardHeader>
+				<CardTitle>Flight</CardTitle>
+			</CardHeader>
+			<FlightEditForm flight={data.flight} {form} />
 		</Card>
-		<Card class="overflow-hidden">
+		<Card class="overflow-hidden flex-grow-[2] basis-[350px] min-w-[350px]">
 			<GreatCircleRoute routes={[[data.flight.originAirport, data.flight.destinationAirport]]} />
 		</Card>
 	</div>

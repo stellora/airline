@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { geoDistanceMiles } from '$lib/flight-helpers'
 	import { debounce } from '$lib/utils'
 	import * as d3 from 'd3'
 	import type { Feature, FeatureCollection } from 'geojson'
 	import { feature as topojsonToGeoJSON } from 'topojson-client'
 	import worldTopoJSONData from './world.topojson.json'
-	import { geoDistanceMiles } from '$lib/flight-helpers'
 
 	const {
 		features,
@@ -96,7 +96,7 @@
 </script>
 
 <div class="map-wrapper" bind:this={containerRef}>
-	<svg {width} {height} viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
+	<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
 		{#each featureCollections as collection}
 			{#each collection.features as feature}
 				{@const path = geoPath(feature)}
