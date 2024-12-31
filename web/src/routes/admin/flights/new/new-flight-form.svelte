@@ -77,7 +77,7 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
-	<Form.Button>Create flight</Form.Button>
+	<Form.Button size="lg">Create</Form.Button>
 	{#if $message}
 		<Alert variant="destructive" aria-live="polite">
 			<CircleAlert class="size-5" />
