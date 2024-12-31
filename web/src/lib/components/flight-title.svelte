@@ -27,7 +27,7 @@
 		class={{
 			'underline decoration-dotted decoration-2 decoration-muted-foreground italic text-muted-foreground':
 				!flight.published,
-			'font-mono': true,
+			'font-mono tracking-tight': true,
 		}}
 	>
 		{#if link}

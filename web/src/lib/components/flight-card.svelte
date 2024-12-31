@@ -11,7 +11,7 @@
 	} = $props()
 </script>
 
-<li class="flex flex-col gap-4 border p-3 rounded-md min-h-32">
-	<FlightTitle {flight} class="text-lg font-bold leading-none" />
+<li class="flex flex-col gap-2 border rounded-md min-h-32">
+	<FlightTitle {flight} class="text-lg font-bold leading-none pt-3 px-3" />
 	<FlightSparkRoute {flight} />
 </li>
