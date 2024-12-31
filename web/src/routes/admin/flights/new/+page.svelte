@@ -11,7 +11,7 @@
 <Page title="New flight">
 	<Card class="self-start">
 		<CardContent>
-			<NewFlightForm form={data.form} />
+			<NewFlightForm form={data.form} action="?/create" />
 		</CardContent>
 	</Card>
 </Page>

@@ -11,7 +11,7 @@
 	import FlightDateRangeInput from './flight-date-range-input.svelte'
 	import { formSchema } from './new-flight-form'
 
-	const props: { form: PageServerData['form'] } = $props()
+	const props: { form: PageServerData['form']; action: string } = $props()
 	const form = superForm(props.form, {
 		validators: typebox(formSchema),
 		onError({ result }) {
@@ -23,7 +23,7 @@
 
 <form
 	method="POST"
-	action="?/create"
+	action={props.action}
 	use:enhance
 	class="flex flex-col gap-6 items-start"
 	data-testid="flight-form"

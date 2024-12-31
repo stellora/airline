@@ -2,11 +2,12 @@
 	import { enhance } from '$app/forms'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
-	import { Card } from '$lib/components/ui/card'
+	import { Card, CardContent } from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { flightTitle } from '$lib/flight-helpers'
+	import NewFlightForm from '../../new/new-flight-form.svelte'
 
-	let { data, form } = $props()
+	let { data } = $props()
 </script>
 
 <Page title={`Manage ${flightTitle(data.flight)}`}>
@@ -41,5 +42,9 @@
 		</form>
 	{/snippet}
 
-	<Card></Card>
+	<Card class="self-start">
+		<CardContent>
+			<NewFlightForm form={data.form} action="?/update" />
+		</CardContent>
+	</Card>
 </Page>

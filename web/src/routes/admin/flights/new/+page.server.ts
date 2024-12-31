@@ -13,7 +13,6 @@ export const load: PageServerLoad = async () => {
 
 export const actions: Actions = {
 	create: async ({ request }) => {
-		console.log('QQQ')
 		const form = await superValidate(request, typebox(formSchema))
 		if (!form.valid) {
 			return fail(400, { form })
@@ -29,8 +28,6 @@ export const actions: Actions = {
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {
-			// TODO(sqs)
-			console.log('EEE', resp.error)
 			return message(form, resp.error, { status: 400 })
 		}
 		redirect(303, `/admin/flights/${resp.data.id}`)
