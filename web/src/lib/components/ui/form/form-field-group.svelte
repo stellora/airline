@@ -12,7 +12,7 @@
 	}: { legend: string } & WithElementRef<HTMLFieldsetAttributes> = $props()
 </script>
 
-<fieldset bind:this={ref} class={cn('rounded-lg border px-4 pt-2 pb-3', className)} {...restProps}>
+<fieldset bind:this={ref} class={cn('rounded-lg border px-4 pt-3 pb-3', className)} {...restProps}>
 	<legend class="text-base font-medium">{legend}</legend>
 	<div class={cn('flex gap-4')}>
 		{@render children?.()}

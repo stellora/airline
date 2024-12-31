@@ -24,7 +24,7 @@ export const actions: Actions = {
 				number: form.data.number,
 				originAirport: form.data.originAirport,
 				destinationAirport: form.data.destinationAirport,
-				published: false,
+				published: form.data.published,
 			},
 			fetch,
 		})

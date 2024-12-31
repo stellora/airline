@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
+	import { Checkbox } from '$lib/components/ui/checkbox'
 	import * as Form from '$lib/components/ui/form'
 	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
 	import { Input } from '$lib/components/ui/input'
@@ -74,6 +75,29 @@
 				{/snippet}
 			</Form.Control>
 			<Form.Description>IATA code</Form.Description>
+			<Form.FieldErrors />
+		</Form.Field>
+	</FormFieldGroup>
+	<Form.Field {form} name="aircraftType">
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Aircraft type</Form.Label>
+				<Input {...props} bind:value={$formData.aircraftType} autocomplete="off" class="w-auto" />
+			{/snippet}
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
+	<FormFieldGroup legend="Options">
+		<Form.Field {form} name="published">
+			<Form.Control>
+				{#snippet children({ props })}
+					<div class="flex items-center gap-2">
+						<Checkbox {...props} bind:checked={$formData.published} />
+						<Form.Label>Published</Form.Label>
+					</div>
+				{/snippet}
+			</Form.Control>
+			<Form.Description>Published flights are immediately available for booking</Form.Description>
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
