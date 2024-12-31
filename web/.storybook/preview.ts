@@ -1,6 +1,9 @@
 import type { Preview } from '@storybook/svelte'
+import { themes, type ThemeVars } from '@storybook/theming'
+import '../src/app.css'
+import './preview.css'
 
-const preview: Preview = {
+const preview: Preview & { docs?: { theme: ThemeVars } } = {
 	parameters: {
 		controls: {
 			matchers: {
@@ -9,6 +12,8 @@ const preview: Preview = {
 			},
 		},
 	},
+	docs: {
+		theme: themes.dark,
+	},
 }
-
 export default preview

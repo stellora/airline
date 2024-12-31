@@ -1,9 +1,16 @@
 <script lang="ts">
 	import type { Airport } from '$lib/types'
 	import type { Feature, MultiLineString, Point } from 'geojson'
+	import type { ComponentProps } from 'svelte'
 	import WorldMap from './world-map.svelte'
 
-	const { routes }: { routes: [Airport, Airport][] } = $props()
+	const {
+		routes,
+		...restProps
+	}: { routes: [Airport, Airport][] } & Omit<
+		ComponentProps<typeof WorldMap>,
+		'features' | 'center' | 'fit'
+	> = $props()
 
 	const greatCircleLines: Feature<MultiLineString> = {
 		type: 'Feature',
@@ -41,4 +48,5 @@
 	]}
 	center={greatCircleLines}
 	fit={greatCircleLines}
+	{...restProps}
 />

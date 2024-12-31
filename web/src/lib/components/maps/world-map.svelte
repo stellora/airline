@@ -5,26 +5,29 @@
 	import { feature as topojsonToGeoJSON } from 'topojson-client'
 	import worldTopoJSONData from './world.topojson.json'
 
-	// Dynamically scale SVG.
-	let containerRef: HTMLDivElement | undefined
-	let width = $state(960)
-	let height = $derived(width / 1.92)
-	$effect(() => {
-		if (!containerRef) return
-		const resizeObserver = new ResizeObserver(
-			debounce((entries) => {
-				width = entries[0].contentRect.width
-			}, 25),
-		)
-		resizeObserver.observe(containerRef)
-		return () => resizeObserver.disconnect()
-	})
-
 	const {
 		features,
 		center: centerFeature,
 		fit: fitFeature,
-	}: { features: Feature[]; center?: Feature; fit?: Feature } = $props()
+		width: widthArg = 'auto',
+	}: { features: Feature[]; center?: Feature; fit?: Feature; width: number | 'auto' } = $props()
+
+	// Dynamically scale SVG.
+	let containerRef: HTMLDivElement | undefined
+	let width = $state(widthArg === 'auto' ? 960 : widthArg)
+	let height = $derived(width / 1.92)
+	if (widthArg === 'auto') {
+		$effect(() => {
+			if (!containerRef) return
+			const resizeObserver = new ResizeObserver(
+				debounce<ResizeObserverCallback>((entries) => {
+					width = entries[0].contentRect.width
+				}, 25),
+			)
+			resizeObserver.observe(containerRef)
+			return () => resizeObserver.disconnect()
+		})
+	}
 
 	const featureCollections: FeatureCollection[] = [
 		topojsonToGeoJSON(
@@ -68,8 +71,8 @@
 	})
 </script>
 
-<div class="map-wrapper h-auto" bind:this={containerRef}>
-	<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
+<div class="map-wrapper" bind:this={containerRef}>
+	<svg {width} {height} viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
 		{#each featureCollections as collection}
 			{#each collection.features as feature}
 				{@const path = geoPath(feature)}

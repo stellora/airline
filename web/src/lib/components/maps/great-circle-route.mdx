@@ -1,0 +1,10 @@
+import { FIXTURE_AIRPORTS } from '$lib/fixtures'
+import { Meta } from '@storybook/blocks'
+import '../../../app.css'
+import GreatCircleRoute from './great-circle-route.svelte'
+
+<Meta title="maps/GreatCircleRoute/Edge cases" component={GreatCircleRoute} />
+
+<GreatCircleRoute routes={[[FIXTURE_AIRPORTS.LHR, FIXTURE_AIRPORTS.AMS]] } />
+
+<GreatCircleRoute routes={[[FIXTURE_AIRPORTS.EWR, FIXTURE_AIRPORTS.SIN]] } />

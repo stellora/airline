@@ -13,6 +13,8 @@ const config: StorybookConfig = {
 	},
 	core: {
 		disableTelemetry: true,
+		enableCrashReports: false,
+		disableWhatsNewNotifications: true,
 	},
 }
 export default config
