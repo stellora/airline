@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as Form from '$lib/components/ui/form'
+	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
 	import { Input } from '$lib/components/ui/input'
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
@@ -7,7 +8,6 @@
 	import { formSchema } from './flight-form'
 
 	const props: { form: PageServerData['form'] } = $props()
-	$inspect(props.form)
 	const form = superForm(props.form, { validators: typebox(formSchema) })
 	const { form: formData, enhance } = form
 </script>
@@ -17,21 +17,26 @@
 		method="POST"
 		action="?/create"
 		use:enhance
-		class="flex flex-wrap gap-2"
+		class="flex flex-col gap-4"
 		data-testid="flight-form"
 	>
 		<Form.Field {form} name="number">
 			<Form.Control>
 				{#snippet children({ props })}
 					<Form.Label>Flight number</Form.Label>
-					<Input {...props} bind:value={$formData.number} autocomplete="off" />
+					<Input
+						{...props}
+						bind:value={$formData.number}
+						autocomplete="off"
+						size={16}
+						class="font-mono w-auto"
+					/>
 				{/snippet}
 			</Form.Control>
 			<Form.Description>Airline (2-letter IATA code) + number</Form.Description>
 			<Form.FieldErrors />
 		</Form.Field>
-		<fieldset>
-			<legend>Hello</legend>
+		<FormFieldGroup legend="Route">
 			<Form.Field {form} name="originAirport">
 				<Form.Control>
 					{#snippet children({ props })}
@@ -48,6 +53,7 @@
 				<Form.Description>IATA code</Form.Description>
 				<Form.FieldErrors />
 			</Form.Field>
+			<span class="relative top-[38px] left-[-4px] w-[1px]">&ndash;</span>
 			<Form.Field {form} name="destinationAirport">
 				<Form.Control>
 					{#snippet children({ props })}
@@ -64,11 +70,7 @@
 				<Form.Description>IATA code</Form.Description>
 				<Form.FieldErrors />
 			</Form.Field>
-		</fieldset>
-		<Form.Button type="submit" variant="secondary" aria-label="Add flight">Add</Form.Button>
+		</FormFieldGroup>
+		<Form.Button>Create flight</Form.Button>
 	</form>
-
-	{#if form?.error}
-		<p class="text-red-700 p-2" role="alert" aria-live="polite">❌ Error: {form.error}</p>
-	{/if}
 </div>
