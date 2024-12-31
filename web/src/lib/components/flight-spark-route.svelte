@@ -1,9 +1,23 @@
 <script lang="ts">
+	import { geoDistanceMiles } from '$lib/flight-helpers'
 	import type { Flight } from '$lib/types'
 	import type { Feature, LineString } from 'geojson'
+	import type { ComponentProps } from 'svelte'
 	import WorldMap from './maps/world-map.svelte'
 
-	const { flight }: { flight: Pick<Flight, 'originAirport' | 'destinationAirport'> } = $props()
+	const {
+		flight,
+		drawBorders: drawBordersArg = 'auto',
+		...restProps
+	}: {
+		flight: Pick<Flight, 'originAirport' | 'destinationAirport'> &
+			Omit<
+				ComponentProps<typeof WorldMap>,
+				'features' | 'center' | 'fit' | 'detailLevel' | 'drawBorders'
+			> & {
+				drawBorders?: boolean | 'auto'
+			}
+	} = $props()
 
 	const line: Feature<LineString> = {
 		type: 'Feature',
@@ -16,6 +30,15 @@
 			],
 		},
 	}
+
+	const drawBorders = drawBordersArg === 'auto' ? geoDistanceMiles(line) < 3000 : drawBordersArg
 </script>
 
-<WorldMap features={[line]} fit={line} detailLevel="low" drawBorders={false} />
+<WorldMap
+	features={[line]}
+	center={line}
+	fit={line}
+	detailLevel="auto"
+	{drawBorders}
+	{...restProps}
+/>

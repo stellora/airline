@@ -4,27 +4,40 @@
 	import type { Feature, FeatureCollection } from 'geojson'
 	import { feature as topojsonToGeoJSON } from 'topojson-client'
 	import worldTopoJSONData from './world.topojson.json'
+	import { geoDistanceMiles } from '$lib/flight-helpers'
 
 	const {
 		features,
 		center: centerFeature,
 		fit: fitFeature,
 		width: widthArg = 'auto',
-		detailLevel = 'low',
+		height: heightArg = 'auto',
+		detailLevel: detailLevelArg = 'low',
 		drawBorders = true,
 	}: {
 		features: Feature[]
 		center?: Feature
 		fit?: Feature
 		width?: number | 'auto'
-		detailLevel?: 'high' | 'low'
-		drawBorders: boolean
+		height?: number | 'auto'
+		detailLevel?: 'high' | 'low' | 'auto'
+		drawBorders?: boolean
 	} = $props()
 
 	// Dynamically scale SVG.
 	let containerRef: HTMLDivElement | undefined
-	let width = $state(widthArg === 'auto' ? 600 : widthArg)
-	let height = $derived(width / 1.92)
+	const initialWidth = widthArg === 'auto' ? 600 : widthArg
+	let width = $state(initialWidth)
+	let height = $state(heightArg === 'auto' ? initialWidth / 1.92 : heightArg)
+
+	const detailLevel =
+		detailLevelArg === 'auto'
+			? fitFeature
+				? geoDistanceMiles(fitFeature) < 500
+					? 'high'
+					: 'low'
+				: 'low'
+			: detailLevelArg
 
 	$effect(() => {
 		if (widthArg === 'auto') {
@@ -32,6 +45,7 @@
 			const resizeObserver = new ResizeObserver(
 				debounce<ResizeObserverCallback>((entries) => {
 					width = entries[0].contentRect.width
+					height = entries[0].contentRect.height
 				}, 25),
 			)
 			resizeObserver.observe(containerRef)

@@ -20,6 +20,7 @@
 		<GreatCircleRoute routes={[[FIXTURE_AIRPORTS.SYD, FIXTURE_AIRPORTS.SCL]]} />
 		<GreatCircleRoute routes={[[FIXTURE_AIRPORTS.SYD, FIXTURE_AIRPORTS.LHR]]} />
 		<GreatCircleRoute routes={[[FIXTURE_AIRPORTS.SYD, FIXTURE_AIRPORTS.EWR]]} />
+		<GreatCircleRoute routes={[[FIXTURE_AIRPORTS.SFO, FIXTURE_AIRPORTS.SIN]]} />
 		<GreatCircleRoute
 			routes={[
 				[FIXTURE_AIRPORTS.SFO, FIXTURE_AIRPORTS.LHR],
@@ -46,9 +47,21 @@
 <section>
 	<h2 class="text-2xl font-bold mb-4">FlightSparkRoute</h2>
 
-	<div class="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4 *:border *:rounded">
+	<div class="flex flex-wrap gap-4 *:w-[100px] *:h-[25px] *:border *:rounded">
 		<FlightSparkRoute
 			flight={{ originAirport: FIXTURE_AIRPORTS.SFO, destinationAirport: FIXTURE_AIRPORTS.LHR }}
+		/>
+		<FlightSparkRoute
+			flight={{ originAirport: FIXTURE_AIRPORTS.SFO, destinationAirport: FIXTURE_AIRPORTS.SIN }}
+		/>
+		<FlightSparkRoute
+			flight={{ originAirport: FIXTURE_AIRPORTS.SFO, destinationAirport: FIXTURE_AIRPORTS.SCL }}
+		/>
+		<FlightSparkRoute
+			flight={{ originAirport: FIXTURE_AIRPORTS.SIN, destinationAirport: FIXTURE_AIRPORTS.EWR }}
+		/>
+		<FlightSparkRoute
+			flight={{ originAirport: FIXTURE_AIRPORTS.LHR, destinationAirport: FIXTURE_AIRPORTS.AMS }}
 		/>
 	</div>
 </section>

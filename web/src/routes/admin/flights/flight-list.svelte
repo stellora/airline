@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import Distance from '$lib/components/distance.svelte'
+	import FlightSparkRoute from '$lib/components/flight-spark-route.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
@@ -25,14 +26,19 @@
 						<Table.Cell class="font-bold text-lg">
 							{flight.number}
 						</Table.Cell>
-						<Table.Cell
-							><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
-								airport={flight.destinationAirport}
-							/>
+						<Table.Cell class="flex gap-2"
+							><span
+								><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
+									airport={flight.destinationAirport}
+								/></span
+							>
 							<span class="text-muted-foreground">
 								<Distance distanceMiles={flight.distanceMiles} /></span
-							></Table.Cell
-						>
+							>
+							<div class="border rounded">
+								<FlightSparkRoute {flight} width={100} height={25} />
+							</div>
+						</Table.Cell>
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"
