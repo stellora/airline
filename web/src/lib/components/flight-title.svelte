@@ -6,6 +6,7 @@
 
 	const {
 		flight,
+		prefix,
 		link = false,
 		class: className,
 		subtitleClass,
@@ -15,6 +16,7 @@
 			originAirport: Exclude<Flight['originAirport'], 'name' | 'iataCode'>
 			destinationAirport: Pick<Flight['destinationAirport'], 'name' | 'iataCode'>
 		}
+		prefix?: string
 		link?: boolean
 		class?: HTMLAttributes<never>['class']
 		subtitleClass?: HTMLAttributes<never>['class']
@@ -23,6 +25,7 @@
 </script>
 
 <svelte:element this={as} class={cn(className, 'flex items-baseline gap-1.5')}>
+	{prefix}
 	<span
 		class={{
 			'underline decoration-dotted decoration-2 decoration-muted-foreground italic text-muted-foreground':
