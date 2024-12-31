@@ -14,7 +14,7 @@
 
 	// Dynamically scale SVG.
 	let containerRef: HTMLDivElement | undefined
-	let width = $state(widthArg === 'auto' ? 960 : widthArg)
+	let width = $state(widthArg === 'auto' ? 600 : widthArg)
 	let height = $derived(width / 1.92)
 
 	$effect(() => {
