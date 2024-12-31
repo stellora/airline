@@ -1,8 +1,0 @@
-#storybook-root {
-	width: 100%;
-}
-
-.docs-story > :first-child {
-	overflow: hidden;
-	width: 100%;
-}

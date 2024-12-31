@@ -56,6 +56,28 @@ const airports = [
 			latitude: 1.35,
 		},
 	},
+	{
+		id: 6,
+		iataCode: 'SYD',
+		name: 'Sydney Airport',
+		country: 'Australia',
+		region: 'New South Wales',
+		point: {
+			longitude: 151.177,
+			latitude: -33.946,
+		},
+	},
+	{
+		id: 7,
+		iataCode: 'SCL',
+		name: 'Comodoro Arturo Merino Benitez International Airport',
+		country: 'Chile',
+		region: 'Metropolitana',
+		point: {
+			longitude: -70.786,
+			latitude: -33.393,
+		},
+	},
 ] as const
 
 type AirportIATACode = (typeof airports)[number]['iataCode']

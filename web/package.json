@@ -20,22 +20,11 @@
 		"format": "prettier --write .",
 		"gen": "npm run -s gen:openapi",
 		"gen:openapi": "openapi-typescript ../api/airline.openapi.yaml --output src/lib/airline.openapi.ts",
-		"gen-online:world-map": "node --experimental-strip-types src/lib/components/maps/generate.ts > src/lib/components/maps/world.geojson.json && geo2topo --quantization 1e6 world=src/lib/components/maps/world.geojson.json > src/lib/components/maps/world.topojson.json; rm src/lib/components/maps/world.geojson.json",
-		"storybook": "NODE_OPTIONS=\"--no-experimental-require-module\" storybook dev -p 6006",
-		"build-storybook": "NODE_OPTIONS=\"--no-experimental-require-module\" storybook build"
+		"gen-online:world-map": "node --experimental-strip-types src/lib/components/maps/generate.ts > src/lib/components/maps/world.geojson.json && geo2topo --quantization 1e6 world=src/lib/components/maps/world.geojson.json > src/lib/components/maps/world.topojson.json; rm src/lib/components/maps/world.geojson.json"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",
 		"@playwright/test": "^1.45.3",
-		"@storybook/addon-essentials": "^8.4.7",
-		"@storybook/addon-interactions": "^8.4.7",
-		"@storybook/addon-svelte-csf": "^5.0.0-next.21",
-		"@storybook/blocks": "^8.4.7",
-		"@storybook/manager-api": "^8.4.7",
-		"@storybook/svelte": "^8.4.7",
-		"@storybook/sveltekit": "^8.4.7",
-		"@storybook/test": "^8.4.7",
-		"@storybook/theming": "^8.4.7",
 		"@sveltejs/adapter-node": "^5.2.9",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
@@ -53,7 +42,6 @@
 		"concurrently": "^9.1.0",
 		"eslint": "^9.7.0",
 		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-storybook": "^0.11.1",
 		"eslint-plugin-svelte": "^2.36.0",
 		"globals": "^15.0.0",
 		"jsdom": "^25.0.1",
@@ -61,7 +49,6 @@
 		"openapi-typescript": "^7.4.4",
 		"prettier": "^3.3.2",
 		"prettier-plugin-svelte": "^3.2.6",
-		"storybook": "^8.4.7",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"tailwind-merge": "^2.6.0",
@@ -82,10 +69,5 @@
 		"d3-geo": "^3.1.1",
 		"openapi-fetch": "^0.13.3",
 		"topojson-client": "^3.1.0"
-	},
-	"eslintConfig": {
-		"extends": [
-			"plugin:storybook/recommended"
-		]
 	}
 }

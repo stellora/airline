@@ -10,14 +10,15 @@
 		center: centerFeature,
 		fit: fitFeature,
 		width: widthArg = 'auto',
-	}: { features: Feature[]; center?: Feature; fit?: Feature; width: number | 'auto' } = $props()
+	}: { features: Feature[]; center?: Feature; fit?: Feature; width?: number | 'auto' } = $props()
 
 	// Dynamically scale SVG.
 	let containerRef: HTMLDivElement | undefined
 	let width = $state(widthArg === 'auto' ? 960 : widthArg)
 	let height = $derived(width / 1.92)
-	if (widthArg === 'auto') {
-		$effect(() => {
+
+	$effect(() => {
+		if (widthArg === 'auto') {
 			if (!containerRef) return
 			const resizeObserver = new ResizeObserver(
 				debounce<ResizeObserverCallback>((entries) => {
@@ -26,8 +27,8 @@
 			)
 			resizeObserver.observe(containerRef)
 			return () => resizeObserver.disconnect()
-		})
-	}
+		}
+	})
 
 	const featureCollections: FeatureCollection[] = [
 		topojsonToGeoJSON(

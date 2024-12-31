@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import * as Sidebar from '$lib/components/ui/sidebar'
+	import Book from 'lucide-svelte/icons/book'
 	import CircleUser from 'lucide-svelte/icons/circle-user'
 	import Info from 'lucide-svelte/icons/info'
 	import MapPin from 'lucide-svelte/icons/map-pin'
@@ -62,6 +63,14 @@
 			icon: Users,
 		},
 	]
+
+	const devItems: Item[] = [
+		{
+			title: 'Storybook',
+			url: '/dev/storybook',
+			icon: Book,
+		},
+	]
 </script>
 
 <Sidebar.Root collapsible="offcanvas" variant="sidebar">
@@ -105,10 +114,30 @@
 				</Sidebar.Menu>
 			</Sidebar.GroupContent>
 		</Sidebar.Group>
+		<Sidebar.Separator />
+		<Sidebar.Group>
+			<Sidebar.GroupLabel>Dev</Sidebar.GroupLabel>
+			<Sidebar.GroupContent>
+				<Sidebar.Menu>
+					{#each devItems as item (item.title)}
+						<Sidebar.MenuItem>
+							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+								{#snippet child({ props })}
+									<a href={item.url} {...props}>
+										<item.icon />
+										<span>{item.title}</span>
+									</a>
+								{/snippet}
+							</Sidebar.MenuButton>
+						</Sidebar.MenuItem>
+					{/each}
+				</Sidebar.Menu>
+			</Sidebar.GroupContent>
+		</Sidebar.Group>
 	</Sidebar.Content>
 	<Sidebar.Separator />
-	<Sidebar.Footer
-		><div class="text-muted-foreground text-sm flex items-center gap-1.5">
+	<Sidebar.Footer>
+		<div class="text-muted-foreground text-sm flex items-center gap-1.5">
 			<CircleUser size="2.5ch" /> <strong>sqs</strong>
 		</div></Sidebar.Footer
 	>
