@@ -24,7 +24,10 @@
 			<FlightEditForm flight={data.flight} {form} />
 		</Card>
 		<Card class="overflow-hidden flex-grow-[2] basis-[350px] min-w-[350px]">
-			<GreatCircleRoute routes={[[data.flight.originAirport, data.flight.destinationAirport]]} />
+			<GreatCircleRoute
+				routes={[[data.flight.originAirport, data.flight.destinationAirport]]}
+				detailLevel="high"
+			/>
 		</Card>
 	</div>
 

@@ -24,6 +24,7 @@
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",
+		"@internationalized/date": "^3.6.0",
 		"@playwright/test": "^1.45.3",
 		"@sinclair/typebox": "^0.34.13",
 		"@sveltejs/adapter-node": "^5.2.9",

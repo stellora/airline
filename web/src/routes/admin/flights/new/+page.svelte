@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Card, CardContent } from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import NewFlightForm from './new-flight-form.svelte'
 
@@ -8,5 +9,9 @@
 </script>
 
 <Page title="New flight">
-	<NewFlightForm form={data.form} />
+	<Card class="self-start">
+		<CardContent>
+			<NewFlightForm form={data.form} />
+		</CardContent>
+	</Card>
 </Page>

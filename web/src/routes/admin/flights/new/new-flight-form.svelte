@@ -8,6 +8,7 @@
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
 	import type { PageServerData } from './$types'
+	import FlightDateRangeInput from './flight-date-range-input.svelte'
 	import { formSchema } from './new-flight-form'
 
 	const props: { form: PageServerData['form'] } = $props()
@@ -78,11 +79,11 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
-	<Form.Field {form} name="aircraftType">
+	<Form.Field {form} name="dateRange">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label>Aircraft type</Form.Label>
-				<Input {...props} bind:value={$formData.aircraftType} autocomplete="off" class="w-auto" />
+				<Form.Label>Date range</Form.Label>
+				<FlightDateRangeInput {...props} bind:value={$formData.dateRange} />
 			{/snippet}
 		</Form.Control>
 		<Form.FieldErrors />

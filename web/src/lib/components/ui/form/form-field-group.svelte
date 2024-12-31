@@ -13,7 +13,7 @@
 </script>
 
 <fieldset bind:this={ref} class={cn('rounded-lg border px-4 pt-3 pb-3', className)} {...restProps}>
-	<legend class="text-base font-medium">{legend}</legend>
+	<legend class="text-sm font-medium">{legend}</legend>
 	<div class={cn('flex gap-4')}>
 		{@render children?.()}
 	</div>
