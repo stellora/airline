@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms'
 	import Distance from '$lib/components/distance.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
+	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent } from '$lib/components/ui/card'
 
@@ -18,9 +19,14 @@
 		/>
 	</div>
 
-	<p class="text-muted-foreground">
-		<Distance distanceMiles={data.flight.distanceMiles} />
-	</p>
+	<div class="flex flex-wrap-reverse gap-4">
+		<Card>
+			<Distance distanceMiles={data.flight.distanceMiles} />
+		</Card>
+		<Card class="overflow-hidden">
+			<GreatCircleRoute routes={[[data.flight.originAirport, data.flight.destinationAirport]]} />
+		</Card>
+	</div>
 
 	<Card class="border-destructive self-start">
 		<CardContent class="flex gap-4">

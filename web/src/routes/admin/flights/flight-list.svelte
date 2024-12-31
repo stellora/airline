@@ -26,18 +26,18 @@
 						<Table.Cell class="font-bold text-lg">
 							{flight.number}
 						</Table.Cell>
-						<Table.Cell class="flex gap-2"
+						<Table.Cell class="flex items-center gap-2"
 							><span
 								><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
 									airport={flight.destinationAirport}
 								/></span
 							>
-							<span class="text-muted-foreground">
-								<Distance distanceMiles={flight.distanceMiles} /></span
-							>
 							<div class="border rounded">
 								<FlightSparkRoute {flight} width={100} height={25} />
 							</div>
+							<span class="text-muted-foreground text-xs">
+								<Distance distanceMiles={flight.distanceMiles} /></span
+							>
 						</Table.Cell>
 						<Table.Cell class="text-right">
 							<Button
