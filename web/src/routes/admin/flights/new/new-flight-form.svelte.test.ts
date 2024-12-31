@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
-import FlightForm from './flight-form.svelte'
+import NewFlightForm from './new-flight-form.svelte'
 
-describe('FlightForm', () => {
+describe('NewFlightForm', () => {
 	it('renders form elements', () => {
-		render(FlightForm)
+		render(NewFlightForm)
 		expect(screen.getByPlaceholderText('Flight number')).toBeInTheDocument()
 		expect(screen.getByPlaceholderText('From')).toBeInTheDocument()
 		expect(screen.getByPlaceholderText('To')).toBeInTheDocument()
@@ -12,12 +12,12 @@ describe('FlightForm', () => {
 	})
 
 	it('displays error message when form.error exists', () => {
-		render(FlightForm, { props: { form: { error: 'Test error message' } } })
+		render(NewFlightForm, { props: { form: { error: 'Test error message' } } })
 		expect(screen.getByText('Test error message', { exact: false })).toBeInTheDocument()
 	})
 
 	it('preserves input values from form data', () => {
-		render(FlightForm, {
+		render(NewFlightForm, {
 			props: {
 				form: {
 					number: 'AB123',
@@ -33,14 +33,14 @@ describe('FlightForm', () => {
 	})
 
 	it('requires all inputs', () => {
-		render(FlightForm)
+		render(NewFlightForm)
 		expect(screen.getByPlaceholderText('Flight number')).toHaveAttribute('required')
 		expect(screen.getByPlaceholderText('From')).toHaveAttribute('required')
 		expect(screen.getByPlaceholderText('To')).toHaveAttribute('required')
 	})
 
 	it('has correct form action and method', () => {
-		render(FlightForm)
+		render(NewFlightForm)
 		const form = screen.getByTestId('flight-form')
 		expect(form).toHaveAttribute('action', '?/create')
 		expect(form).toHaveAttribute('method', 'POST')

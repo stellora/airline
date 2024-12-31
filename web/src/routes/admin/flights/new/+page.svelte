@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Page from '$lib/components/ui/page/page.svelte'
-	import FlightForm from './flight-form.svelte'
+	import NewFlightForm from './new-flight-form.svelte'
 
 	let { data } = $props()
 
@@ -8,5 +8,5 @@
 </script>
 
 <Page title="New flight">
-	<FlightForm form={data.form} />
+	<NewFlightForm form={data.form} />
 </Page>

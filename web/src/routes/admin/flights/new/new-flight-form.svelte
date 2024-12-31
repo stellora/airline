@@ -7,7 +7,7 @@
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
 	import type { PageServerData } from './$types'
-	import { formSchema } from './flight-form'
+	import { formSchema } from './new-flight-form'
 
 	const props: { form: PageServerData['form'] } = $props()
 	const form = superForm(props.form, {
