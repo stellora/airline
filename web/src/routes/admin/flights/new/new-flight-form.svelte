@@ -59,7 +59,7 @@
 			<Form.Description>IATA code</Form.Description>
 			<Form.FieldErrors />
 		</Form.Field>
-		<span class="relative top-[38px] left-[-4px] w-[1px]">&ndash;</span>
+		<span class="relative top-[31px] left-[-4px] w-[1px]">&ndash;</span>
 		<Form.Field {form} name="destinationAirport">
 			<Form.Control>
 				{#snippet children({ props })}
