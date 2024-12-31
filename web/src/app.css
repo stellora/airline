@@ -21,8 +21,6 @@
 		--map-point: red;
 		--map-point-text: white;
 		--map-line: red;
-		--map-land: var(--foreground) / 50%;
-		--map-border: var(--muted-foreground);
 	}
 
 	:root {
@@ -54,6 +52,8 @@
 			--sidebar-accent-foreground: 240 5.9% 10%;
 			--sidebar-border: 220 13% 91%;
 			--sidebar-ring: 217.2 91.2% 59.8%;
+			--map-land: #222;
+			--map-border: #777;
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -84,6 +84,8 @@
 			--sidebar-accent-foreground: 240 4.8% 95.9%;
 			--sidebar-border: 240 3.7% 15.9%;
 			--sidebar-ring: 217.2 91.2% 59.8%;
+			--map-land: #888;
+			--map-border: #aaa;
 		}
 	}
 }

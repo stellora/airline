@@ -3,10 +3,21 @@ import type { FeatureCollection } from 'geojson'
 async function run() {
 	const output: FeatureCollection = { type: 'FeatureCollection', features: [] }
 
-	const geojsonURLs = [
-		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_50m_admin_0_countries_lakes.geojson',
-		'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_50m_admin_1_states_provinces_lakes.geojson',
-	]
+	const detailLevel = process.env.DETAIL_LEVEL
+	if (detailLevel !== 'high' && detailLevel !== 'low') {
+		throw new Error('Invalid DETAIL_LEVEL environment variable. Must be either "high" or "low".')
+	}
+
+	const geojsonURLs =
+		process.env.DETAIL_LEVEL === 'high'
+			? [
+					'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_50m_admin_0_countries_lakes.geojson',
+					'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_50m_admin_1_states_provinces_lakes.geojson',
+				]
+			: [
+					'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_110m_admin_0_countries_lakes.geojson',
+					'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/refs/heads/master/geojson/ne_110m_admin_1_states_provinces_lakes.geojson',
+				]
 	for (const url of geojsonURLs) {
 		const resp = await fetch(url)
 		if (!resp.ok) {
@@ -18,7 +29,10 @@ async function run() {
 		// countries.
 		if (url.endsWith('states_provinces_lakes.geojson')) {
 			geojsonData.features = geojsonData.features.filter((feature) => {
-				return feature.properties?.geonunit === 'United States of America'
+				return (
+					(feature.properties?.geonunit ?? feature.properties?.GEOUNIT) ===
+					'United States of America'
+				)
 			})
 		}
 

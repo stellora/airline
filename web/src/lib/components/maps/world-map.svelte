@@ -10,7 +10,16 @@
 		center: centerFeature,
 		fit: fitFeature,
 		width: widthArg = 'auto',
-	}: { features: Feature[]; center?: Feature; fit?: Feature; width?: number | 'auto' } = $props()
+		detailLevel = 'low',
+		drawBorders = true,
+	}: {
+		features: Feature[]
+		center?: Feature
+		fit?: Feature
+		width?: number | 'auto'
+		detailLevel?: 'high' | 'low'
+		drawBorders: boolean
+	} = $props()
 
 	// Dynamically scale SVG.
 	let containerRef: HTMLDivElement | undefined
@@ -33,7 +42,7 @@
 	const featureCollections: FeatureCollection[] = [
 		topojsonToGeoJSON(
 			worldTopoJSONData as unknown as TopoJSON.Topology,
-			'world',
+			`world-${detailLevel}-detail`,
 		) as unknown as FeatureCollection,
 		{
 			type: 'FeatureCollection',
@@ -105,7 +114,12 @@
 						<path d={path} fill="var(--map-point)" />
 					{/if}
 				{:else if feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon'}
-					<path d={path} fill="var(--land-color)" stroke="var(--border-color)" stroke-width="0.5" />
+					<path
+						d={path}
+						fill="var(--land-color)"
+						stroke={drawBorders ? 'var(--border-color)' : 'var(--land-color)'}
+						stroke-width="0.5"
+					/>
 				{/if}
 			{/each}
 		{/each}
@@ -119,8 +133,7 @@
 	}
 	.map-wrapper :global(svg) {
 		height: auto;
-
-		--land-color: hsl(var(--map-land));
-		--border-color: hsl(var(--map-border));
+		--land-color: var(--map-land);
+		--border-color: var(--map-border);
 	}
 </style>

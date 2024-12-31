@@ -20,7 +20,7 @@
 		"format": "prettier --write .",
 		"gen": "npm run -s gen:openapi",
 		"gen:openapi": "openapi-typescript ../api/airline.openapi.yaml --output src/lib/airline.openapi.ts",
-		"gen-online:world-map": "node --experimental-strip-types src/lib/components/maps/generate.ts > src/lib/components/maps/world.geojson.json && geo2topo --quantization 1e6 world=src/lib/components/maps/world.geojson.json > src/lib/components/maps/world.topojson.json; rm src/lib/components/maps/world.geojson.json"
+		"gen-online:world-map": "DETAIL_LEVEL=high node --experimental-strip-types src/lib/components/maps/generate.ts > src/lib/components/maps/world-high-detail.geojson.json && DETAIL_LEVEL=low node --experimental-strip-types src/lib/components/maps/generate.ts > src/lib/components/maps/world-low-detail.geojson.json && geo2topo --quantization 1e6 world-low-detail=src/lib/components/maps/world-low-detail.geojson.json world-high-detail=src/lib/components/maps/world-high-detail.geojson.json > src/lib/components/maps/world.topojson.json; rm src/lib/components/maps/*.geojson.json"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",
