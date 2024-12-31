@@ -16,7 +16,7 @@
 			$message = result.error.message || 'Unknown error'
 		},
 	})
-	const { form: formData, enhance, allErrors, message } = form
+	const { form: formData, enhance, message } = form
 </script>
 
 <form
