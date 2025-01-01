@@ -13,7 +13,7 @@ import (
 )
 
 func getAirlineBySpec(ctx context.Context, queries *db.Queries, spec api.AirlineSpec) (db.Airline, error) {
-	if id, err := spec.AsAirlineSpec0(); err == nil {
+	if id, err := spec.AsAirlineID(); err == nil {
 		return queries.GetAirline(ctx, int64(id))
 	}
 	if iataCode, err := spec.AsAirlineIATACode(); err == nil {
@@ -25,7 +25,7 @@ func getAirlineBySpec(ctx context.Context, queries *db.Queries, spec api.Airline
 func newAirlineSpec(id int, iataCode string) api.AirlineSpec {
 	var spec api.AirlineSpec
 	if id != 0 {
-		spec.FromAirlineSpec0(id)
+		spec.FromAirlineID(id)
 	} else {
 		spec.FromAirlineIATACode(iataCode)
 	}
