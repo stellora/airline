@@ -207,10 +207,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AirportID: number;
         /** @description IATA code for airport */
         AirportIATACode: string;
         /** AirportSpec */
-        AirportSpec: number | components["schemas"]["AirportIATACode"];
+        AirportSpec: components["schemas"]["AirportID"] | components["schemas"]["AirportIATACode"];
         Airport: {
             id: number;
             name: string;
@@ -254,7 +255,9 @@ export interface components {
         };
     };
     responses: never;
-    parameters: never;
+    parameters: {
+        airportSpecParam: components["schemas"]["AirportSpec"];
+    };
     requestBodies: never;
     headers: never;
     pathItems: never;
@@ -359,7 +362,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airportSpec: components["schemas"]["AirportSpec"];
+                airportSpec: components["parameters"]["airportSpecParam"];
             };
             cookie?: never;
         };
@@ -388,7 +391,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airportSpec: components["schemas"]["AirportSpec"];
+                airportSpec: components["parameters"]["airportSpecParam"];
             };
             cookie?: never;
         };
@@ -415,7 +418,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airportSpec: components["schemas"]["AirportSpec"];
+                airportSpec: components["parameters"]["airportSpecParam"];
             };
             cookie?: never;
         };
@@ -450,7 +453,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airportSpec: components["schemas"]["AirportSpec"];
+                airportSpec: components["parameters"]["airportSpecParam"];
             };
             cookie?: never;
         };

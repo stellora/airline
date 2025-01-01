@@ -15,7 +15,7 @@ import (
 )
 
 func getAirportBySpec(ctx context.Context, queries *db.Queries, spec api.AirportSpec) (db.Airport, error) {
-	if id, err := spec.AsAirportSpec0(); err == nil {
+	if id, err := spec.AsAirportID(); err == nil {
 		log.Println("by id", id)
 		return queries.GetAirport(ctx, int64(id))
 	}
@@ -29,7 +29,7 @@ func getAirportBySpec(ctx context.Context, queries *db.Queries, spec api.Airport
 // getOrCreateAirportBySpec is like getAirportBySpec, but it silently creates the airport if it does
 // not exist and the spec is an airport IATA code.
 func getOrCreateAirportBySpec(ctx context.Context, dbtx db.DBTX, queriesTx *db.Queries, spec api.AirportSpec) (db.Airport, error) {
-	if id, err := spec.AsAirportSpec0(); err == nil {
+	if id, err := spec.AsAirportID(); err == nil {
 		return queriesTx.GetAirport(ctx, int64(id))
 	}
 	if iataCode, err := spec.AsAirportIATACode(); err == nil {
@@ -80,7 +80,7 @@ func getOrCreateAirportBySpec(ctx context.Context, dbtx db.DBTX, queriesTx *db.Q
 func newAirportSpec(id int, iataCode string) api.AirportSpec {
 	var spec api.AirportSpec
 	if id != 0 {
-		spec.FromAirportSpec0(id)
+		spec.FromAirportID(id)
 	} else {
 		spec.FromAirportIATACode(iataCode)
 	}

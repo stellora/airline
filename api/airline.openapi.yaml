@@ -65,11 +65,7 @@ paths:
       operationId: getAirport
       summary: Get airport by ID or IATA code
       parameters:
-        - name: airportSpec
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/AirportSpec'
+        - $ref: '#/components/parameters/airportSpecParam'
       responses:
         '200':
           description: Airport found
@@ -83,11 +79,7 @@ paths:
       operationId: updateAirport
       summary: Update airport
       parameters:
-        - name: airportSpec
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/AirportSpec'
+        - $ref: '#/components/parameters/airportSpecParam'
       requestBody:
         required: true
         content:
@@ -110,11 +102,7 @@ paths:
       operationId: deleteAirport
       summary: Delete an airport
       parameters:
-        - name: airportSpec
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/AirportSpec'
+        - $ref: '#/components/parameters/airportSpecParam'
       responses:
         '204':
           description: Airport deleted
@@ -125,11 +113,7 @@ paths:
       operationId: listFlightsByAirport
       summary: List flights that depart from or arrive at an airport
       parameters:
-        - name: airportSpec
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/AirportSpec'
+        - $ref: '#/components/parameters/airportSpecParam'
       responses:
         '200':
           description: Flights by airport
@@ -425,7 +409,16 @@ paths:
         '404':
           description: Route not found
 components:
+  parameters:
+    airportSpecParam:
+      name: airportSpec
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/AirportSpec'
   schemas:
+    AirportID:
+      type: integer
     AirportIATACode:
       type: string
       description: IATA code for airport
@@ -435,7 +428,7 @@ components:
     AirportSpec:
       title: AirportSpec
       oneOf:
-        - type: integer
+        - $ref: '#/components/schemas/AirportID'
         - $ref: '#/components/schemas/AirportIATACode'
     Airport:
       type: object

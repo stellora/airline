@@ -49,13 +49,13 @@ type Airport struct {
 // AirportIATACode IATA code for airport
 type AirportIATACode = string
 
+// AirportID defines model for AirportID.
+type AirportID = int
+
 // AirportSpec defines model for AirportSpec.
 type AirportSpec struct {
 	union json.RawMessage
 }
-
-// AirportSpec0 AirportID
-type AirportSpec0 = int
 
 // Flight defines model for Flight.
 type Flight struct {
@@ -84,6 +84,9 @@ type Route struct {
 	FlightsCount       int      `json:"flightsCount"`
 	OriginAirport      Airport  `json:"originAirport"`
 }
+
+// AirportSpecParam defines model for airportSpecParam.
+type AirportSpecParam = AirportSpec
 
 // CreateAirlineJSONBody defines parameters for CreateAirline.
 type CreateAirlineJSONBody struct {
@@ -209,22 +212,22 @@ func (t *AirlineSpec) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// AsAirportSpec0 returns the union data inside the AirportSpec as a AirportSpec0
-func (t AirportSpec) AsAirportSpec0() (AirportSpec0, error) {
-	var body AirportSpec0
+// AsAirportID returns the union data inside the AirportSpec as a AirportID
+func (t AirportSpec) AsAirportID() (AirportID, error) {
+	var body AirportID
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromAirportSpec0 overwrites any union data inside the AirportSpec as the provided AirportSpec0
-func (t *AirportSpec) FromAirportSpec0(v AirportSpec0) error {
+// FromAirportID overwrites any union data inside the AirportSpec as the provided AirportID
+func (t *AirportSpec) FromAirportID(v AirportID) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeAirportSpec0 performs a merge with any union data inside the AirportSpec, using the provided AirportSpec0
-func (t *AirportSpec) MergeAirportSpec0(v AirportSpec0) error {
+// MergeAirportID performs a merge with any union data inside the AirportSpec, using the provided AirportID
+func (t *AirportSpec) MergeAirportID(v AirportID) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -305,16 +308,16 @@ type ServerInterface interface {
 	CreateAirport(w http.ResponseWriter, r *http.Request)
 	// Delete an airport
 	// (DELETE /airports/{airportSpec})
-	DeleteAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
+	DeleteAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam)
 	// Get airport by ID or IATA code
 	// (GET /airports/{airportSpec})
-	GetAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
+	GetAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam)
 	// Update airport
 	// (PATCH /airports/{airportSpec})
-	UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
+	UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam)
 	// List flights that depart from or arrive at an airport
 	// (GET /airports/{airportSpec}/flights)
-	ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
+	ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam)
 	// Delete all flights
 	// (DELETE /flights)
 	DeleteAllFlights(w http.ResponseWriter, r *http.Request)
@@ -543,7 +546,7 @@ func (siw *ServerInterfaceWrapper) DeleteAirport(w http.ResponseWriter, r *http.
 	var err error
 
 	// ------------- Path parameter "airportSpec" -------------
-	var airportSpec AirportSpec
+	var airportSpec AirportSpecParam
 
 	err = runtime.BindStyledParameterWithOptions("simple", "airportSpec", r.PathValue("airportSpec"), &airportSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -568,7 +571,7 @@ func (siw *ServerInterfaceWrapper) GetAirport(w http.ResponseWriter, r *http.Req
 	var err error
 
 	// ------------- Path parameter "airportSpec" -------------
-	var airportSpec AirportSpec
+	var airportSpec AirportSpecParam
 
 	err = runtime.BindStyledParameterWithOptions("simple", "airportSpec", r.PathValue("airportSpec"), &airportSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -593,7 +596,7 @@ func (siw *ServerInterfaceWrapper) UpdateAirport(w http.ResponseWriter, r *http.
 	var err error
 
 	// ------------- Path parameter "airportSpec" -------------
-	var airportSpec AirportSpec
+	var airportSpec AirportSpecParam
 
 	err = runtime.BindStyledParameterWithOptions("simple", "airportSpec", r.PathValue("airportSpec"), &airportSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -618,7 +621,7 @@ func (siw *ServerInterfaceWrapper) ListFlightsByAirport(w http.ResponseWriter, r
 	var err error
 
 	// ------------- Path parameter "airportSpec" -------------
-	var airportSpec AirportSpec
+	var airportSpec AirportSpecParam
 
 	err = runtime.BindStyledParameterWithOptions("simple", "airportSpec", r.PathValue("airportSpec"), &airportSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -1167,7 +1170,7 @@ func (response CreateAirport400Response) VisitCreateAirportResponse(w http.Respo
 }
 
 type DeleteAirportRequestObject struct {
-	AirportSpec AirportSpec `json:"airportSpec"`
+	AirportSpec AirportSpecParam `json:"airportSpec"`
 }
 
 type DeleteAirportResponseObject interface {
@@ -1191,7 +1194,7 @@ func (response DeleteAirport404Response) VisitDeleteAirportResponse(w http.Respo
 }
 
 type GetAirportRequestObject struct {
-	AirportSpec AirportSpec `json:"airportSpec"`
+	AirportSpec AirportSpecParam `json:"airportSpec"`
 }
 
 type GetAirportResponseObject interface {
@@ -1216,7 +1219,7 @@ func (response GetAirport404Response) VisitGetAirportResponse(w http.ResponseWri
 }
 
 type UpdateAirportRequestObject struct {
-	AirportSpec AirportSpec `json:"airportSpec"`
+	AirportSpec AirportSpecParam `json:"airportSpec"`
 	Body        *UpdateAirportJSONRequestBody
 }
 
@@ -1242,7 +1245,7 @@ func (response UpdateAirport404Response) VisitUpdateAirportResponse(w http.Respo
 }
 
 type ListFlightsByAirportRequestObject struct {
-	AirportSpec AirportSpec `json:"airportSpec"`
+	AirportSpec AirportSpecParam `json:"airportSpec"`
 }
 
 type ListFlightsByAirportResponseObject interface {
@@ -1828,7 +1831,7 @@ func (sh *strictHandler) CreateAirport(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteAirport operation middleware
-func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
+func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam) {
 	var request DeleteAirportRequestObject
 
 	request.AirportSpec = airportSpec
@@ -1854,7 +1857,7 @@ func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, a
 }
 
 // GetAirport operation middleware
-func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
+func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam) {
 	var request GetAirportRequestObject
 
 	request.AirportSpec = airportSpec
@@ -1880,7 +1883,7 @@ func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, airp
 }
 
 // UpdateAirport operation middleware
-func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
+func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam) {
 	var request UpdateAirportRequestObject
 
 	request.AirportSpec = airportSpec
@@ -1913,7 +1916,7 @@ func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, a
 }
 
 // ListFlightsByAirport operation middleware
-func (sh *strictHandler) ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
+func (sh *strictHandler) ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam) {
 	var request ListFlightsByAirportRequestObject
 
 	request.AirportSpec = airportSpec
