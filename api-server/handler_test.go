@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/stellora/airline/api-server/db"
 )
 
@@ -41,4 +42,11 @@ func insertFlightsT(t *testing.T, handler *Handler, flightTitles ...string) (ids
 		t.Fatal(err)
 	}
 	return ids
+}
+
+func assertEqual(t *testing.T, got any, want any) {
+	t.Helper()
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("mismatch (-want +got):\n%s", diff)
+	}
 }

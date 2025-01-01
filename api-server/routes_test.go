@@ -1,7 +1,6 @@
 package main
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/stellora/airline/api-server/api"
@@ -112,7 +111,5 @@ func TestListRoutes(t *testing.T) {
 			FlightsCount:       1,
 		},
 	}
-	if !reflect.DeepEqual(want, resp) {
-		t.Errorf("got %v, want %v", resp, want)
-	}
+	assertEqual(t, want, resp)
 }

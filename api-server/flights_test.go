@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"testing"
 
 	"github.com/stellora/airline/api-server/api"
@@ -31,9 +30,7 @@ func TestGetFlight(t *testing.T) {
 			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
 			Published:          true,
 		}
-		if !reflect.DeepEqual(want, resp) {
-			t.Errorf("got %v, want %v", resp, want)
-		}
+		assertEqual(t, resp, want)
 	})
 
 	t.Run("does not exist", func(t *testing.T) {
@@ -43,9 +40,7 @@ func TestGetFlight(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if want := (&api.GetFlight404Response{}); !reflect.DeepEqual(resp, want) {
-			t.Errorf("got %v, want %v", resp, want)
-		}
+		assertEqual(t, resp, &api.GetFlight404Response{})
 	})
 }
 
@@ -78,9 +73,7 @@ func TestListFlights(t *testing.T) {
 			Published:          true,
 		},
 	}
-	if !reflect.DeepEqual(want, resp) {
-		t.Errorf("got %v, want %v", resp, want)
-	}
+	assertEqual(t, resp, want)
 }
 
 func TestCreateFlight(t *testing.T) {
@@ -170,9 +163,7 @@ func TestUpdateFlight(t *testing.T) {
 			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
 			Published:          true,
 		}
-		if !reflect.DeepEqual(want, resp) {
-			t.Errorf("got %v, want %v", resp, want)
-		}
+		assertEqual(t, resp, want)
 	}
 }
 
@@ -190,9 +181,7 @@ func TestDeleteFlight(t *testing.T) {
 	}
 
 	want := api.DeleteFlight204Response{}
-	if !reflect.DeepEqual(want, resp) {
-		t.Errorf("got %v, want %v", resp, want)
-	}
+	assertEqual(t, resp, want)
 
 	checkFlightTitles(t, handler, []string{})
 }
@@ -209,9 +198,7 @@ func TestDeleteAllFlights(t *testing.T) {
 	}
 
 	want := api.DeleteAllFlights204Response{}
-	if !reflect.DeepEqual(want, resp) {
-		t.Errorf("got %v, want %v", resp, want)
-	}
+	assertEqual(t, resp, want)
 
 	checkFlightTitles(t, handler, []string{})
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/stellora/airline/api-server/api"
@@ -25,9 +24,7 @@ func TestListFlightsByAirport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !reflect.DeepEqual(want, resp) {
-			t.Errorf("got %v, want %v", resp, want)
-		}
+		assertEqual(t, resp, want)
 	})
 
 	t.Run("by airport code", func(t *testing.T) {
@@ -37,8 +34,6 @@ func TestListFlightsByAirport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !reflect.DeepEqual(want, resp) {
-			t.Errorf("got %v, want %v", resp, want)
-		}
+		assertEqual(t, resp, want)
 	})
 }
