@@ -14,7 +14,7 @@ func TestGetAirport(t *testing.T) {
 	t.Run("exists", func(t *testing.T) {
 		t.Run("by ID", func(t *testing.T) {
 			resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
-				AirportSpec: newAirportSpec(1, ""),
+				AirportSpec: api.NewAirportSpec(1, ""),
 			})
 			if err != nil {
 				t.Fatal(err)
@@ -26,7 +26,7 @@ func TestGetAirport(t *testing.T) {
 		})
 		t.Run("by IATA code", func(t *testing.T) {
 			resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
-				AirportSpec: newAirportSpec(0, "AAA"),
+				AirportSpec: api.NewAirportSpec(0, "AAA"),
 			})
 			if err != nil {
 				t.Fatal(err)
@@ -40,7 +40,7 @@ func TestGetAirport(t *testing.T) {
 	t.Run("does not exist", func(t *testing.T) {
 		t.Run("by ID", func(t *testing.T) {
 			resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
-				AirportSpec: newAirportSpec(999, ""),
+				AirportSpec: api.NewAirportSpec(999, ""),
 			})
 			if err != nil {
 				t.Fatal(err)
@@ -49,7 +49,7 @@ func TestGetAirport(t *testing.T) {
 		})
 		t.Run("by IATA code", func(t *testing.T) {
 			resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
-				AirportSpec: newAirportSpec(0, "ZZ"),
+				AirportSpec: api.NewAirportSpec(0, "ZZ"),
 			})
 			if err != nil {
 				t.Fatal(err)
@@ -101,7 +101,7 @@ func TestDeleteAirport(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 
 	resp, err := handler.DeleteAirport(ctx, api.DeleteAirportRequestObject{
-		AirportSpec: newAirportSpec(1, ""),
+		AirportSpec: api.NewAirportSpec(1, ""),
 	})
 	if err != nil {
 		t.Fatal(err)

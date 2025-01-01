@@ -210,7 +210,6 @@ export interface components {
         AirportID: number;
         /** @description IATA code for airport */
         AirportIATACode: string;
-        /** AirportSpec */
         AirportSpec: components["schemas"]["AirportID"] | components["schemas"]["AirportIATACode"];
         Airport: {
             id: number;
@@ -226,10 +225,10 @@ export interface components {
             /** Format: double */
             latitude: number;
         };
+        AirlineID: number;
         /** @description IATA code for airline */
         AirlineIATACode: string;
-        /** AirlineSpec */
-        AirlineSpec: number | components["schemas"]["AirlineIATACode"];
+        AirlineSpec: components["schemas"]["AirlineID"] | components["schemas"]["AirlineIATACode"];
         Airline: {
             id: number;
             iataCode: components["schemas"]["AirlineIATACode"];
@@ -257,6 +256,7 @@ export interface components {
     responses: never;
     parameters: {
         airportSpec: components["schemas"]["AirportSpec"];
+        airlineSpec: components["schemas"]["AirlineSpec"];
     };
     requestBodies: never;
     headers: never;
@@ -554,7 +554,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airlineSpec: components["schemas"]["AirlineSpec"];
+                airlineSpec: components["parameters"]["airlineSpec"];
             };
             cookie?: never;
         };
@@ -610,7 +610,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airlineSpec: components["schemas"]["AirlineSpec"];
+                airlineSpec: components["parameters"]["airlineSpec"];
             };
             cookie?: never;
         };
@@ -646,7 +646,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airlineSpec: components["schemas"]["AirlineSpec"];
+                airlineSpec: components["parameters"]["airlineSpec"];
             };
             cookie?: never;
         };

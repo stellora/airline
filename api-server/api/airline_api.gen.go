@@ -26,13 +26,13 @@ type Airline struct {
 // AirlineIATACode IATA code for airline
 type AirlineIATACode = string
 
+// AirlineID defines model for AirlineID.
+type AirlineID = int
+
 // AirlineSpec defines model for AirlineSpec.
 type AirlineSpec struct {
 	union json.RawMessage
 }
-
-// AirlineSpec0 defines model for .
-type AirlineSpec0 = int
 
 // Airport defines model for Airport.
 type Airport struct {
@@ -147,22 +147,22 @@ type CreateFlightJSONRequestBody CreateFlightJSONBody
 // UpdateFlightJSONRequestBody defines body for UpdateFlight for application/json ContentType.
 type UpdateFlightJSONRequestBody UpdateFlightJSONBody
 
-// AsAirlineSpec0 returns the union data inside the AirlineSpec as a AirlineSpec0
-func (t AirlineSpec) AsAirlineSpec0() (AirlineSpec0, error) {
-	var body AirlineSpec0
+// AsAirlineID returns the union data inside the AirlineSpec as a AirlineID
+func (t AirlineSpec) AsAirlineID() (AirlineID, error) {
+	var body AirlineID
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromAirlineSpec0 overwrites any union data inside the AirlineSpec as the provided AirlineSpec0
-func (t *AirlineSpec) FromAirlineSpec0(v AirlineSpec0) error {
+// FromAirlineID overwrites any union data inside the AirlineSpec as the provided AirlineID
+func (t *AirlineSpec) FromAirlineID(v AirlineID) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeAirlineSpec0 performs a merge with any union data inside the AirlineSpec, using the provided AirlineSpec0
-func (t *AirlineSpec) MergeAirlineSpec0(v AirlineSpec0) error {
+// MergeAirlineID performs a merge with any union data inside the AirlineSpec, using the provided AirlineID
+func (t *AirlineSpec) MergeAirlineID(v AirlineID) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err

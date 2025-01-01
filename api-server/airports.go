@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"strconv"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
@@ -75,25 +74,6 @@ func getOrCreateAirportBySpec(ctx context.Context, dbtx db.DBTX, queriesTx *db.Q
 		return airport, nil
 	}
 	panic("invalid AirportSpec")
-}
-
-func newAirportSpec(id int, iataCode string) api.AirportSpec {
-	var spec api.AirportSpec
-	if id != 0 {
-		spec.FromAirportID(id)
-	} else {
-		spec.FromAirportIATACode(iataCode)
-	}
-	return spec
-}
-
-// TODO!(sqs): remove? is unused
-func airportSpecFromPathArg(arg string) api.AirportSpec {
-	if isIntString(arg) {
-		id, _ := strconv.Atoi(arg)
-		return newAirportSpec(id, "")
-	}
-	return newAirportSpec(0, arg)
 }
 
 func fromDBAirport(a db.Airport) api.Airport {

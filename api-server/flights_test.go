@@ -86,8 +86,8 @@ func TestCreateFlight(t *testing.T) {
 			Body: &api.CreateFlightJSONRequestBody{
 				Airline:            newAirlineSpec(0, "XX"),
 				Number:             "1",
-				OriginAirport:      newAirportSpec(1, ""),
-				DestinationAirport: newAirportSpec(2, ""),
+				OriginAirport:      api.NewAirportSpec(1, ""),
+				DestinationAirport: api.NewAirportSpec(2, ""),
 			},
 		})
 		if err != nil {
@@ -108,8 +108,8 @@ func TestCreateFlight(t *testing.T) {
 			Body: &api.CreateFlightJSONRequestBody{
 				Airline:            newAirlineSpec(0, "XX"),
 				Number:             "1",
-				OriginAirport:      newAirportSpec(0, "AAA"),
-				DestinationAirport: newAirportSpec(0, "BBB"),
+				OriginAirport:      api.NewAirportSpec(0, "AAA"),
+				DestinationAirport: api.NewAirportSpec(0, "BBB"),
 			},
 		})
 		if err != nil {
@@ -135,8 +135,8 @@ func TestUpdateFlight(t *testing.T) {
 			Body: &api.UpdateFlightJSONRequestBody{
 				Airline:            ptrTo(newAirlineSpec(0, "YY")),
 				Number:             ptrTo("100"),
-				OriginAirport:      ptrTo(newAirportSpec(2, "")),
-				DestinationAirport: ptrTo(newAirportSpec(0, "AAA")),
+				OriginAirport:      ptrTo(api.NewAirportSpec(2, "")),
+				DestinationAirport: ptrTo(api.NewAirportSpec(0, "AAA")),
 				Published:          ptrTo(true),
 			},
 		})

@@ -15,7 +15,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 		error(resp.response.status, resp.error)
 	}
 	return {
-		airport: resp,
+		airport,
 		...(await breadcrumbEntry(parent, {
 			url: route('/admin/airports/[airportSpec]', {
 				params: { airportSpec: airport.iataCode },

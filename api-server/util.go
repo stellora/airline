@@ -62,8 +62,8 @@ func insertFlights(ctx context.Context, handler *Handler, flightTitles ...string
 			Body: &api.CreateFlightJSONRequestBody{
 				Airline:            newAirlineSpec(0, airlineIATACode),
 				Number:             flightNumber,
-				OriginAirport:      newAirportSpec(0, originIATACode),
-				DestinationAirport: newAirportSpec(0, destinationIATACode),
+				OriginAirport:      api.NewAirportSpec(0, originIATACode),
+				DestinationAirport: api.NewAirportSpec(0, destinationIATACode),
 				Published:          ptrTo(true),
 			},
 		})

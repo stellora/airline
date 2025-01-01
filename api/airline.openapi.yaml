@@ -175,11 +175,7 @@ paths:
       operationId: getAirline
       summary: Get airline by ID or IATA code
       parameters:
-        - name: airlineSpec
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/AirlineSpec'
+        - $ref: '#/components/parameters/airlineSpec'
       responses:
         '200':
           description: Airline found
@@ -193,11 +189,7 @@ paths:
       operationId: updateAirline
       summary: Update airline
       parameters:
-        - name: airlineSpec
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/AirlineSpec'
+        - $ref: '#/components/parameters/airlineSpec'
       requestBody:
         required: true
         content:
@@ -237,11 +229,7 @@ paths:
       operationId: listFlightsByAirline
       summary: List flights for an airline
       parameters:
-        - name: airlineSpec
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/AirlineSpec'
+        - $ref: '#/components/parameters/airlineSpec'
       responses:
         '200':
           description: Flights by airline
@@ -416,6 +404,12 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/AirportSpec'
+    airlineSpec:
+      name: airlineSpec
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/AirlineSpec'
   schemas:
     AirportID:
       type: integer
@@ -463,6 +457,8 @@ components:
       required:
         - longitude
         - latitude
+    AirlineID:
+      type: integer
     AirlineIATACode:
       type: string
       description: IATA code for airline
@@ -471,7 +467,7 @@ components:
       maxLength: 2
     AirlineSpec:
       oneOf:
-        - type: integer
+        - $ref: '#/components/schemas/AirlineID'
         - $ref: '#/components/schemas/AirlineIATACode'
     Airline:
       type: object
