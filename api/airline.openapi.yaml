@@ -65,7 +65,7 @@ paths:
       operationId: getAirport
       summary: Get airport by ID or IATA code
       parameters:
-        - $ref: '#/components/parameters/airportSpecParam'
+        - $ref: '#/components/parameters/airportSpec'
       responses:
         '200':
           description: Airport found
@@ -79,7 +79,7 @@ paths:
       operationId: updateAirport
       summary: Update airport
       parameters:
-        - $ref: '#/components/parameters/airportSpecParam'
+        - $ref: '#/components/parameters/airportSpec'
       requestBody:
         required: true
         content:
@@ -102,7 +102,7 @@ paths:
       operationId: deleteAirport
       summary: Delete an airport
       parameters:
-        - $ref: '#/components/parameters/airportSpecParam'
+        - $ref: '#/components/parameters/airportSpec'
       responses:
         '204':
           description: Airport deleted
@@ -113,7 +113,7 @@ paths:
       operationId: listFlightsByAirport
       summary: List flights that depart from or arrive at an airport
       parameters:
-        - $ref: '#/components/parameters/airportSpecParam'
+        - $ref: '#/components/parameters/airportSpec'
       responses:
         '200':
           description: Flights by airport
@@ -410,13 +410,12 @@ paths:
           description: Route not found
 components:
   parameters:
-    airportSpecParam:
+    airportSpec:
       name: airportSpec
       in: path
       required: true
       schema:
         $ref: '#/components/schemas/AirportSpec'
-        x-go-type: AirportSpec
   schemas:
     AirportID:
       type: integer
@@ -427,7 +426,6 @@ components:
       minLength: 3
       maxLength: 3
     AirportSpec:
-      title: AirportSpec
       oneOf:
         - $ref: '#/components/schemas/AirportID'
         - $ref: '#/components/schemas/AirportIATACode'
@@ -472,7 +470,6 @@ components:
       minLength: 2
       maxLength: 2
     AirlineSpec:
-      title: AirlineSpec
       oneOf:
         - type: integer
         - $ref: '#/components/schemas/AirlineIATACode'

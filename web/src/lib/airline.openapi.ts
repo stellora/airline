@@ -256,7 +256,7 @@ export interface components {
     };
     responses: never;
     parameters: {
-        airportSpecParam: components["schemas"]["AirportSpec"];
+        airportSpec: components["schemas"]["AirportSpec"];
     };
     requestBodies: never;
     headers: never;
@@ -362,7 +362,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airportSpec: components["parameters"]["airportSpecParam"];
+                airportSpec: components["parameters"]["airportSpec"];
             };
             cookie?: never;
         };
@@ -391,7 +391,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airportSpec: components["parameters"]["airportSpecParam"];
+                airportSpec: components["parameters"]["airportSpec"];
             };
             cookie?: never;
         };
@@ -418,7 +418,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airportSpec: components["parameters"]["airportSpecParam"];
+                airportSpec: components["parameters"]["airportSpec"];
             };
             cookie?: never;
         };
@@ -453,7 +453,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                airportSpec: components["parameters"]["airportSpecParam"];
+                airportSpec: components["parameters"]["airportSpec"];
             };
             cookie?: never;
         };

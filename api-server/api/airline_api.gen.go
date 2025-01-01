@@ -85,9 +85,6 @@ type Route struct {
 	OriginAirport      Airport  `json:"originAirport"`
 }
 
-// AirportSpecParam defines model for airportSpecParam.
-type AirportSpecParam = AirportSpec
-
 // CreateAirlineJSONBody defines parameters for CreateAirline.
 type CreateAirlineJSONBody struct {
 	// IataCode IATA code for airline
@@ -308,16 +305,16 @@ type ServerInterface interface {
 	CreateAirport(w http.ResponseWriter, r *http.Request)
 	// Delete an airport
 	// (DELETE /airports/{airportSpec})
-	DeleteAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam)
+	DeleteAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
 	// Get airport by ID or IATA code
 	// (GET /airports/{airportSpec})
-	GetAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam)
+	GetAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
 	// Update airport
 	// (PATCH /airports/{airportSpec})
-	UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam)
+	UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
 	// List flights that depart from or arrive at an airport
 	// (GET /airports/{airportSpec}/flights)
-	ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam)
+	ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
 	// Delete all flights
 	// (DELETE /flights)
 	DeleteAllFlights(w http.ResponseWriter, r *http.Request)
@@ -546,7 +543,7 @@ func (siw *ServerInterfaceWrapper) DeleteAirport(w http.ResponseWriter, r *http.
 	var err error
 
 	// ------------- Path parameter "airportSpec" -------------
-	var airportSpec AirportSpecParam
+	var airportSpec AirportSpec
 
 	err = runtime.BindStyledParameterWithOptions("simple", "airportSpec", r.PathValue("airportSpec"), &airportSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -571,7 +568,7 @@ func (siw *ServerInterfaceWrapper) GetAirport(w http.ResponseWriter, r *http.Req
 	var err error
 
 	// ------------- Path parameter "airportSpec" -------------
-	var airportSpec AirportSpecParam
+	var airportSpec AirportSpec
 
 	err = runtime.BindStyledParameterWithOptions("simple", "airportSpec", r.PathValue("airportSpec"), &airportSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -596,7 +593,7 @@ func (siw *ServerInterfaceWrapper) UpdateAirport(w http.ResponseWriter, r *http.
 	var err error
 
 	// ------------- Path parameter "airportSpec" -------------
-	var airportSpec AirportSpecParam
+	var airportSpec AirportSpec
 
 	err = runtime.BindStyledParameterWithOptions("simple", "airportSpec", r.PathValue("airportSpec"), &airportSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -621,7 +618,7 @@ func (siw *ServerInterfaceWrapper) ListFlightsByAirport(w http.ResponseWriter, r
 	var err error
 
 	// ------------- Path parameter "airportSpec" -------------
-	var airportSpec AirportSpecParam
+	var airportSpec AirportSpec
 
 	err = runtime.BindStyledParameterWithOptions("simple", "airportSpec", r.PathValue("airportSpec"), &airportSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -1170,7 +1167,7 @@ func (response CreateAirport400Response) VisitCreateAirportResponse(w http.Respo
 }
 
 type DeleteAirportRequestObject struct {
-	AirportSpec AirportSpecParam `json:"airportSpec"`
+	AirportSpec AirportSpec `json:"airportSpec"`
 }
 
 type DeleteAirportResponseObject interface {
@@ -1194,7 +1191,7 @@ func (response DeleteAirport404Response) VisitDeleteAirportResponse(w http.Respo
 }
 
 type GetAirportRequestObject struct {
-	AirportSpec AirportSpecParam `json:"airportSpec"`
+	AirportSpec AirportSpec `json:"airportSpec"`
 }
 
 type GetAirportResponseObject interface {
@@ -1219,7 +1216,7 @@ func (response GetAirport404Response) VisitGetAirportResponse(w http.ResponseWri
 }
 
 type UpdateAirportRequestObject struct {
-	AirportSpec AirportSpecParam `json:"airportSpec"`
+	AirportSpec AirportSpec `json:"airportSpec"`
 	Body        *UpdateAirportJSONRequestBody
 }
 
@@ -1245,7 +1242,7 @@ func (response UpdateAirport404Response) VisitUpdateAirportResponse(w http.Respo
 }
 
 type ListFlightsByAirportRequestObject struct {
-	AirportSpec AirportSpecParam `json:"airportSpec"`
+	AirportSpec AirportSpec `json:"airportSpec"`
 }
 
 type ListFlightsByAirportResponseObject interface {
@@ -1831,7 +1828,7 @@ func (sh *strictHandler) CreateAirport(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteAirport operation middleware
-func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam) {
+func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
 	var request DeleteAirportRequestObject
 
 	request.AirportSpec = airportSpec
@@ -1857,7 +1854,7 @@ func (sh *strictHandler) DeleteAirport(w http.ResponseWriter, r *http.Request, a
 }
 
 // GetAirport operation middleware
-func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam) {
+func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
 	var request GetAirportRequestObject
 
 	request.AirportSpec = airportSpec
@@ -1883,7 +1880,7 @@ func (sh *strictHandler) GetAirport(w http.ResponseWriter, r *http.Request, airp
 }
 
 // UpdateAirport operation middleware
-func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam) {
+func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
 	var request UpdateAirportRequestObject
 
 	request.AirportSpec = airportSpec
@@ -1916,7 +1913,7 @@ func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, a
 }
 
 // ListFlightsByAirport operation middleware
-func (sh *strictHandler) ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpecParam) {
+func (sh *strictHandler) ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
 	var request ListFlightsByAirportRequestObject
 
 	request.AirportSpec = airportSpec
