@@ -16,7 +16,7 @@ func getAirlineBySpec(ctx context.Context, queries *db.Queries, spec api.Airline
 	if id, err := spec.AsAirlineSpec0(); err == nil {
 		return queries.GetAirline(ctx, int64(id))
 	}
-	if iataCode, err := spec.AsAirlineSpec1(); err == nil {
+	if iataCode, err := spec.AsAirlineIATACode(); err == nil {
 		return queries.GetAirlineByIATACode(ctx, iataCode)
 	}
 	panic("invalid AirlineSpec")
@@ -27,7 +27,7 @@ func newAirlineSpec(id int, iataCode string) api.AirlineSpec {
 	if id != 0 {
 		spec.FromAirlineSpec0(id)
 	} else {
-		spec.FromAirlineSpec1(iataCode)
+		spec.FromAirlineIATACode(iataCode)
 	}
 	return spec
 }

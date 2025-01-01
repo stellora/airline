@@ -87,6 +87,7 @@ func TestGetRoute(t *testing.T) {
 func TestListRoutes(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
 	insertFlightsT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 AAA-CCC", "XX4 AAA-CCC")
 
 	resp, err := handler.ListRoutes(ctx, api.ListRoutesRequestObject{})

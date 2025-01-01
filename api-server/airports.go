@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"regexp"
 	"strconv"
@@ -17,8 +18,59 @@ func getAirportBySpec(ctx context.Context, queries *db.Queries, spec api.Airport
 	if id, err := spec.AsAirportSpec0(); err == nil {
 		return queries.GetAirport(ctx, int64(id))
 	}
-	if iataCode, err := spec.AsAirportSpec1(); err == nil {
+	if iataCode, err := spec.AsAirportIATACode(); err == nil {
 		return queries.GetAirportByIATACode(ctx, iataCode)
+	}
+	panic("invalid AirportSpec")
+}
+
+// getOrCreateAirportBySpec is like getAirportBySpec, but it silently creates the airport if it does
+// not exist and the spec is an airport IATA code.
+func getOrCreateAirportBySpec(ctx context.Context, dbtx db.DBTX, queriesTx *db.Queries, spec api.AirportSpec) (db.Airport, error) {
+	if id, err := spec.AsAirportSpec0(); err == nil {
+		return queriesTx.GetAirport(ctx, int64(id))
+	}
+	if iataCode, err := spec.AsAirportIATACode(); err == nil {
+		// Ensure we're in a DB transaction.
+		var (
+			tx            *sql.Tx
+			txCreatedByUs = false
+		)
+		if dbh, ok := dbtx.(*sql.DB); ok {
+			tx, err = dbh.BeginTx(ctx, nil)
+			if err != nil {
+				return db.Airport{}, err
+			}
+			defer tx.Rollback()
+			queriesTx = queriesTx.WithTx(tx)
+			txCreatedByUs = true
+		} else {
+			// Already in a transaction.
+			tx = dbtx.(*sql.Tx)
+		}
+
+		airport, err := queriesTx.GetAirportByIATACode(ctx, iataCode)
+		if errors.Is(err, sql.ErrNoRows) {
+			airport, err = createAirport(ctx, queriesTx, api.CreateAirportRequestObject{
+				Body: &api.CreateAirportJSONRequestBody{
+					IataCode: iataCode,
+				},
+			})
+			if err != nil {
+				return db.Airport{}, err
+			}
+		} else if err != nil {
+			return db.Airport{}, err
+		}
+
+		// Only commit if we created the transaction.
+		if txCreatedByUs {
+			if err := tx.Commit(); err != nil {
+				return db.Airport{}, err
+			}
+		}
+
+		return airport, nil
 	}
 	panic("invalid AirportSpec")
 }
@@ -28,7 +80,7 @@ func newAirportSpec(id int, iataCode string) api.AirportSpec {
 	if id != 0 {
 		spec.FromAirportSpec0(id)
 	} else {
-		spec.FromAirportSpec1(iataCode)
+		spec.FromAirportIATACode(iataCode)
 	}
 	return spec
 }
@@ -82,9 +134,17 @@ func (h *Handler) ListAirports(ctx context.Context, request api.ListAirportsRequ
 var validAirportIATACode = regexp.MustCompile(`^[A-Z]{3}$`)
 
 func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRequestObject) (api.CreateAirportResponseObject, error) {
+	created, err := createAirport(ctx, h.queries, request)
+	if err != nil {
+		return nil, err
+	}
+	return api.CreateAirport201JSONResponse(fromDBAirport(created)), nil
+}
+
+func createAirport(ctx context.Context, queries *db.Queries, request api.CreateAirportRequestObject) (db.Airport, error) {
 	if !validAirportIATACode.MatchString(request.Body.IataCode) {
 		log.Println("invalid IATA") // TODO(sqs): return error
-		return api.CreateAirport400Response{}, nil
+		return db.Airport{}, fmt.Errorf("invalid IATA code: %s", request.Body.IataCode)
 	}
 
 	params := db.CreateAirportParams{
@@ -93,12 +153,12 @@ func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRe
 	if info := extdata.Airports.AirportByIATACode(request.Body.IataCode); info != nil {
 		params.OadbID = sql.NullInt64{Int64: int64(info.Airport.ID), Valid: true}
 	}
-	created, err := h.queries.CreateAirport(ctx, params)
+	created, err := queries.CreateAirport(ctx, params)
 	if err != nil {
 		log.Println(err) // TODO(sqs): return error
-		return api.CreateAirport400Response{}, nil
+		return db.Airport{}, fmt.Errorf("failed to create airport: %w", err)
 	}
-	return api.CreateAirport201JSONResponse(fromDBAirport(created)), nil
+	return created, nil
 }
 
 func (h *Handler) UpdateAirport(ctx context.Context, request api.UpdateAirportRequestObject) (api.UpdateAirportResponseObject, error) {

@@ -12,7 +12,12 @@ import (
 
 func fromDBFlight(a db.FlightsView) api.Flight {
 	b := api.Flight{
-		Id:     int(a.ID),
+		Id: int(a.ID),
+		Airline: fromDBAirline(db.Airline{
+			ID:       a.AirlineID,
+			IataCode: a.AirlineIataCode,
+			Name:     a.AirlineName,
+		}),
 		Number: a.Number,
 		OriginAirport: fromDBAirport(db.Airport{
 			ID:       a.OriginAirportID,
@@ -53,6 +58,14 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 		return nil, fmt.Errorf("number must not be empty")
 	}
 
+	airline, err := getAirlineBySpec(ctx, h.queries, request.Body.Airline)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("airline %q not found", request.Body.Airline)
+		}
+		return nil, err
+	}
+
 	// TODO(sqs): return HTTP 400 errors with error msg
 	originAirport, err := getAirportBySpec(ctx, h.queries, request.Body.OriginAirport)
 	if err != nil {
@@ -70,6 +83,7 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 	}
 
 	created, err := h.queries.CreateFlight(ctx, db.CreateFlightParams{
+		AirlineID:            airline.ID,
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
 		DestinationAirportID: destinationAirport.ID,
@@ -87,36 +101,63 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 }
 
 func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequestObject) (api.UpdateFlightResponseObject, error) {
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
+
 	params := db.UpdateFlightParams{
 		ID: int64(request.Id),
+	}
+	if request.Body.Airline != nil {
+		airline, err := getAirlineBySpec(ctx, queriesTx, *request.Body.Airline)
+		if err != nil {
+			return nil, err
+		}
+		params.AirlineID = sql.NullInt64{Int64: airline.ID, Valid: true}
 	}
 	if request.Body.Number != nil {
 		params.Number = sql.NullString{String: *request.Body.Number, Valid: true}
 	}
 	if request.Body.OriginAirport != nil {
-		params.OriginAirportID = sql.NullInt64{Int64: int64(*request.Body.OriginAirport), Valid: true}
+		originAirport, err := getOrCreateAirportBySpec(ctx, tx, queriesTx, *request.Body.OriginAirport)
+		if err != nil {
+			return nil, err
+		}
+		params.OriginAirportID = sql.NullInt64{Int64: originAirport.ID, Valid: true}
 	}
 	if request.Body.DestinationAirport != nil {
-		params.DestinationAirportID = sql.NullInt64{Int64: int64(*request.Body.DestinationAirport), Valid: true}
+		destinationAirport, err := getOrCreateAirportBySpec(ctx, tx, queriesTx, *request.Body.DestinationAirport)
+		if err != nil {
+			return nil, err
+		}
+		params.DestinationAirportID = sql.NullInt64{Int64: destinationAirport.ID, Valid: true}
 	}
 	if request.Body.Published != nil {
 		params.Published = sql.NullBool{Bool: *request.Body.Published, Valid: true}
 	}
 
-	if _, err := h.queries.UpdateFlight(ctx, params); err != nil {
+	if _, err := queriesTx.UpdateFlight(ctx, params); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateFlight404Response{}, nil
 		}
 		return nil, err
 	}
 
-	flight, err := h.queries.GetFlight(ctx, int64(request.Id))
+	flight, err := queriesTx.GetFlight(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateFlight404Response{}, nil
 		}
 		return nil, err
 	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return api.UpdateFlight200JSONResponse(fromDBFlight(flight)), nil
 }
 
