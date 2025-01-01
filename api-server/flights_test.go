@@ -158,7 +158,8 @@ func TestUpdateFlight(t *testing.T) {
 
 		want := api.GetFlight200JSONResponse{
 			Id:                 1,
-			Number:             "XX100",
+			Airline:            api.Airline{Id: 2, IataCode: "YY"},
+			Number:             "100",
 			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
 			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
 			Published:          true,
