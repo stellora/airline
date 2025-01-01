@@ -416,7 +416,7 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/AirportSpec'
-      x-go-type: AirportSpec
+        x-go-type: AirportSpec
   schemas:
     AirportID:
       type: integer
