@@ -40,14 +40,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/airports/{id}": {
+    "/airports/{airportSpec}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get airport by ID */
+        /** Get airport by ID or IATA code */
         get: operations["getAirport"];
         put?: never;
         post?: never;
@@ -95,14 +95,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/airlines/{id}": {
+    "/airlines/{airlineSpec}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get airline by ID */
+        /** Get airline by ID or IATA code */
         get: operations["getAirline"];
         put?: never;
         post?: never;
@@ -359,7 +359,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                airportSpec: components["schemas"]["AirportSpec"];
             };
             cookie?: never;
         };
@@ -388,7 +388,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                airportSpec: components["schemas"]["AirportSpec"];
             };
             cookie?: never;
         };
@@ -415,7 +415,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                airportSpec: components["schemas"]["AirportSpec"];
             };
             cookie?: never;
         };
@@ -551,7 +551,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                airlineSpec: components["schemas"]["AirlineSpec"];
             };
             cookie?: never;
         };
@@ -580,7 +580,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                airlineSpec: components["schemas"]["AirlineSpec"];
             };
             cookie?: never;
         };
@@ -607,7 +607,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                airlineSpec: components["schemas"]["AirlineSpec"];
             };
             cookie?: never;
         };

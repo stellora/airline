@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip'
+	import { route } from '$lib/route-helpers'
 	import type { Airport } from '$lib/types'
 	import { cn } from '$lib/utils'
 	import type { HTMLAttributes } from 'svelte/elements'
@@ -37,7 +38,11 @@
 				{...props}
 			>
 				{#if link && 'id' in airport}
-					<a href={`/admin/airports/${airport.id}`}>{airport.iataCode}</a>
+					<a
+						href={route('/admin/airports/[airportSpec]', {
+							params: { airportSpec: airport.iataCode },
+						})}>{airport.iataCode}</a
+					>
 				{:else}
 					{airport.iataCode}
 				{/if}

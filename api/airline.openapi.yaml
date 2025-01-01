@@ -60,16 +60,16 @@ paths:
       responses:
         '204':
           description: All airports deleted
-  /airports/{id}:
+  /airports/{airportSpec}:
     get:
       operationId: getAirport
-      summary: Get airport by ID
+      summary: Get airport by ID or IATA code
       parameters:
-        - name: id
+        - name: airportSpec
           in: path
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/AirportSpec'
       responses:
         '200':
           description: Airport found
@@ -83,11 +83,11 @@ paths:
       operationId: updateAirport
       summary: Update airport
       parameters:
-        - name: id
+        - name: airportSpec
           in: path
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/AirportSpec'
       requestBody:
         required: true
         content:
@@ -110,11 +110,11 @@ paths:
       operationId: deleteAirport
       summary: Delete an airport
       parameters:
-        - name: id
+        - name: airportSpec
           in: path
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/AirportSpec'
       responses:
         '204':
           description: Airport deleted
@@ -186,16 +186,16 @@ paths:
       responses:
         '204':
           description: All airlines deleted
-  /airlines/{id}:
+  /airlines/{airlineSpec}:
     get:
       operationId: getAirline
-      summary: Get airline by ID
+      summary: Get airline by ID or IATA code
       parameters:
-        - name: id
+        - name: airlineSpec
           in: path
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/AirlineSpec'
       responses:
         '200':
           description: Airline found
@@ -209,11 +209,11 @@ paths:
       operationId: updateAirline
       summary: Update airline
       parameters:
-        - name: id
+        - name: airlineSpec
           in: path
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/AirlineSpec'
       requestBody:
         required: true
         content:
@@ -238,11 +238,11 @@ paths:
       operationId: deleteAirline
       summary: Delete an airline
       parameters:
-        - name: id
+        - name: airlineSpec
           in: path
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/AirlineSpec'
       responses:
         '204':
           description: Airline deleted

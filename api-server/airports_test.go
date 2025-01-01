@@ -12,28 +12,50 @@ func TestGetAirport(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 
 	t.Run("exists", func(t *testing.T) {
-		resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
-			Id: 1,
+		t.Run("by ID", func(t *testing.T) {
+			resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
+				AirportSpec: newAirportSpec(1, ""),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertEqual(t, resp, api.GetAirport200JSONResponse{
+				Id:       1,
+				IataCode: "AAA",
+			})
 		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		want := api.GetAirport200JSONResponse{
-			Id:       1,
-			IataCode: "AAA",
-		}
-		assertEqual(t, resp, want)
+		t.Run("by IATA code", func(t *testing.T) {
+			resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
+				AirportSpec: newAirportSpec(0, "AAA"),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertEqual(t, resp, api.GetAirport200JSONResponse{
+				Id:       1,
+				IataCode: "AAA",
+			})
+		})
 	})
-
 	t.Run("does not exist", func(t *testing.T) {
-		resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
-			Id: 999,
+		t.Run("by ID", func(t *testing.T) {
+			resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
+				AirportSpec: newAirportSpec(999, ""),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertEqual(t, resp, &api.GetAirport404Response{})
 		})
-		if err != nil {
-			t.Fatal(err)
-		}
-		assertEqual(t, resp, (&api.GetAirport404Response{}))
+		t.Run("by IATA code", func(t *testing.T) {
+			resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
+				AirportSpec: newAirportSpec(0, "ZZ"),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertEqual(t, resp, &api.GetAirport404Response{})
+		})
 	})
 }
 
@@ -79,7 +101,7 @@ func TestDeleteAirport(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 
 	resp, err := handler.DeleteAirport(ctx, api.DeleteAirportRequestObject{
-		Id: 1,
+		AirportSpec: newAirportSpec(1, ""),
 	})
 	if err != nil {
 		t.Fatal(err)

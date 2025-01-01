@@ -1,39 +1,54 @@
 <script lang="ts">
-	import { enhance } from '$app/forms'
-	import { Button } from '$lib/components/ui/button'
+	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
+	import * as Form from '$lib/components/ui/form'
 	import { Input } from '$lib/components/ui/input'
-	import type { ActionData } from './$types'
-	let { form }: { form: ActionData } = $props()
+	import CircleAlert from 'lucide-svelte/icons/circle-alert'
+	import { superForm } from 'sveltekit-superforms'
+	import { typebox } from 'sveltekit-superforms/adapters'
+	import type { PageServerData } from './$types'
+	import { formSchema } from './airport-form'
+
+	const props: { form: PageServerData['form']; action: string } = $props()
+	const form = superForm(props.form, {
+		validators: typebox(formSchema),
+		onError({ result }) {
+			$message = result.error.message || 'Unknown error'
+		},
+	})
+	const { form: formData, enhance, message } = form
 </script>
 
-<div class="flex flex-col gap-1">
-	<form
-		method="POST"
-		action="?/create"
-		use:enhance
-		class="flex flex-wrap gap-2"
-		data-testid="airport-form"
-	>
-		<Input
-			type="text"
-			name="iataCode"
-			placeholder="IATA code"
-			value={form?.iataCode ?? ''}
-			autocomplete="off"
-			class="w-24"
-			maxlength={3}
-			required
-			aria-label="Airport IATA code"
-			aria-required="true"
-			pattern={`[A-Z]{3,3}`}
-			oninput={(ev) => {
-				ev.currentTarget.value = ev.currentTarget.value.toUpperCase()
-			}}
-		/>
-		<Button type="submit" variant="secondary" aria-label="Add airport">Add</Button>
-	</form>
-
-	{#if form?.error}
-		<p class="text-red-700 p-2" role="alert" aria-live="polite">❌ Error: {form.error}</p>
+<form
+	method="POST"
+	action={props.action}
+	use:enhance
+	class="flex gap-4 items-center"
+	data-testid="airport-form"
+>
+	<Form.Field {form} name="iataCode">
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Airport code</Form.Label>
+				<Input
+					{...props}
+					bind:value={$formData.iataCode}
+					autocomplete="off"
+					class="font-mono w-32"
+					oninput={(ev) => {
+						ev.currentTarget.value = ev.currentTarget.value.toUpperCase()
+					}}
+				/>
+			{/snippet}
+		</Form.Control>
+		<Form.Description>3-letter IATA code</Form.Description>
+		<Form.FieldErrors />
+	</Form.Field>
+	<Form.Button>Create</Form.Button>
+	{#if $message}
+		<Alert variant="destructive" aria-live="polite">
+			<CircleAlert class="size-5" />
+			<AlertTitle>Error</AlertTitle>
+			<AlertDescription>{$message}</AlertDescription>
+		</Alert>
 	{/if}
-</div>
+</form>

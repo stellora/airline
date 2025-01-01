@@ -51,7 +51,7 @@ func fromDBAirline(a db.Airline) api.Airline {
 }
 
 func (h *Handler) GetAirline(ctx context.Context, request api.GetAirlineRequestObject) (api.GetAirlineResponseObject, error) {
-	airline, err := h.queries.GetAirline(ctx, int64(request.Id))
+	airline, err := getAirlineBySpec(ctx, h.queries, request.AirlineSpec)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.GetAirline404Response{}, nil
@@ -89,9 +89,22 @@ func (h *Handler) CreateAirline(ctx context.Context, request api.CreateAirlineRe
 }
 
 func (h *Handler) UpdateAirline(ctx context.Context, request api.UpdateAirlineRequestObject) (api.UpdateAirlineResponseObject, error) {
-	params := db.UpdateAirlineParams{
-		ID: int64(request.Id),
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
 	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
+
+	airline, err := getAirlineBySpec(ctx, queriesTx, request.AirlineSpec)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.UpdateAirline404Response{}, nil
+		}
+		return nil, err
+	}
+
+	params := db.UpdateAirlineParams{ID: airline.ID}
 	if request.Body.IataCode != nil {
 		params.IataCode = sql.NullString{String: *request.Body.IataCode, Valid: true}
 	}
@@ -99,21 +112,46 @@ func (h *Handler) UpdateAirline(ctx context.Context, request api.UpdateAirlineRe
 		params.Name = sql.NullString{String: *request.Body.Name, Valid: true}
 	}
 
-	updated, err := h.queries.UpdateAirline(ctx, params)
+	updated, err := queriesTx.UpdateAirline(ctx, params)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateAirline404Response{}, nil
 		}
 		return nil, err
 	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return api.UpdateAirline200JSONResponse(fromDBAirline(updated)), nil
 }
 
 func (h *Handler) DeleteAirline(ctx context.Context, request api.DeleteAirlineRequestObject) (api.DeleteAirlineResponseObject, error) {
-	if err := h.queries.DeleteAirline(ctx, int64(request.Id)); err != nil {
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
+
+	airline, err := getAirlineBySpec(ctx, queriesTx, request.AirlineSpec)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.DeleteAirline404Response{}, nil
+		}
+		return nil, err
+	}
+
+	if err := queriesTx.DeleteAirline(ctx, airline.ID); err != nil {
 		// TODO(sqs): check if it was actually deleted
 		return nil, err
 	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return api.DeleteAirline204Response{}, nil
 }
 

@@ -114,7 +114,7 @@ func fromDBAirport(a db.Airport) api.Airport {
 }
 
 func (h *Handler) GetAirport(ctx context.Context, request api.GetAirportRequestObject) (api.GetAirportResponseObject, error) {
-	airport, err := h.queries.GetAirport(ctx, int64(request.Id))
+	airport, err := getAirportBySpec(ctx, h.queries, request.AirportSpec)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.GetAirport404Response{}, nil
@@ -162,28 +162,66 @@ func createAirport(ctx context.Context, queries *db.Queries, request api.CreateA
 }
 
 func (h *Handler) UpdateAirport(ctx context.Context, request api.UpdateAirportRequestObject) (api.UpdateAirportResponseObject, error) {
-	params := db.UpdateAirportParams{
-		ID: int64(request.Id),
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
 	}
-	if request.Body.IataCode != nil {
-		params.IataCode = sql.NullString{String: *request.Body.IataCode, Valid: true}
-	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
 
-	updated, err := h.queries.UpdateAirport(ctx, params)
+	airport, err := getAirportBySpec(ctx, queriesTx, request.AirportSpec)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateAirport404Response{}, nil
 		}
 		return nil, err
 	}
+
+	params := db.UpdateAirportParams{ID: airport.ID}
+	if request.Body.IataCode != nil {
+		params.IataCode = sql.NullString{String: *request.Body.IataCode, Valid: true}
+	}
+
+	updated, err := queriesTx.UpdateAirport(ctx, params)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.UpdateAirport404Response{}, nil
+		}
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return api.UpdateAirport200JSONResponse(fromDBAirport(updated)), nil
 }
 
 func (h *Handler) DeleteAirport(ctx context.Context, request api.DeleteAirportRequestObject) (api.DeleteAirportResponseObject, error) {
-	if err := h.queries.DeleteAirport(ctx, int64(request.Id)); err != nil {
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
+
+	airport, err := getAirportBySpec(ctx, queriesTx, request.AirportSpec)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.DeleteAirport404Response{}, nil
+		}
+		return nil, err
+	}
+
+	if err := queriesTx.DeleteAirport(ctx, airport.ID); err != nil {
 		// TODO(sqs): check if it was actually deleted
 		return nil, err
 	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return api.DeleteAirport204Response{}, nil
 }
 

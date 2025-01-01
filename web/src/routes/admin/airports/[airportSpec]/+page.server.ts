@@ -2,11 +2,10 @@ import { apiClient } from '$lib/api'
 import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ params, parent }) => {
-	const id = Number.parseInt(params.id)
+export const load: PageServerLoad = async ({ params }) => {
 	const flights = apiClient
-		.GET('/airports/{id}/flights', {
-			params: { path: { id } },
+		.GET('/airports/{airportSpec}/flights', {
+			params: { path: { airportSpec: params.airportSpec } },
 			fetch,
 		})
 		.then((resp) => resp.data)

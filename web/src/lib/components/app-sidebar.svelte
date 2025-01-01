@@ -2,6 +2,7 @@
 	import { page } from '$app/state'
 	import * as Sidebar from '$lib/components/ui/sidebar'
 	import Book from 'lucide-svelte/icons/book'
+	import Building from 'lucide-svelte/icons/building'
 	import CircleUser from 'lucide-svelte/icons/circle-user'
 	import Info from 'lucide-svelte/icons/info'
 	import MapPin from 'lucide-svelte/icons/map-pin'
@@ -61,6 +62,11 @@
 			title: 'Passengers',
 			url: '/admin/passengers',
 			icon: Users,
+		},
+		{
+			title: 'Airlines',
+			url: '/admin/airlines',
+			icon: Building,
 		},
 	]
 

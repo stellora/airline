@@ -12,28 +12,50 @@ func TestGetAirline(t *testing.T) {
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
 
 	t.Run("exists", func(t *testing.T) {
-		resp, err := handler.GetAirline(ctx, api.GetAirlineRequestObject{
-			Id: 1,
+		t.Run("by ID", func(t *testing.T) {
+			resp, err := handler.GetAirline(ctx, api.GetAirlineRequestObject{
+				AirlineSpec: newAirlineSpec(1, ""),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertEqual(t, resp, api.GetAirline200JSONResponse{
+				Id:       1,
+				IataCode: "XX",
+			})
 		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		want := api.GetAirline200JSONResponse{
-			Id:       1,
-			IataCode: "XX",
-		}
-		assertEqual(t, resp, want)
+		t.Run("by IATA code", func(t *testing.T) {
+			resp, err := handler.GetAirline(ctx, api.GetAirlineRequestObject{
+				AirlineSpec: newAirlineSpec(0, "XX"),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertEqual(t, resp, api.GetAirline200JSONResponse{
+				Id:       1,
+				IataCode: "XX",
+			})
+		})
 	})
-
 	t.Run("does not exist", func(t *testing.T) {
-		resp, err := handler.GetAirline(ctx, api.GetAirlineRequestObject{
-			Id: 999,
+		t.Run("by ID", func(t *testing.T) {
+			resp, err := handler.GetAirline(ctx, api.GetAirlineRequestObject{
+				AirlineSpec: newAirlineSpec(999, ""),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertEqual(t, resp, &api.GetAirline404Response{})
 		})
-		if err != nil {
-			t.Fatal(err)
-		}
-		assertEqual(t, resp, &api.GetAirline404Response{})
+		t.Run("by IATA code", func(t *testing.T) {
+			resp, err := handler.GetAirline(ctx, api.GetAirlineRequestObject{
+				AirlineSpec: newAirlineSpec(0, "ZZ"),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertEqual(t, resp, &api.GetAirline404Response{})
+		})
 	})
 }
 
@@ -79,7 +101,7 @@ func TestDeleteAirline(t *testing.T) {
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
 
 	resp, err := handler.DeleteAirline(ctx, api.DeleteAirlineRequestObject{
-		Id: 1,
+		AirlineSpec: newAirlineSpec(1, ""),
 	})
 	if err != nil {
 		t.Fatal(err)

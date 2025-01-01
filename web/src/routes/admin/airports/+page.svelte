@@ -1,16 +1,26 @@
 <script lang="ts">
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import { Button } from '$lib/components/ui/button'
-	import { Card } from '$lib/components/ui/card'
+	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
+	import { route } from '$lib/route-helpers'
 	import AirportForm from './airport-form.svelte'
 
-	let { data, form } = $props()
+	let { data } = $props()
 </script>
 
 <Page title="Airports">
-	<AirportForm {form} />
+	<Card class="self-start">
+		<!-- Card header for airport creation form -->
+		<CardHeader>
+			<CardTitle>New airport</CardTitle>
+		</CardHeader>
+
+		<CardContent>
+			<AirportForm form={data.form} action="?/create" />
+		</CardContent>
+	</Card>
 	<Card>
 		<Table.Root>
 			<Table.Header>
@@ -33,7 +43,9 @@
 							<Table.Cell class="text-right">
 								<Button
 									variant="link"
-									href={`/admin/airports/${airport.id}`}
+									href={route('/admin/airports/[airportSpec]', {
+										params: { airportSpec: airport.iataCode },
+									})}
 									class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 								>
 									Manage
