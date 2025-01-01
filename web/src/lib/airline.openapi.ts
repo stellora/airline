@@ -4,617 +4,887 @@
  */
 
 export interface paths {
-	'/health': {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		/** Health check endpoint */
-		get: operations['healthCheck']
-		put?: never
-		post?: never
-		delete?: never
-		options?: never
-		head?: never
-		patch?: never
-		trace?: never
-	}
-	'/airports': {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		/** List all airports */
-		get: operations['listAirports']
-		put?: never
-		/** Create a new airport */
-		post: operations['createAirport']
-		/** Delete all airports */
-		delete: operations['deleteAllAirports']
-		options?: never
-		head?: never
-		patch?: never
-		trace?: never
-	}
-	'/airports/{id}': {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		/** Get airport by ID */
-		get: operations['getAirport']
-		put?: never
-		post?: never
-		/** Delete an airport */
-		delete: operations['deleteAirport']
-		options?: never
-		head?: never
-		/** Update airport */
-		patch: operations['updateAirport']
-		trace?: never
-	}
-	'/airports/{id}/flights': {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		/** List flights that depart from or arrive at an airport */
-		get: operations['listFlightsByAirport']
-		put?: never
-		post?: never
-		delete?: never
-		options?: never
-		head?: never
-		patch?: never
-		trace?: never
-	}
-	'/flights': {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		/** List all flights */
-		get: operations['listFlights']
-		put?: never
-		/** Create a new flight */
-		post: operations['createFlight']
-		/** Delete all flights */
-		delete: operations['deleteAllFlights']
-		options?: never
-		head?: never
-		patch?: never
-		trace?: never
-	}
-	'/flights/{id}': {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		/** Get flight by ID */
-		get: operations['getFlight']
-		put?: never
-		post?: never
-		/** Delete a flight */
-		delete: operations['deleteFlight']
-		options?: never
-		head?: never
-		/** Update flight */
-		patch: operations['updateFlight']
-		trace?: never
-	}
-	'/routes': {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		/** List all routes */
-		get: operations['listRoutes']
-		put?: never
-		post?: never
-		delete?: never
-		options?: never
-		head?: never
-		patch?: never
-		trace?: never
-	}
-	'/routes/{route}': {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		/** Get route by IATA codes of origin and destination airports */
-		get: operations['getRoute']
-		put?: never
-		post?: never
-		delete?: never
-		options?: never
-		head?: never
-		patch?: never
-		trace?: never
-	}
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Health check endpoint */
+        get: operations["healthCheck"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/airports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all airports */
+        get: operations["listAirports"];
+        put?: never;
+        /** Create a new airport */
+        post: operations["createAirport"];
+        /** Delete all airports */
+        delete: operations["deleteAllAirports"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/airports/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get airport by ID */
+        get: operations["getAirport"];
+        put?: never;
+        post?: never;
+        /** Delete an airport */
+        delete: operations["deleteAirport"];
+        options?: never;
+        head?: never;
+        /** Update airport */
+        patch: operations["updateAirport"];
+        trace?: never;
+    };
+    "/airports/{airportSpec}/flights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List flights that depart from or arrive at an airport */
+        get: operations["listFlightsByAirport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/airlines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all airlines */
+        get: operations["listAirlines"];
+        put?: never;
+        /** Create a new airline */
+        post: operations["createAirline"];
+        /** Delete all airlines */
+        delete: operations["deleteAllAirlines"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/airlines/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get airline by ID */
+        get: operations["getAirline"];
+        put?: never;
+        post?: never;
+        /** Delete an airline */
+        delete: operations["deleteAirline"];
+        options?: never;
+        head?: never;
+        /** Update airline */
+        patch: operations["updateAirline"];
+        trace?: never;
+    };
+    "/airlines/{airlineSpec}/flights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List flights for an airline */
+        get: operations["listFlightsByAirline"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/flights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all flights */
+        get: operations["listFlights"];
+        put?: never;
+        /** Create a new flight */
+        post: operations["createFlight"];
+        /** Delete all flights */
+        delete: operations["deleteAllFlights"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/flights/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get flight by ID */
+        get: operations["getFlight"];
+        put?: never;
+        post?: never;
+        /** Delete a flight */
+        delete: operations["deleteFlight"];
+        options?: never;
+        head?: never;
+        /** Update flight */
+        patch: operations["updateFlight"];
+        trace?: never;
+    };
+    "/routes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all routes */
+        get: operations["listRoutes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routes/{route}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get route by IATA codes of origin and destination airports */
+        get: operations["getRoute"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
-	schemas: {
-		/** AirportSpec */
-		airportSpec: number | string
-		Airport: {
-			id: number
-			name: string
-			iataCode: string
-			country: string
-			region: string
-			point: components['schemas']['Point']
-		}
-		Point: {
-			/** Format: double */
-			longitude: number
-			/** Format: double */
-			latitude: number
-		}
-		Flight: {
-			id: number
-			number: string
-			originAirport: components['schemas']['Airport']
-			destinationAirport: components['schemas']['Airport']
-			/** Format: double */
-			distanceMiles?: number
-			published: boolean
-		}
-		Route: {
-			originAirport: components['schemas']['Airport']
-			destinationAirport: components['schemas']['Airport']
-			/** Format: double */
-			distanceMiles?: number
-			flightsCount: number
-		}
-	}
-	responses: never
-	parameters: never
-	requestBodies: never
-	headers: never
-	pathItems: never
+    schemas: {
+        /** @description IATA code for airport */
+        AirportIATACode: string;
+        /** AirportSpec */
+        AirportSpec: number | components["schemas"]["AirportIATACode"];
+        Airport: {
+            id: number;
+            name: string;
+            iataCode: components["schemas"]["AirportIATACode"];
+            country: string;
+            region: string;
+            point: components["schemas"]["Point"];
+        };
+        Point: {
+            /** Format: double */
+            longitude: number;
+            /** Format: double */
+            latitude: number;
+        };
+        /** @description IATA code for airline */
+        AirlineIATACode: string;
+        /** AirlineSpec */
+        AirlineSpec: number | components["schemas"]["AirlineIATACode"];
+        Airline: {
+            id: number;
+            iataCode: components["schemas"]["AirlineIATACode"];
+            name: string;
+        };
+        Flight: {
+            id: number;
+            airline: components["schemas"]["Airline"];
+            number: components["schemas"]["FlightNumber"];
+            originAirport: components["schemas"]["Airport"];
+            destinationAirport: components["schemas"]["Airport"];
+            /** Format: double */
+            distanceMiles?: number;
+            published: boolean;
+        };
+        FlightNumber: string;
+        Route: {
+            originAirport: components["schemas"]["Airport"];
+            destinationAirport: components["schemas"]["Airport"];
+            /** Format: double */
+            distanceMiles?: number;
+            flightsCount: number;
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-export type $defs = Record<string, never>
+export type $defs = Record<string, never>;
 export interface operations {
-	healthCheck: {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description Successful response */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': {
-						ok?: boolean
-					}
-				}
-			}
-		}
-	}
-	listAirports: {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description List of airports */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Airport'][]
-				}
-			}
-		}
-	}
-	createAirport: {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		requestBody: {
-			content: {
-				'application/json': {
-					iataCode: string
-				}
-			}
-		}
-		responses: {
-			/** @description Airport created */
-			201: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Airport']
-				}
-			}
-			/** @description Invalid request */
-			400: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	deleteAllAirports: {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description All airports deleted */
-			204: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	getAirport: {
-		parameters: {
-			query?: never
-			header?: never
-			path: {
-				id: number
-			}
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description Airport found */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Airport']
-				}
-			}
-			/** @description Airport not found */
-			404: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	deleteAirport: {
-		parameters: {
-			query?: never
-			header?: never
-			path: {
-				id: number
-			}
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description Airport deleted */
-			204: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-			/** @description Airport not found */
-			404: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	updateAirport: {
-		parameters: {
-			query?: never
-			header?: never
-			path: {
-				id: number
-			}
-			cookie?: never
-		}
-		requestBody: {
-			content: {
-				'application/json': {
-					iataCode?: string
-				}
-			}
-		}
-		responses: {
-			/** @description Airport updated */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Airport']
-				}
-			}
-			/** @description Airport not found */
-			404: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	listFlightsByAirport: {
-		parameters: {
-			query?: never
-			header?: never
-			path: {
-				id: number
-			}
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description Flights by airport */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Flight'][]
-				}
-			}
-		}
-	}
-	listFlights: {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description List of flights */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Flight'][]
-				}
-			}
-		}
-	}
-	createFlight: {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		requestBody: {
-			content: {
-				'application/json': {
-					number: string
-					originAirport: components['schemas']['airportSpec']
-					destinationAirport: components['schemas']['airportSpec']
-					/** @default false */
-					published?: boolean
-				}
-			}
-		}
-		responses: {
-			/** @description Flight created */
-			201: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Flight']
-				}
-			}
-			/** @description Invalid request */
-			400: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	deleteAllFlights: {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description All flights deleted */
-			204: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	getFlight: {
-		parameters: {
-			query?: never
-			header?: never
-			path: {
-				id: number
-			}
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description Flight found */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Flight']
-				}
-			}
-			/** @description Flight not found */
-			404: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	deleteFlight: {
-		parameters: {
-			query?: never
-			header?: never
-			path: {
-				id: number
-			}
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description Flight deleted */
-			204: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-			/** @description Flight not found */
-			404: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	updateFlight: {
-		parameters: {
-			query?: never
-			header?: never
-			path: {
-				id: number
-			}
-			cookie?: never
-		}
-		requestBody: {
-			content: {
-				'application/json': {
-					number?: string
-					originAirport?: number
-					destinationAirport?: number
-					published?: boolean
-				}
-			}
-		}
-		responses: {
-			/** @description Flight updated */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Flight']
-				}
-			}
-			/** @description Flight not found */
-			404: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
-	listRoutes: {
-		parameters: {
-			query?: never
-			header?: never
-			path?: never
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description List of routes */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Route'][]
-				}
-			}
-		}
-	}
-	getRoute: {
-		parameters: {
-			query?: never
-			header?: never
-			path: {
-				route: string
-			}
-			cookie?: never
-		}
-		requestBody?: never
-		responses: {
-			/** @description Route information */
-			200: {
-				headers: {
-					[name: string]: unknown
-				}
-				content: {
-					'application/json': components['schemas']['Route']
-				}
-			}
-			/** @description Route not found */
-			404: {
-				headers: {
-					[name: string]: unknown
-				}
-				content?: never
-			}
-		}
-	}
+    healthCheck: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        ok?: boolean;
+                    };
+                };
+            };
+        };
+    };
+    listAirports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of airports */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Airport"][];
+                };
+            };
+        };
+    };
+    createAirport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    iataCode: components["schemas"]["AirportIATACode"];
+                };
+            };
+        };
+        responses: {
+            /** @description Airport created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Airport"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteAllAirports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All airports deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getAirport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Airport found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Airport"];
+                };
+            };
+            /** @description Airport not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteAirport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Airport deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Airport not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateAirport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    iataCode?: components["schemas"]["AirportIATACode"];
+                };
+            };
+        };
+        responses: {
+            /** @description Airport updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Airport"];
+                };
+            };
+            /** @description Airport not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFlightsByAirport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airportSpec: components["schemas"]["AirportSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Flights by airport */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Flight"][];
+                };
+            };
+            /** @description Airport not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listAirlines: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of airlines */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Airline"][];
+                };
+            };
+        };
+    };
+    createAirline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    iataCode: components["schemas"]["AirlineIATACode"];
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Airline created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Airline"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteAllAirlines: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All airlines deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getAirline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Airline found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Airline"];
+                };
+            };
+            /** @description Airline not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteAirline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Airline deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Airline not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateAirline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    iataCode?: components["schemas"]["AirlineIATACode"];
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Airline updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Airline"];
+                };
+            };
+            /** @description Airline not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFlightsByAirline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["schemas"]["AirlineSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Flights by airline */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Flight"][];
+                };
+            };
+            /** @description Airline not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFlights: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of flights */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Flight"][];
+                };
+            };
+        };
+    };
+    createFlight: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    airline: components["schemas"]["AirlineSpec"];
+                    number: components["schemas"]["FlightNumber"];
+                    originAirport: components["schemas"]["AirportSpec"];
+                    destinationAirport: components["schemas"]["AirportSpec"];
+                    /** @default false */
+                    published?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Flight created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Flight"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteAllFlights: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All flights deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getFlight: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Flight found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Flight"];
+                };
+            };
+            /** @description Flight not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteFlight: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Flight deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Flight not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateFlight: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    airline?: components["schemas"]["AirlineSpec"];
+                    number?: components["schemas"]["FlightNumber"];
+                    originAirport?: components["schemas"]["AirportSpec"];
+                    destinationAirport?: components["schemas"]["AirportSpec"];
+                    published?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Flight updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Flight"];
+                };
+            };
+            /** @description Flight not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listRoutes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of routes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Route"][];
+                };
+            };
+        };
+    };
+    getRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                route: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Route information */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Route"];
+                };
+            };
+            /** @description Route not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
 }

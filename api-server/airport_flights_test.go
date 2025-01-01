@@ -10,20 +10,35 @@ import (
 func TestListFlightsByAirport(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
-	insertFlightsT(t, handler, "ST1 AAA-BBB", "ST2 BBB-AAA", "ST3 CCC-BBB")
-
-	resp, err := handler.ListFlightsByAirport(ctx, api.ListFlightsByAirportRequestObject{
-		Id: 1,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertFlightsT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 CCC-BBB")
 
 	want := api.ListFlightsByAirport200JSONResponse{
-		{Id: 1, Number: "ST1", OriginAirport: api.Airport{Id: 1, IataCode: "AAA"}, DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"}, Published: true},
-		{Id: 2, Number: "ST2", OriginAirport: api.Airport{Id: 2, IataCode: "BBB"}, DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"}, Published: true},
+		{Id: 1, Number: "XX1", OriginAirport: api.Airport{Id: 1, IataCode: "AAA"}, DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"}, Published: true},
+		{Id: 2, Number: "XX2", OriginAirport: api.Airport{Id: 2, IataCode: "BBB"}, DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"}, Published: true},
 	}
-	if !reflect.DeepEqual(want, resp) {
-		t.Errorf("got %v, want %v", resp, want)
-	}
+
+	t.Run("by id", func(t *testing.T) {
+		resp, err := handler.ListFlightsByAirport(ctx, api.ListFlightsByAirportRequestObject{
+			AirportSpec: newAirportSpec(1, ""),
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(want, resp) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
+	})
+
+	t.Run("by airport code", func(t *testing.T) {
+		resp, err := handler.ListFlightsByAirport(ctx, api.ListFlightsByAirportRequestObject{
+			AirportSpec: newAirportSpec(0, "AAA"),
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(want, resp) {
+			t.Errorf("got %v, want %v", resp, want)
+		}
+	})
 }

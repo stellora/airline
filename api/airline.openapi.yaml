@@ -42,7 +42,7 @@ paths:
               type: object
               properties:
                 iataCode:
-                  type: string
+                  $ref: '#/components/schemas/AirportIATACode'
               required:
                 - iataCode
       responses:
@@ -96,7 +96,7 @@ paths:
               type: object
               properties:
                 iataCode:
-                  type: string                
+                  $ref: '#/components/schemas/AirportIATACode'                
       responses:
         '200':
           description: Airport updated
@@ -120,16 +120,16 @@ paths:
           description: Airport deleted
         '404':
           description: Airport not found
-  /airports/{id}/flights:
+  /airports/{airportSpec}/flights:
     get:
       operationId: listFlightsByAirport
       summary: List flights that depart from or arrive at an airport
       parameters:
-        - name: id
+        - name: airportSpec
           in: path
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/AirportSpec'
       responses:
         '200':
           description: Flights by airport
@@ -139,6 +139,136 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Flight'
+        '404':
+          description: Airport not found
+  /airlines:
+    get:
+      operationId: listAirlines
+      summary: List all airlines
+      responses:
+        '200':
+          description: List of airlines
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Airline'
+    post:
+      operationId: createAirline
+      summary: Create a new airline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                iataCode:
+                  $ref: '#/components/schemas/AirlineIATACode'
+                name:
+                  type: string
+              required:
+                - iataCode
+                - name
+      responses:
+        '201':
+          description: Airline created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airline'
+        '400':
+          description: Invalid request
+    delete:
+      operationId: deleteAllAirlines
+      summary: Delete all airlines
+      responses:
+        '204':
+          description: All airlines deleted
+  /airlines/{id}:
+    get:
+      operationId: getAirline
+      summary: Get airline by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Airline found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airline'
+        '404':
+          description: Airline not found
+    patch:
+      operationId: updateAirline
+      summary: Update airline
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                iataCode:
+                  $ref: '#/components/schemas/AirlineIATACode'
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Airline updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airline'
+        '404':
+          description: Airline not found
+    delete:
+      operationId: deleteAirline
+      summary: Delete an airline
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Airline deleted
+        '404':
+          description: Airline not found
+  /airlines/{airlineSpec}/flights:
+    get:
+      operationId: listFlightsByAirline
+      summary: List flights for an airline
+      parameters:
+        - name: airlineSpec
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/AirlineSpec'
+      responses:
+        '200':
+          description: Flights by airline
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
+        '404':
+          description: Airline not found
   /flights:
     get:
       operationId: listFlights
@@ -162,16 +292,19 @@ paths:
             schema:
               type: object
               properties:
+                airline:
+                  $ref: '#/components/schemas/AirlineSpec'
                 number:
-                  type: string
+                  $ref: '#/components/schemas/FlightNumber'
                 originAirport:
-                  $ref: '#/components/schemas/airportSpec'
+                  $ref: '#/components/schemas/AirportSpec'
                 destinationAirport:
-                  $ref: '#/components/schemas/airportSpec'
+                  $ref: '#/components/schemas/AirportSpec'
                 published:
                   type: boolean
                   default: false
               required:
+                - airline
                 - number
                 - originAirport
                 - destinationAirport
@@ -225,12 +358,14 @@ paths:
             schema:
               type: object
               properties:
+                airline:
+                  $ref: '#/components/schemas/AirlineSpec'
                 number:
-                  type: string
+                  $ref: '#/components/schemas/FlightNumber'
                 originAirport:
-                  type: integer
+                  $ref: '#/components/schemas/AirportSpec'
                 destinationAirport:
-                  type: integer
+                  $ref: '#/components/schemas/AirportSpec'
                 published:
                   type: boolean
       responses:
@@ -291,14 +426,17 @@ paths:
           description: Route not found
 components:
   schemas:
-    airportSpec:
+    AirportIATACode:
+      type: string
+      description: IATA code for airport
+      pattern: '^[A-Z]{3}$'
+      minLength: 3
+      maxLength: 3
+    AirportSpec:
       title: AirportSpec
       oneOf:
         - type: integer
-        - type: string
-          pattern: '^[A-Z]{3}$'
-          minLength: 3
-          maxLength: 3
+        - $ref: '#/components/schemas/AirportIATACode'
     Airport:
       type: object
       properties:
@@ -307,7 +445,7 @@ components:
         name:
           type: string
         iataCode:
-          type: string
+          $ref: '#/components/schemas/AirportIATACode'
         country:
           type: string
         region:
@@ -333,13 +471,39 @@ components:
       required:
         - longitude
         - latitude
+    AirlineIATACode:
+      type: string
+      description: IATA code for airline
+      pattern: '^[A-Z]{2}$'
+      minLength: 2
+      maxLength: 2
+    AirlineSpec:
+      title: AirlineSpec
+      oneOf:
+        - type: integer
+        - $ref: '#/components/schemas/AirlineIATACode'
+    Airline:
+      type: object
+      properties:
+        id:
+          type: integer
+        iataCode:
+          $ref: '#/components/schemas/AirlineIATACode'
+        name:
+          type: string
+      required:
+        - id
+        - iataCode
+        - name
     Flight:
       type: object
       properties:
         id:
           type: integer
+        airline:
+          $ref: '#/components/schemas/Airline'
         number:
-          type: string
+          $ref: '#/components/schemas/FlightNumber'
         originAirport:
           $ref: '#/components/schemas/Airport'
         destinationAirport:
@@ -351,10 +515,14 @@ components:
           type: boolean
       required:
         - id
+        - airline
         - number
         - originAirport
         - destinationAirport
         - published
+    FlightNumber:
+      type: string
+      pattern: '^[0-9]{1,4}$'
     Route:
       type: object
       properties:

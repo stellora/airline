@@ -8,6 +8,12 @@ import (
 	"database/sql"
 )
 
+type Airline struct {
+	ID       int64
+	IataCode string
+	Name     string
+}
+
 type Airport struct {
 	ID       int64
 	IataCode string
@@ -16,6 +22,7 @@ type Airport struct {
 
 type Flight struct {
 	ID                   int64
+	AirlineID            int64
 	Number               string
 	OriginAirportID      int64
 	DestinationAirportID int64
@@ -24,6 +31,7 @@ type Flight struct {
 
 type FlightsView struct {
 	ID                         int64
+	AirlineID                  int64
 	Number                     string
 	OriginAirportID            int64
 	DestinationAirportID       int64
@@ -32,6 +40,8 @@ type FlightsView struct {
 	OriginAirportOadbID        sql.NullInt64
 	DestinationAirportIataCode string
 	DestinationAirportOadbID   sql.NullInt64
+	AirlineIataCode            string
+	AirlineName                string
 }
 
 type Route struct {

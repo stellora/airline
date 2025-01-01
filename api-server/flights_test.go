@@ -12,7 +12,8 @@ import (
 func TestGetFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
-	insertFlightsT(t, handler, "ST1 AAA-BBB", "ST2 BBB-AAA")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertFlightsT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA")
 
 	t.Run("exists", func(t *testing.T) {
 		resp, err := handler.GetFlight(ctx, api.GetFlightRequestObject{
@@ -24,7 +25,7 @@ func TestGetFlight(t *testing.T) {
 
 		want := api.GetFlight200JSONResponse{
 			Id:                 1,
-			Number:             "ST1",
+			Number:             "XX1",
 			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
 			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
 			Published:          true,
@@ -50,7 +51,8 @@ func TestGetFlight(t *testing.T) {
 func TestListFlights(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
-	insertFlightsT(t, handler, "ST1 AAA-BBB", "ST2 BBB-AAA")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertFlightsT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA")
 
 	resp, err := handler.ListFlights(ctx, api.ListFlightsRequestObject{})
 	if err != nil {
@@ -60,14 +62,14 @@ func TestListFlights(t *testing.T) {
 	want := api.ListFlights200JSONResponse{
 		api.Flight{
 			Id:                 1,
-			Number:             "ST1",
+			Number:             "XX1",
 			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
 			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
 			Published:          true,
 		},
 		api.Flight{
 			Id:                 2,
-			Number:             "ST2",
+			Number:             "XX2",
 			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
 			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
 			Published:          true,
@@ -82,10 +84,11 @@ func TestCreateFlight(t *testing.T) {
 	t.Run("with airport IDs", func(t *testing.T) {
 		ctx, handler := handlerTest(t)
 		insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
+		insertAirlinesWithIATACodesT(t, handler, "XX")
 
 		resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 			Body: &api.CreateFlightJSONRequestBody{
-				Number:             "ST1",
+				Number:             "XX1",
 				OriginAirport:      newAirportSpec(1, ""),
 				DestinationAirport: newAirportSpec(2, ""),
 			},
@@ -96,16 +99,17 @@ func TestCreateFlight(t *testing.T) {
 		if _, ok := resp.(api.CreateFlight201JSONResponse); !ok {
 			t.Errorf("got %#v", resp)
 		}
-		checkFlightTitles(t, handler, []string{"ST1 AAA-BBB"})
+		checkFlightTitles(t, handler, []string{"XX1 AAA-BBB"})
 	})
 
 	t.Run("with airport IATA codes", func(t *testing.T) {
 		ctx, handler := handlerTest(t)
 		insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
+		insertAirlinesWithIATACodesT(t, handler, "XX")
 
 		resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 			Body: &api.CreateFlightJSONRequestBody{
-				Number:             "ST1",
+				Number:             "XX1",
 				OriginAirport:      newAirportSpec(0, "AAA"),
 				DestinationAirport: newAirportSpec(0, "BBB"),
 			},
@@ -116,21 +120,22 @@ func TestCreateFlight(t *testing.T) {
 		if _, ok := resp.(api.CreateFlight201JSONResponse); !ok {
 			t.Errorf("got %#v", resp)
 		}
-		checkFlightTitles(t, handler, []string{"ST1 AAA-BBB"})
+		checkFlightTitles(t, handler, []string{"XX1 AAA-BBB"})
 	})
 }
 
 func TestUpdateFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
-	insertFlightsT(t, handler, "ST1 AAA-BBB")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertFlightsT(t, handler, "XX1 AAA-BBB")
 
 	{
 		// Update the flight
 		resp, err := handler.UpdateFlight(ctx, api.UpdateFlightRequestObject{
 			Id: 1,
 			Body: &api.UpdateFlightJSONRequestBody{
-				Number:             ptrTo("ST100"),
+				Number:             ptrTo("XX100"),
 				OriginAirport:      ptrTo(2),
 				DestinationAirport: ptrTo(1),
 				Published:          ptrTo(true),
@@ -142,7 +147,7 @@ func TestUpdateFlight(t *testing.T) {
 		if _, ok := resp.(api.UpdateFlight200JSONResponse); !ok {
 			t.Errorf("got %#v", resp)
 		}
-		checkFlightTitles(t, handler, []string{"ST100 BBB-AAA"})
+		checkFlightTitles(t, handler, []string{"XX100 BBB-AAA"})
 	}
 
 	{
@@ -154,7 +159,7 @@ func TestUpdateFlight(t *testing.T) {
 
 		want := api.GetFlight200JSONResponse{
 			Id:                 1,
-			Number:             "ST100",
+			Number:             "XX100",
 			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
 			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
 			Published:          true,
@@ -168,7 +173,8 @@ func TestUpdateFlight(t *testing.T) {
 func TestDeleteFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
-	insertFlightsT(t, handler, "ST1 AAA-BBB")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertFlightsT(t, handler, "XX1 AAA-BBB")
 
 	resp, err := handler.DeleteFlight(ctx, api.DeleteFlightRequestObject{
 		Id: 1,
@@ -188,7 +194,8 @@ func TestDeleteFlight(t *testing.T) {
 func TestDeleteAllFlights(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
-	insertFlightsT(t, handler, "ST1 AAA-BBB", "ST2 BBB-AAA")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertFlightsT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA")
 
 	resp, err := handler.DeleteAllFlights(ctx, api.DeleteAllFlightsRequestObject{})
 	if err != nil {

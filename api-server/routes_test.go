@@ -50,7 +50,8 @@ func TestParseRoute(t *testing.T) {
 func TestGetRoute(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
-	insertFlightsT(t, handler, "ST1 AAA-BBB", "ST2 BBB-AAA", "ST3 AAA-BBB")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertFlightsT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 AAA-BBB")
 
 	t.Run("has flights", func(t *testing.T) {
 		resp, err := handler.GetRoute(ctx, api.GetRouteRequestObject{Route: "AAA-BBB"})
@@ -86,7 +87,7 @@ func TestGetRoute(t *testing.T) {
 func TestListRoutes(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
-	insertFlightsT(t, handler, "ST1 AAA-BBB", "ST2 BBB-AAA", "ST3 AAA-CCC", "ST4 AAA-CCC")
+	insertFlightsT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 AAA-CCC", "XX4 AAA-CCC")
 
 	resp, err := handler.ListRoutes(ctx, api.ListRoutesRequestObject{})
 	if err != nil {

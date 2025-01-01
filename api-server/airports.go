@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"regexp"
+	"strconv"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
@@ -30,6 +31,15 @@ func newAirportSpec(id int, iataCode string) api.AirportSpec {
 		spec.FromAirportSpec1(iataCode)
 	}
 	return spec
+}
+
+// TODO!(sqs): remove? is unused
+func airportSpecFromPathArg(arg string) api.AirportSpec {
+	if isIntString(arg) {
+		id, _ := strconv.Atoi(arg)
+		return newAirportSpec(id, "")
+	}
+	return newAirportSpec(0, arg)
 }
 
 func fromDBAirport(a db.Airport) api.Airport {
@@ -69,10 +79,10 @@ func (h *Handler) ListAirports(ctx context.Context, request api.ListAirportsRequ
 	return api.ListAirports200JSONResponse(mapSlice(fromDBAirport, airports)), nil
 }
 
-var validIATACode = regexp.MustCompile(`^[A-Z]{3}$`)
+var validAirportIATACode = regexp.MustCompile(`^[A-Z]{3}$`)
 
 func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRequestObject) (api.CreateAirportResponseObject, error) {
-	if !validIATACode.MatchString(request.Body.IataCode) {
+	if !validAirportIATACode.MatchString(request.Body.IataCode) {
 		log.Println("invalid IATA") // TODO(sqs): return error
 		return api.CreateAirport400Response{}, nil
 	}

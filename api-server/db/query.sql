@@ -34,6 +34,55 @@ WHERE id=?;
 -- name: DeleteAllAirports :exec
 DELETE FROM airports;
 
+-- name: ListFlightsByAirport :many
+SELECT *
+FROM flights_view
+WHERE origin_airport_id=:airport OR destination_airport_id=:airport
+ORDER BY id ASC;
+
+------------------------------------------------------------------------------- airlines
+
+-- name: GetAirline :one
+SELECT * FROM airlines
+WHERE id=? LIMIT 1;
+
+-- name: GetAirlineByIATACode :one
+SELECT * FROM airlines
+WHERE iata_code=? LIMIT 1;
+
+-- name: ListAirlines :many
+SELECT * FROM airlines
+ORDER BY id ASC;
+
+-- name: CreateAirline :one
+INSERT INTO airlines (
+  iata_code,
+  name
+) VALUES (
+  ?, ?
+)
+RETURNING *;
+
+-- name: UpdateAirline :one
+UPDATE airlines SET
+iata_code = COALESCE(sqlc.narg('iata_code'), iata_code),
+name = COALESCE(sqlc.narg('name'), name)
+WHERE id=?
+RETURNING *;
+
+-- name: DeleteAirline :exec
+DELETE FROM airlines
+WHERE id=?;
+
+-- name: DeleteAllAirlines :exec
+DELETE FROM airlines;
+
+-- name: ListFlightsByAirline :many
+SELECT *
+FROM flights_view
+WHERE airline_id=:airline
+ORDER BY id ASC;
+
 ------------------------------------------------------------------------------- flights
 
 -- name: GetFlight :one
@@ -46,14 +95,15 @@ ORDER BY id ASC;
 
 -- name: CreateFlight :one
 INSERT INTO flights (
-  number, origin_airport_id, destination_airport_id, published
+  airline_id, number, origin_airport_id, destination_airport_id, published
 ) VALUES (
-  ?, ?, ?, ?
+  ?, ?, ?, ?, ?
 )
 RETURNING id;
 
 -- name: UpdateFlight :one
 UPDATE flights SET
+airline_id = COALESCE(sqlc.narg('airline_id'), airline_id),
 number = COALESCE(sqlc.narg('number'), number),
 origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
 destination_airport_id = COALESCE(sqlc.narg('destination_airport_id'), destination_airport_id),
@@ -67,14 +117,6 @@ WHERE id=?;
 
 -- name: DeleteAllFlights :exec
 DELETE FROM flights;
-
-------------------------------------------------------------------------------- airport_flights
-
--- name: ListFlightsByAirport :many
-SELECT *
-FROM flights_view
-WHERE origin_airport_id=:airport OR destination_airport_id=:airport
-ORDER BY id ASC;
 
 ------------------------------------------------------------------------------- routes
 

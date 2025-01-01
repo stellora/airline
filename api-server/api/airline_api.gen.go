@@ -15,25 +15,61 @@ import (
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 )
 
+// Airline defines model for Airline.
+type Airline struct {
+	// IataCode IATA code for airline
+	IataCode AirlineIATACode `json:"iataCode"`
+	Id       int             `json:"id"`
+	Name     string          `json:"name"`
+}
+
+// AirlineIATACode IATA code for airline
+type AirlineIATACode = string
+
+// AirlineSpec defines model for AirlineSpec.
+type AirlineSpec struct {
+	union json.RawMessage
+}
+
+// AirlineSpec0 defines model for .
+type AirlineSpec0 = int
+
 // Airport defines model for Airport.
 type Airport struct {
-	Country  string `json:"country"`
-	IataCode string `json:"iataCode"`
-	Id       int    `json:"id"`
-	Name     string `json:"name"`
-	Point    Point  `json:"point"`
-	Region   string `json:"region"`
+	Country string `json:"country"`
+
+	// IataCode IATA code for airport
+	IataCode AirportIATACode `json:"iataCode"`
+	Id       int             `json:"id"`
+	Name     string          `json:"name"`
+	Point    Point           `json:"point"`
+	Region   string          `json:"region"`
 }
+
+// AirportIATACode IATA code for airport
+type AirportIATACode = string
+
+// AirportSpec defines model for AirportSpec.
+type AirportSpec struct {
+	union json.RawMessage
+}
+
+// AirportSpec0 defines model for .
+type AirportSpec0 = int
 
 // Flight defines model for Flight.
 type Flight struct {
-	DestinationAirport Airport  `json:"destinationAirport"`
-	DistanceMiles      *float64 `json:"distanceMiles,omitempty"`
-	Id                 int      `json:"id"`
-	Number             string   `json:"number"`
-	OriginAirport      Airport  `json:"originAirport"`
-	Published          bool     `json:"published"`
+	Airline            Airline      `json:"airline"`
+	DestinationAirport Airport      `json:"destinationAirport"`
+	DistanceMiles      *float64     `json:"distanceMiles,omitempty"`
+	Id                 int          `json:"id"`
+	Number             FlightNumber `json:"number"`
+	OriginAirport      Airport      `json:"originAirport"`
+	Published          bool         `json:"published"`
 }
+
+// FlightNumber defines model for FlightNumber.
+type FlightNumber = string
 
 // Point defines model for Point.
 type Point struct {
@@ -49,42 +85,55 @@ type Route struct {
 	OriginAirport      Airport  `json:"originAirport"`
 }
 
-// AirportSpec defines model for airportSpec.
-type AirportSpec struct {
-	union json.RawMessage
+// CreateAirlineJSONBody defines parameters for CreateAirline.
+type CreateAirlineJSONBody struct {
+	// IataCode IATA code for airline
+	IataCode AirlineIATACode `json:"iataCode"`
+	Name     string          `json:"name"`
 }
 
-// AirportSpec0 defines model for .
-type AirportSpec0 = int
-
-// AirportSpec1 defines model for .
-type AirportSpec1 = string
+// UpdateAirlineJSONBody defines parameters for UpdateAirline.
+type UpdateAirlineJSONBody struct {
+	// IataCode IATA code for airline
+	IataCode *AirlineIATACode `json:"iataCode,omitempty"`
+	Name     *string          `json:"name,omitempty"`
+}
 
 // CreateAirportJSONBody defines parameters for CreateAirport.
 type CreateAirportJSONBody struct {
-	IataCode string `json:"iataCode"`
+	// IataCode IATA code for airport
+	IataCode AirportIATACode `json:"iataCode"`
 }
 
 // UpdateAirportJSONBody defines parameters for UpdateAirport.
 type UpdateAirportJSONBody struct {
-	IataCode *string `json:"iataCode,omitempty"`
+	// IataCode IATA code for airport
+	IataCode *AirportIATACode `json:"iataCode,omitempty"`
 }
 
 // CreateFlightJSONBody defines parameters for CreateFlight.
 type CreateFlightJSONBody struct {
-	DestinationAirport AirportSpec `json:"destinationAirport"`
-	Number             string      `json:"number"`
-	OriginAirport      AirportSpec `json:"originAirport"`
-	Published          *bool       `json:"published,omitempty"`
+	Airline            AirlineSpec  `json:"airline"`
+	DestinationAirport AirportSpec  `json:"destinationAirport"`
+	Number             FlightNumber `json:"number"`
+	OriginAirport      AirportSpec  `json:"originAirport"`
+	Published          *bool        `json:"published,omitempty"`
 }
 
 // UpdateFlightJSONBody defines parameters for UpdateFlight.
 type UpdateFlightJSONBody struct {
-	DestinationAirport *int    `json:"destinationAirport,omitempty"`
-	Number             *string `json:"number,omitempty"`
-	OriginAirport      *int    `json:"originAirport,omitempty"`
-	Published          *bool   `json:"published,omitempty"`
+	Airline            *AirlineSpec  `json:"airline,omitempty"`
+	DestinationAirport *AirportSpec  `json:"destinationAirport,omitempty"`
+	Number             *FlightNumber `json:"number,omitempty"`
+	OriginAirport      *AirportSpec  `json:"originAirport,omitempty"`
+	Published          *bool         `json:"published,omitempty"`
 }
+
+// CreateAirlineJSONRequestBody defines body for CreateAirline for application/json ContentType.
+type CreateAirlineJSONRequestBody CreateAirlineJSONBody
+
+// UpdateAirlineJSONRequestBody defines body for UpdateAirline for application/json ContentType.
+type UpdateAirlineJSONRequestBody UpdateAirlineJSONBody
 
 // CreateAirportJSONRequestBody defines body for CreateAirport for application/json ContentType.
 type CreateAirportJSONRequestBody CreateAirportJSONBody
@@ -97,6 +146,68 @@ type CreateFlightJSONRequestBody CreateFlightJSONBody
 
 // UpdateFlightJSONRequestBody defines body for UpdateFlight for application/json ContentType.
 type UpdateFlightJSONRequestBody UpdateFlightJSONBody
+
+// AsAirlineSpec0 returns the union data inside the AirlineSpec as a AirlineSpec0
+func (t AirlineSpec) AsAirlineSpec0() (AirlineSpec0, error) {
+	var body AirlineSpec0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAirlineSpec0 overwrites any union data inside the AirlineSpec as the provided AirlineSpec0
+func (t *AirlineSpec) FromAirlineSpec0(v AirlineSpec0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAirlineSpec0 performs a merge with any union data inside the AirlineSpec, using the provided AirlineSpec0
+func (t *AirlineSpec) MergeAirlineSpec0(v AirlineSpec0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAirlineIATACode returns the union data inside the AirlineSpec as a AirlineIATACode
+func (t AirlineSpec) AsAirlineIATACode() (AirlineIATACode, error) {
+	var body AirlineIATACode
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAirlineIATACode overwrites any union data inside the AirlineSpec as the provided AirlineIATACode
+func (t *AirlineSpec) FromAirlineIATACode(v AirlineIATACode) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAirlineIATACode performs a merge with any union data inside the AirlineSpec, using the provided AirlineIATACode
+func (t *AirlineSpec) MergeAirlineIATACode(v AirlineIATACode) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AirlineSpec) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AirlineSpec) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsAirportSpec0 returns the union data inside the AirportSpec as a AirportSpec0
 func (t AirportSpec) AsAirportSpec0() (AirportSpec0, error) {
@@ -124,22 +235,22 @@ func (t *AirportSpec) MergeAirportSpec0(v AirportSpec0) error {
 	return err
 }
 
-// AsAirportSpec1 returns the union data inside the AirportSpec as a AirportSpec1
-func (t AirportSpec) AsAirportSpec1() (AirportSpec1, error) {
-	var body AirportSpec1
+// AsAirportIATACode returns the union data inside the AirportSpec as a AirportIATACode
+func (t AirportSpec) AsAirportIATACode() (AirportIATACode, error) {
+	var body AirportIATACode
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromAirportSpec1 overwrites any union data inside the AirportSpec as the provided AirportSpec1
-func (t *AirportSpec) FromAirportSpec1(v AirportSpec1) error {
+// FromAirportIATACode overwrites any union data inside the AirportSpec as the provided AirportIATACode
+func (t *AirportSpec) FromAirportIATACode(v AirportIATACode) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeAirportSpec1 performs a merge with any union data inside the AirportSpec, using the provided AirportSpec1
-func (t *AirportSpec) MergeAirportSpec1(v AirportSpec1) error {
+// MergeAirportIATACode performs a merge with any union data inside the AirportSpec, using the provided AirportIATACode
+func (t *AirportSpec) MergeAirportIATACode(v AirportIATACode) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -162,6 +273,27 @@ func (t *AirportSpec) UnmarshalJSON(b []byte) error {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Delete all airlines
+	// (DELETE /airlines)
+	DeleteAllAirlines(w http.ResponseWriter, r *http.Request)
+	// List all airlines
+	// (GET /airlines)
+	ListAirlines(w http.ResponseWriter, r *http.Request)
+	// Create a new airline
+	// (POST /airlines)
+	CreateAirline(w http.ResponseWriter, r *http.Request)
+	// List flights for an airline
+	// (GET /airlines/{airlineSpec}/flights)
+	ListFlightsByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
+	// Delete an airline
+	// (DELETE /airlines/{id})
+	DeleteAirline(w http.ResponseWriter, r *http.Request, id int)
+	// Get airline by ID
+	// (GET /airlines/{id})
+	GetAirline(w http.ResponseWriter, r *http.Request, id int)
+	// Update airline
+	// (PATCH /airlines/{id})
+	UpdateAirline(w http.ResponseWriter, r *http.Request, id int)
 	// Delete all airports
 	// (DELETE /airports)
 	DeleteAllAirports(w http.ResponseWriter, r *http.Request)
@@ -171,6 +303,9 @@ type ServerInterface interface {
 	// Create a new airport
 	// (POST /airports)
 	CreateAirport(w http.ResponseWriter, r *http.Request)
+	// List flights that depart from or arrive at an airport
+	// (GET /airports/{airportSpec}/flights)
+	ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
 	// Delete an airport
 	// (DELETE /airports/{id})
 	DeleteAirport(w http.ResponseWriter, r *http.Request, id int)
@@ -180,9 +315,6 @@ type ServerInterface interface {
 	// Update airport
 	// (PATCH /airports/{id})
 	UpdateAirport(w http.ResponseWriter, r *http.Request, id int)
-	// List flights that depart from or arrive at an airport
-	// (GET /airports/{id}/flights)
-	ListFlightsByAirport(w http.ResponseWriter, r *http.Request, id int)
 	// Delete all flights
 	// (DELETE /flights)
 	DeleteAllFlights(w http.ResponseWriter, r *http.Request)
@@ -221,6 +353,148 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
+// DeleteAllAirlines operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAllAirlines(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteAllAirlines(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListAirlines operation middleware
+func (siw *ServerInterfaceWrapper) ListAirlines(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListAirlines(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateAirline operation middleware
+func (siw *ServerInterfaceWrapper) CreateAirline(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateAirline(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListFlightsByAirline operation middleware
+func (siw *ServerInterfaceWrapper) ListFlightsByAirline(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "airlineSpec" -------------
+	var airlineSpec AirlineSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "airlineSpec", r.PathValue("airlineSpec"), &airlineSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "airlineSpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListFlightsByAirline(w, r, airlineSpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteAirline operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAirline(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteAirline(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAirline operation middleware
+func (siw *ServerInterfaceWrapper) GetAirline(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAirline(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateAirline operation middleware
+func (siw *ServerInterfaceWrapper) UpdateAirline(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateAirline(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // DeleteAllAirports operation middleware
 func (siw *ServerInterfaceWrapper) DeleteAllAirports(w http.ResponseWriter, r *http.Request) {
 
@@ -254,6 +528,31 @@ func (siw *ServerInterfaceWrapper) CreateAirport(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateAirport(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListFlightsByAirport operation middleware
+func (siw *ServerInterfaceWrapper) ListFlightsByAirport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "airportSpec" -------------
+	var airportSpec AirportSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "airportSpec", r.PathValue("airportSpec"), &airportSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "airportSpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListFlightsByAirport(w, r, airportSpec)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -329,31 +628,6 @@ func (siw *ServerInterfaceWrapper) UpdateAirport(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateAirport(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListFlightsByAirport operation middleware
-func (siw *ServerInterfaceWrapper) ListFlightsByAirport(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListFlightsByAirport(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -653,13 +927,20 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	m.HandleFunc("DELETE "+options.BaseURL+"/airlines", wrapper.DeleteAllAirlines)
+	m.HandleFunc("GET "+options.BaseURL+"/airlines", wrapper.ListAirlines)
+	m.HandleFunc("POST "+options.BaseURL+"/airlines", wrapper.CreateAirline)
+	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flights", wrapper.ListFlightsByAirline)
+	m.HandleFunc("DELETE "+options.BaseURL+"/airlines/{id}", wrapper.DeleteAirline)
+	m.HandleFunc("GET "+options.BaseURL+"/airlines/{id}", wrapper.GetAirline)
+	m.HandleFunc("PATCH "+options.BaseURL+"/airlines/{id}", wrapper.UpdateAirline)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airports", wrapper.DeleteAllAirports)
 	m.HandleFunc("GET "+options.BaseURL+"/airports", wrapper.ListAirports)
 	m.HandleFunc("POST "+options.BaseURL+"/airports", wrapper.CreateAirport)
+	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}/flights", wrapper.ListFlightsByAirport)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airports/{id}", wrapper.DeleteAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/airports/{id}", wrapper.GetAirport)
 	m.HandleFunc("PATCH "+options.BaseURL+"/airports/{id}", wrapper.UpdateAirport)
-	m.HandleFunc("GET "+options.BaseURL+"/airports/{id}/flights", wrapper.ListFlightsByAirport)
 	m.HandleFunc("DELETE "+options.BaseURL+"/flights", wrapper.DeleteAllFlights)
 	m.HandleFunc("GET "+options.BaseURL+"/flights", wrapper.ListFlights)
 	m.HandleFunc("POST "+options.BaseURL+"/flights", wrapper.CreateFlight)
@@ -671,6 +952,162 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/routes/{route}", wrapper.GetRoute)
 
 	return m
+}
+
+type DeleteAllAirlinesRequestObject struct {
+}
+
+type DeleteAllAirlinesResponseObject interface {
+	VisitDeleteAllAirlinesResponse(w http.ResponseWriter) error
+}
+
+type DeleteAllAirlines204Response struct {
+}
+
+func (response DeleteAllAirlines204Response) VisitDeleteAllAirlinesResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type ListAirlinesRequestObject struct {
+}
+
+type ListAirlinesResponseObject interface {
+	VisitListAirlinesResponse(w http.ResponseWriter) error
+}
+
+type ListAirlines200JSONResponse []Airline
+
+func (response ListAirlines200JSONResponse) VisitListAirlinesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateAirlineRequestObject struct {
+	Body *CreateAirlineJSONRequestBody
+}
+
+type CreateAirlineResponseObject interface {
+	VisitCreateAirlineResponse(w http.ResponseWriter) error
+}
+
+type CreateAirline201JSONResponse Airline
+
+func (response CreateAirline201JSONResponse) VisitCreateAirlineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateAirline400Response struct {
+}
+
+func (response CreateAirline400Response) VisitCreateAirlineResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
+type ListFlightsByAirlineRequestObject struct {
+	AirlineSpec AirlineSpec `json:"airlineSpec"`
+}
+
+type ListFlightsByAirlineResponseObject interface {
+	VisitListFlightsByAirlineResponse(w http.ResponseWriter) error
+}
+
+type ListFlightsByAirline200JSONResponse []Flight
+
+func (response ListFlightsByAirline200JSONResponse) VisitListFlightsByAirlineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListFlightsByAirline404Response struct {
+}
+
+func (response ListFlightsByAirline404Response) VisitListFlightsByAirlineResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type DeleteAirlineRequestObject struct {
+	Id int `json:"id"`
+}
+
+type DeleteAirlineResponseObject interface {
+	VisitDeleteAirlineResponse(w http.ResponseWriter) error
+}
+
+type DeleteAirline204Response struct {
+}
+
+func (response DeleteAirline204Response) VisitDeleteAirlineResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteAirline404Response struct {
+}
+
+func (response DeleteAirline404Response) VisitDeleteAirlineResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type GetAirlineRequestObject struct {
+	Id int `json:"id"`
+}
+
+type GetAirlineResponseObject interface {
+	VisitGetAirlineResponse(w http.ResponseWriter) error
+}
+
+type GetAirline200JSONResponse Airline
+
+func (response GetAirline200JSONResponse) VisitGetAirlineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAirline404Response struct {
+}
+
+func (response GetAirline404Response) VisitGetAirlineResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type UpdateAirlineRequestObject struct {
+	Id   int `json:"id"`
+	Body *UpdateAirlineJSONRequestBody
+}
+
+type UpdateAirlineResponseObject interface {
+	VisitUpdateAirlineResponse(w http.ResponseWriter) error
+}
+
+type UpdateAirline200JSONResponse Airline
+
+func (response UpdateAirline200JSONResponse) VisitUpdateAirlineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAirline404Response struct {
+}
+
+func (response UpdateAirline404Response) VisitUpdateAirlineResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
 }
 
 type DeleteAllAirportsRequestObject struct {
@@ -726,6 +1163,31 @@ type CreateAirport400Response struct {
 
 func (response CreateAirport400Response) VisitCreateAirportResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
+	return nil
+}
+
+type ListFlightsByAirportRequestObject struct {
+	AirportSpec AirportSpec `json:"airportSpec"`
+}
+
+type ListFlightsByAirportResponseObject interface {
+	VisitListFlightsByAirportResponse(w http.ResponseWriter) error
+}
+
+type ListFlightsByAirport200JSONResponse []Flight
+
+func (response ListFlightsByAirport200JSONResponse) VisitListFlightsByAirportResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListFlightsByAirport404Response struct {
+}
+
+func (response ListFlightsByAirport404Response) VisitListFlightsByAirportResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
 	return nil
 }
 
@@ -802,23 +1264,6 @@ type UpdateAirport404Response struct {
 func (response UpdateAirport404Response) VisitUpdateAirportResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
-}
-
-type ListFlightsByAirportRequestObject struct {
-	Id int `json:"id"`
-}
-
-type ListFlightsByAirportResponseObject interface {
-	VisitListFlightsByAirportResponse(w http.ResponseWriter) error
-}
-
-type ListFlightsByAirport200JSONResponse []Flight
-
-func (response ListFlightsByAirport200JSONResponse) VisitListFlightsByAirportResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteAllFlightsRequestObject struct {
@@ -1013,6 +1458,27 @@ func (response GetRoute404Response) VisitGetRouteResponse(w http.ResponseWriter)
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// Delete all airlines
+	// (DELETE /airlines)
+	DeleteAllAirlines(ctx context.Context, request DeleteAllAirlinesRequestObject) (DeleteAllAirlinesResponseObject, error)
+	// List all airlines
+	// (GET /airlines)
+	ListAirlines(ctx context.Context, request ListAirlinesRequestObject) (ListAirlinesResponseObject, error)
+	// Create a new airline
+	// (POST /airlines)
+	CreateAirline(ctx context.Context, request CreateAirlineRequestObject) (CreateAirlineResponseObject, error)
+	// List flights for an airline
+	// (GET /airlines/{airlineSpec}/flights)
+	ListFlightsByAirline(ctx context.Context, request ListFlightsByAirlineRequestObject) (ListFlightsByAirlineResponseObject, error)
+	// Delete an airline
+	// (DELETE /airlines/{id})
+	DeleteAirline(ctx context.Context, request DeleteAirlineRequestObject) (DeleteAirlineResponseObject, error)
+	// Get airline by ID
+	// (GET /airlines/{id})
+	GetAirline(ctx context.Context, request GetAirlineRequestObject) (GetAirlineResponseObject, error)
+	// Update airline
+	// (PATCH /airlines/{id})
+	UpdateAirline(ctx context.Context, request UpdateAirlineRequestObject) (UpdateAirlineResponseObject, error)
 	// Delete all airports
 	// (DELETE /airports)
 	DeleteAllAirports(ctx context.Context, request DeleteAllAirportsRequestObject) (DeleteAllAirportsResponseObject, error)
@@ -1022,6 +1488,9 @@ type StrictServerInterface interface {
 	// Create a new airport
 	// (POST /airports)
 	CreateAirport(ctx context.Context, request CreateAirportRequestObject) (CreateAirportResponseObject, error)
+	// List flights that depart from or arrive at an airport
+	// (GET /airports/{airportSpec}/flights)
+	ListFlightsByAirport(ctx context.Context, request ListFlightsByAirportRequestObject) (ListFlightsByAirportResponseObject, error)
 	// Delete an airport
 	// (DELETE /airports/{id})
 	DeleteAirport(ctx context.Context, request DeleteAirportRequestObject) (DeleteAirportResponseObject, error)
@@ -1031,9 +1500,6 @@ type StrictServerInterface interface {
 	// Update airport
 	// (PATCH /airports/{id})
 	UpdateAirport(ctx context.Context, request UpdateAirportRequestObject) (UpdateAirportResponseObject, error)
-	// List flights that depart from or arrive at an airport
-	// (GET /airports/{id}/flights)
-	ListFlightsByAirport(ctx context.Context, request ListFlightsByAirportRequestObject) (ListFlightsByAirportResponseObject, error)
 	// Delete all flights
 	// (DELETE /flights)
 	DeleteAllFlights(ctx context.Context, request DeleteAllFlightsRequestObject) (DeleteAllFlightsResponseObject, error)
@@ -1090,6 +1556,196 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// DeleteAllAirlines operation middleware
+func (sh *strictHandler) DeleteAllAirlines(w http.ResponseWriter, r *http.Request) {
+	var request DeleteAllAirlinesRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteAllAirlines(ctx, request.(DeleteAllAirlinesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteAllAirlines")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteAllAirlinesResponseObject); ok {
+		if err := validResponse.VisitDeleteAllAirlinesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListAirlines operation middleware
+func (sh *strictHandler) ListAirlines(w http.ResponseWriter, r *http.Request) {
+	var request ListAirlinesRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListAirlines(ctx, request.(ListAirlinesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListAirlines")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListAirlinesResponseObject); ok {
+		if err := validResponse.VisitListAirlinesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateAirline operation middleware
+func (sh *strictHandler) CreateAirline(w http.ResponseWriter, r *http.Request) {
+	var request CreateAirlineRequestObject
+
+	var body CreateAirlineJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateAirline(ctx, request.(CreateAirlineRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateAirline")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateAirlineResponseObject); ok {
+		if err := validResponse.VisitCreateAirlineResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListFlightsByAirline operation middleware
+func (sh *strictHandler) ListFlightsByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec) {
+	var request ListFlightsByAirlineRequestObject
+
+	request.AirlineSpec = airlineSpec
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListFlightsByAirline(ctx, request.(ListFlightsByAirlineRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListFlightsByAirline")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListFlightsByAirlineResponseObject); ok {
+		if err := validResponse.VisitListFlightsByAirlineResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteAirline operation middleware
+func (sh *strictHandler) DeleteAirline(w http.ResponseWriter, r *http.Request, id int) {
+	var request DeleteAirlineRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteAirline(ctx, request.(DeleteAirlineRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteAirline")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteAirlineResponseObject); ok {
+		if err := validResponse.VisitDeleteAirlineResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetAirline operation middleware
+func (sh *strictHandler) GetAirline(w http.ResponseWriter, r *http.Request, id int) {
+	var request GetAirlineRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetAirline(ctx, request.(GetAirlineRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetAirline")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetAirlineResponseObject); ok {
+		if err := validResponse.VisitGetAirlineResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateAirline operation middleware
+func (sh *strictHandler) UpdateAirline(w http.ResponseWriter, r *http.Request, id int) {
+	var request UpdateAirlineRequestObject
+
+	request.Id = id
+
+	var body UpdateAirlineJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateAirline(ctx, request.(UpdateAirlineRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateAirline")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateAirlineResponseObject); ok {
+		if err := validResponse.VisitUpdateAirlineResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // DeleteAllAirports operation middleware
@@ -1164,6 +1820,32 @@ func (sh *strictHandler) CreateAirport(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CreateAirportResponseObject); ok {
 		if err := validResponse.VisitCreateAirportResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListFlightsByAirport operation middleware
+func (sh *strictHandler) ListFlightsByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
+	var request ListFlightsByAirportRequestObject
+
+	request.AirportSpec = airportSpec
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListFlightsByAirport(ctx, request.(ListFlightsByAirportRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListFlightsByAirport")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListFlightsByAirportResponseObject); ok {
+		if err := validResponse.VisitListFlightsByAirportResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1249,32 +1931,6 @@ func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, i
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateAirportResponseObject); ok {
 		if err := validResponse.VisitUpdateAirportResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// ListFlightsByAirport operation middleware
-func (sh *strictHandler) ListFlightsByAirport(w http.ResponseWriter, r *http.Request, id int) {
-	var request ListFlightsByAirportRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListFlightsByAirport(ctx, request.(ListFlightsByAirportRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListFlightsByAirport")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListFlightsByAirportResponseObject); ok {
-		if err := validResponse.VisitListFlightsByAirportResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

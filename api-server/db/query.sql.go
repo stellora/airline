@@ -10,6 +10,28 @@ import (
 	"database/sql"
 )
 
+const createAirline = `-- name: CreateAirline :one
+INSERT INTO airlines (
+  iata_code,
+  name
+) VALUES (
+  ?, ?
+)
+RETURNING id, iata_code, name
+`
+
+type CreateAirlineParams struct {
+	IataCode string
+	Name     string
+}
+
+func (q *Queries) CreateAirline(ctx context.Context, arg CreateAirlineParams) (Airline, error) {
+	row := q.db.QueryRowContext(ctx, createAirline, arg.IataCode, arg.Name)
+	var i Airline
+	err := row.Scan(&i.ID, &i.IataCode, &i.Name)
+	return i, err
+}
+
 const createAirport = `-- name: CreateAirport :one
 INSERT INTO airports (
   iata_code,
@@ -34,14 +56,15 @@ func (q *Queries) CreateAirport(ctx context.Context, arg CreateAirportParams) (A
 
 const createFlight = `-- name: CreateFlight :one
 INSERT INTO flights (
-  number, origin_airport_id, destination_airport_id, published
+  airline_id, number, origin_airport_id, destination_airport_id, published
 ) VALUES (
-  ?, ?, ?, ?
+  ?, ?, ?, ?, ?
 )
 RETURNING id
 `
 
 type CreateFlightParams struct {
+	AirlineID            int64
 	Number               string
 	OriginAirportID      int64
 	DestinationAirportID int64
@@ -50,6 +73,7 @@ type CreateFlightParams struct {
 
 func (q *Queries) CreateFlight(ctx context.Context, arg CreateFlightParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createFlight,
+		arg.AirlineID,
 		arg.Number,
 		arg.OriginAirportID,
 		arg.DestinationAirportID,
@@ -60,6 +84,16 @@ func (q *Queries) CreateFlight(ctx context.Context, arg CreateFlightParams) (int
 	return id, err
 }
 
+const deleteAirline = `-- name: DeleteAirline :exec
+DELETE FROM airlines
+WHERE id=?
+`
+
+func (q *Queries) DeleteAirline(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAirline, id)
+	return err
+}
+
 const deleteAirport = `-- name: DeleteAirport :exec
 DELETE FROM airports
 WHERE id=?
@@ -67,6 +101,15 @@ WHERE id=?
 
 func (q *Queries) DeleteAirport(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteAirport, id)
+	return err
+}
+
+const deleteAllAirlines = `-- name: DeleteAllAirlines :exec
+DELETE FROM airlines
+`
+
+func (q *Queries) DeleteAllAirlines(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteAllAirlines)
 	return err
 }
 
@@ -98,6 +141,32 @@ func (q *Queries) DeleteFlight(ctx context.Context, id int64) error {
 	return err
 }
 
+const getAirline = `-- name: GetAirline :one
+
+SELECT id, iata_code, name FROM airlines
+WHERE id=? LIMIT 1
+`
+
+// ----------------------------------------------------------------------------- airlines
+func (q *Queries) GetAirline(ctx context.Context, id int64) (Airline, error) {
+	row := q.db.QueryRowContext(ctx, getAirline, id)
+	var i Airline
+	err := row.Scan(&i.ID, &i.IataCode, &i.Name)
+	return i, err
+}
+
+const getAirlineByIATACode = `-- name: GetAirlineByIATACode :one
+SELECT id, iata_code, name FROM airlines
+WHERE iata_code=? LIMIT 1
+`
+
+func (q *Queries) GetAirlineByIATACode(ctx context.Context, iataCode string) (Airline, error) {
+	row := q.db.QueryRowContext(ctx, getAirlineByIATACode, iataCode)
+	var i Airline
+	err := row.Scan(&i.ID, &i.IataCode, &i.Name)
+	return i, err
+}
+
 const getAirport = `-- name: GetAirport :one
 
 SELECT id, iata_code, oadb_id FROM airports
@@ -126,7 +195,7 @@ func (q *Queries) GetAirportByIATACode(ctx context.Context, iataCode string) (Ai
 
 const getFlight = `-- name: GetFlight :one
 
-SELECT id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id FROM flights_view
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, airline_iata_code, airline_name FROM flights_view
 WHERE id=? LIMIT 1
 `
 
@@ -136,6 +205,7 @@ func (q *Queries) GetFlight(ctx context.Context, id int64) (FlightsView, error) 
 	var i FlightsView
 	err := row.Scan(
 		&i.ID,
+		&i.AirlineID,
 		&i.Number,
 		&i.OriginAirportID,
 		&i.DestinationAirportID,
@@ -144,6 +214,8 @@ func (q *Queries) GetFlight(ctx context.Context, id int64) (FlightsView, error) 
 		&i.OriginAirportOadbID,
 		&i.DestinationAirportIataCode,
 		&i.DestinationAirportOadbID,
+		&i.AirlineIataCode,
+		&i.AirlineName,
 	)
 	return i, err
 }
@@ -176,6 +248,34 @@ func (q *Queries) GetRouteByIATACodes(ctx context.Context, arg GetRouteByIATACod
 	return i, err
 }
 
+const listAirlines = `-- name: ListAirlines :many
+SELECT id, iata_code, name FROM airlines
+ORDER BY id ASC
+`
+
+func (q *Queries) ListAirlines(ctx context.Context) ([]Airline, error) {
+	rows, err := q.db.QueryContext(ctx, listAirlines)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Airline
+	for rows.Next() {
+		var i Airline
+		if err := rows.Scan(&i.ID, &i.IataCode, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listAirports = `-- name: ListAirports :many
 SELECT id, iata_code, oadb_id FROM airports
 ORDER BY id ASC
@@ -205,7 +305,7 @@ func (q *Queries) ListAirports(ctx context.Context) ([]Airport, error) {
 }
 
 const listFlights = `-- name: ListFlights :many
-SELECT id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id FROM flights_view
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, airline_iata_code, airline_name FROM flights_view
 ORDER BY id ASC
 `
 
@@ -220,6 +320,7 @@ func (q *Queries) ListFlights(ctx context.Context) ([]FlightsView, error) {
 		var i FlightsView
 		if err := rows.Scan(
 			&i.ID,
+			&i.AirlineID,
 			&i.Number,
 			&i.OriginAirportID,
 			&i.DestinationAirportID,
@@ -228,6 +329,51 @@ func (q *Queries) ListFlights(ctx context.Context) ([]FlightsView, error) {
 			&i.OriginAirportOadbID,
 			&i.DestinationAirportIataCode,
 			&i.DestinationAirportOadbID,
+			&i.AirlineIataCode,
+			&i.AirlineName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFlightsByAirline = `-- name: ListFlightsByAirline :many
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, airline_iata_code, airline_name
+FROM flights_view
+WHERE airline_id=?1
+ORDER BY id ASC
+`
+
+func (q *Queries) ListFlightsByAirline(ctx context.Context, airline int64) ([]FlightsView, error) {
+	rows, err := q.db.QueryContext(ctx, listFlightsByAirline, airline)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FlightsView
+	for rows.Next() {
+		var i FlightsView
+		if err := rows.Scan(
+			&i.ID,
+			&i.AirlineID,
+			&i.Number,
+			&i.OriginAirportID,
+			&i.DestinationAirportID,
+			&i.Published,
+			&i.OriginAirportIataCode,
+			&i.OriginAirportOadbID,
+			&i.DestinationAirportIataCode,
+			&i.DestinationAirportOadbID,
+			&i.AirlineIataCode,
+			&i.AirlineName,
 		); err != nil {
 			return nil, err
 		}
@@ -243,14 +389,12 @@ func (q *Queries) ListFlights(ctx context.Context) ([]FlightsView, error) {
 }
 
 const listFlightsByAirport = `-- name: ListFlightsByAirport :many
-
-SELECT id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, airline_iata_code, airline_name
 FROM flights_view
 WHERE origin_airport_id=?1 OR destination_airport_id=?1
 ORDER BY id ASC
 `
 
-// ----------------------------------------------------------------------------- airport_flights
 func (q *Queries) ListFlightsByAirport(ctx context.Context, airport int64) ([]FlightsView, error) {
 	rows, err := q.db.QueryContext(ctx, listFlightsByAirport, airport)
 	if err != nil {
@@ -262,6 +406,7 @@ func (q *Queries) ListFlightsByAirport(ctx context.Context, airport int64) ([]Fl
 		var i FlightsView
 		if err := rows.Scan(
 			&i.ID,
+			&i.AirlineID,
 			&i.Number,
 			&i.OriginAirportID,
 			&i.DestinationAirportID,
@@ -270,6 +415,8 @@ func (q *Queries) ListFlightsByAirport(ctx context.Context, airport int64) ([]Fl
 			&i.OriginAirportOadbID,
 			&i.DestinationAirportIataCode,
 			&i.DestinationAirportOadbID,
+			&i.AirlineIataCode,
+			&i.AirlineName,
 		); err != nil {
 			return nil, err
 		}
@@ -285,7 +432,7 @@ func (q *Queries) ListFlightsByAirport(ctx context.Context, airport int64) ([]Fl
 }
 
 const listFlightsByRoute = `-- name: ListFlightsByRoute :many
-SELECT id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, published, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, airline_iata_code, airline_name
 FROM flights_view
 WHERE origin_airport_id=?1 OR destination_airport_id=?2
 ORDER BY id ASC
@@ -307,6 +454,7 @@ func (q *Queries) ListFlightsByRoute(ctx context.Context, arg ListFlightsByRoute
 		var i FlightsView
 		if err := rows.Scan(
 			&i.ID,
+			&i.AirlineID,
 			&i.Number,
 			&i.OriginAirportID,
 			&i.DestinationAirportID,
@@ -315,6 +463,8 @@ func (q *Queries) ListFlightsByRoute(ctx context.Context, arg ListFlightsByRoute
 			&i.OriginAirportOadbID,
 			&i.DestinationAirportIataCode,
 			&i.DestinationAirportOadbID,
+			&i.AirlineIataCode,
+			&i.AirlineName,
 		); err != nil {
 			return nil, err
 		}
@@ -365,6 +515,27 @@ func (q *Queries) ListRoutes(ctx context.Context) ([]Route, error) {
 	return items, nil
 }
 
+const updateAirline = `-- name: UpdateAirline :one
+UPDATE airlines SET
+iata_code = COALESCE(?2, iata_code),
+name = COALESCE(?3, name)
+WHERE id=?
+RETURNING id, iata_code, name
+`
+
+type UpdateAirlineParams struct {
+	IataCode sql.NullString
+	Name     sql.NullString
+	ID       int64
+}
+
+func (q *Queries) UpdateAirline(ctx context.Context, arg UpdateAirlineParams) (Airline, error) {
+	row := q.db.QueryRowContext(ctx, updateAirline, arg.IataCode, arg.Name, arg.ID)
+	var i Airline
+	err := row.Scan(&i.ID, &i.IataCode, &i.Name)
+	return i, err
+}
+
 const updateAirport = `-- name: UpdateAirport :one
 UPDATE airports SET
 iata_code = COALESCE(?2, iata_code)
@@ -386,15 +557,17 @@ func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) (A
 
 const updateFlight = `-- name: UpdateFlight :one
 UPDATE flights SET
-number = COALESCE(?1, number),
-origin_airport_id = COALESCE(?2, origin_airport_id),
-destination_airport_id = COALESCE(?3, destination_airport_id),
-published = COALESCE(?4, published)
-WHERE id=?5
+airline_id = COALESCE(?1, airline_id),
+number = COALESCE(?2, number),
+origin_airport_id = COALESCE(?3, origin_airport_id),
+destination_airport_id = COALESCE(?4, destination_airport_id),
+published = COALESCE(?5, published)
+WHERE id=?6
 RETURNING id
 `
 
 type UpdateFlightParams struct {
+	AirlineID            sql.NullInt64
 	Number               sql.NullString
 	OriginAirportID      sql.NullInt64
 	DestinationAirportID sql.NullInt64
@@ -404,6 +577,7 @@ type UpdateFlightParams struct {
 
 func (q *Queries) UpdateFlight(ctx context.Context, arg UpdateFlightParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, updateFlight,
+		arg.AirlineID,
 		arg.Number,
 		arg.OriginAirportID,
 		arg.DestinationAirportID,

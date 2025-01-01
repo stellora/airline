@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"regexp"
 	"strings"
 
 	"github.com/stellora/airline/api-server/api"
@@ -17,9 +18,10 @@ func mapSlice[T any, U any](fn func(T) U, slice []T) []U {
 }
 
 // parseFlightTitle parses a flight title of the form "UA123 SFO-JFK".
-func parseFlightTitle(title string) (flightNumber, originIATACode, destinationIATACode string) {
-	var route string
-	flightNumber, route, _ = strings.Cut(title, " ")
+func parseFlightTitle(title string) (airlineIATACode, flightNumber, originIATACode, destinationIATACode string) {
+	var airlineFlightNumber, route string
+	airlineFlightNumber, route, _ = strings.Cut(title, " ")
+	airlineIATACode, flightNumber = airlineFlightNumber[:2], airlineFlightNumber[2:]
 	originIATACode, destinationIATACode, _ = strings.Cut(route, "-")
 	return
 }
@@ -38,12 +40,27 @@ func insertAirportsWithIATACodes(ctx context.Context, handler *Handler, iataCode
 	return ids, nil
 }
 
+func insertAirlinesWithIATACodes(ctx context.Context, handler *Handler, iataCodes ...string) (ids []int, err error) {
+	ids = make([]int, len(iataCodes))
+	for i, iataCode := range iataCodes {
+		v, err := handler.CreateAirline(ctx, api.CreateAirlineRequestObject{
+			Body: &api.CreateAirlineJSONRequestBody{IataCode: iataCode},
+		})
+		if err != nil {
+			return nil, err
+		}
+		ids[i] = v.(api.CreateAirline201JSONResponse).Id
+	}
+	return ids, nil
+}
+
 func insertFlights(ctx context.Context, handler *Handler, flightTitles ...string) (ids []int, err error) {
 	ids = make([]int, len(flightTitles))
 	for i, flight := range flightTitles {
-		flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
+		airlineIATACode, flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
 		v, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 			Body: &api.CreateFlightJSONRequestBody{
+				Airline:            newAirlineSpec(0, airlineIATACode),
 				Number:             flightNumber,
 				OriginAirport:      newAirportSpec(0, originIATACode),
 				DestinationAirport: newAirportSpec(0, destinationIATACode),
@@ -66,6 +83,14 @@ func distanceMilesBetweenAirports(a, b api.Airport) *float64 {
 		return ptrTo(distanceMeters * metersPerMile)
 	}
 	return nil
+}
+
+var intString = regexp.MustCompile(`^\d+$`)
+
+// isIntString returns true if str is a string of one or more digits. Unlike strconv.Atoi or
+// strconv.ParseInt, it does not allow leading '-' or '+' characters.
+func isIntString(str string) bool {
+	return intString.MatchString(str)
 }
 
 func ptrTo[T any](v T) *T {
