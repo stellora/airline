@@ -5,12 +5,11 @@ import { error } from '@sveltejs/kit'
 import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ params, parent }) => {
-	const airport = (
-		await apiClient.GET('/airports/{id}', {
-			params: { path: { airportSpec: params.airportSpec } },
-			fetch,
-		})
-	).data
+	const airport = await apiClient.GET('/airports/{airportSpec}', {
+		params: { path: { airportSpec: params.airportSpec } },
+		fetch,
+	})
+	console.log('XX', airport, params)
 	if (!airport) {
 		error(404)
 	}

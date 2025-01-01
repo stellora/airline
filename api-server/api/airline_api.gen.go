@@ -54,7 +54,7 @@ type AirportSpec struct {
 	union json.RawMessage
 }
 
-// AirportSpec0 defines model for .
+// AirportSpec0 AirportID
 type AirportSpec0 = int
 
 // Flight defines model for Flight.

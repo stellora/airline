@@ -15,17 +15,9 @@ export const load: PageServerLoad = async ({ params }) => {
 }
 
 export const actions: Actions = {
-	delete: async ({ request }) => {
-		const data = await request.formData()
-		const idStr = data.get('id')
-		if (!idStr || typeof idStr !== 'string') {
-			return fail(400, {
-				error: 'id is required',
-			})
-		}
-		const id = Number.parseInt(idStr)
-		const resp = await apiClient.DELETE('/airports/{id}', {
-			params: { path: { id } },
+	delete: async ({ params }) => {
+		const resp = await apiClient.DELETE('/airports/{airportSpec}', {
+			params: { path: { airportSpec: params.airportSpec } },
 			fetch,
 		})
 		if (!resp.response.ok) {

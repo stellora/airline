@@ -69,7 +69,6 @@
 					}
 				}}
 			>
-				<input type="hidden" name="id" value={data.airport.id} />
 				<Button type="submit" variant="destructive">Delete airport</Button>
 			</form>
 		</CardContent>

@@ -16,9 +16,11 @@ import (
 
 func getAirportBySpec(ctx context.Context, queries *db.Queries, spec api.AirportSpec) (db.Airport, error) {
 	if id, err := spec.AsAirportSpec0(); err == nil {
+		log.Println("by id", id)
 		return queries.GetAirport(ctx, int64(id))
 	}
 	if iataCode, err := spec.AsAirportIATACode(); err == nil {
+		log.Println("by airport iata code", iataCode)
 		return queries.GetAirportByIATACode(ctx, iataCode)
 	}
 	panic("invalid AirportSpec")
