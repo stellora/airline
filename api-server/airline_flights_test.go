@@ -19,7 +19,7 @@ func TestListFlightsByAirline(t *testing.T) {
 
 	t.Run("by id", func(t *testing.T) {
 		resp, err := handler.ListFlightsByAirline(ctx, api.ListFlightsByAirlineRequestObject{
-			AirlineSpec: newAirlineSpec(1, ""),
+			AirlineSpec: api.NewAirlineSpec(1, ""),
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -29,7 +29,7 @@ func TestListFlightsByAirline(t *testing.T) {
 
 	t.Run("by IATA code", func(t *testing.T) {
 		resp, err := handler.ListFlightsByAirline(ctx, api.ListFlightsByAirlineRequestObject{
-			AirlineSpec: newAirlineSpec(0, "XX"),
+			AirlineSpec: api.NewAirlineSpec(0, "XX"),
 		})
 		if err != nil {
 			t.Fatal(err)

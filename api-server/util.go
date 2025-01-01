@@ -54,13 +54,27 @@ func insertAirlinesWithIATACodes(ctx context.Context, handler *Handler, iataCode
 	return ids, nil
 }
 
+func insertAirlines(ctx context.Context, handler *Handler, airlines map[string]string) (ids []int, err error) {
+	ids = make([]int, 0, len(airlines))
+	for iataCode, name := range airlines {
+		v, err := handler.CreateAirline(ctx, api.CreateAirlineRequestObject{
+			Body: &api.CreateAirlineJSONRequestBody{IataCode: iataCode, Name: name},
+		})
+		if err != nil {
+			return nil, err
+		}
+		ids = append(ids, v.(api.CreateAirline201JSONResponse).Id)
+	}
+	return ids, nil
+}
+
 func insertFlights(ctx context.Context, handler *Handler, flightTitles ...string) (ids []int, err error) {
 	ids = make([]int, len(flightTitles))
 	for i, flight := range flightTitles {
 		airlineIATACode, flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
 		v, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 			Body: &api.CreateFlightJSONRequestBody{
-				Airline:            newAirlineSpec(0, airlineIATACode),
+				Airline:            api.NewAirlineSpec(0, airlineIATACode),
 				Number:             flightNumber,
 				OriginAirport:      api.NewAirportSpec(0, originIATACode),
 				DestinationAirport: api.NewAirportSpec(0, destinationIATACode),

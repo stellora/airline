@@ -6,7 +6,6 @@ import (
 	"errors"
 	"log"
 	"regexp"
-	"strconv"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
@@ -20,25 +19,6 @@ func getAirlineBySpec(ctx context.Context, queries *db.Queries, spec api.Airline
 		return queries.GetAirlineByIATACode(ctx, iataCode)
 	}
 	panic("invalid AirlineSpec")
-}
-
-func newAirlineSpec(id int, iataCode string) api.AirlineSpec {
-	var spec api.AirlineSpec
-	if id != 0 {
-		spec.FromAirlineID(id)
-	} else {
-		spec.FromAirlineIATACode(iataCode)
-	}
-	return spec
-}
-
-// TODO!(sqs): remove? is unused
-func airlineSpecFromPathArg(arg string) api.AirlineSpec {
-	if isIntString(arg) {
-		id, _ := strconv.Atoi(arg)
-		return newAirlineSpec(id, "")
-	}
-	return newAirlineSpec(0, arg)
 }
 
 func fromDBAirline(a db.Airline) api.Airline {

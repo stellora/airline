@@ -5,21 +5,21 @@ import { error } from '@sveltejs/kit'
 import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ params, parent }) => {
-	const resp = await apiClient.GET('/airports/{airportSpec}', {
-		params: { path: { airportSpec: params.airportSpec } },
+	const resp = await apiClient.GET('/airlines/{airlineSpec}', {
+		params: { path: { airlineSpec: params.airlineSpec } },
 		fetch,
 	})
-	const airport = resp.data
-	if (!airport) {
+	const airline = resp.data
+	if (!airline) {
 		error(resp.response.status, resp.error)
 	}
 	return {
-		airport,
+		airline,
 		...(await breadcrumbEntry(parent, {
-			url: route('/admin/airports/[airportSpec]', {
-				params: { airportSpec: airport.iataCode },
+			url: route('/admin/airlines/[airlineSpec]', {
+				params: { airlineSpec: airline.iataCode },
 			}),
-			title: airport.iataCode,
+			title: airline.iataCode,
 		})),
 	}
 }

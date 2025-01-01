@@ -2,6 +2,7 @@
 	import type { Flight } from '$lib/types'
 	import { cn } from '$lib/utils'
 	import type { HTMLAttributes } from 'svelte/elements'
+	import AirlineCode from './airline-code.svelte'
 	import AirportCode from './airport-code.svelte'
 
 	const {
@@ -13,8 +14,9 @@
 		as = 'h2',
 	}: {
 		flight: Pick<Flight, 'id' | 'number' | 'published'> & {
-			originAirport: Exclude<Flight['originAirport'], 'name' | 'iataCode'>
-			destinationAirport: Pick<Flight['destinationAirport'], 'name' | 'iataCode'>
+			airline: Pick<Flight['airline'], 'iataCode' | 'name'>
+			originAirport: Pick<Flight['originAirport'], 'iataCode' | 'name'>
+			destinationAirport: Pick<Flight['destinationAirport'], 'iataCode' | 'name'>
 		}
 		prefix?: string
 		link?: boolean
@@ -34,9 +36,11 @@
 		}}
 	>
 		{#if link}
-			<a href={`/admin/flights/${flight.id}`}>{flight.number}</a>
+			<a href={`/admin/flights/${flight.id}`}
+				><AirlineCode airline={flight.airline} />{flight.number}</a
+			>
 		{:else}
-			{flight.number}
+			<AirlineCode airline={flight.airline} />{flight.number}
 		{/if}
 	</span>
 

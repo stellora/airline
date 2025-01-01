@@ -19,7 +19,6 @@ func getAirportBySpec(ctx context.Context, queries *db.Queries, spec api.Airport
 		return queries.GetAirport(ctx, int64(id))
 	}
 	if iataCode, err := spec.AsAirportIATACode(); err == nil {
-		log.Println("by airport iata code", iataCode)
 		return queries.GetAirportByIATACode(ctx, iataCode)
 	}
 	panic("invalid AirportSpec")

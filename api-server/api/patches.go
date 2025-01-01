@@ -39,3 +39,28 @@ func NewAirportSpec(id int, iataCode string) AirportSpec {
 	}
 	return spec
 }
+
+func (a *AirlineSpec) UnmarshalText(text []byte) error {
+	*a = airlineSpecFromPathArg(string(text))
+	return nil
+}
+
+var _ encoding.TextUnmarshaler = (*AirlineSpec)(nil)
+
+func airlineSpecFromPathArg(arg string) AirlineSpec {
+	if isIntString(arg) {
+		id, _ := strconv.Atoi(arg)
+		return NewAirlineSpec(id, "")
+	}
+	return NewAirlineSpec(0, arg)
+}
+
+func NewAirlineSpec(id int, iataCode string) AirlineSpec {
+	var spec AirlineSpec
+	if id != 0 {
+		spec.FromAirlineID(id)
+	} else {
+		spec.FromAirlineIATACode(iataCode)
+	}
+	return spec
+}

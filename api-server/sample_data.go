@@ -3,8 +3,21 @@ package main
 import "context"
 
 func insertSampleData(ctx context.Context, handler *Handler) error {
-	iataCodes := []string{"SFO", "SIN", "NRT", "HND", "EWR", "LAX", "DEN", "ORD", "AMS", "LHR", "HKG", "SYD", "HNL", "LIH", "SJC", "STS", "SEA", "FRA", "MUC", "DXB", "TLV", "IST", "DOH", "DEL", "BOM", "KIX", "MEL", "JNB", "CPT", "EZE", "MEX", "CUN", "MSP", "IAD", "DCA", "DFW", "MRS", "PVR", "BOS", "FCO"}
-	if _, err := insertAirportsWithIATACodes(ctx, handler, iataCodes...); err != nil {
+	airports := []string{"SFO", "SIN", "NRT", "HND", "EWR", "LAX", "DEN", "ORD", "AMS", "LHR", "HKG", "SYD", "HNL", "LIH", "SJC", "STS", "SEA", "FRA", "MUC", "DXB", "TLV", "IST", "DOH", "DEL", "BOM", "KIX", "MEL", "JNB", "CPT", "EZE", "MEX", "CUN", "MSP", "IAD", "DCA", "DFW", "MRS", "PVR", "BOS", "FCO", "SCL"}
+	if _, err := insertAirportsWithIATACodes(ctx, handler, airports...); err != nil {
+		return err
+	}
+
+	airlines := map[string]string{
+		"UA": "United Airlines",
+		"SQ": "Singapore Airlines",
+		"LH": "Lufthansa",
+		"BA": "British Airways",
+		"DL": "Delta Air Lines",
+		"AF": "Air France",
+		"KL": "KLM Royal Dutch Airlines",
+	}
+	if _, err := insertAirlines(ctx, handler, airlines); err != nil {
 		return err
 	}
 

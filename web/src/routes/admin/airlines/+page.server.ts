@@ -4,11 +4,11 @@ import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
 import type { Actions, PageServerLoad } from './$types'
-import { formSchema } from './airport-form'
+import { formSchema } from './airline-form'
 
 export const load: PageServerLoad = async () => {
 	return {
-		airports: (await apiClient.GET('/airports', { fetch })).data,
+		airlines: (await apiClient.GET('/airlines', { fetch })).data,
 		form: await superValidate(typebox(formSchema)),
 	}
 }
@@ -20,9 +20,10 @@ export const actions: Actions = {
 			return fail(400, { form })
 		}
 
-		const resp = await apiClient.POST('/airports', {
+		const resp = await apiClient.POST('/airlines', {
 			body: {
 				iataCode: form.data.iataCode,
+				name: form.data.name,
 			},
 			fetch,
 		})
@@ -34,8 +35,8 @@ export const actions: Actions = {
 		}
 		redirect(
 			303,
-			route('/admin/airports/[airportSpec]', {
-				params: { airportSpec: resp.data.iataCode },
+			route('/admin/airlines/[airlineSpec]', {
+				params: { airlineSpec: resp.data.iataCode },
 			}),
 		)
 	},

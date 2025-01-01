@@ -6,7 +6,7 @@
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
 	import type { PageServerData } from './$types'
-	import { formSchema } from './airport-form'
+	import { formSchema } from './airline-form'
 
 	const props: { form: PageServerData['form']; action: string } = $props()
 	const form = superForm(props.form, {
@@ -23,25 +23,35 @@
 	action={props.action}
 	use:enhance
 	class="flex gap-4 items-center"
-	data-testid="airport-form"
+	data-testid="airline-form"
 >
 	<Form.Field {form} name="iataCode">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label>Airport code</Form.Label>
+				<Form.Label>IATA code</Form.Label>
 				<Input
 					{...props}
 					bind:value={$formData.iataCode}
 					autocomplete="off"
 					class="font-mono w-32"
-					maxlength={3}
+					maxlength={2}
 					oninput={(ev) => {
 						ev.currentTarget.value = ev.currentTarget.value.toUpperCase()
 					}}
 				/>
 			{/snippet}
 		</Form.Control>
-		<Form.Description>3-letter IATA code</Form.Description>
+		<Form.Description>2-letter IATA code</Form.Description>
+		<Form.FieldErrors />
+	</Form.Field>
+	<Form.Field {form} name="name">
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Name</Form.Label>
+				<Input {...props} bind:value={$formData.name} autocomplete="off" class="w-64" />
+			{/snippet}
+		</Form.Control>
+		<Form.Description>&nbsp;</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
 	<Form.Button>Create</Form.Button>

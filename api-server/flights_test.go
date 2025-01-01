@@ -84,7 +84,7 @@ func TestCreateFlight(t *testing.T) {
 
 		resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 			Body: &api.CreateFlightJSONRequestBody{
-				Airline:            newAirlineSpec(0, "XX"),
+				Airline:            api.NewAirlineSpec(0, "XX"),
 				Number:             "1",
 				OriginAirport:      api.NewAirportSpec(1, ""),
 				DestinationAirport: api.NewAirportSpec(2, ""),
@@ -106,7 +106,7 @@ func TestCreateFlight(t *testing.T) {
 
 		resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
 			Body: &api.CreateFlightJSONRequestBody{
-				Airline:            newAirlineSpec(0, "XX"),
+				Airline:            api.NewAirlineSpec(0, "XX"),
 				Number:             "1",
 				OriginAirport:      api.NewAirportSpec(0, "AAA"),
 				DestinationAirport: api.NewAirportSpec(0, "BBB"),
@@ -133,7 +133,7 @@ func TestUpdateFlight(t *testing.T) {
 		resp, err := handler.UpdateFlight(ctx, api.UpdateFlightRequestObject{
 			Id: 1,
 			Body: &api.UpdateFlightJSONRequestBody{
-				Airline:            ptrTo(newAirlineSpec(0, "YY")),
+				Airline:            ptrTo(api.NewAirlineSpec(0, "YY")),
 				Number:             ptrTo("100"),
 				OriginAirport:      ptrTo(api.NewAirportSpec(2, "")),
 				DestinationAirport: ptrTo(api.NewAirportSpec(0, "AAA")),

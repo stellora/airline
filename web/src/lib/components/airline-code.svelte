@@ -1,18 +1,18 @@
 <script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip'
 	import { route } from '$lib/route-helpers'
-	import type { Airport } from '$lib/types'
+	import type { Airline } from '$lib/types'
 	import { cn } from '$lib/utils'
 	import type { HTMLAttributes } from 'svelte/elements'
 
 	const {
-		airport,
+		airline,
 		link = false,
 		tooltip = true,
 		class: className,
 		as = 'abbr',
 	}: {
-		airport: Pick<Airport, 'name' | 'iataCode'>
+		airline: Pick<Airline, 'name' | 'iataCode'>
 		link?: boolean
 		tooltip?: boolean
 		class?: HTMLAttributes<never>['class']
@@ -32,18 +32,18 @@
 			>
 				{#if link}
 					<a
-						href={route('/admin/airports/[airportSpec]', {
-							params: { airportSpec: airport.iataCode },
-						})}>{airport.iataCode}</a
+						href={route('/admin/airlines/[airlineSpec]', {
+							params: { airlineSpec: airline.iataCode },
+						})}>{airline.iataCode}</a
 					>
 				{:else}
-					{airport.iataCode}
+					{airline.iataCode}
 				{/if}
 			</svelte:element>
 		{/snippet}
 	</Tooltip.Trigger><Tooltip.Portal>
 		<Tooltip.Content collisionPadding={50}>
-			<span class="font-normal text-sm">{airport.name}</span>
+			<span class="font-normal text-sm">{airline.name}</span>
 		</Tooltip.Content>
 	</Tooltip.Portal>
 </Tooltip.Root>

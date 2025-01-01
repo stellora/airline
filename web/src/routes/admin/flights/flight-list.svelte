@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AirlineCode from '$lib/components/airline-code.svelte'
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import Distance from '$lib/components/distance.svelte'
 	import FlightSparkRoute from '$lib/components/flight-spark-route.svelte'
@@ -24,7 +25,7 @@
 				{#each flights as flight (flight.id)}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell class="font-bold text-lg">
-							{flight.number}
+							<AirlineCode airline={flight.airline} />{flight.number}
 						</Table.Cell>
 						<Table.Cell class="flex items-center gap-2"
 							><div class="inline-flex flex-col gap-1">

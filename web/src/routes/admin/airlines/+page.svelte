@@ -1,23 +1,23 @@
 <script lang="ts">
-	import AirportCode from '$lib/components/airport-code.svelte'
+	import AirlineCode from '$lib/components/airline-code.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
 	import { route } from '$lib/route-helpers'
-	import AirportForm from './airport-form.svelte'
+	import AirlineForm from './airline-form.svelte'
 
 	let { data } = $props()
 </script>
 
-<Page title="Airports">
+<Page title="Airlines">
 	<Card class="self-start">
 		<CardHeader>
-			<CardTitle>New airport</CardTitle>
+			<CardTitle>New airline</CardTitle>
 		</CardHeader>
 
 		<CardContent>
-			<AirportForm form={data.form} action="?/create" />
+			<AirlineForm form={data.form} action="?/create" />
 		</CardContent>
 	</Card>
 	<Card>
@@ -26,24 +26,22 @@
 				<Table.Row>
 					<Table.Head class="w-[100px]">IATA code</Table.Head>
 					<Table.Head>Name</Table.Head>
-					<Table.Head>Region</Table.Head>
 					<Table.Head class="text-right"></Table.Head>
 				</Table.Row>
 			</Table.Header>
-			{#if data.airports && data.airports.length > 0}
+			{#if data.airlines && data.airlines.length > 0}
 				<Table.Body>
-					{#each data.airports as airport (airport.id)}
+					{#each data.airlines as airline (airline.id)}
 						<Table.Row class="stretched-link-container group">
 							<Table.Cell class="font-bold text-lg">
-								<AirportCode tooltip={false} {airport} />
+								<AirlineCode tooltip={false} {airline} />
 							</Table.Cell>
-							<Table.Cell>{airport.name}</Table.Cell>
-							<Table.Cell>{airport.region}, {airport.country}</Table.Cell>
+							<Table.Cell>{airline.name}</Table.Cell>
 							<Table.Cell class="text-right">
 								<Button
 									variant="link"
-									href={route('/admin/airports/[airportSpec]', {
-										params: { airportSpec: airport.iataCode },
+									href={route('/admin/airlines/[airlineSpec]', {
+										params: { airlineSpec: airline.iataCode },
 									})}
 									class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 								>
@@ -54,7 +52,7 @@
 					{/each}
 				</Table.Body>
 			{:else}
-				<Table.Caption class="mb-4">No airports found</Table.Caption>
+				<Table.Caption class="mb-4">No airlines found</Table.Caption>
 			{/if}
 		</Table.Root>
 	</Card>
