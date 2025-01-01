@@ -13,8 +13,8 @@ func TestListFlightsByAirport(t *testing.T) {
 	insertFlightsT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 CCC-BBB")
 
 	want := api.ListFlightsByAirport200JSONResponse{
-		{Id: 1, Number: "XX1", OriginAirport: api.Airport{Id: 1, IataCode: "AAA"}, DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"}, Published: true},
-		{Id: 2, Number: "XX2", OriginAirport: api.Airport{Id: 2, IataCode: "BBB"}, DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"}, Published: true},
+		{Id: 1, Airline: api.Airline{Id: 1, IataCode: "XX"}, Number: "1", OriginAirport: api.Airport{Id: 1, IataCode: "AAA"}, DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"}, Published: true},
+		{Id: 2, Airline: api.Airline{Id: 1, IataCode: "XX"}, Number: "2", OriginAirport: api.Airport{Id: 2, IataCode: "BBB"}, DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"}, Published: true},
 	}
 
 	t.Run("by id", func(t *testing.T) {
@@ -27,7 +27,7 @@ func TestListFlightsByAirport(t *testing.T) {
 		assertEqual(t, resp, want)
 	})
 
-	t.Run("by airport code", func(t *testing.T) {
+	t.Run("by IATA code", func(t *testing.T) {
 		resp, err := handler.ListFlightsByAirport(ctx, api.ListFlightsByAirportRequestObject{
 			AirportSpec: newAirportSpec(0, "AAA"),
 		})

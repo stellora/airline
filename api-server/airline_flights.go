@@ -9,12 +9,14 @@ import (
 )
 
 func (h *Handler) ListFlightsByAirline(ctx context.Context, request api.ListFlightsByAirlineRequestObject) (api.ListFlightsByAirlineResponseObject, error) {
-	tx, err := h.db.BeginTx(ctx, &sql.TxOptions{ReadOnly: true})
+	tx, err := h.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
 
-	airline, err := getAirlineBySpec(ctx, h.queries.WithTx(tx), request.AirlineSpec)
+	airline, err := getAirlineBySpec(ctx, queriesTx, request.AirlineSpec)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.ListFlightsByAirline404Response{}, nil
@@ -22,7 +24,7 @@ func (h *Handler) ListFlightsByAirline(ctx context.Context, request api.ListFlig
 		return nil, err
 	}
 
-	flights, err := h.queries.ListFlightsByAirline(ctx, airline.ID)
+	flights, err := queriesTx.ListFlightsByAirline(ctx, airline.ID)
 	if err != nil {
 		return nil, err
 	}
