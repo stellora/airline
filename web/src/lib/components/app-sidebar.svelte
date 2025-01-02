@@ -4,7 +4,7 @@
 	import { route } from '$lib/route-helpers'
 	import Book from 'lucide-svelte/icons/book'
 	import Building from 'lucide-svelte/icons/building'
-	import CalendarDays from 'lucide-svelte/icons/calendar-days'
+	import CalendarRange from 'lucide-svelte/icons/calendar-range'
 	import CircleUser from 'lucide-svelte/icons/circle-user'
 	import Info from 'lucide-svelte/icons/info'
 	import List from 'lucide-svelte/icons/list'
@@ -43,7 +43,7 @@
 		{
 			title: 'Flight schedule',
 			url: route('/admin/flight-schedules'),
-			icon: CalendarDays,
+			icon: CalendarRange,
 		},
 		{
 			title: 'Routes',

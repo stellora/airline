@@ -7,6 +7,7 @@
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
+	import CalendarDays from 'lucide-svelte/icons/calendar-days'
 	import Eye from 'lucide-svelte/icons/eye'
 	import EyeOff from 'lucide-svelte/icons/eye-off'
 	import Settings2 from 'lucide-svelte/icons/settings-2'
@@ -27,11 +28,11 @@
 			icon: SquareMenu,
 		},
 		{
-			title: 'Manage',
-			url: route('/admin/flight-schedules/[id]/manage', {
+			title: 'Instances',
+			url: route('/admin/flight-schedules/[id]/instances', {
 				params: { id: page.params.id },
 			}),
-			icon: Settings2,
+			icon: CalendarDays,
 		},
 	]}
 >
