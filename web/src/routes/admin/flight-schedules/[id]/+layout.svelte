@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
@@ -10,6 +12,7 @@
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
+	import FlightScheduleForm from '../flight-schedule-form.svelte'
 
 	const { children, data } = $props()
 </script>
@@ -90,6 +93,26 @@
 				>
 			</DropdownMenu.Group>
 		</PageNavbarBreadcrumbActionsDropdownMenu>
+	{/snippet}
+	{#snippet actions()}
+		<Dialog.RootByNavigationState id="edit-flight-schedule">
+			<Dialog.Trigger>
+				<Button variant="secondary" size="pageNavbar"><Settings2 /> Edit</Button>
+			</Dialog.Trigger>
+			<Dialog.Content>
+				<Dialog.Header>
+					<Dialog.Title>Edit flight schedule</Dialog.Title>
+				</Dialog.Header>
+				<FlightScheduleForm
+					action={route('/admin/flight-schedules/[id]', {
+						params: { id: page.params.id },
+						query: '/update',
+					})}
+					submitLabel="Save"
+					form={data.form}
+				/>
+			</Dialog.Content>
+		</Dialog.RootByNavigationState>
 	{/snippet}
 </PageNav>
 

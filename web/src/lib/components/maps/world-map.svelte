@@ -30,14 +30,15 @@
 	let width = $state(initialWidth)
 	let height = $state(heightArg === 'auto' ? initialWidth / 1.92 : heightArg)
 
-	const detailLevel =
+	const detailLevel = $derived(
 		detailLevelArg === 'auto'
 			? fitFeature
 				? geoDistanceMiles(fitFeature) < 500
 					? 'high'
 					: 'low'
 				: 'low'
-			: detailLevelArg
+			: detailLevelArg,
+	)
 
 	$effect(() => {
 		if (widthArg === 'auto') {
@@ -53,7 +54,7 @@
 		}
 	})
 
-	const featureCollections: FeatureCollection[] = [
+	const featureCollections: FeatureCollection[] = $derived([
 		topojsonToGeoJSON(
 			worldTopoJSONData as unknown as TopoJSON.Topology,
 			`world-${detailLevel}-detail`,
@@ -62,9 +63,9 @@
 			type: 'FeatureCollection',
 			features,
 		},
-	]
+	])
 
-	const centerCentroid = centerFeature && d3.geoCentroid(centerFeature)
+	const centerCentroid = $derived(centerFeature && d3.geoCentroid(centerFeature))
 
 	// TODO!(sqs): use https://www.d3indepth.com/geographic/
 	// https://connorrothschild.github.io/v4/post/svelte-and-d3

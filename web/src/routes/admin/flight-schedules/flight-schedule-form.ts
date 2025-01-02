@@ -1,3 +1,4 @@
+import type { FlightSchedule } from '$lib/types'
 import { Type } from '@sinclair/typebox'
 
 export const formSchema = Type.Object({
@@ -9,3 +10,13 @@ export const formSchema = Type.Object({
 })
 
 export type FormSchema = typeof formSchema
+
+export function existingFlightScheduleToFormData(a: FlightSchedule): FormSchema['static'] {
+	return {
+		airline: a.airline.iataCode,
+		number: a.number,
+		originAirport: a.originAirport.iataCode,
+		destinationAirport: a.destinationAirport.iataCode,
+		published: a.published,
+	}
+}

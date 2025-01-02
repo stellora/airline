@@ -4,7 +4,7 @@
 	import type { ComponentProps } from 'svelte'
 	import WorldMap from './world-map.svelte'
 
-	const {
+	let {
 		routes,
 		...restProps
 	}: { routes: [Airport, Airport][] } & Omit<
@@ -12,7 +12,7 @@
 		'features' | 'center' | 'fit'
 	> = $props()
 
-	const greatCircleLines: Feature<MultiLineString> = {
+	let greatCircleLines: Feature<MultiLineString> = $derived({
 		type: 'Feature',
 		properties: null,
 		geometry: {
@@ -22,13 +22,16 @@
 				[destination.point.longitude, destination.point.latitude],
 			]),
 		},
-	}
+	})
 
-	const airports: Record<string, Airport> = {}
-	for (const [origin, destination] of routes) {
-		airports[origin.iataCode] = origin
-		airports[destination.iataCode] = destination
-	}
+	let airports: Record<string, Airport> = $derived.by(() => {
+		const airports: Record<string, Airport> = {}
+		for (const [origin, destination] of routes) {
+			airports[origin.iataCode] = origin
+			airports[destination.iataCode] = destination
+		}
+		return airports
+	})
 </script>
 
 <WorldMap

@@ -12,7 +12,7 @@
 
 <PageNav>
 	{#snippet actions()}
-		<Dialog.RootByNavigationState id="foo">
+		<Dialog.RootByNavigationState id="new-flight-schedule">
 			<Dialog.Trigger>
 				<Button variant="secondary" size="pageNavbar"><Plus /> New flight schedule</Button>
 			</Dialog.Trigger>
@@ -20,7 +20,7 @@
 				<Dialog.Header>
 					<Dialog.Title>New flight schedule</Dialog.Title>
 				</Dialog.Header>
-				<FlightScheduleForm action="?/create" form={data.form} />
+				<FlightScheduleForm action="?/create" submitLabel="Create" form={data.form} />
 			</Dialog.Content>
 		</Dialog.RootByNavigationState>
 	{/snippet}
