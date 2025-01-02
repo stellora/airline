@@ -15,7 +15,7 @@
 		<FlightTitle flight={data.flight} class={className} subtitleClass="text-base" as="h1" />
 	{/snippet}
 	{#snippet actions()}
-		<Button href={`/admin/flights/${data.flight.id}/manage`} variant="default">Manage flight</Button
+		<Button href={`/admin/flight-schedules/${data.flight.id}/manage`} variant="default">Manage flight</Button
 		>
 	{/snippet}
 

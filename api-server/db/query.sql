@@ -34,9 +34,9 @@ WHERE id=?;
 -- name: DeleteAllAirports :exec
 DELETE FROM airports;
 
--- name: ListFlightsByAirport :many
+-- name: ListFlightSchedulesByAirport :many
 SELECT *
-FROM flights_view
+FROM flight_schedules_view
 WHERE origin_airport_id=:airport OR destination_airport_id=:airport
 ORDER BY id ASC;
 
@@ -77,32 +77,32 @@ WHERE id=?;
 -- name: DeleteAllAirlines :exec
 DELETE FROM airlines;
 
--- name: ListFlightsByAirline :many
+-- name: ListFlightSchedulesByAirline :many
 SELECT *
-FROM flights_view
+FROM flight_schedules_view
 WHERE airline_id=:airline
 ORDER BY id ASC;
 
-------------------------------------------------------------------------------- flights
+------------------------------------------------------------------------------- flight_schedules
 
--- name: GetFlight :one
-SELECT * FROM flights_view
+-- name: GetFlightSchedule :one
+SELECT * FROM flight_schedules_view
 WHERE id=? LIMIT 1;
 
--- name: ListFlights :many
-SELECT * FROM flights_view
+-- name: ListFlightSchedules :many
+SELECT * FROM flight_schedules_view
 ORDER BY id ASC;
 
--- name: CreateFlight :one
-INSERT INTO flights (
+-- name: CreateFlightSchedule :one
+INSERT INTO flight_schedules (
   airline_id, number, origin_airport_id, destination_airport_id, published
 ) VALUES (
   ?, ?, ?, ?, ?
 )
 RETURNING id;
 
--- name: UpdateFlight :one
-UPDATE flights SET
+-- name: UpdateFlightSchedule :exec
+UPDATE flight_schedules SET
 airline_id = COALESCE(sqlc.narg('airline_id'), airline_id),
 number = COALESCE(sqlc.narg('number'), number),
 origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
@@ -111,12 +111,12 @@ published = COALESCE(sqlc.narg('published'), published)
 WHERE id=sqlc.arg('id')
 RETURNING id;
 
--- name: DeleteFlight :exec
-DELETE FROM flights
+-- name: DeleteFlightSchedule :exec
+DELETE FROM flight_schedules
 WHERE id=?;
 
--- name: DeleteAllFlights :exec
-DELETE FROM flights;
+-- name: DeleteAllFlightSchedules :exec
+DELETE FROM flight_schedules;
 
 ------------------------------------------------------------------------------- routes
 
@@ -127,10 +127,10 @@ LIMIT 1;
 
 -- name: ListRoutes :many
 SELECT * FROM routes
-ORDER BY flights_count DESC, origin_airport_id ASC, destination_airport_id ASC;
+ORDER BY flight_schedules_count DESC, origin_airport_id ASC, destination_airport_id ASC;
 
--- name: ListFlightsByRoute :many
+-- name: ListFlightSchedulesByRoute :many
 SELECT *
-FROM flights_view
+FROM flight_schedules_view
 WHERE origin_airport_id=:origin_airport OR destination_airport_id=:destination_airport
 ORDER BY id ASC;

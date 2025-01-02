@@ -9,7 +9,7 @@
 
 <Page title="Flights">
 	{#snippet actions()}
-		<Button href="/admin/flights/new" variant="default"><Plus /> New flight</Button>
+		<Button href="/admin/flight-schedules/new" variant="default"><Plus /> New flight</Button>
 	{/snippet}
 	<FlightList flights={data.flights} />
 </Page>

@@ -10,7 +10,7 @@ import (
 	"github.com/stellora/airline/api-server/db"
 )
 
-func fromDBFlight(a db.FlightsView) api.Flight {
+func fromDBFlight(a db.FlightSchedulesView) api.Flight {
 	b := api.Flight{
 		Id: int(a.ID),
 		Airline: fromDBAirline(db.Airline{
@@ -45,15 +45,15 @@ func (h *Handler) GetFlight(ctx context.Context, request api.GetFlightRequestObj
 	return api.GetFlight200JSONResponse(fromDBFlight(flight)), nil
 }
 
-func (h *Handler) ListFlights(ctx context.Context, request api.ListFlightsRequestObject) (api.ListFlightsResponseObject, error) {
-	flights, err := h.queries.ListFlights(ctx)
+func (h *Handler) ListFlightSchedules(ctx context.Context, request api.ListFlightSchedulesRequestObject) (api.ListFlightSchedulesResponseObject, error) {
+	flights, err := h.queries.ListFlightSchedules(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return api.ListFlights200JSONResponse(mapSlice(fromDBFlight, flights)), nil
+	return api.ListFlightSchedules200JSONResponse(mapSlice(fromDBFlight, flights)), nil
 }
 
-func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequestObject) (api.CreateFlightResponseObject, error) {
+func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFlightScheduleRequestObject) (api.CreateFlightScheduleResponseObject, error) {
 	if request.Body.Number == "" {
 		return nil, fmt.Errorf("number must not be empty")
 	}
@@ -89,7 +89,7 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 		return nil, fmt.Errorf("looking up destinationAirport: %w", err)
 	}
 
-	created, err := queriesTx.CreateFlight(ctx, db.CreateFlightParams{
+	created, err := queriesTx.CreateFlightSchedule(ctx, db.CreateFlightScheduleParams{
 		AirlineID:            airline.ID,
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
@@ -109,7 +109,7 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 		return nil, err
 	}
 
-	return api.CreateFlight201JSONResponse(fromDBFlight(flight)), nil
+	return api.CreateFlightSchedule201JSONResponse(fromDBFlight(flight)), nil
 }
 
 func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequestObject) (api.UpdateFlightResponseObject, error) {
@@ -173,17 +173,17 @@ func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequ
 	return api.UpdateFlight200JSONResponse(fromDBFlight(flight)), nil
 }
 
-func (h *Handler) DeleteFlight(ctx context.Context, request api.DeleteFlightRequestObject) (api.DeleteFlightResponseObject, error) {
-	if err := h.queries.DeleteFlight(ctx, int64(request.Id)); err != nil {
+func (h *Handler) DeleteFlightSchedule(ctx context.Context, request api.DeleteFlightScheduleRequestObject) (api.DeleteFlightScheduleResponseObject, error) {
+	if err := h.queries.DeleteFlightSchedule(ctx, int64(request.Id)); err != nil {
 		// TODO(sqs): check if it was actually deleted
 		return nil, err
 	}
-	return api.DeleteFlight204Response{}, nil
+	return api.DeleteFlightSchedule204Response{}, nil
 }
 
-func (h *Handler) DeleteAllFlights(ctx context.Context, request api.DeleteAllFlightsRequestObject) (api.DeleteAllFlightsResponseObject, error) {
-	if err := h.queries.DeleteAllFlights(ctx); err != nil {
+func (h *Handler) DeleteAllFlightSchedules(ctx context.Context, request api.DeleteAllFlightSchedulesRequestObject) (api.DeleteAllFlightSchedulesResponseObject, error) {
+	if err := h.queries.DeleteAllFlightSchedules(ctx); err != nil {
 		return nil, err
 	}
-	return api.DeleteAllFlights204Response{}, nil
+	return api.DeleteAllFlightSchedules204Response{}, nil
 }

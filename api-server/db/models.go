@@ -20,7 +20,7 @@ type Airport struct {
 	OadbID   sql.NullInt64
 }
 
-type Flight struct {
+type FlightSchedule struct {
 	ID                   int64
 	AirlineID            int64
 	Number               string
@@ -29,7 +29,7 @@ type Flight struct {
 	Published            bool
 }
 
-type FlightsView struct {
+type FlightSchedulesView struct {
 	ID                         int64
 	AirlineID                  int64
 	Number                     string
@@ -51,5 +51,5 @@ type Route struct {
 	OriginAirportOadbID        sql.NullInt64
 	DestinationAirportIataCode string
 	DestinationAirportOadbID   sql.NullInt64
-	FlightsCount               int64
+	FlightSchedulesCount       int64
 }

@@ -36,7 +36,7 @@
 		}}
 	>
 		{#if link}
-			<a href={`/admin/flights/${flight.id}`}
+			<a href={`/admin/flight-schedules/${flight.id}`}
 				><AirlineCode airline={flight.airline} />{flight.number}</a
 			>
 		{:else}

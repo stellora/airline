@@ -35,9 +35,9 @@ func insertAirlinesWithIATACodesT(t *testing.T, handler *Handler, iataCodes ...s
 	return ids
 }
 
-func insertFlightsT(t *testing.T, handler *Handler, flightTitles ...string) (ids []int) {
+func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...string) (ids []int) {
 	t.Helper()
-	ids, err := insertFlights(context.Background(), handler, flightTitles...)
+	ids, err := insertFlightSchedules(context.Background(), handler, flightTitles...)
 	if err != nil {
 		t.Fatal(err)
 	}

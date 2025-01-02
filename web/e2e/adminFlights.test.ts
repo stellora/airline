@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
 
 test('flight list has expected title and initial flights', async ({ page }) => {
-	await page.goto('/admin/flights')
+	await page.goto('/admin/flight-schedules')
 	await expect(page.locator('h1')).toContainText('Flights')
 	await expect(page.getByText('UA1 SFO–SIN')).toBeVisible()
 })
@@ -14,7 +14,7 @@ test('add and delete flight', async ({ page }) => {
 	const deleteButton = page.getByRole('button', { name: 'Delete flight' })
 	page.on('dialog', (dialog) => dialog.accept())
 	await deleteButton.click()
-	await expect(page).toHaveURL(/\/admin\/flights$/)
+	await expect(page).toHaveURL(/\/admin\/flight-schedules$/)
 	await expect(page.getByText('ST123 SFO–LAX')).not.toBeVisible()
 })
 
@@ -44,7 +44,7 @@ async function addFlight(
 	originIataCode: string,
 	destinationIataCode: string,
 ): Promise<void> {
-	await page.goto('/admin/flights')
+	await page.goto('/admin/flight-schedules')
 
 	// Add flight
 	await page.getByLabel('Flight number').fill(number)
@@ -57,6 +57,6 @@ async function addFlight(
 }
 
 async function gotoAdminFlightPage(page: Page, number: string): Promise<void> {
-	await page.goto('/admin/flights')
+	await page.goto('/admin/flight-schedules')
 	await page.getByRole('link', { name: number }).click()
 }

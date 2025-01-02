@@ -18,7 +18,7 @@ export const actions: Actions = {
 			return fail(400, { form })
 		}
 
-		const resp = await apiClient.POST('/flights', {
+		const resp = await apiClient.POST('/flight-schedules', {
 			body: {
 				airline: form.data.airline,
 				number: form.data.number,
@@ -31,6 +31,6 @@ export const actions: Actions = {
 		if (!resp.response.ok || !resp.data) {
 			return message(form, resp.error, { status: 400 })
 		}
-		redirect(303, `/admin/flights/${resp.data.id}`)
+		redirect(303, `/admin/flight-schedules/${resp.data.id}`)
 	},
 }

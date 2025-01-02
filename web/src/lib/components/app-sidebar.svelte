@@ -40,7 +40,7 @@
 	const adminItems: Item[] = [
 		{
 			title: 'Flights',
-			url: '/admin/flights',
+			url: '/admin/flight-schedules',
 			icon: Spline,
 		},
 		{

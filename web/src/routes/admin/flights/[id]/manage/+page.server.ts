@@ -17,7 +17,7 @@ export const actions: Actions = {
 			return fail(400, { form })
 		}
 
-		const resp = await apiClient.PATCH('/flights/{id}', {
+		const resp = await apiClient.PATCH('/flight-schedules/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
 			body: {
 				number: form.data.number,
@@ -33,7 +33,7 @@ export const actions: Actions = {
 		if (!resp.response.ok || !resp.data) {
 			return message(form, resp.error, { status: 400 })
 		}
-		redirect(303, `/admin/flights/${resp.data.id}/manage`)
+		redirect(303, `/admin/flight-schedules/${resp.data.id}/manage`)
 	},
 	setFlightPublished: async ({ request }) => {
 		// TODO!(sqs): make this use the id from the URL not the form data
@@ -56,7 +56,7 @@ export const actions: Actions = {
 		}
 		const published = publishedStr === 'true'
 
-		const resp = await apiClient.PATCH('/flights/{id}', {
+		const resp = await apiClient.PATCH('/flight-schedules/{id}', {
 			params: { path: { id } },
 			body: { published },
 			fetch,
@@ -80,7 +80,7 @@ export const actions: Actions = {
 		}
 		const id = Number.parseInt(idStr)
 
-		const resp = await apiClient.DELETE('/flights/{id}', {
+		const resp = await apiClient.DELETE('/flight-schedules/{id}', {
 			params: { path: { id } },
 			fetch,
 		})
@@ -90,6 +90,6 @@ export const actions: Actions = {
 				error: await resp.response.text(),
 			})
 		}
-		return redirect(303, '/admin/flights')
+		return redirect(303, '/admin/flight-schedules')
 	},
 }

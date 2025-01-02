@@ -6,7 +6,7 @@ import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ params, parent }) => {
 	const id = Number.parseInt(params.id)
-	const resp = await apiClient.GET('/flights/{id}', {
+	const resp = await apiClient.GET('/flight-schedules/{id}', {
 		params: { path: { id } },
 		fetch,
 	})
@@ -18,7 +18,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 	return {
 		flight,
 		...(await breadcrumbEntry(parent, {
-			url: `/admin/flights/${flight.id}`,
+			url: `/admin/flight-schedules/${flight.id}`,
 			title: flightTitle(flight),
 		})),
 	}

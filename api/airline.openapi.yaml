@@ -108,21 +108,21 @@ paths:
           description: Airport deleted
         '404':
           description: Airport not found
-  /airports/{airportSpec}/flights:
+  /airports/{airportSpec}/flight-schedules:
     get:
-      operationId: listFlightsByAirport
-      summary: List flights that depart from or arrive at an airport
+      operationId: listFlightSchedulesByAirport
+      summary: List flight schedules that depart from or arrive at an airport
       parameters:
         - $ref: '#/components/parameters/airportSpec'
       responses:
         '200':
-          description: Flights by airport
+          description: Flight schedules by airport
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Flight'
+                  $ref: '#/components/schemas/FlightSchedule'
         '404':
           description: Airport not found
   /airlines:
@@ -224,39 +224,39 @@ paths:
           description: Airline deleted
         '404':
           description: Airline not found
-  /airlines/{airlineSpec}/flights:
+  /airlines/{airlineSpec}/flight-schedules:
     get:
-      operationId: listFlightsByAirline
-      summary: List flights for an airline
+      operationId: listFlightSchedulesByAirline
+      summary: List flight schedules for an airline
       parameters:
         - $ref: '#/components/parameters/airlineSpec'
       responses:
         '200':
-          description: Flights by airline
+          description: Flight schedules by airline
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Flight'
+                  $ref: '#/components/schemas/FlightSchedule'
         '404':
           description: Airline not found
-  /flights:
+  /flight-schedules:
     get:
-      operationId: listFlights
-      summary: List all flights
+      operationId: listFlightSchedules
+      summary: List all flight schedules
       responses:
         '200':
-          description: List of flights
+          description: List of flight schedules
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Flight'
+                  $ref: '#/components/schemas/FlightSchedule'
     post:
-      operationId: createFlight
-      summary: Create a new flight
+      operationId: createFlightSchedule
+      summary: Create a new flight schedule
       requestBody:
         required: true
         content:
@@ -282,23 +282,23 @@ paths:
                 - destinationAirport
       responses:
         '201':
-          description: Flight created
+          description: Flight schedule created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Flight'
+                $ref: '#/components/schemas/FlightSchedule'
         '400':
           description: Invalid request
     delete:
       operationId: deleteAllFlights
-      summary: Delete all flights
+      summary: Delete all flight schedules
       responses:
         '204':
-          description: All flights deleted
-  /flights/{id}:
+          description: All flight schedules deleted
+  /flight-schedules/{id}:
     get:
-      operationId: getFlight
-      summary: Get flight by ID
+      operationId: getFlightSchedule
+      summary: Get flight schedule by ID
       parameters:
         - name: id
           in: path
@@ -307,16 +307,16 @@ paths:
             type: integer
       responses:
         '200':
-          description: Flight found
+          description: Flight schedule found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Flight'
+                $ref: '#/components/schemas/FlightSchedule'
         '404':
-          description: Flight not found
+          description: Flight schedule not found
     patch:
-      operationId: updateFlight
-      summary: Update flight
+      operationId: updateFlightSchedule
+      summary: Update flight schedule
       parameters:
         - name: id
           in: path
@@ -342,16 +342,16 @@ paths:
                   type: boolean
       responses:
         '200':
-          description: Flight updated
+          description: Flight schedule updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Flight'
+                $ref: '#/components/schemas/FlightSchedule'
         '404':
-          description: Flight not found
+          description: Flight schedule not found
     delete:
-      operationId: deleteFlight
-      summary: Delete a flight
+      operationId: deleteFlightSchedule
+      summary: Delete a flight schedule
       parameters:
         - name: id
           in: path
@@ -360,9 +360,9 @@ paths:
             type: integer
       responses:
         '204':
-          description: Flight deleted
+          description: Flight schedule deleted
         '404':
-          description: Flight not found
+          description: Flight schedule not found
   /routes:
     get:
       operationId: listRoutes
@@ -482,7 +482,7 @@ components:
         - id
         - iataCode
         - name
-    Flight:
+    FlightSchedule:
       type: object
       properties:
         id:
@@ -520,10 +520,10 @@ components:
         distanceMiles:
           type: number
           format: double
-        flightsCount:
+        flightSchedulesCount:
           type: integer
       required:
         - originAirport
         - destinationAirport
-        - flightsCount
+        - flightSchedulesCount
       

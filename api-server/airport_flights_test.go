@@ -6,19 +6,19 @@ import (
 	"github.com/stellora/airline/api-server/api"
 )
 
-func TestListFlightsByAirport(t *testing.T) {
+func TestListFlightSchedulesByAirport(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	insertFlightsT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 CCC-BBB")
+	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 CCC-BBB")
 
-	want := api.ListFlightsByAirport200JSONResponse{
+	want := api.ListFlightSchedulesByAirport200JSONResponse{
 		{Id: 1, Airline: api.Airline{Id: 1, IataCode: "XX"}, Number: "1", OriginAirport: api.Airport{Id: 1, IataCode: "AAA"}, DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"}, Published: true},
 		{Id: 2, Airline: api.Airline{Id: 1, IataCode: "XX"}, Number: "2", OriginAirport: api.Airport{Id: 2, IataCode: "BBB"}, DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"}, Published: true},
 	}
 
 	t.Run("by id", func(t *testing.T) {
-		resp, err := handler.ListFlightsByAirport(ctx, api.ListFlightsByAirportRequestObject{
+		resp, err := handler.ListFlightSchedulesByAirport(ctx, api.ListFlightSchedulesByAirportRequestObject{
 			AirportSpec: api.NewAirportSpec(1, ""),
 		})
 		if err != nil {
@@ -28,7 +28,7 @@ func TestListFlightsByAirport(t *testing.T) {
 	})
 
 	t.Run("by IATA code", func(t *testing.T) {
-		resp, err := handler.ListFlightsByAirport(ctx, api.ListFlightsByAirportRequestObject{
+		resp, err := handler.ListFlightSchedulesByAirport(ctx, api.ListFlightSchedulesByAirportRequestObject{
 			AirportSpec: api.NewAirportSpec(0, "AAA"),
 		})
 		if err != nil {

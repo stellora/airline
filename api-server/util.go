@@ -17,7 +17,7 @@ func mapSlice[T any, U any](fn func(T) U, slice []T) []U {
 	return result
 }
 
-// parseFlightTitle parses a flight title of the form "UA123 SFO-JFK".
+// parseFlightTitle parses a flight schedule title of the form "UA123 SFO-JFK".
 func parseFlightTitle(title string) (airlineIATACode, flightNumber, originIATACode, destinationIATACode string) {
 	var airlineFlightNumber, route string
 	airlineFlightNumber, route, _ = strings.Cut(title, " ")
@@ -68,12 +68,12 @@ func insertAirlines(ctx context.Context, handler *Handler, airlines map[string]s
 	return ids, nil
 }
 
-func insertFlights(ctx context.Context, handler *Handler, flightTitles ...string) (ids []int, err error) {
+func insertFlightSchedules(ctx context.Context, handler *Handler, flightTitles ...string) (ids []int, err error) {
 	ids = make([]int, len(flightTitles))
 	for i, flight := range flightTitles {
 		airlineIATACode, flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
-		v, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
-			Body: &api.CreateFlightJSONRequestBody{
+		v, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{
+			Body: &api.CreateFlightScheduleJSONRequestBody{
 				Airline:            api.NewAirlineSpec(0, airlineIATACode),
 				Number:             flightNumber,
 				OriginAirport:      api.NewAirportSpec(0, originIATACode),
@@ -84,7 +84,7 @@ func insertFlights(ctx context.Context, handler *Handler, flightTitles ...string
 		if err != nil {
 			return nil, err
 		}
-		ids[i] = v.(api.CreateFlight201JSONResponse).Id
+		ids[i] = v.(api.CreateFlightSchedule201JSONResponse).Id
 	}
 	return ids, nil
 }

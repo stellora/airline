@@ -43,7 +43,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		"DL2649 MSP-BOS",
 		"UA1212 SFO-PVR", "UA1243 PVR-SFO",
 	}
-	if _, err := insertFlights(ctx, handler, flightTitles...); err != nil {
+	if _, err := insertFlightSchedules(ctx, handler, flightTitles...); err != nil {
 		return err
 	}
 

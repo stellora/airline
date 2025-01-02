@@ -45,7 +45,7 @@
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"
-								href={`/admin/flights/${flight.id}`}
+								href={`/admin/flight-schedules/${flight.id}`}
 								class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 							>
 								Manage
