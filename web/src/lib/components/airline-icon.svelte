@@ -33,11 +33,11 @@
 </script>
 
 <div
-	class={cn('w-[1em] h-[1em] rounded-[2px] overflow-hidden', className)}
+	class={cn('w-[1rem] h-[1rem] rounded-[2px] overflow-hidden', className)}
 	role="presentation"
 	style="--color-1: {colors[0]}; --color-2: {colors[1]}; --angle: {angle}deg"
 >
-	<div class="gradient"></div>
+	<div class="gradient inline-block"></div>
 </div>
 
 <style>

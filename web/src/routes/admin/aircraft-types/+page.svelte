@@ -21,7 +21,7 @@
 					{#each data.allAircraftTypes as aircraftType (aircraftType.icaoCode)}
 						<Table.Row class="stretched-link-container group">
 							<Table.Cell class="font-bold text-lg">
-								<AircraftTypeCode tooltip={false} {aircraftType} />
+								<AircraftTypeCode showName={false} {aircraftType} />
 							</Table.Cell>
 							<Table.Cell>{aircraftType.name}</Table.Cell>
 						</Table.Row>

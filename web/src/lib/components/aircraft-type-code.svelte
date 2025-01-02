@@ -8,12 +8,12 @@
 
 	const {
 		aircraftType: aircraftTypeInput,
-		tooltip = true,
+		showName = 'tooltip',
 		class: className,
 		as = 'abbr',
 	}: {
 		aircraftType: Pick<AircraftType, 'icaoCode' | 'name'> | AircraftType['icaoCode']
-		tooltip?: boolean
+		showName?: 'tooltip' | boolean
 		class?: HTMLAttributes<never>['class']
 		as?: 'abbr'
 	} = $props()
@@ -28,20 +28,31 @@
 			: aircraftTypeInput
 </script>
 
-<Tooltip.Root disabled={!tooltip}>
-	<Tooltip.Trigger>
-		{#snippet child({ props })}
-			<svelte:element
-				this={as}
-				class={cn(className, 'font-mono hover:underline hover:decoration-dotted cursor-help')}
-				{...props}
-			>
-				{aircraftType.icaoCode}
-			</svelte:element>
-		{/snippet}
-	</Tooltip.Trigger><Tooltip.Portal>
-		<Tooltip.Content collisionPadding={50}>
-			<span class="font-normal text-sm">{aircraftType.name}</span>
-		</Tooltip.Content>
-	</Tooltip.Portal>
-</Tooltip.Root>
+{#if showName === 'tooltip'}
+	<Tooltip.Root>
+		<Tooltip.Trigger>
+			{#snippet child({ props })}
+				<svelte:element
+					this={as}
+					class={cn(className, 'font-mono hover:underline hover:decoration-dotted cursor-help')}
+					{...props}
+				>
+					{aircraftType.icaoCode}
+				</svelte:element>
+			{/snippet}
+		</Tooltip.Trigger><Tooltip.Portal>
+			<Tooltip.Content collisionPadding={50}>
+				<span class="font-normal text-sm">{aircraftType.name}</span>
+			</Tooltip.Content>
+		</Tooltip.Portal>
+	</Tooltip.Root>
+{:else}
+	<svelte:element this={as} class={cn(className, 'font-mono')}>
+		{aircraftType.icaoCode}
+		{#if showName}
+			<span class="font-sans text-muted-foreground text-xs">
+				{aircraftType.name}
+			</span>
+		{/if}
+	</svelte:element>
+{/if}

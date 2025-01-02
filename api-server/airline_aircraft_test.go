@@ -13,8 +13,8 @@ func TestListAircraftByAirline(t *testing.T) {
 	insertAircraftT(t, handler, "YY", "N3")
 
 	want := api.ListAircraftByAirline200JSONResponse{
-		{Id: 1, Registration: "N1", AircraftType: "777", Airline: api.Airline{Id: 1, IataCode: "XX"}},
-		{Id: 2, Registration: "N2", AircraftType: "777", Airline: api.Airline{Id: 1, IataCode: "XX"}},
+		{Id: 1, Registration: "N1", AircraftType: "B77W", Airline: api.Airline{Id: 1, IataCode: "XX"}},
+		{Id: 2, Registration: "N2", AircraftType: "B77W", Airline: api.Airline{Id: 1, IataCode: "XX"}},
 	}
 
 	t.Run("by id", func(t *testing.T) {

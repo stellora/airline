@@ -23,7 +23,7 @@ func TestGetAircraft(t *testing.T) {
 			assertEqual(t, resp, api.GetAircraft200JSONResponse{
 				Id:           1,
 				Registration: "N1",
-				AircraftType: "777",
+				AircraftType: "B77W",
 				Airline:      api.Airline{Id: 1, IataCode: "XX"},
 			})
 		})
@@ -37,7 +37,7 @@ func TestGetAircraft(t *testing.T) {
 			assertEqual(t, resp, api.GetAircraft200JSONResponse{
 				Id:           1,
 				Registration: "N1",
-				AircraftType: "777",
+				AircraftType: "B77W",
 				Airline:      api.Airline{Id: 1, IataCode: "XX"},
 			})
 		})
@@ -75,8 +75,8 @@ func TestListAircraft(t *testing.T) {
 	}
 
 	want := api.ListAircraft200JSONResponse{
-		api.Aircraft{Id: int(ids[0]), Registration: "N1", AircraftType: "777", Airline: api.Airline{Id: 1, IataCode: "XX"}},
-		api.Aircraft{Id: int(ids[1]), Registration: "N2", AircraftType: "777", Airline: api.Airline{Id: 1, IataCode: "XX"}},
+		api.Aircraft{Id: int(ids[0]), Registration: "N1", AircraftType: "B77W", Airline: api.Airline{Id: 1, IataCode: "XX"}},
+		api.Aircraft{Id: int(ids[1]), Registration: "N2", AircraftType: "B77W", Airline: api.Airline{Id: 1, IataCode: "XX"}},
 	}
 	assertEqual(t, resp, want)
 }
@@ -88,7 +88,7 @@ func TestCreateAircraft(t *testing.T) {
 	resp, err := handler.CreateAircraft(ctx, api.CreateAircraftRequestObject{
 		Body: &api.CreateAircraftJSONRequestBody{
 			Registration: "N1",
-			AircraftType: "777",
+			AircraftType: "B77W",
 			Airline:      api.NewAirlineSpec(0, "XX"),
 		},
 	})
@@ -99,7 +99,7 @@ func TestCreateAircraft(t *testing.T) {
 	want := api.CreateAircraft201JSONResponse{
 		Id:           1,
 		Registration: "N1",
-		AircraftType: "777",
+		AircraftType: "B77W",
 		Airline:      api.Airline{Id: 1, IataCode: "XX"},
 	}
 	assertEqual(t, resp, want)

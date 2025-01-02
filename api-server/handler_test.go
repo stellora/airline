@@ -19,7 +19,7 @@ func handlerTest(t *testing.T) (context.Context, *Handler) {
 
 func insertAircraftT(t *testing.T, handler *Handler, airline string, registrations ...string) (ids []int) {
 	t.Helper()
-	ids, err := insertAircraft(context.Background(), handler, airline, registrations...)
+	ids, err := insertAircraft(context.Background(), handler, airline, "B77W", registrations...)
 	if err != nil {
 		t.Fatal(err)
 	}

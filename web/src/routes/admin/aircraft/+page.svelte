@@ -53,7 +53,7 @@
 								{aircraft.registration}
 							</Table.Cell>
 							<Table.Cell>
-								<AircraftTypeCode aircraftType={aircraft.aircraftType} />
+								<AircraftTypeCode aircraftType={aircraft.aircraftType} showName={true} />
 							</Table.Cell>
 							<Table.Cell class="text-right">
 								<Button
