@@ -76,6 +76,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/aircraft-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all aircraft types */
+        get: operations["listAircraftTypes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/airports": {
         parameters: {
             query?: never;
@@ -269,11 +286,15 @@ export interface components {
         Aircraft: {
             id: number;
             registration: components["schemas"]["AircraftRegistration"];
-            aircraftType: components["schemas"]["AircraftTypeIATACode"];
+            aircraftType: components["schemas"]["AircraftTypeICAOCode"];
             airline: components["schemas"]["Airline"];
         };
-        /** @description IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators. */
-        AircraftTypeIATACode: string;
+        /** @description ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators. */
+        AircraftTypeICAOCode: string;
+        AircraftType: {
+            icaoCode: components["schemas"]["AircraftTypeICAOCode"];
+            name: string;
+        };
         AirlineID: number;
         /** @description IATA code for airline */
         AirlineIATACode: string;
@@ -385,7 +406,7 @@ export interface operations {
             content: {
                 "application/json": {
                     registration: components["schemas"]["AircraftRegistration"];
-                    aircraftType: components["schemas"]["AircraftTypeIATACode"];
+                    aircraftType: components["schemas"]["AircraftTypeICAOCode"];
                     airline: components["schemas"]["AirlineSpec"];
                 };
             };
@@ -496,7 +517,7 @@ export interface operations {
             content: {
                 "application/json": {
                     registration?: components["schemas"]["AircraftRegistration"];
-                    aircraftType?: components["schemas"]["AircraftTypeIATACode"];
+                    aircraftType?: components["schemas"]["AircraftTypeICAOCode"];
                     airline?: components["schemas"]["AirlineSpec"];
                 };
             };
@@ -546,6 +567,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    listAircraftTypes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of aircraft types */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AircraftType"][];
+                };
             };
         };
     };

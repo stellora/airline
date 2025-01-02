@@ -17,8 +17,8 @@ import (
 
 // Aircraft defines model for Aircraft.
 type Aircraft struct {
-	// AircraftType IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType AircraftTypeIATACode `json:"aircraftType"`
+	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+	AircraftType AircraftTypeICAOCode `json:"aircraftType"`
 	Airline      Airline              `json:"airline"`
 	Id           int                  `json:"id"`
 
@@ -37,8 +37,15 @@ type AircraftSpec struct {
 	union json.RawMessage
 }
 
-// AircraftTypeIATACode IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-type AircraftTypeIATACode = string
+// AircraftType defines model for AircraftType.
+type AircraftType struct {
+	// IcaoCode ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+	IcaoCode AircraftTypeICAOCode `json:"icaoCode"`
+	Name     string               `json:"name"`
+}
+
+// AircraftTypeICAOCode ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+type AircraftTypeICAOCode = string
 
 // Airline defines model for Airline.
 type Airline struct {
@@ -112,8 +119,8 @@ type Route struct {
 
 // CreateAircraftJSONBody defines parameters for CreateAircraft.
 type CreateAircraftJSONBody struct {
-	// AircraftType IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType AircraftTypeIATACode `json:"aircraftType"`
+	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+	AircraftType AircraftTypeICAOCode `json:"aircraftType"`
 	Airline      AirlineSpec          `json:"airline"`
 
 	// Registration Registration code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_registration_prefixes.
@@ -122,8 +129,8 @@ type CreateAircraftJSONBody struct {
 
 // UpdateAircraftJSONBody defines parameters for UpdateAircraft.
 type UpdateAircraftJSONBody struct {
-	// AircraftType IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType *AircraftTypeIATACode `json:"aircraftType,omitempty"`
+	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+	AircraftType *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
 	Airline      *AirlineSpec          `json:"airline,omitempty"`
 
 	// Registration Registration code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_registration_prefixes.
@@ -395,6 +402,9 @@ type ServerInterface interface {
 	// Create a new aircraft
 	// (POST /aircraft)
 	CreateAircraft(w http.ResponseWriter, r *http.Request)
+	// List all aircraft types
+	// (GET /aircraft-types)
+	ListAircraftTypes(w http.ResponseWriter, r *http.Request)
 	// Delete an aircraft
 	// (DELETE /aircraft/{aircraftSpec})
 	DeleteAircraft(w http.ResponseWriter, r *http.Request, aircraftSpec AircraftSpec)
@@ -520,6 +530,20 @@ func (siw *ServerInterfaceWrapper) CreateAircraft(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateAircraft(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListAircraftTypes operation middleware
+func (siw *ServerInterfaceWrapper) ListAircraftTypes(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListAircraftTypes(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1206,6 +1230,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("DELETE "+options.BaseURL+"/aircraft", wrapper.DeleteAllAircraft)
 	m.HandleFunc("GET "+options.BaseURL+"/aircraft", wrapper.ListAircraft)
 	m.HandleFunc("POST "+options.BaseURL+"/aircraft", wrapper.CreateAircraft)
+	m.HandleFunc("GET "+options.BaseURL+"/aircraft-types", wrapper.ListAircraftTypes)
 	m.HandleFunc("DELETE "+options.BaseURL+"/aircraft/{aircraftSpec}", wrapper.DeleteAircraft)
 	m.HandleFunc("GET "+options.BaseURL+"/aircraft/{aircraftSpec}", wrapper.GetAircraft)
 	m.HandleFunc("PATCH "+options.BaseURL+"/aircraft/{aircraftSpec}", wrapper.UpdateAircraft)
@@ -1291,6 +1316,22 @@ type CreateAircraft400Response struct {
 func (response CreateAircraft400Response) VisitCreateAircraftResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
+}
+
+type ListAircraftTypesRequestObject struct {
+}
+
+type ListAircraftTypesResponseObject interface {
+	VisitListAircraftTypesResponse(w http.ResponseWriter) error
+}
+
+type ListAircraftTypes200JSONResponse []AircraftType
+
+func (response ListAircraftTypes200JSONResponse) VisitListAircraftTypesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteAircraftRequestObject struct {
@@ -1906,6 +1947,9 @@ type StrictServerInterface interface {
 	// Create a new aircraft
 	// (POST /aircraft)
 	CreateAircraft(ctx context.Context, request CreateAircraftRequestObject) (CreateAircraftResponseObject, error)
+	// List all aircraft types
+	// (GET /aircraft-types)
+	ListAircraftTypes(ctx context.Context, request ListAircraftTypesRequestObject) (ListAircraftTypesResponseObject, error)
 	// Delete an aircraft
 	// (DELETE /aircraft/{aircraftSpec})
 	DeleteAircraft(ctx context.Context, request DeleteAircraftRequestObject) (DeleteAircraftResponseObject, error)
@@ -2090,6 +2134,30 @@ func (sh *strictHandler) CreateAircraft(w http.ResponseWriter, r *http.Request) 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CreateAircraftResponseObject); ok {
 		if err := validResponse.VisitCreateAircraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListAircraftTypes operation middleware
+func (sh *strictHandler) ListAircraftTypes(w http.ResponseWriter, r *http.Request) {
+	var request ListAircraftTypesRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListAircraftTypes(ctx, request.(ListAircraftTypesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListAircraftTypes")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListAircraftTypesResponseObject); ok {
+		if err := validResponse.VisitListAircraftTypesResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

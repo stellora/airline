@@ -44,7 +44,7 @@ paths:
                 registration:
                   $ref: '#/components/schemas/AircraftRegistration'
                 aircraftType:
-                  $ref: '#/components/schemas/AircraftTypeIATACode'
+                  $ref: '#/components/schemas/AircraftTypeICAOCode'
                 airline:
                   $ref: '#/components/schemas/AirlineSpec'
               required:
@@ -96,7 +96,7 @@ paths:
                 registration:
                   $ref: '#/components/schemas/AircraftRegistration'
                 aircraftType:
-                  $ref: '#/components/schemas/AircraftTypeIATACode'                
+                  $ref: '#/components/schemas/AircraftTypeICAOCode'                
                 airline:
                   $ref: '#/components/schemas/AirlineSpec'
       responses:
@@ -135,6 +135,19 @@ paths:
                   $ref: '#/components/schemas/Aircraft'
         '404':
           description: Airline not found
+  /aircraft-types:
+    get:
+      operationId: listAircraftTypes
+      summary: List all aircraft types
+      responses:
+        '200':
+          description: List of aircraft types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AircraftType'
   /airports:
     get:
       operationId: listAirports
@@ -554,7 +567,7 @@ components:
         registration:
           $ref: '#/components/schemas/AircraftRegistration'
         aircraftType:
-          $ref: '#/components/schemas/AircraftTypeIATACode'
+          $ref: '#/components/schemas/AircraftTypeICAOCode'
         airline:
           $ref: '#/components/schemas/Airline'
       required:
@@ -562,12 +575,22 @@ components:
         - registration
         - aircraftType
         - airline
-    AircraftTypeIATACode:
+    AircraftTypeICAOCode:
       type: string
-      description: IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-      pattern: '^[A-Z0-9]{3}$'
-      minLength: 3
-      maxLength: 3
+      description: ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+      pattern: '^[A-Z][A-Z0-9]{1,3}$'
+      minLength: 2
+      maxLength: 4
+    AircraftType:
+      type: object
+      properties:
+        icaoCode:
+          $ref: '#/components/schemas/AircraftTypeICAOCode'
+        name:
+          type: string
+      required:
+        - icaoCode
+        - name
     AirlineID:
       type: integer
     AirlineIATACode:
