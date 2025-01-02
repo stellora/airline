@@ -18,6 +18,123 @@ paths:
                 properties:
                   ok:
                     type: boolean
+  /aircraft:
+    get:
+      operationId: listAircraft
+      summary: List all aircraft
+      responses:
+        '200':
+          description: List of aircraft
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Aircraft'
+    post:
+      operationId: createAircraft
+      summary: Create a new aircraft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                registration:
+                  $ref: '#/components/schemas/AircraftRegistration'
+                aircraftType:
+                  $ref: '#/components/schemas/AircraftType'
+                airline:
+                  $ref: '#/components/schemas/AirlineSpec'
+              required:
+                - registration
+                - aircraftType
+                - airline
+      responses:
+        '201':
+          description: Aircraft created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aircraft'
+        '400':
+          description: Invalid request
+    delete:
+      operationId: deleteAllAircraft
+      summary: Delete all aircraft
+      responses:
+        '204':
+          description: All aircraft deleted
+  /aircraft/{aircraftSpec}:
+    get:
+      operationId: getAircraft
+      summary: Get aircraft by ID or registration
+      parameters:
+        - $ref: '#/components/parameters/aircraftSpec'
+      responses:
+        '200':
+          description: Aircraft found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aircraft'
+        '404':
+          description: Aircraft not found
+    patch:
+      operationId: updateAircraft
+      summary: Update aircraft
+      parameters:
+        - $ref: '#/components/parameters/aircraftSpec'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                registration:
+                  $ref: '#/components/schemas/AircraftRegistration'
+                aircraftType:
+                  $ref: '#/components/schemas/AircraftType'                
+                airline:
+                  $ref: '#/components/schemas/AirlineSpec'
+      responses:
+        '200':
+          description: Aircraft updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aircraft'
+        '404':
+          description: Aircraft not found
+    delete:
+      operationId: deleteAircraft
+      summary: Delete an aircraft
+      parameters:
+        - $ref: '#/components/parameters/aircraftSpec'
+      responses:
+        '204':
+          description: Aircraft deleted
+        '404':
+          description: Aircraft not found
+  /airlines/{airlineSpec}/aircraft:
+    get:
+      operationId: listAircraftByAirline
+      summary: List all aircraft owned by an airline
+      parameters:
+        - $ref: '#/components/parameters/airlineSpec'
+      responses:
+        '200':
+          description: List of aircraft
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Aircraft'
+        '404':
+          description: Airline not found
   /airports:
     get:
       operationId: listAirports
@@ -398,6 +515,12 @@ paths:
           description: Route not found
 components:
   parameters:
+    aircraftSpec:
+      name: aircraftSpec
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/AircraftSpec'
     airportSpec:
       name: airportSpec
       in: path
@@ -411,6 +534,40 @@ components:
       schema:
         $ref: '#/components/schemas/AirlineSpec'
   schemas:
+    AircraftID:
+      type: integer
+    AircraftRegistration:
+      type: string
+      description: Registration code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_registration_prefixes.
+      pattern: '^[A-Z][A-Z0-9-]{1,12}$'
+      minLength: 2
+      maxLength: 13
+    AircraftSpec:
+      oneOf:
+        - $ref: '#/components/schemas/AircraftID'
+        - $ref: '#/components/schemas/AircraftRegistration'
+    Aircraft:
+      type: object
+      properties:
+        id:
+          type: integer
+        registration:
+          $ref: '#/components/schemas/AircraftRegistration'
+        aircraftType:
+          $ref: '#/components/schemas/AircraftTypeIATACode'
+        airline:
+          $ref: '#/components/schemas/Airline'
+      required:
+        - id
+        - registration
+        - aircraftType
+        - airline
+    AircraftTypeIATACode:
+      type: string
+      description: IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+      pattern: '^[A-Z0-9]{3}$'
+      minLength: 3
+      maxLength: 3
     AirportID:
       type: integer
     AirportIATACode:

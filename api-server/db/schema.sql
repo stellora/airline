@@ -1,3 +1,11 @@
+CREATE TABLE IF NOT EXISTS aircraft (
+  id INTEGER PRIMARY KEY,
+  registration TEXT NOT NULL UNIQUE,
+  aircraft_type TEXT NOT NULL,
+  airline_id INTEGER NOT NULL,
+  FOREIGN KEY (airline_id) REFERENCES airlines(id)
+);
+
 CREATE TABLE IF NOT EXISTS airports (
   id INTEGER PRIMARY KEY,
   iata_code TEXT NOT NULL UNIQUE,

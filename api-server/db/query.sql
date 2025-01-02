@@ -1,3 +1,48 @@
+------------------------------------------------------------------------------- aircraft
+
+-- name: GetAircraft :one
+SELECT * FROM aircraft
+WHERE id=? LIMIT 1;
+
+-- name: GetAircraft :one
+SELECT * FROM aircraft
+WHERE id=? LIMIT 1;
+
+-- name: ListAircraft :many
+SELECT * FROM aircraft
+ORDER BY id ASC;
+
+-- name: CreateAircraft :one
+INSERT INTO aircraft (
+  registration,
+  aircraft_type,
+  airline_id
+) VALUES (
+  ?, ?, ?
+)
+RETURNING *;
+
+-- name: UpdateAircraft :one
+UPDATE aircraft SET
+registration = COALESCE(sqlc.narg('registration'), registration),
+aircraft_type = COALESCE(sqlc.narg('aircraft_type'), aircraft_type),
+airline_id = COALESCE(sqlc.narg('airline_id'), airline_id)
+WHERE id=?
+RETURNING *;
+
+-- name: DeleteAircraft :exec
+DELETE FROM aircraft
+WHERE id=?;
+
+-- name: DeleteAllAircraft :exec
+DELETE FROM aircraft;
+
+-- name: ListAircraftByAirline :many
+SELECT *
+FROM aircraft
+WHERE airline_id=:airline
+ORDER BY id ASC;
+
 ------------------------------------------------------------------------------- airports
 
 -- name: GetAirport :one
@@ -77,12 +122,6 @@ WHERE id=?;
 -- name: DeleteAllAirlines :exec
 DELETE FROM airlines;
 
--- name: ListFlightSchedulesByAirline :many
-SELECT *
-FROM flight_schedules_view
-WHERE airline_id=:airline
-ORDER BY id ASC;
-
 ------------------------------------------------------------------------------- flight_schedules
 
 -- name: GetFlightSchedule :one
@@ -118,6 +157,18 @@ WHERE id=?;
 -- name: DeleteAllFlightSchedules :exec
 DELETE FROM flight_schedules;
 
+-- name: ListFlightSchedulesByAirline :many
+SELECT *
+FROM flight_schedules_view
+WHERE airline_id=:airline
+ORDER BY id ASC;
+
+-- name: ListFlightSchedulesByRoute :many
+SELECT *
+FROM flight_schedules_view
+WHERE origin_airport_id=:origin_airport OR destination_airport_id=:destination_airport
+ORDER BY id ASC;
+
 ------------------------------------------------------------------------------- routes
 
 -- name: GetRouteByIATACodes :one
@@ -128,9 +179,3 @@ LIMIT 1;
 -- name: ListRoutes :many
 SELECT * FROM routes
 ORDER BY flight_schedules_count DESC, origin_airport_id ASC, destination_airport_id ASC;
-
--- name: ListFlightSchedulesByRoute :many
-SELECT *
-FROM flight_schedules_view
-WHERE origin_airport_id=:origin_airport OR destination_airport_id=:destination_airport
-ORDER BY id ASC;
