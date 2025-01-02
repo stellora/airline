@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AirlineCode from '$lib/components/airline-code.svelte'
+	import AirlineIcon from '$lib/components/airline-icon.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
@@ -36,7 +37,12 @@
 							<Table.Cell class="font-bold text-lg">
 								<AirlineCode tooltip={false} {airline} />
 							</Table.Cell>
-							<Table.Cell>{airline.name}</Table.Cell>
+							<Table.Cell>
+								<div class="flex items-center gap-2">
+									<AirlineIcon {airline} />
+									{airline.name}
+								</div>
+							</Table.Cell>
 							<Table.Cell class="text-right">
 								<Button
 									variant="link"
