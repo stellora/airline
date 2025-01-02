@@ -20,8 +20,8 @@
 			as="h1"
 		/>
 	{/snippet}
-	{#snippet actions()}
-		<form method="POST" action="?/setFlightPublished" use:enhance>
+	{#snippet titleActions()}
+		<form method="POST" action="?/setFlightSchedulePublished" use:enhance>
 			<input type="hidden" name="id" value={data.flight.id} />
 			<input type="hidden" name="published" value={data.flight.published ? 'false' : 'true'} />
 			<Button type="submit" variant={data.flight.published ? 'outline' : 'default'}>

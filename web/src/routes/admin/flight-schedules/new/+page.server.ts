@@ -1,9 +1,10 @@
 import { apiClient } from '$lib/api'
+import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
+import { formSchema } from '../flight-schedule-form'
 import type { Actions, PageServerLoad } from './$types'
-import { formSchema } from './new-flight-form'
 
 export const load: PageServerLoad = async () => {
 	return {
@@ -31,6 +32,9 @@ export const actions: Actions = {
 		if (!resp.response.ok || !resp.data) {
 			return message(form, resp.error, { status: 400 })
 		}
-		redirect(303, `/admin/flight-schedules/${resp.data.id}`)
+		redirect(
+			303,
+			route('/admin/flight-schedules/[id]', { params: { id: resp.data.id.toString() } }),
+		)
 	},
 }

@@ -7,13 +7,13 @@
 		breadcrumbActions,
 		title,
 		titleElement,
-		actions,
+		titleActions,
 		children,
 	}: {
 		breadcrumbActions?: Snippet
 		title: string
 		titleElement?: Snippet<[className: string]>
-		actions?: Snippet
+		titleActions?: Snippet
 		children?: Snippet
 	} = $props()
 </script>
@@ -36,7 +36,7 @@
 			<h1 class="text-4xl font-bold">{title}</h1>
 		{/if}
 		<div class="flex-1"></div>
-		{@render actions?.()}
+		{@render titleActions?.()}
 	</header>
 
 	{@render children?.()}

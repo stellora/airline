@@ -10,7 +10,7 @@
 	import { typebox } from 'sveltekit-superforms/adapters'
 	import type { PageServerData } from './$types'
 	import FlightDateRangeInput from './flight-date-range-input.svelte'
-	import { formSchema } from './new-flight-form'
+	import { formSchema } from './flight-schedule-form'
 
 	const props: { form: PageServerData['form']; action: string } = $props()
 	const form = superForm(props.form, {

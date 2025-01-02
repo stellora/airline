@@ -14,7 +14,7 @@
 	{#snippet titleElement(className)}
 		<FlightTitle flight={data.flightSchedule} class={className} subtitleClass="text-base" as="h1" />
 	{/snippet}
-	{#snippet actions()}
+	{#snippet titleActions()}
 		<Button
 			href={route('/admin/flight-schedules/[id]/manage', {
 				params: { id: data.flightSchedule.id.toString() },

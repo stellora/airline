@@ -1,13 +1,14 @@
 import { apiClient } from '$lib/api'
+import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
-import { formSchema } from '../../new/new-flight-form'
+import { formSchema } from '../../flight-schedule-form'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params, parent }) => {
-	const { flight } = await parent()
-	return { form: await superValidate(flight, typebox(formSchema)) }
+	const { flightSchedule } = await parent()
+	return { form: await superValidate(flightSchedule, typebox(formSchema)) }
 }
 
 export const actions: Actions = {
@@ -33,9 +34,12 @@ export const actions: Actions = {
 		if (!resp.response.ok || !resp.data) {
 			return message(form, resp.error, { status: 400 })
 		}
-		redirect(303, `/admin/flight-schedules/${resp.data.id}/manage`)
+		redirect(
+			303,
+			route('/admin/flight-schedules/[id]/manage', { params: { id: resp.data.id.toString() } }),
+		)
 	},
-	setFlightPublished: async ({ request }) => {
+	setFlightSchedulePublished: async ({ request }) => {
 		// TODO!(sqs): make this use the id from the URL not the form data
 		const data = await request.formData()
 		const idStr = data.get('id')
@@ -90,6 +94,6 @@ export const actions: Actions = {
 				error: await resp.response.text(),
 			})
 		}
-		return redirect(303, '/admin/flight-schedules')
+		return redirect(303, route('/admin/flight-schedules'))
 	},
 }

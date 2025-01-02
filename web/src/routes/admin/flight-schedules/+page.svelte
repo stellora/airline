@@ -9,7 +9,7 @@
 </script>
 
 <Page title="Flight schedules">
-	{#snippet actions()}
+	{#snippet titleActions()}
 		<Button href={route('/admin/flight-schedules/new')} variant="default"
 			><Plus /> New flight schedule</Button
 		>
