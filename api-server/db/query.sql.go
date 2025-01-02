@@ -555,7 +555,7 @@ func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) (A
 	return i, err
 }
 
-const updateFlightSchedule = `-- name: UpdateFlightSchedule :exec
+const updateFlightSchedule = `-- name: UpdateFlightSchedule :one
 UPDATE flight_schedules SET
 airline_id = COALESCE(?1, airline_id),
 number = COALESCE(?2, number),
@@ -575,8 +575,8 @@ type UpdateFlightScheduleParams struct {
 	ID                   int64
 }
 
-func (q *Queries) UpdateFlightSchedule(ctx context.Context, arg UpdateFlightScheduleParams) error {
-	_, err := q.db.ExecContext(ctx, updateFlightSchedule,
+func (q *Queries) UpdateFlightSchedule(ctx context.Context, arg UpdateFlightScheduleParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, updateFlightSchedule,
 		arg.AirlineID,
 		arg.Number,
 		arg.OriginAirportID,
@@ -584,5 +584,7 @@ func (q *Queries) UpdateFlightSchedule(ctx context.Context, arg UpdateFlightSche
 		arg.Published,
 		arg.ID,
 	)
-	return err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }

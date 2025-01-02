@@ -144,7 +144,7 @@ export interface paths {
         /** Create a new flight schedule */
         post: operations["createFlightSchedule"];
         /** Delete all flight schedules */
-        delete: operations["deleteAllFlights"];
+        delete: operations["deleteAllFlightSchedules"];
         options?: never;
         head?: never;
         patch?: never;
@@ -728,7 +728,7 @@ export interface operations {
             };
         };
     };
-    deleteAllFlights: {
+    deleteAllFlightSchedules: {
         parameters: {
             query?: never;
             header?: never;

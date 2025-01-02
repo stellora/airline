@@ -290,7 +290,7 @@ paths:
         '400':
           description: Invalid request
     delete:
-      operationId: deleteAllFlights
+      operationId: deleteAllFlightSchedules
       summary: Delete all flight schedules
       responses:
         '204':

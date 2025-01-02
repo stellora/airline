@@ -101,7 +101,7 @@ INSERT INTO flight_schedules (
 )
 RETURNING id;
 
--- name: UpdateFlightSchedule :exec
+-- name: UpdateFlightSchedule :one
 UPDATE flight_schedules SET
 airline_id = COALESCE(sqlc.narg('airline_id'), airline_id),
 number = COALESCE(sqlc.narg('number'), number),

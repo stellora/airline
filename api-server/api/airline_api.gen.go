@@ -317,7 +317,7 @@ type ServerInterface interface {
 	ListFlightSchedulesByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
 	// Delete all flight schedules
 	// (DELETE /flight-schedules)
-	DeleteAllFlights(w http.ResponseWriter, r *http.Request)
+	DeleteAllFlightSchedules(w http.ResponseWriter, r *http.Request)
 	// List all flight schedules
 	// (GET /flight-schedules)
 	ListFlightSchedules(w http.ResponseWriter, r *http.Request)
@@ -637,11 +637,11 @@ func (siw *ServerInterfaceWrapper) ListFlightSchedulesByAirport(w http.ResponseW
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteAllFlights operation middleware
-func (siw *ServerInterfaceWrapper) DeleteAllFlights(w http.ResponseWriter, r *http.Request) {
+// DeleteAllFlightSchedules operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAllFlightSchedules(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteAllFlights(w, r)
+		siw.Handler.DeleteAllFlightSchedules(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -941,7 +941,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}", wrapper.GetAirport)
 	m.HandleFunc("PATCH "+options.BaseURL+"/airports/{airportSpec}", wrapper.UpdateAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}/flight-schedules", wrapper.ListFlightSchedulesByAirport)
-	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules", wrapper.DeleteAllFlights)
+	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules", wrapper.DeleteAllFlightSchedules)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules", wrapper.ListFlightSchedules)
 	m.HandleFunc("POST "+options.BaseURL+"/flight-schedules", wrapper.CreateFlightSchedule)
 	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules/{id}", wrapper.DeleteFlightSchedule)
@@ -1266,17 +1266,17 @@ func (response ListFlightSchedulesByAirport404Response) VisitListFlightSchedules
 	return nil
 }
 
-type DeleteAllFlightsRequestObject struct {
+type DeleteAllFlightSchedulesRequestObject struct {
 }
 
-type DeleteAllFlightsResponseObject interface {
-	VisitDeleteAllFlightsResponse(w http.ResponseWriter) error
+type DeleteAllFlightSchedulesResponseObject interface {
+	VisitDeleteAllFlightSchedulesResponse(w http.ResponseWriter) error
 }
 
-type DeleteAllFlights204Response struct {
+type DeleteAllFlightSchedules204Response struct {
 }
 
-func (response DeleteAllFlights204Response) VisitDeleteAllFlightsResponse(w http.ResponseWriter) error {
+func (response DeleteAllFlightSchedules204Response) VisitDeleteAllFlightSchedulesResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
@@ -1502,7 +1502,7 @@ type StrictServerInterface interface {
 	ListFlightSchedulesByAirport(ctx context.Context, request ListFlightSchedulesByAirportRequestObject) (ListFlightSchedulesByAirportResponseObject, error)
 	// Delete all flight schedules
 	// (DELETE /flight-schedules)
-	DeleteAllFlights(ctx context.Context, request DeleteAllFlightsRequestObject) (DeleteAllFlightsResponseObject, error)
+	DeleteAllFlightSchedules(ctx context.Context, request DeleteAllFlightSchedulesRequestObject) (DeleteAllFlightSchedulesResponseObject, error)
 	// List all flight schedules
 	// (GET /flight-schedules)
 	ListFlightSchedules(ctx context.Context, request ListFlightSchedulesRequestObject) (ListFlightSchedulesResponseObject, error)
@@ -1938,23 +1938,23 @@ func (sh *strictHandler) ListFlightSchedulesByAirport(w http.ResponseWriter, r *
 	}
 }
 
-// DeleteAllFlights operation middleware
-func (sh *strictHandler) DeleteAllFlights(w http.ResponseWriter, r *http.Request) {
-	var request DeleteAllFlightsRequestObject
+// DeleteAllFlightSchedules operation middleware
+func (sh *strictHandler) DeleteAllFlightSchedules(w http.ResponseWriter, r *http.Request) {
+	var request DeleteAllFlightSchedulesRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteAllFlights(ctx, request.(DeleteAllFlightsRequestObject))
+		return sh.ssi.DeleteAllFlightSchedules(ctx, request.(DeleteAllFlightSchedulesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteAllFlights")
+		handler = middleware(handler, "DeleteAllFlightSchedules")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteAllFlightsResponseObject); ok {
-		if err := validResponse.VisitDeleteAllFlightsResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteAllFlightSchedulesResponseObject); ok {
+		if err := validResponse.VisitDeleteAllFlightSchedulesResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
