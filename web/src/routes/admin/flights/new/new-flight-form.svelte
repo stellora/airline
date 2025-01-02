@@ -18,7 +18,7 @@
 			$message = result.error.message || 'Unknown error'
 		},
 	})
-	const { form: formData, enhance, message } = form
+	const { form: formData, enhance, message, constraints } = form
 </script>
 
 <form
@@ -37,6 +37,7 @@
 					bind:value={$formData.number}
 					autocomplete="off"
 					size={16}
+					{...$constraints.number}
 					class="font-mono w-auto"
 				/>
 			{/snippet}
@@ -54,6 +55,7 @@
 						bind:value={$formData.originAirport}
 						autocomplete="off"
 						size={3}
+						{...$constraints.originAirport}
 						class="font-mono"
 					/>
 				{/snippet}
@@ -71,6 +73,7 @@
 						bind:value={$formData.destinationAirport}
 						autocomplete="off"
 						size={3}
+						{...$constraints.destinationAirport}
 						class="font-mono"
 					/>
 				{/snippet}

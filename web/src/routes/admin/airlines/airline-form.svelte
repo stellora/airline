@@ -15,7 +15,7 @@
 			$message = result.error.message || 'Unknown error'
 		},
 	})
-	const { form: formData, enhance, message } = form
+	const { form: formData, enhance, message, constraints } = form
 </script>
 
 <form
@@ -34,7 +34,7 @@
 					bind:value={$formData.iataCode}
 					autocomplete="off"
 					class="font-mono w-32"
-					maxlength={2}
+					{...$constraints.iataCode}
 					oninput={(ev) => {
 						ev.currentTarget.value = ev.currentTarget.value.toUpperCase()
 					}}
@@ -48,7 +48,13 @@
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label>Name</Form.Label>
-				<Input {...props} bind:value={$formData.name} autocomplete="off" class="w-64" />
+				<Input
+					{...props}
+					bind:value={$formData.name}
+					autocomplete="off"
+					class="w-64"
+					{...$constraints.name}
+				/>
 			{/snippet}
 		</Form.Control>
 		<Form.Description>&nbsp;</Form.Description>
