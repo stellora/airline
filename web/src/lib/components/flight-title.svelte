@@ -4,6 +4,7 @@
 	import { cn } from '$lib/utils'
 	import type { HTMLAttributes } from 'svelte/elements'
 	import AirlineCode from './airline-code.svelte'
+	import AirlineIcon from './airline-icon.svelte'
 	import AirportCode from './airport-code.svelte'
 
 	const {
@@ -31,11 +32,12 @@
 
 <svelte:element this={as} class={cn(className, 'flex items-baseline gap-1.5')}>
 	{prefix}
+	<AirlineIcon airline={flight.airline} class="self-stretch" />
 	<span
 		class={{
 			'underline decoration-dotted decoration-2 decoration-muted-foreground italic text-muted-foreground':
 				!flight.published,
-			'font-mono tracking-tight whitespace-nowrap': true,
+			'font-mono tracking-tight whitespace-nowrap leading-none': true,
 		}}
 	>
 		{#if link}
@@ -50,7 +52,7 @@
 	</span>
 
 	{#if showRoute}
-		<span class={cn('text-muted-foreground text-sm whitespace-nowrap', subtitleClass)}
+		<span class={cn('text-muted-foreground text-sm whitespace-nowrap leading-none', subtitleClass)}
 			><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
 				airport={flight.destinationAirport}
 			/></span

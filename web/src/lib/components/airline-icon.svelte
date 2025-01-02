@@ -1,7 +1,12 @@
 <script lang="ts">
 	import type { Airline } from '$lib/types'
+	import { cn } from '$lib/utils'
+	import type { HTMLAttributes } from 'svelte/elements'
 
-	const { airline }: { airline: Pick<Airline, 'iataCode'> } = $props()
+	const {
+		airline,
+		class: className,
+	}: { airline: Pick<Airline, 'iataCode'>; class?: HTMLAttributes<never>['class'] } = $props()
 
 	const airlineColors: Record<Airline['iataCode'], [color1: string, color2: string]> = {
 		AC: ['#D22630', '#000000'],
@@ -28,7 +33,7 @@
 </script>
 
 <div
-	class="w-[1rem] h-[1rem] relative rounded-[2px] overflow-hidden"
+	class={cn('w-[1em] h-[1em] rounded-[2px] overflow-hidden', className)}
 	role="presentation"
 	style="--color-1: {colors[0]}; --color-2: {colors[1]}; --angle: {angle}deg"
 >
@@ -37,8 +42,8 @@
 
 <style>
 	.gradient {
-		position: absolute;
-		inset: 0;
+		width: 100%;
+		height: 100%;
 		background: linear-gradient(var(--angle), var(--color-1) 0% 55%, var(--color-2) 80% 100%);
 	}
 </style>
