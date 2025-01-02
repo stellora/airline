@@ -5,15 +5,15 @@
 	import { Card, CardContent } from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { flightTitle } from '$lib/flight-helpers'
-	import NewFlightForm from '../../new/new-flight-form.svelte'
+	import FlightScheduleForm from '../../flight-schedule-form.svelte'
 
 	let { data } = $props()
 </script>
 
-<Page title={`Manage ${flightTitle(data.flight)}`}>
+<Page title={`Manage ${flightTitle(data.flightSchedule)}`}>
 	{#snippet titleElement(className)}
 		<FlightTitle
-			flight={data.flight}
+			flight={data.flightSchedule}
 			prefix="Manage "
 			class={className}
 			subtitleClass="text-base"
@@ -22,7 +22,6 @@
 	{/snippet}
 	{#snippet titleActions()}
 		<form method="POST" action="?/setFlightSchedulePublished" use:enhance>
-			<input type="hidden" name="id" value={data.flight.id} />
 			<input type="hidden" name="published" value={data.flight.published ? 'false' : 'true'} />
 			<Button type="submit" variant={data.flight.published ? 'outline' : 'default'}>
 				{data.flight.published ? 'Unpublish' : 'Publish'}
@@ -44,7 +43,7 @@
 
 	<Card class="self-start">
 		<CardContent>
-			<NewFlightForm form={data.form} action="?/update" />
+			<FlightScheduleForm form={data.form} action="?/update" />
 		</CardContent>
 	</Card>
 </Page>

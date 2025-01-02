@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import BreadcrumbItem from './breadcrumb-item.svelte'
 	import type { BreadcrumbEntry } from './helpers'
@@ -15,10 +14,8 @@
 		<Breadcrumb.Item>
 			{#if typeof entry === 'string'}
 				<Breadcrumb.Page>{entry}</Breadcrumb.Page>
-			{:else if entry.url === page.url.pathname}
-				<Breadcrumb.Page>{entry.title}</Breadcrumb.Page>
 			{:else}
-				<Breadcrumb.Link href={entry.url}>{entry.title}</Breadcrumb.Link>
+				<Breadcrumb.Link href={entry.url} isActive={isLast}>{entry.title}</Breadcrumb.Link>
 			{/if}
 		</Breadcrumb.Item>
 	{:else}

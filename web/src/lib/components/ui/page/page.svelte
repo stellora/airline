@@ -6,14 +6,16 @@
 	const {
 		breadcrumbActions,
 		title,
+		showTitleHeading = false,
 		titleElement,
 		titleActions,
 		children,
 	}: {
 		breadcrumbActions?: Snippet
 		title: string
+		showTitleHeading?: boolean
 		titleElement?: Snippet<[className: string]>
-		titleActions?: Snippet
+		titleActions?: Snippet // TODO!(sqs): remove
 		children?: Snippet
 	} = $props()
 </script>
@@ -29,15 +31,17 @@
 {/if}
 
 <main class="flex flex-col gap-4">
-	<header class="flex flex-wrap gap-4 justify-between items-start">
-		{#if titleElement}
-			{@render titleElement('text-4xl font-bold')}
-		{:else}
-			<h1 class="text-4xl font-bold">{title}</h1>
-		{/if}
-		<div class="flex-1"></div>
-		{@render titleActions?.()}
-	</header>
+	{#if showTitleHeading}
+		<header class="flex flex-wrap gap-4 justify-between items-start">
+			{#if titleElement}
+				{@render titleElement('text-4xl font-bold')}
+			{:else}
+				<h1 class="text-4xl font-bold">{title}</h1>
+			{/if}
+			<div class="flex-1"></div>
+			{@render titleActions?.()}
+		</header>
+	{/if}
 
 	{@render children?.()}
 </main>

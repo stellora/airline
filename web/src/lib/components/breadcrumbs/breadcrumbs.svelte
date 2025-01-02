@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
-	import type { BreadcrumbEntry } from './helpers'
 	import BreadcrumbItem from './breadcrumb-item.svelte'
+	import type { BreadcrumbEntry } from './helpers'
 
 	let { entries }: { entries: BreadcrumbEntry[] } = $props()
 </script>

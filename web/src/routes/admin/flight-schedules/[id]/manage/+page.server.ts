@@ -39,17 +39,9 @@ export const actions: Actions = {
 			route('/admin/flight-schedules/[id]/manage', { params: { id: resp.data.id.toString() } }),
 		)
 	},
-	setFlightSchedulePublished: async ({ request }) => {
+	setFlightSchedulePublished: async ({ request, params }) => {
 		// TODO!(sqs): make this use the id from the URL not the form data
 		const data = await request.formData()
-		const idStr = data.get('id')
-		if (!idStr || typeof idStr !== 'string') {
-			return fail(400, {
-				id: idStr,
-				error: 'id is required',
-			})
-		}
-		const id = Number.parseInt(idStr)
 
 		const publishedStr = data.get('published')
 		if (publishedStr !== 'true' && publishedStr !== 'false') {
@@ -61,7 +53,7 @@ export const actions: Actions = {
 		const published = publishedStr === 'true'
 
 		const resp = await apiClient.PATCH('/flight-schedules/{id}', {
-			params: { path: { id } },
+			params: { path: { id: Number.parseInt(params.id) } },
 			body: { published },
 			fetch,
 		})
@@ -73,19 +65,10 @@ export const actions: Actions = {
 			})
 		}
 	},
-	delete: async ({ request }) => {
-		// TODO!(sqs): make this use the id from the URL not the form data
+	delete: async ({ params, request }) => {
 		const data = await request.formData()
-		const idStr = data.get('id')
-		if (!idStr || typeof idStr !== 'string') {
-			return fail(400, {
-				error: 'id is required',
-			})
-		}
-		const id = Number.parseInt(idStr)
-
 		const resp = await apiClient.DELETE('/flight-schedules/{id}', {
-			params: { path: { id } },
+			params: { path: { id: Number.parseInt(params.id) } },
 			fetch,
 		})
 		if (!resp.response.ok) {

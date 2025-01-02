@@ -1,22 +1,28 @@
 <script lang="ts">
-	import type { HTMLAnchorAttributes } from 'svelte/elements'
-	import type { Snippet } from 'svelte'
-	import type { WithElementRef } from 'bits-ui'
 	import { cn } from '$lib/utils.js'
+	import type { WithElementRef } from 'bits-ui'
+	import type { Snippet } from 'svelte'
+	import type { HTMLAnchorAttributes } from 'svelte/elements'
 
 	let {
 		ref = $bindable(null),
 		class: className,
 		href = undefined,
+		isActive,
 		child,
 		children,
 		...restProps
 	}: WithElementRef<HTMLAnchorAttributes> & {
+		isActive?: boolean
 		child?: Snippet<[{ props: HTMLAnchorAttributes }]>
 	} = $props()
 
 	const attrs = $derived({
-		class: cn('hover:text-foreground transition-colors', className),
+		class: cn(
+			'hover:text-foreground transition-colors',
+			{ 'text-foreground': isActive },
+			className,
+		),
 		href,
 		...restProps,
 	})

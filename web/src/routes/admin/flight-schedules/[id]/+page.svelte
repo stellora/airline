@@ -1,26 +1,16 @@
 <script lang="ts">
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
-	import { Button } from '$lib/components/ui/button'
 	import { Card, CardHeader, CardTitle } from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { flightTitle } from '$lib/flight-helpers'
-	import { route } from '$lib/route-helpers'
 
 	let { data } = $props()
 </script>
 
-<Page title={`${flightTitle(data.flightSchedule)} schedule`}>
+<Page title={`${flightTitle(data.flightSchedule)} schedule`} showTitleHeading={true}>
 	{#snippet titleElement(className)}
 		<FlightTitle flight={data.flightSchedule} class={className} subtitleClass="text-base" as="h1" />
-	{/snippet}
-	{#snippet titleActions()}
-		<Button
-			href={route('/admin/flight-schedules/[id]/manage', {
-				params: { id: data.flightSchedule.id.toString() },
-			})}
-			variant="default">Manage flight schedule</Button
-		>
 	{/snippet}
 
 	<div class="flex flex-wrap-reverse gap-4">
