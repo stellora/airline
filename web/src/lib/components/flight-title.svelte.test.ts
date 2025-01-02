@@ -15,14 +15,14 @@ describe('FlightTitle', () => {
 
 	it('renders flight title correctly', () => {
 		const { getByText } = render(FlightTitle, { props: { flight: mockFlight } })
-		expect(getByText('XX1')).toBeInTheDocument()
+		expect(getByText('XX 1')).toBeInTheDocument()
 		expect(getByText('AAA–BBB')).toBeInTheDocument()
 	})
 
 	describe('publishing', () => {
 		it('shows when flight is unpublished', () => {
 			const { getByText } = render(FlightTitle, { props: { flight: mockFlight } })
-			expect(getByText('XX1', { selector: 'span' })).toHaveClass('decoration-dotted')
+			expect(getByText('XX 1', { selector: 'span' })).toHaveClass('decoration-dotted')
 		})
 	})
 })

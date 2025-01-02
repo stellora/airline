@@ -3,7 +3,7 @@ import type { Feature } from 'geojson'
 import type { Airport, FlightSchedule } from './types'
 
 export function flightTitle(flight: FlightSchedule): string {
-	return `${flight.airline.iataCode}${flight.number} ${flightRoute(flight.originAirport, flight.destinationAirport)}`
+	return `${flight.airline.iataCode} ${flight.number} ${flightRoute(flight.originAirport, flight.destinationAirport)}`
 }
 
 export function flightRoute(

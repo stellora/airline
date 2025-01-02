@@ -9,6 +9,7 @@
 	const {
 		flight,
 		prefix,
+		showRoute = true,
 		link = false,
 		class: className,
 		subtitleClass,
@@ -20,6 +21,7 @@
 			destinationAirport: Pick<FlightSchedule['destinationAirport'], 'iataCode' | 'name'>
 		}
 		prefix?: string
+		showRoute?: boolean
 		link?: boolean
 		class?: HTMLAttributes<never>['class']
 		subtitleClass?: HTMLAttributes<never>['class']
@@ -40,16 +42,18 @@
 			<a
 				href={route('/admin/flight-schedules/[id]', {
 					params: { id: flight.id.toString() },
-				})}><AirlineCode airline={flight.airline} />{flight.number}</a
+				})}><AirlineCode airline={flight.airline} />&ThinSpace;{flight.number}</a
 			>
 		{:else}
-			<AirlineCode airline={flight.airline} />{flight.number}
+			<AirlineCode airline={flight.airline} />&ThinSpace;{flight.number}
 		{/if}
 	</span>
 
-	<span class={cn('text-muted-foreground text-sm whitespace-nowrap', subtitleClass)}
-		><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
-			airport={flight.destinationAirport}
-		/></span
-	>
+	{#if showRoute}
+		<span class={cn('text-muted-foreground text-sm whitespace-nowrap', subtitleClass)}
+			><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
+				airport={flight.destinationAirport}
+			/></span
+		>
+	{/if}
 </svelte:element>

@@ -35,7 +35,7 @@
 								<ul class="flex gap-3 justify-center w-full">
 									<li class="text-muted-foreground whitespace-nowrap text-xs">
 										{route.flightSchedulesCount}
-										flight schedule{route.flightSchedulesCount !== 1 ? 's' : ''}
+										flight{route.flightSchedulesCount !== 1 ? 's' : ''}
 									</li>
 									<li class="text-muted-foreground whitespace-nowrap text-xs">
 										<Distance distanceMiles={route.distanceMiles} />

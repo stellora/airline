@@ -7,6 +7,7 @@
 	import CalendarDays from 'lucide-svelte/icons/calendar-days'
 	import CircleUser from 'lucide-svelte/icons/circle-user'
 	import Info from 'lucide-svelte/icons/info'
+	import List from 'lucide-svelte/icons/list'
 	import MapPin from 'lucide-svelte/icons/map-pin'
 	import Plane from 'lucide-svelte/icons/plane'
 	import TicketsPlane from 'lucide-svelte/icons/tickets-plane'
@@ -68,6 +69,11 @@
 			title: 'Airlines',
 			url: route('/admin/airlines'),
 			icon: Building,
+		},
+		{
+			title: 'Aircraft types',
+			url: route('/admin/aircraft-types'),
+			icon: List,
 		},
 	]
 

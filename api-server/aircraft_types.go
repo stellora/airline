@@ -17,7 +17,6 @@ var aircraftTypes = []api.AircraftType{
 	{IcaoCode: "A20N", Name: "Airbus A320neo"},
 	{IcaoCode: "A21N", Name: "Airbus A321neo"},
 	{IcaoCode: "A332", Name: "Airbus A330-200"},
-	{IcaoCode: "A332", Name: "Airbus A330-200"},
 	{IcaoCode: "A338", Name: "Airbus A330-800"},
 	{IcaoCode: "A339", Name: "Airbus A330-900"},
 	{IcaoCode: "A342", Name: "Airbus A340-200"},
