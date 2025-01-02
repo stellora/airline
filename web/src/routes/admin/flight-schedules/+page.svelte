@@ -1,28 +1,27 @@
 <script lang="ts">
-	import { page } from '$app/state'
 	import Portal from '$lib/components/portal.svelte'
 	import { Button } from '$lib/components/ui/button'
-	import ModalDialog from '$lib/components/ui/modal-dialog/modal-dialog.svelte'
+	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import { PAGE_NAVBAR_ACTIONS_ID } from '$lib/components/ui/page/page-navbar.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
-	import { route } from '$lib/route-helpers'
 	import Plus from 'lucide-svelte/icons/plus'
 	import FlightList from './flight-list.svelte'
+	import NewFlightScheduleDialogContent from './new-flight-schedule-dialog-content.svelte'
 
 	let { data } = $props()
 </script>
 
 <Portal target={PAGE_NAVBAR_ACTIONS_ID}>
 	<div class="flex justify-end">
-		<Button
-			href={route('/admin/flight-schedules/new')}
-			variant="secondary"
-			size="sm"
-			class="h-[unset] py-1 px-2"><Plus /> New flight schedule</Button
-		>
+		<Dialog.RootByNavigationState id="foo">
+			<Dialog.Trigger>
+				<Button variant="secondary" size="sm" class="h-[unset] py-1 px-2"
+					><Plus /> New flight schedule</Button
+				>
+			</Dialog.Trigger>
+			<NewFlightScheduleDialogContent action="?/create" form={data.form} />
+		</Dialog.RootByNavigationState>
 	</div>
-	state={JSON.stringify(page.state)}
-	<ModalDialog id="foo">hello</ModalDialog>
 </Portal>
 
 <Page title="Flight schedules">
