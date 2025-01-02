@@ -3,6 +3,7 @@
 
 	import { page } from '$app/state'
 	import Portal from '$lib/components/portal.svelte'
+	import PageNavbarOtherActions from '$lib/components/ui/page/page-navbar-other-actions.svelte'
 	import PageNavbarTabs, {
 		type PageNavbarTabsItem,
 	} from '$lib/components/ui/page/page-navbar-tabs.svelte'
@@ -31,7 +32,10 @@
 </script>
 
 <Portal target={PAGE_NAVBAR_ACTIONS_ID}>
-	<PageNavbarTabs {tabs} />
+	<div class="flex flex-wrap gap-3">
+		<PageNavbarOtherActions />
+		<PageNavbarTabs {tabs} />
+	</div>
 </Portal>
 
 {@render children()}
