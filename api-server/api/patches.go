@@ -14,7 +14,31 @@ func isIntString(str string) bool {
 	return intString.MatchString(str)
 }
 
-// UnmarshalText implements encoding.TextUnmarshaler interface for AirportSpec
+func (a *AircraftSpec) UnmarshalText(text []byte) error {
+	*a = aircraftSpecFromPathArg(string(text))
+	return nil
+}
+
+var _ encoding.TextUnmarshaler = (*AircraftSpec)(nil)
+
+func aircraftSpecFromPathArg(arg string) AircraftSpec {
+	if isIntString(arg) {
+		id, _ := strconv.Atoi(arg)
+		return NewAircraftSpec(id, "")
+	}
+	return NewAircraftSpec(0, arg)
+}
+
+func NewAircraftSpec(id int, registration string) AircraftSpec {
+	var spec AircraftSpec
+	if id != 0 {
+		spec.FromAircraftID(id)
+	} else {
+		spec.FromAircraftRegistration(registration)
+	}
+	return spec
+}
+
 func (a *AirportSpec) UnmarshalText(text []byte) error {
 	*a = airportSpecFromPathArg(string(text))
 	return nil

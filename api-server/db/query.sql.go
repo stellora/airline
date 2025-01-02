@@ -10,6 +10,35 @@ import (
 	"database/sql"
 )
 
+const createAircraft = `-- name: CreateAircraft :one
+INSERT INTO aircraft (
+  registration,
+  aircraft_type,
+  airline_id
+) VALUES (
+  ?, ?, ?
+)
+RETURNING id, registration, aircraft_type, airline_id
+`
+
+type CreateAircraftParams struct {
+	Registration string
+	AircraftType string
+	AirlineID    int64
+}
+
+func (q *Queries) CreateAircraft(ctx context.Context, arg CreateAircraftParams) (Aircraft, error) {
+	row := q.db.QueryRowContext(ctx, createAircraft, arg.Registration, arg.AircraftType, arg.AirlineID)
+	var i Aircraft
+	err := row.Scan(
+		&i.ID,
+		&i.Registration,
+		&i.AircraftType,
+		&i.AirlineID,
+	)
+	return i, err
+}
+
 const createAirline = `-- name: CreateAirline :one
 INSERT INTO airlines (
   iata_code,
@@ -84,6 +113,16 @@ func (q *Queries) CreateFlightSchedule(ctx context.Context, arg CreateFlightSche
 	return id, err
 }
 
+const deleteAircraft = `-- name: DeleteAircraft :exec
+DELETE FROM aircraft
+WHERE id=?
+`
+
+func (q *Queries) DeleteAircraft(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAircraft, id)
+	return err
+}
+
 const deleteAirline = `-- name: DeleteAirline :exec
 DELETE FROM airlines
 WHERE id=?
@@ -101,6 +140,15 @@ WHERE id=?
 
 func (q *Queries) DeleteAirport(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteAirport, id)
+	return err
+}
+
+const deleteAllAircraft = `-- name: DeleteAllAircraft :exec
+DELETE FROM aircraft
+`
+
+func (q *Queries) DeleteAllAircraft(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteAllAircraft)
 	return err
 }
 
@@ -139,6 +187,46 @@ WHERE id=?
 func (q *Queries) DeleteFlightSchedule(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteFlightSchedule, id)
 	return err
+}
+
+const getAircraft = `-- name: GetAircraft :one
+
+SELECT id, registration, aircraft_type, airline_id, airline_iata_code, airline_name FROM aircraft_view
+WHERE id=? LIMIT 1
+`
+
+// ----------------------------------------------------------------------------- aircraft
+func (q *Queries) GetAircraft(ctx context.Context, id int64) (AircraftView, error) {
+	row := q.db.QueryRowContext(ctx, getAircraft, id)
+	var i AircraftView
+	err := row.Scan(
+		&i.ID,
+		&i.Registration,
+		&i.AircraftType,
+		&i.AirlineID,
+		&i.AirlineIataCode,
+		&i.AirlineName,
+	)
+	return i, err
+}
+
+const getAircraftByRegistration = `-- name: GetAircraftByRegistration :one
+SELECT id, registration, aircraft_type, airline_id, airline_iata_code, airline_name FROM aircraft_view
+WHERE registration=? LIMIT 1
+`
+
+func (q *Queries) GetAircraftByRegistration(ctx context.Context, registration string) (AircraftView, error) {
+	row := q.db.QueryRowContext(ctx, getAircraftByRegistration, registration)
+	var i AircraftView
+	err := row.Scan(
+		&i.ID,
+		&i.Registration,
+		&i.AircraftType,
+		&i.AirlineID,
+		&i.AirlineIataCode,
+		&i.AirlineName,
+	)
+	return i, err
 }
 
 const getAirline = `-- name: GetAirline :one
@@ -246,6 +334,78 @@ func (q *Queries) GetRouteByIATACodes(ctx context.Context, arg GetRouteByIATACod
 		&i.FlightSchedulesCount,
 	)
 	return i, err
+}
+
+const listAircraft = `-- name: ListAircraft :many
+SELECT id, registration, aircraft_type, airline_id, airline_iata_code, airline_name FROM aircraft_view
+ORDER BY id ASC
+`
+
+func (q *Queries) ListAircraft(ctx context.Context) ([]AircraftView, error) {
+	rows, err := q.db.QueryContext(ctx, listAircraft)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AircraftView
+	for rows.Next() {
+		var i AircraftView
+		if err := rows.Scan(
+			&i.ID,
+			&i.Registration,
+			&i.AircraftType,
+			&i.AirlineID,
+			&i.AirlineIataCode,
+			&i.AirlineName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAircraftByAirline = `-- name: ListAircraftByAirline :many
+SELECT id, registration, aircraft_type, airline_id, airline_iata_code, airline_name
+FROM aircraft_view
+WHERE airline_id=?1
+ORDER BY id ASC
+`
+
+func (q *Queries) ListAircraftByAirline(ctx context.Context, airline int64) ([]AircraftView, error) {
+	rows, err := q.db.QueryContext(ctx, listAircraftByAirline, airline)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AircraftView
+	for rows.Next() {
+		var i AircraftView
+		if err := rows.Scan(
+			&i.ID,
+			&i.Registration,
+			&i.AircraftType,
+			&i.AirlineID,
+			&i.AirlineIataCode,
+			&i.AirlineName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listAirlines = `-- name: ListAirlines :many
@@ -513,6 +673,39 @@ func (q *Queries) ListRoutes(ctx context.Context) ([]Route, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateAircraft = `-- name: UpdateAircraft :one
+UPDATE aircraft SET
+registration = COALESCE(?2, registration),
+aircraft_type = COALESCE(?3, aircraft_type),
+airline_id = COALESCE(?4, airline_id)
+WHERE id=?
+RETURNING id, registration, aircraft_type, airline_id
+`
+
+type UpdateAircraftParams struct {
+	Registration sql.NullString
+	AircraftType sql.NullString
+	AirlineID    sql.NullInt64
+	ID           int64
+}
+
+func (q *Queries) UpdateAircraft(ctx context.Context, arg UpdateAircraftParams) (Aircraft, error) {
+	row := q.db.QueryRowContext(ctx, updateAircraft,
+		arg.Registration,
+		arg.AircraftType,
+		arg.AirlineID,
+		arg.ID,
+	)
+	var i Aircraft
+	err := row.Scan(
+		&i.ID,
+		&i.Registration,
+		&i.AircraftType,
+		&i.AirlineID,
+	)
+	return i, err
 }
 
 const updateAirline = `-- name: UpdateAirline :one

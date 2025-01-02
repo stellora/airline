@@ -44,7 +44,7 @@ paths:
                 registration:
                   $ref: '#/components/schemas/AircraftRegistration'
                 aircraftType:
-                  $ref: '#/components/schemas/AircraftType'
+                  $ref: '#/components/schemas/AircraftTypeIATACode'
                 airline:
                   $ref: '#/components/schemas/AirlineSpec'
               required:
@@ -96,7 +96,7 @@ paths:
                 registration:
                   $ref: '#/components/schemas/AircraftRegistration'
                 aircraftType:
-                  $ref: '#/components/schemas/AircraftType'                
+                  $ref: '#/components/schemas/AircraftTypeIATACode'                
                 airline:
                   $ref: '#/components/schemas/AirlineSpec'
       responses:
@@ -568,6 +568,31 @@ components:
       pattern: '^[A-Z0-9]{3}$'
       minLength: 3
       maxLength: 3
+    AirlineID:
+      type: integer
+    AirlineIATACode:
+      type: string
+      description: IATA code for airline
+      pattern: '^[A-Z]{2}$'
+      minLength: 2
+      maxLength: 2
+    AirlineSpec:
+      oneOf:
+        - $ref: '#/components/schemas/AirlineID'
+        - $ref: '#/components/schemas/AirlineIATACode'
+    Airline:
+      type: object
+      properties:
+        id:
+          type: integer
+        iataCode:
+          $ref: '#/components/schemas/AirlineIATACode'
+        name:
+          type: string
+      required:
+        - id
+        - iataCode
+        - name
     AirportID:
       type: integer
     AirportIATACode:
@@ -614,31 +639,6 @@ components:
       required:
         - longitude
         - latitude
-    AirlineID:
-      type: integer
-    AirlineIATACode:
-      type: string
-      description: IATA code for airline
-      pattern: '^[A-Z]{2}$'
-      minLength: 2
-      maxLength: 2
-    AirlineSpec:
-      oneOf:
-        - $ref: '#/components/schemas/AirlineID'
-        - $ref: '#/components/schemas/AirlineIATACode'
-    Airline:
-      type: object
-      properties:
-        id:
-          type: integer
-        iataCode:
-          $ref: '#/components/schemas/AirlineIATACode'
-        name:
-          type: string
-      required:
-        - id
-        - iataCode
-        - name
     FlightSchedule:
       type: object
       properties:

@@ -6,16 +6,21 @@ CREATE TABLE IF NOT EXISTS aircraft (
   FOREIGN KEY (airline_id) REFERENCES airlines(id)
 );
 
-CREATE TABLE IF NOT EXISTS airports (
-  id INTEGER PRIMARY KEY,
-  iata_code TEXT NOT NULL UNIQUE,
-  oadb_id INTEGER
-);
-
 CREATE TABLE IF NOT EXISTS airlines (
   id INTEGER PRIMARY KEY,
   iata_code TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL
+);
+
+CREATE VIEW IF NOT EXISTS aircraft_view AS
+SELECT aircraft.*, airlines.iata_code AS airline_iata_code, airlines.name AS airline_name
+FROM aircraft
+JOIN airlines ON airlines.id=aircraft.airline_id;
+
+CREATE TABLE IF NOT EXISTS airports (
+  id INTEGER PRIMARY KEY,
+  iata_code TEXT NOT NULL UNIQUE,
+  oadb_id INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS flight_schedules (

@@ -15,6 +15,31 @@ import (
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 )
 
+// Aircraft defines model for Aircraft.
+type Aircraft struct {
+	// AircraftType IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+	AircraftType AircraftTypeIATACode `json:"aircraftType"`
+	Airline      Airline              `json:"airline"`
+	Id           int                  `json:"id"`
+
+	// Registration Registration code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_registration_prefixes.
+	Registration AircraftRegistration `json:"registration"`
+}
+
+// AircraftID defines model for AircraftID.
+type AircraftID = int
+
+// AircraftRegistration Registration code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_registration_prefixes.
+type AircraftRegistration = string
+
+// AircraftSpec defines model for AircraftSpec.
+type AircraftSpec struct {
+	union json.RawMessage
+}
+
+// AircraftTypeIATACode IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+type AircraftTypeIATACode = string
+
 // Airline defines model for Airline.
 type Airline struct {
 	// IataCode IATA code for airline
@@ -85,6 +110,26 @@ type Route struct {
 	OriginAirport        Airport  `json:"originAirport"`
 }
 
+// CreateAircraftJSONBody defines parameters for CreateAircraft.
+type CreateAircraftJSONBody struct {
+	// AircraftType IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+	AircraftType AircraftTypeIATACode `json:"aircraftType"`
+	Airline      AirlineSpec          `json:"airline"`
+
+	// Registration Registration code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_registration_prefixes.
+	Registration AircraftRegistration `json:"registration"`
+}
+
+// UpdateAircraftJSONBody defines parameters for UpdateAircraft.
+type UpdateAircraftJSONBody struct {
+	// AircraftType IATA aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+	AircraftType *AircraftTypeIATACode `json:"aircraftType,omitempty"`
+	Airline      *AirlineSpec          `json:"airline,omitempty"`
+
+	// Registration Registration code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_registration_prefixes.
+	Registration *AircraftRegistration `json:"registration,omitempty"`
+}
+
 // CreateAirlineJSONBody defines parameters for CreateAirline.
 type CreateAirlineJSONBody struct {
 	// IataCode IATA code for airline
@@ -129,6 +174,12 @@ type UpdateFlightScheduleJSONBody struct {
 	Published          *bool         `json:"published,omitempty"`
 }
 
+// CreateAircraftJSONRequestBody defines body for CreateAircraft for application/json ContentType.
+type CreateAircraftJSONRequestBody CreateAircraftJSONBody
+
+// UpdateAircraftJSONRequestBody defines body for UpdateAircraft for application/json ContentType.
+type UpdateAircraftJSONRequestBody UpdateAircraftJSONBody
+
 // CreateAirlineJSONRequestBody defines body for CreateAirline for application/json ContentType.
 type CreateAirlineJSONRequestBody CreateAirlineJSONBody
 
@@ -146,6 +197,68 @@ type CreateFlightScheduleJSONRequestBody CreateFlightScheduleJSONBody
 
 // UpdateFlightScheduleJSONRequestBody defines body for UpdateFlightSchedule for application/json ContentType.
 type UpdateFlightScheduleJSONRequestBody UpdateFlightScheduleJSONBody
+
+// AsAircraftID returns the union data inside the AircraftSpec as a AircraftID
+func (t AircraftSpec) AsAircraftID() (AircraftID, error) {
+	var body AircraftID
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAircraftID overwrites any union data inside the AircraftSpec as the provided AircraftID
+func (t *AircraftSpec) FromAircraftID(v AircraftID) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAircraftID performs a merge with any union data inside the AircraftSpec, using the provided AircraftID
+func (t *AircraftSpec) MergeAircraftID(v AircraftID) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAircraftRegistration returns the union data inside the AircraftSpec as a AircraftRegistration
+func (t AircraftSpec) AsAircraftRegistration() (AircraftRegistration, error) {
+	var body AircraftRegistration
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAircraftRegistration overwrites any union data inside the AircraftSpec as the provided AircraftRegistration
+func (t *AircraftSpec) FromAircraftRegistration(v AircraftRegistration) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAircraftRegistration performs a merge with any union data inside the AircraftSpec, using the provided AircraftRegistration
+func (t *AircraftSpec) MergeAircraftRegistration(v AircraftRegistration) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AircraftSpec) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AircraftSpec) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsAirlineID returns the union data inside the AirlineSpec as a AirlineID
 func (t AirlineSpec) AsAirlineID() (AirlineID, error) {
@@ -273,6 +386,24 @@ func (t *AirportSpec) UnmarshalJSON(b []byte) error {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Delete all aircraft
+	// (DELETE /aircraft)
+	DeleteAllAircraft(w http.ResponseWriter, r *http.Request)
+	// List all aircraft
+	// (GET /aircraft)
+	ListAircraft(w http.ResponseWriter, r *http.Request)
+	// Create a new aircraft
+	// (POST /aircraft)
+	CreateAircraft(w http.ResponseWriter, r *http.Request)
+	// Delete an aircraft
+	// (DELETE /aircraft/{aircraftSpec})
+	DeleteAircraft(w http.ResponseWriter, r *http.Request, aircraftSpec AircraftSpec)
+	// Get aircraft by ID or registration
+	// (GET /aircraft/{aircraftSpec})
+	GetAircraft(w http.ResponseWriter, r *http.Request, aircraftSpec AircraftSpec)
+	// Update aircraft
+	// (PATCH /aircraft/{aircraftSpec})
+	UpdateAircraft(w http.ResponseWriter, r *http.Request, aircraftSpec AircraftSpec)
 	// Delete all airlines
 	// (DELETE /airlines)
 	DeleteAllAirlines(w http.ResponseWriter, r *http.Request)
@@ -291,6 +422,9 @@ type ServerInterface interface {
 	// Update airline
 	// (PATCH /airlines/{airlineSpec})
 	UpdateAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
+	// List all aircraft owned by an airline
+	// (GET /airlines/{airlineSpec}/aircraft)
+	ListAircraftByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
 	// List flight schedules for an airline
 	// (GET /airlines/{airlineSpec}/flight-schedules)
 	ListFlightSchedulesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
@@ -352,6 +486,123 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// DeleteAllAircraft operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAllAircraft(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteAllAircraft(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListAircraft operation middleware
+func (siw *ServerInterfaceWrapper) ListAircraft(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListAircraft(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateAircraft operation middleware
+func (siw *ServerInterfaceWrapper) CreateAircraft(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateAircraft(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteAircraft operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAircraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "aircraftSpec" -------------
+	var aircraftSpec AircraftSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "aircraftSpec", r.PathValue("aircraftSpec"), &aircraftSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "aircraftSpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteAircraft(w, r, aircraftSpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAircraft operation middleware
+func (siw *ServerInterfaceWrapper) GetAircraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "aircraftSpec" -------------
+	var aircraftSpec AircraftSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "aircraftSpec", r.PathValue("aircraftSpec"), &aircraftSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "aircraftSpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAircraft(w, r, aircraftSpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateAircraft operation middleware
+func (siw *ServerInterfaceWrapper) UpdateAircraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "aircraftSpec" -------------
+	var aircraftSpec AircraftSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "aircraftSpec", r.PathValue("aircraftSpec"), &aircraftSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "aircraftSpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateAircraft(w, r, aircraftSpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // DeleteAllAirlines operation middleware
 func (siw *ServerInterfaceWrapper) DeleteAllAirlines(w http.ResponseWriter, r *http.Request) {
@@ -461,6 +712,31 @@ func (siw *ServerInterfaceWrapper) UpdateAirline(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateAirline(w, r, airlineSpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListAircraftByAirline operation middleware
+func (siw *ServerInterfaceWrapper) ListAircraftByAirline(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "airlineSpec" -------------
+	var airlineSpec AirlineSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "airlineSpec", r.PathValue("airlineSpec"), &airlineSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "airlineSpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListAircraftByAirline(w, r, airlineSpec)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -927,12 +1203,19 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	m.HandleFunc("DELETE "+options.BaseURL+"/aircraft", wrapper.DeleteAllAircraft)
+	m.HandleFunc("GET "+options.BaseURL+"/aircraft", wrapper.ListAircraft)
+	m.HandleFunc("POST "+options.BaseURL+"/aircraft", wrapper.CreateAircraft)
+	m.HandleFunc("DELETE "+options.BaseURL+"/aircraft/{aircraftSpec}", wrapper.DeleteAircraft)
+	m.HandleFunc("GET "+options.BaseURL+"/aircraft/{aircraftSpec}", wrapper.GetAircraft)
+	m.HandleFunc("PATCH "+options.BaseURL+"/aircraft/{aircraftSpec}", wrapper.UpdateAircraft)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airlines", wrapper.DeleteAllAirlines)
 	m.HandleFunc("GET "+options.BaseURL+"/airlines", wrapper.ListAirlines)
 	m.HandleFunc("POST "+options.BaseURL+"/airlines", wrapper.CreateAirline)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airlines/{airlineSpec}", wrapper.DeleteAirline)
 	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}", wrapper.GetAirline)
 	m.HandleFunc("PATCH "+options.BaseURL+"/airlines/{airlineSpec}", wrapper.UpdateAirline)
+	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/aircraft", wrapper.ListAircraftByAirline)
 	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flight-schedules", wrapper.ListFlightSchedulesByAirline)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airports", wrapper.DeleteAllAirports)
 	m.HandleFunc("GET "+options.BaseURL+"/airports", wrapper.ListAirports)
@@ -952,6 +1235,137 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/routes/{route}", wrapper.GetRoute)
 
 	return m
+}
+
+type DeleteAllAircraftRequestObject struct {
+}
+
+type DeleteAllAircraftResponseObject interface {
+	VisitDeleteAllAircraftResponse(w http.ResponseWriter) error
+}
+
+type DeleteAllAircraft204Response struct {
+}
+
+func (response DeleteAllAircraft204Response) VisitDeleteAllAircraftResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type ListAircraftRequestObject struct {
+}
+
+type ListAircraftResponseObject interface {
+	VisitListAircraftResponse(w http.ResponseWriter) error
+}
+
+type ListAircraft200JSONResponse []Aircraft
+
+func (response ListAircraft200JSONResponse) VisitListAircraftResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateAircraftRequestObject struct {
+	Body *CreateAircraftJSONRequestBody
+}
+
+type CreateAircraftResponseObject interface {
+	VisitCreateAircraftResponse(w http.ResponseWriter) error
+}
+
+type CreateAircraft201JSONResponse Aircraft
+
+func (response CreateAircraft201JSONResponse) VisitCreateAircraftResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateAircraft400Response struct {
+}
+
+func (response CreateAircraft400Response) VisitCreateAircraftResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
+type DeleteAircraftRequestObject struct {
+	AircraftSpec AircraftSpec `json:"aircraftSpec"`
+}
+
+type DeleteAircraftResponseObject interface {
+	VisitDeleteAircraftResponse(w http.ResponseWriter) error
+}
+
+type DeleteAircraft204Response struct {
+}
+
+func (response DeleteAircraft204Response) VisitDeleteAircraftResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteAircraft404Response struct {
+}
+
+func (response DeleteAircraft404Response) VisitDeleteAircraftResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type GetAircraftRequestObject struct {
+	AircraftSpec AircraftSpec `json:"aircraftSpec"`
+}
+
+type GetAircraftResponseObject interface {
+	VisitGetAircraftResponse(w http.ResponseWriter) error
+}
+
+type GetAircraft200JSONResponse Aircraft
+
+func (response GetAircraft200JSONResponse) VisitGetAircraftResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAircraft404Response struct {
+}
+
+func (response GetAircraft404Response) VisitGetAircraftResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type UpdateAircraftRequestObject struct {
+	AircraftSpec AircraftSpec `json:"aircraftSpec"`
+	Body         *UpdateAircraftJSONRequestBody
+}
+
+type UpdateAircraftResponseObject interface {
+	VisitUpdateAircraftResponse(w http.ResponseWriter) error
+}
+
+type UpdateAircraft200JSONResponse Aircraft
+
+func (response UpdateAircraft200JSONResponse) VisitUpdateAircraftResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAircraft404Response struct {
+}
+
+func (response UpdateAircraft404Response) VisitUpdateAircraftResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
 }
 
 type DeleteAllAirlinesRequestObject struct {
@@ -1081,6 +1495,31 @@ type UpdateAirline404Response struct {
 }
 
 func (response UpdateAirline404Response) VisitUpdateAirlineResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type ListAircraftByAirlineRequestObject struct {
+	AirlineSpec AirlineSpec `json:"airlineSpec"`
+}
+
+type ListAircraftByAirlineResponseObject interface {
+	VisitListAircraftByAirlineResponse(w http.ResponseWriter) error
+}
+
+type ListAircraftByAirline200JSONResponse []Aircraft
+
+func (response ListAircraftByAirline200JSONResponse) VisitListAircraftByAirlineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAircraftByAirline404Response struct {
+}
+
+func (response ListAircraftByAirline404Response) VisitListAircraftByAirlineResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -1458,6 +1897,24 @@ func (response GetRoute404Response) VisitGetRouteResponse(w http.ResponseWriter)
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// Delete all aircraft
+	// (DELETE /aircraft)
+	DeleteAllAircraft(ctx context.Context, request DeleteAllAircraftRequestObject) (DeleteAllAircraftResponseObject, error)
+	// List all aircraft
+	// (GET /aircraft)
+	ListAircraft(ctx context.Context, request ListAircraftRequestObject) (ListAircraftResponseObject, error)
+	// Create a new aircraft
+	// (POST /aircraft)
+	CreateAircraft(ctx context.Context, request CreateAircraftRequestObject) (CreateAircraftResponseObject, error)
+	// Delete an aircraft
+	// (DELETE /aircraft/{aircraftSpec})
+	DeleteAircraft(ctx context.Context, request DeleteAircraftRequestObject) (DeleteAircraftResponseObject, error)
+	// Get aircraft by ID or registration
+	// (GET /aircraft/{aircraftSpec})
+	GetAircraft(ctx context.Context, request GetAircraftRequestObject) (GetAircraftResponseObject, error)
+	// Update aircraft
+	// (PATCH /aircraft/{aircraftSpec})
+	UpdateAircraft(ctx context.Context, request UpdateAircraftRequestObject) (UpdateAircraftResponseObject, error)
 	// Delete all airlines
 	// (DELETE /airlines)
 	DeleteAllAirlines(ctx context.Context, request DeleteAllAirlinesRequestObject) (DeleteAllAirlinesResponseObject, error)
@@ -1476,6 +1933,9 @@ type StrictServerInterface interface {
 	// Update airline
 	// (PATCH /airlines/{airlineSpec})
 	UpdateAirline(ctx context.Context, request UpdateAirlineRequestObject) (UpdateAirlineResponseObject, error)
+	// List all aircraft owned by an airline
+	// (GET /airlines/{airlineSpec}/aircraft)
+	ListAircraftByAirline(ctx context.Context, request ListAircraftByAirlineRequestObject) (ListAircraftByAirlineResponseObject, error)
 	// List flight schedules for an airline
 	// (GET /airlines/{airlineSpec}/flight-schedules)
 	ListFlightSchedulesByAirline(ctx context.Context, request ListFlightSchedulesByAirlineRequestObject) (ListFlightSchedulesByAirlineResponseObject, error)
@@ -1556,6 +2016,170 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// DeleteAllAircraft operation middleware
+func (sh *strictHandler) DeleteAllAircraft(w http.ResponseWriter, r *http.Request) {
+	var request DeleteAllAircraftRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteAllAircraft(ctx, request.(DeleteAllAircraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteAllAircraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteAllAircraftResponseObject); ok {
+		if err := validResponse.VisitDeleteAllAircraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListAircraft operation middleware
+func (sh *strictHandler) ListAircraft(w http.ResponseWriter, r *http.Request) {
+	var request ListAircraftRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListAircraft(ctx, request.(ListAircraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListAircraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListAircraftResponseObject); ok {
+		if err := validResponse.VisitListAircraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateAircraft operation middleware
+func (sh *strictHandler) CreateAircraft(w http.ResponseWriter, r *http.Request) {
+	var request CreateAircraftRequestObject
+
+	var body CreateAircraftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateAircraft(ctx, request.(CreateAircraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateAircraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateAircraftResponseObject); ok {
+		if err := validResponse.VisitCreateAircraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteAircraft operation middleware
+func (sh *strictHandler) DeleteAircraft(w http.ResponseWriter, r *http.Request, aircraftSpec AircraftSpec) {
+	var request DeleteAircraftRequestObject
+
+	request.AircraftSpec = aircraftSpec
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteAircraft(ctx, request.(DeleteAircraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteAircraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteAircraftResponseObject); ok {
+		if err := validResponse.VisitDeleteAircraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetAircraft operation middleware
+func (sh *strictHandler) GetAircraft(w http.ResponseWriter, r *http.Request, aircraftSpec AircraftSpec) {
+	var request GetAircraftRequestObject
+
+	request.AircraftSpec = aircraftSpec
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetAircraft(ctx, request.(GetAircraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetAircraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetAircraftResponseObject); ok {
+		if err := validResponse.VisitGetAircraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateAircraft operation middleware
+func (sh *strictHandler) UpdateAircraft(w http.ResponseWriter, r *http.Request, aircraftSpec AircraftSpec) {
+	var request UpdateAircraftRequestObject
+
+	request.AircraftSpec = aircraftSpec
+
+	var body UpdateAircraftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateAircraft(ctx, request.(UpdateAircraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateAircraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateAircraftResponseObject); ok {
+		if err := validResponse.VisitUpdateAircraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // DeleteAllAirlines operation middleware
@@ -1715,6 +2339,32 @@ func (sh *strictHandler) UpdateAirline(w http.ResponseWriter, r *http.Request, a
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateAirlineResponseObject); ok {
 		if err := validResponse.VisitUpdateAirlineResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListAircraftByAirline operation middleware
+func (sh *strictHandler) ListAircraftByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec) {
+	var request ListAircraftByAirlineRequestObject
+
+	request.AirlineSpec = airlineSpec
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListAircraftByAirline(ctx, request.(ListAircraftByAirlineRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListAircraftByAirline")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListAircraftByAirlineResponseObject); ok {
+		if err := validResponse.VisitListAircraftByAirlineResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

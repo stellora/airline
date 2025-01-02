@@ -17,6 +17,15 @@ func handlerTest(t *testing.T) (context.Context, *Handler) {
 	return ctx, NewHandler(db, queries)
 }
 
+func insertAircraftT(t *testing.T, handler *Handler, airline string, registrations ...string) (ids []int) {
+	t.Helper()
+	ids, err := insertAircraft(context.Background(), handler, airline, registrations...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return ids
+}
+
 func insertAirportsWithIATACodesT(t *testing.T, handler *Handler, iataCodes ...string) (ids []int) {
 	t.Helper()
 	ids, err := insertAirportsWithIATACodes(context.Background(), handler, iataCodes...)

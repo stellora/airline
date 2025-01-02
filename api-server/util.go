@@ -26,6 +26,24 @@ func parseFlightTitle(title string) (airlineIATACode, flightNumber, originIATACo
 	return
 }
 
+func insertAircraft(ctx context.Context, handler *Handler, airlineIATACode string, registrations ...string) (ids []int, err error) {
+	ids = make([]int, len(registrations))
+	for i, reg := range registrations {
+		v, err := handler.CreateAircraft(ctx, api.CreateAircraftRequestObject{
+			Body: &api.CreateAircraftJSONRequestBody{
+				Registration: reg,
+				AircraftType: "777",
+				Airline:      api.NewAirlineSpec(0, airlineIATACode),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+		ids[i] = v.(api.CreateAircraft201JSONResponse).Id
+	}
+	return ids, nil
+}
+
 func insertAirportsWithIATACodes(ctx context.Context, handler *Handler, iataCodes ...string) (ids []int, err error) {
 	ids = make([]int, len(iataCodes))
 	for i, iataCode := range iataCodes {

@@ -8,6 +8,22 @@ import (
 	"database/sql"
 )
 
+type Aircraft struct {
+	ID           int64
+	Registration string
+	AircraftType string
+	AirlineID    int64
+}
+
+type AircraftView struct {
+	ID              int64
+	Registration    string
+	AircraftType    string
+	AirlineID       int64
+	AirlineIataCode string
+	AirlineName     string
+}
+
 type Airline struct {
 	ID       int64
 	IataCode string

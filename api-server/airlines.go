@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"regexp"
 
 	"github.com/stellora/airline/api-server/api"
@@ -53,7 +52,6 @@ var validAirlineIATACode = regexp.MustCompile(`^[A-Z]{2}$`)
 
 func (h *Handler) CreateAirline(ctx context.Context, request api.CreateAirlineRequestObject) (api.CreateAirlineResponseObject, error) {
 	if !validAirlineIATACode.MatchString(request.Body.IataCode) {
-		log.Println("invalid IATA") // TODO(sqs): return error
 		return api.CreateAirline400Response{}, nil
 	}
 
@@ -63,8 +61,7 @@ func (h *Handler) CreateAirline(ctx context.Context, request api.CreateAirlineRe
 	}
 	created, err := h.queries.CreateAirline(ctx, params)
 	if err != nil {
-		log.Println(err) // TODO(sqs): return error
-		return api.CreateAirline400Response{}, nil
+		return api.CreateAirline400Response{}, err
 	}
 	return api.CreateAirline201JSONResponse(fromDBAirline(created)), nil
 }
