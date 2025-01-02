@@ -9,6 +9,6 @@
 <PageNavbar class="px-4 py-2 sticky top-0 z-50 border-b bg-background h-[47px]">
 	<Breadcrumbs entries={page.data.breadcrumbs} />
 </PageNavbar>
-<div class="p-4">
+<div class="p-4 max-w-screen-lg mx-auto">
 	{@render children?.()}
 </div>

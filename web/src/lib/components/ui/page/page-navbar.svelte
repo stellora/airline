@@ -11,7 +11,7 @@
 
 <div class={cn('flex flex-wrap items-center gap-2', className)}>
 	{@render children?.()}
-	<div id={PAGE_NAVBAR_ACTIONS_ID.slice(1)}>
+	<div id={PAGE_NAVBAR_ACTIONS_ID.slice(1)} class="flex-1">
 		<!-- Use <Portal target={PAGE_NAVBAR_ACTIONS_ID} to supply content. -->
 	</div>
 </div>

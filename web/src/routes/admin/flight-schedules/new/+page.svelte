@@ -9,7 +9,7 @@
 </script>
 
 <Page title="New flight schedule">
-	<Card class="self-start">
+	<Card>
 		<CardContent>
 			<FlightScheduleForm form={data.form} action="?/create" />
 		</CardContent>

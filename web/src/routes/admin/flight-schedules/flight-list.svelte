@@ -15,10 +15,10 @@
 <Card>
 	<Table.Root>
 		<Table.Header>
-			<Table.Row>
+			<Table.Row class="!hover:bg-none">
 				<Table.Head class="w-[200px]">Flight number</Table.Head>
 				<Table.Head>Route</Table.Head>
-				<Table.Head class="text-right"></Table.Head>
+				<Table.Head class="text-right" />
 			</Table.Row>
 		</Table.Header>
 		{#if flightSchedules && flightSchedules.length > 0}
