@@ -6,6 +6,7 @@
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
 	import { route } from '$lib/route-helpers'
+	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 	import AirlineForm from './airline-form.svelte'
 
 	let { data } = $props()
@@ -51,7 +52,7 @@
 									})}
 									class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 								>
-									Manage
+									<ChevronRight />
 								</Button>
 							</Table.Cell>
 						</Table.Row>

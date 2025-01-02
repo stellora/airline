@@ -8,6 +8,7 @@
 	import * as Table from '$lib/components/ui/table'
 	import { route } from '$lib/route-helpers'
 	import type { FlightSchedule } from '$lib/types'
+	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
 	let { flightSchedules }: { flightSchedules: FlightSchedule[] } = $props()
 </script>
@@ -51,7 +52,7 @@
 								})}
 								class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 							>
-								Manage
+								<ChevronRight />
 							</Button>
 						</Table.Cell>
 					</Table.Row>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AircraftRegistration from '$lib/components/aircraft-registration.svelte'
 	import AircraftTypeCode from '$lib/components/aircraft-type-code.svelte'
 	import AirlineCode from '$lib/components/airline-code.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
@@ -12,8 +13,8 @@
 >
 	{#snippet titleElement()}
 		<div class="flex items-baseline gap-2">
-			<h1 class="text-4xl font-bold font-mono">
-				{data.aircraft.registration}
+			<h1 class="text-4xl font-bold">
+				<AircraftRegistration aircraft={data.aircraft} />
 			</h1>
 			<span class="text-muted-foreground flex items-center gap-2">
 				<AircraftTypeCode aircraftType={data.aircraft.aircraftType} />
