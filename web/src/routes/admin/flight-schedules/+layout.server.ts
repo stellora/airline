@@ -3,6 +3,9 @@ import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ parent }) => {
 	return {
-		...(await breadcrumbEntry(parent, { url: '/admin/flight-schedules', title: 'Flights' })),
+		...(await breadcrumbEntry(parent, {
+			url: '/admin/flight-schedules',
+			title: 'Flight schedules',
+		})),
 	}
 }

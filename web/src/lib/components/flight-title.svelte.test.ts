@@ -6,22 +6,23 @@ import FlightTitle from './flight-title.svelte'
 describe('FlightTitle', () => {
 	const mockFlight: ComponentProps<typeof FlightTitle>['flight'] = {
 		id: 1,
-		number: 'ST1',
-		originAirport: { iataCode: 'AAA' },
-		destinationAirport: { iataCode: 'BBB' },
+		airline: { iataCode: 'XX', name: 'XX Airlines' },
+		number: '1',
+		originAirport: { iataCode: 'AAA', name: 'AAA Airport' },
+		destinationAirport: { iataCode: 'BBB', name: 'BBB Airport' },
 		published: false,
 	}
 
 	it('renders flight title correctly', () => {
 		const { getByText } = render(FlightTitle, { props: { flight: mockFlight } })
-		expect(getByText('ST1')).toBeInTheDocument()
+		expect(getByText('XX1')).toBeInTheDocument()
 		expect(getByText('AAA–BBB')).toBeInTheDocument()
 	})
 
 	describe('publishing', () => {
 		it('shows when flight is unpublished', () => {
 			const { getByText } = render(FlightTitle, { props: { flight: mockFlight } })
-			expect(getByText('ST1', { selector: 'span' })).toHaveClass('decoration-dotted')
+			expect(getByText('XX1', { selector: 'span' })).toHaveClass('decoration-dotted')
 		})
 	})
 })

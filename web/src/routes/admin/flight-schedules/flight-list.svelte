@@ -6,9 +6,10 @@
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
-	import type { Flight } from '$lib/types'
+	import { route } from '$lib/route-helpers'
+	import type { FlightSchedule } from '$lib/types'
 
-	let { flights }: { flights: Flight[] } = $props()
+	let { flightSchedules }: { flightSchedules: FlightSchedule[] } = $props()
 </script>
 
 <Card>
@@ -20,9 +21,9 @@
 				<Table.Head class="text-right"></Table.Head>
 			</Table.Row>
 		</Table.Header>
-		{#if flights && flights.length > 0}
+		{#if flightSchedules && flightSchedules.length > 0}
 			<Table.Body>
-				{#each flights as flight (flight.id)}
+				{#each flightSchedules as flight (flight.id)}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell class="font-bold text-lg">
 							<AirlineCode airline={flight.airline} />{flight.number}
@@ -45,7 +46,9 @@
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"
-								href={`/admin/flight-schedules/${flight.id}`}
+								href={route('/admin/flight-schedules/[id]', {
+									params: { id: flight.id.toString() },
+								})}
 								class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 							>
 								Manage

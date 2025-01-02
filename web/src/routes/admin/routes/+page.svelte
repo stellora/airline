@@ -5,6 +5,7 @@
 	import { Button } from '$lib/components/ui/button'
 	import { Card, CardContent } from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
+	import { route as urlRoute } from '$lib/route-helpers'
 </script>
 
 <Page title="Routes">
@@ -20,7 +21,11 @@
 								class="p-3 border rounded-md flex flex-col items-center justify-between gap-1 stretched-link-container"
 							>
 								<Button
-									href={`/admin/routes/${route.originAirport.iataCode}-${route.destinationAirport.iataCode}`}
+									href={urlRoute('/admin/routes/[route]', {
+										params: {
+											route: `${route.originAirport.iataCode}-${route.destinationAirport.iataCode}`,
+										},
+									})}
 									variant="link"
 									class="text-xl stretched-link gap-0 py-0 h-[unset]"
 									><AirportCode airport={route.originAirport} />&ndash;<AirportCode

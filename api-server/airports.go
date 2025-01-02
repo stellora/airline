@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"regexp"
 
 	"github.com/stellora/airline/api-server/api"
@@ -15,7 +14,6 @@ import (
 
 func getAirportBySpec(ctx context.Context, queries *db.Queries, spec api.AirportSpec) (db.Airport, error) {
 	if id, err := spec.AsAirportID(); err == nil {
-		log.Println("by id", id)
 		return queries.GetAirport(ctx, int64(id))
 	}
 	if iataCode, err := spec.AsAirportIATACode(); err == nil {
@@ -124,7 +122,6 @@ func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRe
 
 func createAirport(ctx context.Context, queries *db.Queries, request api.CreateAirportRequestObject) (db.Airport, error) {
 	if !validAirportIATACode.MatchString(request.Body.IataCode) {
-		log.Println("invalid IATA") // TODO(sqs): return error
 		return db.Airport{}, fmt.Errorf("invalid IATA code: %s", request.Body.IataCode)
 	}
 
@@ -136,8 +133,7 @@ func createAirport(ctx context.Context, queries *db.Queries, request api.CreateA
 	}
 	created, err := queries.CreateAirport(ctx, params)
 	if err != nil {
-		log.Println(err) // TODO(sqs): return error
-		return db.Airport{}, fmt.Errorf("failed to create airport: %w", err)
+		return db.Airport{}, fmt.Errorf("failed to create airport %q: %w", request.Body.IataCode, err)
 	}
 	return created, nil
 }

@@ -1,10 +1,10 @@
 import { render } from '@testing-library/svelte'
 import type { ComponentProps } from 'svelte'
 import { describe, expect, it } from 'vitest'
-import FlightCard from './flight-card.svelte'
+import FlightScheduleItem from './flight-schedule-item.svelte'
 
-describe('FlightCard', () => {
-	const mockFlight: ComponentProps<typeof FlightCard>['flight'] = {
+describe('FlightScheduleItem', () => {
+	const mockFlightSchedule: ComponentProps<typeof FlightScheduleItem>['flight'] = {
 		id: 1,
 		airline: { iataCode: 'XX', name: 'XX Airlines' },
 		number: '1',
@@ -13,8 +13,10 @@ describe('FlightCard', () => {
 		published: false,
 	}
 
-	it('renders flight title correctly', () => {
-		const { getByText } = render(FlightCard, { props: { flight: mockFlight } })
+	it('renders flight number correctly', () => {
+		const { getByText } = render(FlightScheduleItem, {
+			props: { flightSchedule: mockFlightSchedule },
+		})
 		expect(getByText('XX1')).toBeInTheDocument()
 	})
 })

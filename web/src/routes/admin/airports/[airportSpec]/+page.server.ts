@@ -3,14 +3,14 @@ import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
-	const flights = apiClient
+	const flightSchedules = apiClient
 		.GET('/airports/{airportSpec}/flight-schedules', {
 			params: { path: { airportSpec: params.airportSpec } },
 			fetch,
 		})
 		.then((resp) => resp.data)
 	return {
-		flights,
+		flightSchedules,
 	}
 }
 

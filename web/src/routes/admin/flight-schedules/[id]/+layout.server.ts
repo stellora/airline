@@ -1,6 +1,7 @@
 import { apiClient } from '$lib/api'
 import { breadcrumbEntry } from '$lib/components/breadcrumbs'
 import { flightTitle } from '$lib/flight-helpers'
+import { route } from '$lib/route-helpers'
 import { error } from '@sveltejs/kit'
 import type { LayoutServerLoad } from './$types'
 
@@ -12,14 +13,14 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 	})
 	if (!resp.response.ok || !resp.data) {
 		// TODO(sqs)
-		throw error(404, 'Flight not found')
+		throw error(404, 'Flight schedule not found')
 	}
-	const flight = resp.data
+	const flightSchedule = resp.data
 	return {
-		flight,
+		flightSchedule: flightSchedule,
 		...(await breadcrumbEntry(parent, {
-			url: `/admin/flight-schedules/${flight.id}`,
-			title: flightTitle(flight),
+			url: route('/admin/flight-schedules/[id]', { params: { id: flightSchedule.id.toString() } }),
+			title: flightTitle(flightSchedule),
 		})),
 	}
 }

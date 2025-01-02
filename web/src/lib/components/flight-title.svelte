@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { Flight } from '$lib/types'
+	import { route } from '$lib/route-helpers'
+	import type { FlightSchedule } from '$lib/types'
 	import { cn } from '$lib/utils'
 	import type { HTMLAttributes } from 'svelte/elements'
 	import AirlineCode from './airline-code.svelte'
@@ -13,10 +14,10 @@
 		subtitleClass,
 		as = 'h2',
 	}: {
-		flight: Pick<Flight, 'id' | 'number' | 'published'> & {
-			airline: Pick<Flight['airline'], 'iataCode' | 'name'>
-			originAirport: Pick<Flight['originAirport'], 'iataCode' | 'name'>
-			destinationAirport: Pick<Flight['destinationAirport'], 'iataCode' | 'name'>
+		flight: Pick<FlightSchedule, 'id' | 'number' | 'published'> & {
+			airline: Pick<FlightSchedule['airline'], 'iataCode' | 'name'>
+			originAirport: Pick<FlightSchedule['originAirport'], 'iataCode' | 'name'>
+			destinationAirport: Pick<FlightSchedule['destinationAirport'], 'iataCode' | 'name'>
 		}
 		prefix?: string
 		link?: boolean
@@ -36,8 +37,10 @@
 		}}
 	>
 		{#if link}
-			<a href={`/admin/flight-schedules/${flight.id}`}
-				><AirlineCode airline={flight.airline} />{flight.number}</a
+			<a
+				href={route('/admin/flight-schedules/[id]', {
+					params: { id: flight.id.toString() },
+				})}><AirlineCode airline={flight.airline} />{flight.number}</a
 			>
 		{:else}
 			<AirlineCode airline={flight.airline} />{flight.number}

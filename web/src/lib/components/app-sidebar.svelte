@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import * as Sidebar from '$lib/components/ui/sidebar'
+	import { route } from '$lib/route-helpers'
 	import Book from 'lucide-svelte/icons/book'
 	import Building from 'lucide-svelte/icons/building'
+	import CalendarDays from 'lucide-svelte/icons/calendar-days'
 	import CircleUser from 'lucide-svelte/icons/circle-user'
 	import Info from 'lucide-svelte/icons/info'
 	import MapPin from 'lucide-svelte/icons/map-pin'
 	import Plane from 'lucide-svelte/icons/plane'
-	import Spline from 'lucide-svelte/icons/spline'
 	import TicketsPlane from 'lucide-svelte/icons/tickets-plane'
 	import User from 'lucide-svelte/icons/user'
 	import Users from 'lucide-svelte/icons/users'
@@ -22,7 +23,7 @@
 	const items: Item[] = [
 		{
 			title: 'Book flights',
-			url: '/',
+			url: route('/'),
 			icon: TicketsPlane,
 		},
 		{
@@ -39,18 +40,18 @@
 
 	const adminItems: Item[] = [
 		{
-			title: 'Flights',
-			url: '/admin/flight-schedules',
-			icon: Spline,
+			title: 'Flight schedule',
+			url: route('/admin/flight-schedules'),
+			icon: CalendarDays,
 		},
 		{
 			title: 'Routes',
-			url: '/admin/routes',
+			url: route('/admin/routes'),
 			icon: Waypoints,
 		},
 		{
 			title: 'Airports',
-			url: '/admin/airports',
+			url: route('/admin/airports'),
 			icon: MapPin,
 		},
 		{
@@ -65,7 +66,7 @@
 		},
 		{
 			title: 'Airlines',
-			url: '/admin/airlines',
+			url: route('/admin/airlines'),
 			icon: Building,
 		},
 	]
@@ -73,7 +74,7 @@
 	const devItems: Item[] = [
 		{
 			title: 'Storybook',
-			url: '/dev/storybook',
+			url: route('/dev/storybook'),
 			icon: Book,
 		},
 	]

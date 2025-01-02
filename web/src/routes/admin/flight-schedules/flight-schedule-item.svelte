@@ -4,12 +4,12 @@
 	import { fade } from 'svelte/transition'
 
 	const {
-		flight,
+		flightSchedule,
 	}: {
-		flight: ComponentProps<typeof FlightTitle>['flight']
+		flightSchedule: ComponentProps<typeof FlightTitle>['flight']
 	} = $props()
 </script>
 
 <li in:fade out:fade class="flex flex-col gap-4 border p-3 rounded-md">
-	<FlightTitle {flight} link class="text-lg font-bold leading-none" />
+	<FlightTitle flight={flightSchedule} link class="text-lg font-bold leading-none" />
 </li>
