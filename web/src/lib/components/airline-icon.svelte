@@ -15,15 +15,22 @@
 		JL: ['#FF0000', '#FFFFFF'],
 		KL: ['#00A1DE', '#FFFFFF'],
 		DL: ['#003268', '#E3132C'],
+		LX: ['#E60005', '#FFFFFF'],
+		NZ: ['#00247D', '#FFFFFF'],
+		QF: ['#EE0000', '#FFFFFF'],
+		QR: ['#5C0632', '#FFFFFF'],
+		EK: ['#D71A21', '#FFFFFF'],
 	}
 
 	const colors = airlineColors[airline.iataCode] ?? ['#777', '#ccc']
+	const angle =
+		180 + (airline.iataCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 4) * 45
 </script>
 
 <div
 	class="w-[1rem] h-[1rem] relative rounded-[2px] overflow-hidden"
 	role="presentation"
-	style="--color-1: {colors[0]}; --color-2: {colors[1]}"
+	style="--color-1: {colors[0]}; --color-2: {colors[1]}; --angle: {angle}deg"
 >
 	<div class="gradient"></div>
 </div>
@@ -32,6 +39,6 @@
 	.gradient {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, var(--color-1) 0% 55%, var(--color-2) 75% 100%);
+		background: linear-gradient(var(--angle), var(--color-1) 0% 55%, var(--color-2) 80% 100%);
 	}
 </style>

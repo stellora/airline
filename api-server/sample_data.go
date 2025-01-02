@@ -16,6 +16,12 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		"DL": "Delta Air Lines",
 		"AF": "Air France",
 		"KL": "KLM Royal Dutch Airlines",
+		"LX": "Swiss International Air Lines",
+		"EY": "Etihad Airways",
+		"EK": "Emirates",
+		"QR": "Qatar Airways",
+		"QF": "Qantas",
+		"NZ": "Air New Zealand",
 	}
 	if _, err := insertAirlines(ctx, handler, airlines); err != nil {
 		return err
