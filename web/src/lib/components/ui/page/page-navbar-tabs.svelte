@@ -1,7 +1,7 @@
-<script module>
+<script module lang="ts">
 	import type { ComponentType } from 'svelte'
 
-	export type PageNavbarTabsItem = {
+	export type PageNavbarTab = {
 		title: string
 		url: string
 		icon: ComponentType
@@ -15,7 +15,7 @@
 	const {
 		tabs,
 	}: {
-		tabs: PageNavbarTabsItem[]
+		tabs: PageNavbarTab[]
 	} = $props()
 </script>
 

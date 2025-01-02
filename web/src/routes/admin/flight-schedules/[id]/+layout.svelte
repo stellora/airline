@@ -1,13 +1,10 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
-	import Portal from '$lib/components/portal.svelte'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
+	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarOtherActions from '$lib/components/ui/page/page-navbar-other-actions.svelte'
-	import PageNavbarTabs, {
-		type PageNavbarTabsItem,
-	} from '$lib/components/ui/page/page-navbar-tabs.svelte'
-	import { PAGE_NAVBAR_ACTIONS_ID } from '$lib/components/ui/page/page-navbar.svelte'
+	import { type PageNavbarTab } from '$lib/components/ui/page/page-navbar-tabs.svelte'
 	import { route } from '$lib/route-helpers'
 	import Eye from 'lucide-svelte/icons/eye'
 	import EyeOff from 'lucide-svelte/icons/eye-off'
@@ -17,7 +14,7 @@
 
 	const { children, data } = $props()
 
-	const tabs: PageNavbarTabsItem[] = [
+	const tabs: PageNavbarTab[] = [
 		{
 			title: 'Overview',
 			url: route('/admin/flight-schedules/[id]', {
@@ -35,8 +32,8 @@
 	]
 </script>
 
-<Portal target={PAGE_NAVBAR_ACTIONS_ID}>
-	<div class="flex flex-wrap gap-3">
+<PageNav {tabs}>
+	{#snippet breadcrumbActions()}
 		<PageNavbarOtherActions>
 			<DropdownMenu.Group>
 				<DropdownMenu.Item>
@@ -94,8 +91,7 @@
 				>
 			</DropdownMenu.Group></PageNavbarOtherActions
 		>
-		<PageNavbarTabs {tabs} />
-	</div>
-</Portal>
+	{/snippet}
+</PageNav>
 
 {@render children()}
