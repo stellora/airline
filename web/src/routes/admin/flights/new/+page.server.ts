@@ -20,6 +20,7 @@ export const actions: Actions = {
 
 		const resp = await apiClient.POST('/flights', {
 			body: {
+				airline: form.data.airline,
 				number: form.data.number,
 				originAirport: form.data.originAirport,
 				destinationAirport: form.data.destinationAirport,

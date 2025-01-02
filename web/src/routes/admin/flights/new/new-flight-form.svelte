@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AirlineSelect from '$lib/components/airline-select.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import { Checkbox } from '$lib/components/ui/checkbox'
 	import * as Form from '$lib/components/ui/form'
@@ -28,23 +29,33 @@
 	class="flex flex-col gap-6 items-start"
 	data-testid="flight-form"
 >
-	<Form.Field {form} name="number">
-		<Form.Control>
-			{#snippet children({ props })}
-				<Form.Label>Flight number</Form.Label>
-				<Input
-					{...props}
-					bind:value={$formData.number}
-					autocomplete="off"
-					size={16}
-					{...$constraints.number}
-					class="font-mono w-auto"
-				/>
-			{/snippet}
-		</Form.Control>
-		<Form.Description>Airline (2-letter IATA code) + number</Form.Description>
-		<Form.FieldErrors />
-	</Form.Field>
+	<FormFieldGroup legend="Flight number">
+		<Form.Field {form} name="airline">
+			<Form.Control>
+				{#snippet children({ props })}
+					<Form.Label>Airline</Form.Label>
+					<AirlineSelect {...props} bind:value={$formData.airline} {...$constraints.airline} />
+				{/snippet}
+			</Form.Control>
+			<Form.FieldErrors />
+		</Form.Field>
+		<Form.Field {form} name="number">
+			<Form.Control>
+				{#snippet children({ props })}
+					<Form.Label>Number</Form.Label>
+					<Input
+						{...props}
+						bind:value={$formData.number}
+						autocomplete="off"
+						size={8}
+						{...$constraints.number}
+						class="font-mono w-auto"
+					/>
+				{/snippet}
+			</Form.Control>
+			<Form.FieldErrors />
+		</Form.Field>
+	</FormFieldGroup>
 	<FormFieldGroup legend="Route">
 		<Form.Field {form} name="originAirport">
 			<Form.Control>

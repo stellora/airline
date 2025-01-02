@@ -58,7 +58,14 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 		return nil, fmt.Errorf("number must not be empty")
 	}
 
-	airline, err := getAirlineBySpec(ctx, h.queries, request.Body.Airline)
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
+
+	airline, err := getAirlineBySpec(ctx, queriesTx, request.Body.Airline)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("airline %q not found", request.Body.Airline)
@@ -67,14 +74,14 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 	}
 
 	// TODO(sqs): return HTTP 400 errors with error msg
-	originAirport, err := getAirportBySpec(ctx, h.queries, request.Body.OriginAirport)
+	originAirport, err := getOrCreateAirportBySpec(ctx, tx, queriesTx, request.Body.OriginAirport)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("originAirport %q not found", request.Body.OriginAirport)
 		}
 		return nil, fmt.Errorf("looking up originAirport: %w", err)
 	}
-	destinationAirport, err := getAirportBySpec(ctx, h.queries, request.Body.DestinationAirport)
+	destinationAirport, err := getOrCreateAirportBySpec(ctx, tx, queriesTx, request.Body.DestinationAirport)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("destinationAirport %q not found", request.Body.DestinationAirport)
@@ -82,7 +89,7 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 		return nil, fmt.Errorf("looking up destinationAirport: %w", err)
 	}
 
-	created, err := h.queries.CreateFlight(ctx, db.CreateFlightParams{
+	created, err := queriesTx.CreateFlight(ctx, db.CreateFlightParams{
 		AirlineID:            airline.ID,
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
@@ -93,10 +100,15 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 		return nil, err
 	}
 
-	flight, err := h.queries.GetFlight(ctx, created)
+	flight, err := queriesTx.GetFlight(ctx, created)
 	if err != nil {
 		return nil, err
 	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return api.CreateFlight201JSONResponse(fromDBFlight(flight)), nil
 }
 

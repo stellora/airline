@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"regexp"
 
@@ -18,7 +19,7 @@ func getAirlineBySpec(ctx context.Context, queries *db.Queries, spec api.Airline
 	if iataCode, err := spec.AsAirlineIATACode(); err == nil {
 		return queries.GetAirlineByIATACode(ctx, iataCode)
 	}
-	panic("invalid AirlineSpec")
+	panic("invalid AirlineSpec: " + fmt.Sprintf("%#v", spec))
 }
 
 func fromDBAirline(a db.Airline) api.Airline {

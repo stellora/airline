@@ -3,7 +3,7 @@ package main
 import "context"
 
 func insertSampleData(ctx context.Context, handler *Handler) error {
-	airports := []string{"SFO", "SIN", "NRT", "HND", "EWR", "LAX", "DEN", "ORD", "AMS", "LHR", "HKG", "SYD", "HNL", "LIH", "SJC", "STS", "SEA", "FRA", "MUC", "DXB", "TLV", "IST", "DOH", "DEL", "BOM", "KIX", "MEL", "JNB", "CPT", "EZE", "MEX", "CUN", "MSP", "IAD", "DCA", "DFW", "MRS", "PVR", "BOS", "FCO", "SCL"}
+	airports := []string{"SFO", "SIN", "NRT", "HND", "EWR", "LAX", "DEN", "ORD", "AMS", "LHR", "HKG", "SYD", "HNL", "LIH", "SJC", "STS", "SEA", "FRA", "MUC", "DXB", "TLV", "IST", "DOH", "DEL", "BOM", "KIX", "MEL", "JNB", "CPT", "EZE", "MEX", "CUN", "MSP", "IAD", "DCA", "DFW", "MRS", "PVR", "BOS", "FCO", "SCL", "CDG"}
 	if _, err := insertAirportsWithIATACodes(ctx, handler, airports...); err != nil {
 		return err
 	}
