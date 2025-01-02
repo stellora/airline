@@ -8,7 +8,7 @@
 </script>
 
 <Page title={flightRoute(data.route.originAirport, data.route.destinationAirport)}>
-	<Card class="max-w-[960px]">
+	<Card class="max-w-[960px] overflow-hidden">
 		<GreatCircleRoute routes={[[data.route.originAirport, data.route.destinationAirport]]} />
 	</Card>
 </Page>

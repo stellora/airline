@@ -29,6 +29,7 @@
 				<CardTitle>Route</CardTitle>
 			</CardHeader>
 		</Card>
+
 		<Card class="overflow-hidden flex-grow-[2] basis-[350px] min-w-[350px]">
 			<GreatCircleRoute
 				routes={[[data.flightSchedule.originAirport, data.flightSchedule.destinationAirport]]}

@@ -24,25 +24,16 @@
 		<CardHeader>
 			<CardTitle>Flights on {data.airline.iataCode}</CardTitle>
 		</CardHeader>
-		{#await data.flights then flights}
-			{#if flights && flights.length > 0}
-				<div class="max-w-[600px]">
-					<GreatCircleRoute
-						routes={flights.map((flight) => [flight.originAirport, flight.destinationAirport])}
-					/>
-				</div>
-			{/if}
-		{/await}
 		<CardContent>
-			{#await data.flights}
+			{#await data.flightSchedules}
 				<div class="text-muted-foreground">Loading...</div>
-			{:then flights}
-				{#if flights && flights.length > 0}
+			{:then flightSchedules}
+				{#if flightSchedules && flightSchedules.length > 0}
 					<ul
 						class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4"
 						data-testid="flights-to-from-airline"
 					>
-						{#each flights as flight (flight.id)}
+						{#each flightSchedules as flight (flight.id)}
 							<li class="p-3 border rounded-md flex items-center justify-between gap-2">
 								<FlightTitle class="w-full" link {flight} />
 								<span class="text-muted-foreground whitespace-nowrap text-sm">
@@ -57,6 +48,19 @@
 			{/await}
 		</CardContent>
 	</Card>
+
+	{#await data.flightSchedules then flights}
+		{#if flights && flights.length > 0}
+			<Card class="overflow-hidden">
+				<CardHeader>
+					<CardTitle>Route map</CardTitle>
+				</CardHeader>
+				<GreatCircleRoute
+					routes={flights.map((flight) => [flight.originAirport, flight.destinationAirport])}
+				/>
+			</Card>
+		{/if}
+	{/await}
 
 	<Card class="border-destructive self-start">
 		<CardContent>

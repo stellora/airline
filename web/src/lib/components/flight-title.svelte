@@ -35,7 +35,7 @@
 		class={{
 			'underline decoration-dotted decoration-2 decoration-muted-foreground italic text-muted-foreground':
 				!flight.published,
-			'font-mono tracking-tight': true,
+			'font-mono tracking-tight whitespace-nowrap': true,
 		}}
 	>
 		{#if link}
