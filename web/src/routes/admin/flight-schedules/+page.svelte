@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { page } from '$app/state'
 	import Portal from '$lib/components/portal.svelte'
 	import { Button } from '$lib/components/ui/button'
+	import ModalDialog from '$lib/components/ui/modal-dialog/modal-dialog.svelte'
 	import { PAGE_NAVBAR_ACTIONS_ID } from '$lib/components/ui/page/page-navbar.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { route } from '$lib/route-helpers'
@@ -19,6 +21,8 @@
 			class="h-[unset] py-1 px-2"><Plus /> New flight schedule</Button
 		>
 	</div>
+	state={JSON.stringify(page.state)}
+	<ModalDialog id="foo">hello</ModalDialog>
 </Portal>
 
 <Page title="Flight schedules">
