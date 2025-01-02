@@ -28,7 +28,7 @@
 	let containerRef: HTMLDivElement | undefined
 	const initialWidth = widthArg === 'auto' ? 600 : widthArg
 	let width = $state(initialWidth)
-	let height = $state(heightArg === 'auto' ? initialWidth / 1.92 : heightArg)
+	let height = $state(heightArg === 'auto' ? initialWidth / 2.07 : heightArg)
 
 	const detailLevel = $derived(
 		detailLevelArg === 'auto'
@@ -78,20 +78,23 @@
 		if (centerCentroid) {
 			projection.rotate([-1 * centerCentroid[0], 0])
 		}
-		if (fitFeature) {
-			projection
-				.fitExtent(
-					[
-						[padding[0], padding[1]],
-						[width - padding[0], height - padding[1]],
-					],
-					fitFeature,
-				)
-				.clipExtent([
-					[0, 0],
-					[width, height],
-				])
-		}
+		projection
+			.fitExtent(
+				fitFeature
+					? [
+							[padding[0], padding[1]],
+							[width - padding[0], height - padding[1]],
+						]
+					: [
+							[0, 0],
+							[width, height],
+						],
+				fitFeature ?? featureCollections[0],
+			)
+			.clipExtent([
+				[0, 0],
+				[width, height],
+			])
 		return d3.geoPath(projection, null)
 	})
 </script>

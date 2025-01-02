@@ -1,25 +1,35 @@
 <script lang="ts">
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import { Button } from '$lib/components/ui/button'
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
+	import { Card } from '$lib/components/ui/card'
+	import * as Dialog from '$lib/components/ui/dialog/index.js'
+	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
 	import { route } from '$lib/route-helpers'
+	import Plus from 'lucide-svelte/icons/plus'
 	import AirportForm from './airport-form.svelte'
 
 	let { data } = $props()
 </script>
 
-<Page title="Airports">
-	<Card class="self-start">
-		<CardHeader>
-			<CardTitle>New airport</CardTitle>
-		</CardHeader>
+<PageNav>
+	{#snippet actions()}
+		<Dialog.RootByNavigationState id="new-airport">
+			<Dialog.Trigger>
+				<Button variant="secondary" size="pageNavbar"><Plus /> New airport</Button>
+			</Dialog.Trigger>
+			<Dialog.Content>
+				<Dialog.Header>
+					<Dialog.Title>New airport</Dialog.Title>
+				</Dialog.Header>
+				<AirportForm action="?/create" submitLabel="Create" form={data.form} />
+			</Dialog.Content>
+		</Dialog.RootByNavigationState>
+	{/snippet}
+</PageNav>
 
-		<CardContent>
-			<AirportForm form={data.form} action="?/create" />
-		</CardContent>
-	</Card>
+<Page title="Airports">
 	<Card>
 		<Table.Root>
 			<Table.Header>

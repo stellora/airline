@@ -731,18 +731,20 @@ func (q *Queries) UpdateAirline(ctx context.Context, arg UpdateAirlineParams) (A
 
 const updateAirport = `-- name: UpdateAirport :one
 UPDATE airports SET
-iata_code = COALESCE(?2, iata_code)
-WHERE id=?
+iata_code = COALESCE(?1, iata_code),
+oadb_id = COALESCE(?2, oadb_id)
+WHERE id=?3
 RETURNING id, iata_code, oadb_id
 `
 
 type UpdateAirportParams struct {
 	IataCode sql.NullString
+	OadbID   sql.NullInt64
 	ID       int64
 }
 
 func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) (Airport, error) {
-	row := q.db.QueryRowContext(ctx, updateAirport, arg.IataCode, arg.ID)
+	row := q.db.QueryRowContext(ctx, updateAirport, arg.IataCode, arg.OadbID, arg.ID)
 	var i Airport
 	err := row.Scan(&i.ID, &i.IataCode, &i.OadbID)
 	return i, err

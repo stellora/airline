@@ -8,7 +8,11 @@
 	import type { PageServerData } from './$types'
 	import { formSchema } from './airport-form'
 
-	const props: { form: PageServerData['form']; action: string } = $props()
+	const {
+		action,
+		submitLabel,
+		...props
+	}: { action: string; submitLabel: string; form: PageServerData['form'] } = $props()
 	const form = superForm(props.form, {
 		validators: typebox(formSchema),
 		onError({ result }) {
@@ -20,9 +24,9 @@
 
 <form
 	method="POST"
-	action={props.action}
+	{action}
 	use:enhance
-	class="flex gap-4 items-center"
+	class="flex flex-col gap-6 items-start"
 	data-testid="airport-form"
 >
 	<Form.Field {form} name="iataCode">
@@ -44,7 +48,7 @@
 		<Form.Description>3-letter IATA code</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
-	<Form.Button>Create</Form.Button>
+	<Form.Button>{submitLabel}</Form.Button>
 	{#if $message}
 		<Alert variant="destructive" aria-live="polite">
 			<CircleAlert class="size-5" />

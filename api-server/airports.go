@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"regexp"
 
 	"github.com/stellora/airline/api-server/api"
@@ -157,10 +158,17 @@ func (h *Handler) UpdateAirport(ctx context.Context, request api.UpdateAirportRe
 	params := db.UpdateAirportParams{ID: airport.ID}
 	if request.Body.IataCode != nil {
 		params.IataCode = sql.NullString{String: *request.Body.IataCode, Valid: true}
+		info := extdata.Airports.AirportByIATACode(*request.Body.IataCode)
+		if info != nil {
+			params.OadbID = sql.NullInt64{Int64: int64(info.Airport.ID), Valid: true}
+		} else {
+			params.OadbID = sql.NullInt64{Valid: false}
+		}
 	}
 
 	updated, err := queriesTx.UpdateAirport(ctx, params)
 	if err != nil {
+		log.Println("XX11", err)
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateAirport404Response{}, nil
 		}

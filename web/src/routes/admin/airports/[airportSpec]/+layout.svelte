@@ -7,13 +7,11 @@
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
-	import CalendarDays from 'lucide-svelte/icons/calendar-days'
-	import Eye from 'lucide-svelte/icons/eye'
-	import EyeOff from 'lucide-svelte/icons/eye-off'
+	import CalendarRange from 'lucide-svelte/icons/calendar-range'
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
-	import FlightScheduleForm from '../flight-schedule-form.svelte'
+	import AirportForm from '../airport-form.svelte'
 
 	const { children, data } = $props()
 </script>
@@ -22,17 +20,17 @@
 	tabs={[
 		{
 			title: 'Overview',
-			url: route('/admin/flight-schedules/[id]', {
-				params: { id: page.params.id },
+			url: route('/admin/airports/[airportSpec]', {
+				params: { airportSpec: page.params.airportSpec },
 			}),
 			icon: SquareMenu,
 		},
 		{
-			title: 'Instances',
-			url: route('/admin/flight-schedules/[id]/instances', {
-				params: { id: page.params.id },
+			title: 'Flight schedule',
+			url: route('/admin/airports/[airportSpec]/flights', {
+				params: { airportSpec: page.params.airportSpec },
 			}),
-			icon: CalendarDays,
+			icon: CalendarRange,
 		},
 	]}
 >
@@ -43,35 +41,8 @@
 					{#snippet child({ props })}
 						<form
 							method="POST"
-							action={route('/admin/flight-schedules/[id]', {
-								params: { id: page.params.id },
-								query: '/setFlightSchedulePublished',
-							})}
-							use:enhance
-							class="w-full [&>button]:w-full"
-						>
-							<input
-								type="hidden"
-								name="published"
-								value={data.flightSchedule.published ? 'false' : 'true'}
-							/>
-							<button type="submit" {...props}>
-								{#if data.flightSchedule.published}
-									<EyeOff /> Unpublish
-								{:else}
-									<Eye /> Publish
-								{/if}
-							</button>
-						</form>
-					{/snippet}
-				</DropdownMenu.Item>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Item>
-					{#snippet child({ props })}
-						<form
-							method="POST"
-							action={route('/admin/flight-schedules/[id]', {
-								params: { id: page.params.id },
+							action={route('/admin/airports/[airportSpec]', {
+								params: { airportSpec: page.params.airportSpec },
 								query: '/delete',
 							})}
 							use:enhance={({ cancel }) => {
@@ -91,17 +62,17 @@
 		</PageNavbarBreadcrumbActionsDropdownMenu>
 	{/snippet}
 	{#snippet actions()}
-		<Dialog.RootByNavigationState id="edit-flight-schedule">
+		<Dialog.RootByNavigationState id="edit-airport">
 			<Dialog.Trigger>
 				<Button variant="secondary" size="pageNavbar"><Settings2 /> Edit</Button>
 			</Dialog.Trigger>
 			<Dialog.Content>
 				<Dialog.Header>
-					<Dialog.Title>Edit flight schedule</Dialog.Title>
+					<Dialog.Title>Edit airport</Dialog.Title>
 				</Dialog.Header>
-				<FlightScheduleForm
-					action={route('/admin/flight-schedules/[id]', {
-						params: { id: page.params.id },
+				<AirportForm
+					action={route('/admin/airports/[airportSpec]', {
+						params: { airportSpec: page.params.airportSpec },
 						query: '/update',
 					})}
 					submitLabel="Save"

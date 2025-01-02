@@ -105,8 +105,9 @@ RETURNING *;
 
 -- name: UpdateAirport :one
 UPDATE airports SET
-iata_code = COALESCE(sqlc.narg('iata_code'), iata_code)
-WHERE id=?
+iata_code = COALESCE(sqlc.narg('iata_code'), iata_code),
+oadb_id = COALESCE(sqlc.narg('oadb_id'), oadb_id)
+WHERE id=sqlc.arg('id')
 RETURNING *;
 
 -- name: DeleteAirport :exec
