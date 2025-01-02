@@ -17,7 +17,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 	}
 	const flightSchedule = resp.data
 	return {
-		flightSchedule: flightSchedule,
+		flightSchedule,
 		...(await breadcrumbEntry(parent, {
 			url: route('/admin/flight-schedules/[id]', { params: { id: flightSchedule.id.toString() } }),
 			title: flightTitle(flightSchedule),

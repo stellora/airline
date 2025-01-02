@@ -1,12 +1,13 @@
 <script lang="ts">
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import Ellipsis from 'lucide-svelte/icons/ellipsis'
+	import type { Snippet } from 'svelte'
 	import { buttonVariants } from '../button'
 
 	const {
-		tabs,
+		children,
 	}: {
-		tabs: PageNavbarTabsItem[]
+		children: Snippet<[]>
 	} = $props()
 </script>
 
@@ -20,13 +21,6 @@
 		})}><Ellipsis /></DropdownMenu.Trigger
 	>
 	<DropdownMenu.Content>
-		<DropdownMenu.Group>
-			<DropdownMenu.GroupHeading>My Account</DropdownMenu.GroupHeading>
-			<DropdownMenu.Separator />
-			<DropdownMenu.Item>Profile</DropdownMenu.Item>
-			<DropdownMenu.Item>Billing</DropdownMenu.Item>
-			<DropdownMenu.Item>Team</DropdownMenu.Item>
-			<DropdownMenu.Item>Subscription</DropdownMenu.Item>
-		</DropdownMenu.Group>
+		{@render children()}
 	</DropdownMenu.Content>
 </DropdownMenu.Root>
