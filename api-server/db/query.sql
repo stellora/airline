@@ -27,7 +27,7 @@ UPDATE aircraft SET
 registration = COALESCE(sqlc.narg('registration'), registration),
 aircraft_type = COALESCE(sqlc.narg('aircraft_type'), aircraft_type),
 airline_id = COALESCE(sqlc.narg('airline_id'), airline_id)
-WHERE id=?
+WHERE id=sqlc.arg('id')
 RETURNING *;
 
 -- name: DeleteAircraft :exec

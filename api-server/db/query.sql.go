@@ -677,10 +677,10 @@ func (q *Queries) ListRoutes(ctx context.Context) ([]Route, error) {
 
 const updateAircraft = `-- name: UpdateAircraft :one
 UPDATE aircraft SET
-registration = COALESCE(?2, registration),
-aircraft_type = COALESCE(?3, aircraft_type),
-airline_id = COALESCE(?4, airline_id)
-WHERE id=?
+registration = COALESCE(?1, registration),
+aircraft_type = COALESCE(?2, aircraft_type),
+airline_id = COALESCE(?3, airline_id)
+WHERE id=?4
 RETURNING id, registration, aircraft_type, airline_id
 `
 

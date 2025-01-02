@@ -4,17 +4,20 @@
 	import type { Airline } from '$lib/types'
 	import { cn } from '$lib/utils'
 	import type { HTMLAttributes } from 'svelte/elements'
+	import AirlineIcon from './airline-icon.svelte'
 
 	const {
 		airline,
 		link = false,
 		tooltip = true,
+		icon = false,
 		class: className,
 		as = 'abbr',
 	}: {
 		airline: Pick<Airline, 'name' | 'iataCode'>
 		link?: boolean
 		tooltip?: boolean
+		icon?: boolean
 		class?: HTMLAttributes<never>['class']
 		as?: 'abbr'
 	} = $props()
@@ -27,9 +30,11 @@
 				this={as}
 				class={cn(className, 'font-mono hover:underline hover:decoration-dotted', {
 					'cursor-help': !link,
+					'inline-flex items-center gap-1.5': icon,
 				})}
 				{...props}
 			>
+				{#if icon}<AirlineIcon {airline} />{/if}
 				{#if link}
 					<a
 						href={route('/admin/airlines/[airlineSpec]', {
