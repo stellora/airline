@@ -3,8 +3,7 @@
 	import { page } from '$app/state'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
-	import PageNavbarOtherActions from '$lib/components/ui/page/page-navbar-other-actions.svelte'
-	import { type PageNavbarTab } from '$lib/components/ui/page/page-navbar-tabs.svelte'
+	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
 	import Eye from 'lucide-svelte/icons/eye'
 	import EyeOff from 'lucide-svelte/icons/eye-off'
@@ -13,8 +12,10 @@
 	import Trash from 'lucide-svelte/icons/trash'
 
 	const { children, data } = $props()
+</script>
 
-	const tabs: PageNavbarTab[] = [
+<PageNav
+	tabs={[
 		{
 			title: 'Overview',
 			url: route('/admin/flight-schedules/[id]', {
@@ -29,12 +30,10 @@
 			}),
 			icon: Settings2,
 		},
-	]
-</script>
-
-<PageNav {tabs}>
+	]}
+>
 	{#snippet breadcrumbActions()}
-		<PageNavbarOtherActions>
+		<PageNavbarBreadcrumbActionsDropdownMenu>
 			<DropdownMenu.Group>
 				<DropdownMenu.Item>
 					{#snippet child({ props })}
@@ -89,8 +88,8 @@
 						</form>
 					{/snippet}</DropdownMenu.Item
 				>
-			</DropdownMenu.Group></PageNavbarOtherActions
-		>
+			</DropdownMenu.Group>
+		</PageNavbarBreadcrumbActionsDropdownMenu>
 	{/snippet}
 </PageNav>
 

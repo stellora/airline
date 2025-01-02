@@ -22,9 +22,8 @@
 <nav class="flex flex-wrap gap-2">
 	{#each tabs as tab (tab.url)}
 		<Button
-			variant="outline"
-			size="sm"
-			class="h-[unset] py-1 px-2 text-muted-foreground [&:not(:hover)>svg]:text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground [&>svg]:size-4"
+			variant="pageNavbarTab"
+			size="pageNavbar"
 			href={tab.url}
 			data-active={page.url.pathname === tab.url}
 		>

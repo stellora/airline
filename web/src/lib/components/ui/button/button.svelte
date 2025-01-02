@@ -13,6 +13,10 @@
 				secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
 				ghost: 'hover:bg-accent hover:text-accent-foreground',
 				link: 'text-primary underline-offset-4 hover:underline',
+				pageNavbarIcon:
+					'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+				pageNavbarTab:
+					'border border-input/75 text-muted-foreground [&:not(:hover)>svg]:text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
 			},
 			size: {
 				default: 'h-10 px-4 py-2',
@@ -20,14 +24,21 @@
 				lg: 'h-11 rounded-md px-8',
 				icon: 'h-10 w-10',
 				iconSm: 'h-6 w-6',
+				pageNavbar: 'rounded-md py-1 px-2 [&>svg]:!size-5',
 			},
 		},
+		compoundVariants: [
+			{
+				variant: 'pageNavbarIcon',
+				size: 'pageNavbar',
+				class: 'px-1',
+			},
+		],
 		defaultVariants: {
 			variant: 'default',
 			size: 'default',
 		},
 	})
-
 	export type ButtonVariant = VariantProps<typeof buttonVariants>['variant']
 	export type ButtonSize = VariantProps<typeof buttonVariants>['size']
 

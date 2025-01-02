@@ -5,7 +5,7 @@
 	import Page from '$lib/components/ui/page/page.svelte'
 	import Plus from 'lucide-svelte/icons/plus'
 	import FlightList from './flight-list.svelte'
-	import NewFlightScheduleDialogContent from './new-flight-schedule-dialog-content.svelte'
+	import FlightScheduleForm from './flight-schedule-form.svelte'
 
 	let { data } = $props()
 </script>
@@ -14,11 +14,14 @@
 	{#snippet actions()}
 		<Dialog.RootByNavigationState id="foo">
 			<Dialog.Trigger>
-				<Button variant="secondary" size="sm" class="h-[unset] py-1 px-2"
-					><Plus /> New flight schedule</Button
-				>
+				<Button variant="secondary" size="pageNavbar"><Plus /> New flight schedule</Button>
 			</Dialog.Trigger>
-			<NewFlightScheduleDialogContent action="?/create" form={data.form} />
+			<Dialog.Content>
+				<Dialog.Header>
+					<Dialog.Title>New flight schedule</Dialog.Title>
+				</Dialog.Header>
+				<FlightScheduleForm action="?/create" form={data.form} />
+			</Dialog.Content>
 		</Dialog.RootByNavigationState>
 	{/snippet}
 </PageNav>

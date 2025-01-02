@@ -14,10 +14,8 @@
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger
 		class={buttonVariants({
-			variant: 'ghost',
-			size: 'sm',
-			class:
-				'h-[unset] py-1 px-1 text-muted-foreground hover:text-sidebar-accent-foreground [&>svg]:!size-5',
+			variant: 'pageNavbarIcon',
+			size: 'pageNavbar',
 		})}><Ellipsis /></DropdownMenu.Trigger
 	>
 	<DropdownMenu.Content>
