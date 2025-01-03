@@ -412,6 +412,10 @@ paths:
                   format: date
                 daysOfWeek:
                   $ref: '#/components/schemas/DaysOfWeek'
+                departureTime:
+                  $ref: '#/components/schemas/TimeOfDay'
+                arrivalTime:
+                  $ref: '#/components/schemas/TimeOfDay'
                 published:
                   type: boolean
                   default: false
@@ -424,6 +428,8 @@ paths:
                 - startDate
                 - endDate
                 - daysOfWeek
+                - departureTime
+                - arrivalTime
       responses:
         '201':
           description: Flight schedule created
@@ -492,6 +498,10 @@ paths:
                   format: date
                 daysOfWeek:
                   $ref: '#/components/schemas/DaysOfWeek'
+                departureTime:
+                  $ref: '#/components/schemas/TimeOfDay'
+                arrivalTime:
+                  $ref: '#/components/schemas/TimeOfDay'
                 published:
                   type: boolean
       responses:
@@ -863,6 +873,10 @@ components:
       minItems: 0
       maxItems: 7
       uniqueItems: true
+    TimeOfDay:
+      type: string
+      description: A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
+      pattern: '[0-2]?\d:[0-5]\d'
     FlightSchedule:
       type: object
       properties:
@@ -889,6 +903,10 @@ components:
           format: date
         daysOfWeek:
           $ref: '#/components/schemas/DaysOfWeek'
+        departureTime:
+          $ref: '#/components/schemas/TimeOfDay'
+        arrivalTime:
+          $ref: '#/components/schemas/TimeOfDay'
         published:
           type: boolean
       required:
@@ -901,6 +919,8 @@ components:
         - startDate
         - endDate
         - daysOfWeek
+        - departureTime
+        - arrivalTime
         - published
     FlightNumber:
       type: string

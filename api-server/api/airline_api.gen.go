@@ -93,13 +93,21 @@ type AirportSpec struct {
 // DaysOfWeek defines model for DaysOfWeek.
 type DaysOfWeek = []int
 
-// FlightInstance A single flight, associated with the FlightSchedule template that defined it.
+// FlightInstance A single flight, either created and synced automatically from a flight schedule or created manually.
 type FlightInstance struct {
-	Aircraft     *Aircraft          `json:"aircraft,omitempty"`
-	Id           int                `json:"id"`
-	InstanceDate openapi_types.Date `json:"instanceDate"`
-	Notes        *string            `json:"notes,omitempty"`
-	Source       FlightSchedule     `json:"source"`
+	Aircraft             *Aircraft           `json:"aircraft,omitempty"`
+	AircraftType         AircraftType        `json:"aircraftType"`
+	Airline              Airline             `json:"airline"`
+	ArrivalDateTime      openapi_types.Date  `json:"arrivalDateTime"`
+	DepartureDateTime    openapi_types.Date  `json:"departureDateTime"`
+	DestinationAirport   Airport             `json:"destinationAirport"`
+	Id                   int                 `json:"id"`
+	Notes                string              `json:"notes"`
+	Number               FlightNumber        `json:"number"`
+	OriginAirport        Airport             `json:"originAirport"`
+	Published            bool                `json:"published"`
+	ScheduleID           *int                `json:"scheduleID,omitempty"`
+	ScheduleInstanceDate *openapi_types.Date `json:"scheduleInstanceDate,omitempty"`
 }
 
 // FlightNumber defines model for FlightNumber.
@@ -107,9 +115,15 @@ type FlightNumber = string
 
 // FlightSchedule defines model for FlightSchedule.
 type FlightSchedule struct {
-	AircraftType       AircraftType       `json:"aircraftType"`
-	Airline            Airline            `json:"airline"`
-	DaysOfWeek         DaysOfWeek         `json:"daysOfWeek"`
+	AircraftType AircraftType `json:"aircraftType"`
+	Airline      Airline      `json:"airline"`
+
+	// ArrivalTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
+	ArrivalTime TimeOfDay  `json:"arrivalTime"`
+	DaysOfWeek  DaysOfWeek `json:"daysOfWeek"`
+
+	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
+	DepartureTime      TimeOfDay          `json:"departureTime"`
 	DestinationAirport Airport            `json:"destinationAirport"`
 	DistanceMiles      *float64           `json:"distanceMiles,omitempty"`
 	EndDate            openapi_types.Date `json:"endDate"`
@@ -133,6 +147,9 @@ type Route struct {
 	FlightSchedulesCount int      `json:"flightSchedulesCount"`
 	OriginAirport        Airport  `json:"originAirport"`
 }
+
+// TimeOfDay A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
+type TimeOfDay = string
 
 // CreateAircraftJSONBody defines parameters for CreateAircraft.
 type CreateAircraftJSONBody struct {
@@ -180,38 +197,76 @@ type UpdateAirportJSONBody struct {
 	IataCode *AirportIATACode `json:"iataCode,omitempty"`
 }
 
+// CreateFlightInstanceJSONBody defines parameters for CreateFlightInstance.
+type CreateFlightInstanceJSONBody struct {
+	Aircraft *AircraftSpec `json:"aircraft,omitempty"`
+
+	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+	AircraftType       AircraftTypeICAOCode `json:"aircraftType"`
+	Airline            AirlineSpec          `json:"airline"`
+	ArrivalDateTime    openapi_types.Date   `json:"arrivalDateTime"`
+	DepartureDateTime  openapi_types.Date   `json:"departureDateTime"`
+	DestinationAirport AirportSpec          `json:"destinationAirport"`
+	Notes              string               `json:"notes"`
+	Number             FlightNumber         `json:"number"`
+	OriginAirport      AirportSpec          `json:"originAirport"`
+	Published          *bool                `json:"published,omitempty"`
+}
+
 // UpdateFlightInstanceJSONBody defines parameters for UpdateFlightInstance.
 type UpdateFlightInstanceJSONBody struct {
 	Aircraft *AircraftSpec `json:"aircraft,omitempty"`
-	Notes    *string       `json:"notes,omitempty"`
+
+	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
+	AircraftType       *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
+	Airline            *AirlineSpec          `json:"airline,omitempty"`
+	ArrivalDateTime    *openapi_types.Date   `json:"arrivalDateTime,omitempty"`
+	DepartureDateTime  *openapi_types.Date   `json:"departureDateTime,omitempty"`
+	DestinationAirport *AirportSpec          `json:"destinationAirport,omitempty"`
+	Notes              *string               `json:"notes,omitempty"`
+	Number             *FlightNumber         `json:"number,omitempty"`
+	OriginAirport      *AirportSpec          `json:"originAirport,omitempty"`
+	Published          *bool                 `json:"published,omitempty"`
 }
 
 // CreateFlightScheduleJSONBody defines parameters for CreateFlightSchedule.
 type CreateFlightScheduleJSONBody struct {
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType       AircraftTypeICAOCode `json:"aircraftType"`
-	Airline            AirlineSpec          `json:"airline"`
-	DaysOfWeek         DaysOfWeek           `json:"daysOfWeek"`
-	DestinationAirport AirportSpec          `json:"destinationAirport"`
-	EndDate            openapi_types.Date   `json:"endDate"`
-	Number             FlightNumber         `json:"number"`
-	OriginAirport      AirportSpec          `json:"originAirport"`
-	Published          *bool                `json:"published,omitempty"`
-	StartDate          openapi_types.Date   `json:"startDate"`
+	AircraftType AircraftTypeICAOCode `json:"aircraftType"`
+	Airline      AirlineSpec          `json:"airline"`
+
+	// ArrivalTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
+	ArrivalTime TimeOfDay  `json:"arrivalTime"`
+	DaysOfWeek  DaysOfWeek `json:"daysOfWeek"`
+
+	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
+	DepartureTime      TimeOfDay          `json:"departureTime"`
+	DestinationAirport AirportSpec        `json:"destinationAirport"`
+	EndDate            openapi_types.Date `json:"endDate"`
+	Number             FlightNumber       `json:"number"`
+	OriginAirport      AirportSpec        `json:"originAirport"`
+	Published          *bool              `json:"published,omitempty"`
+	StartDate          openapi_types.Date `json:"startDate"`
 }
 
 // UpdateFlightScheduleJSONBody defines parameters for UpdateFlightSchedule.
 type UpdateFlightScheduleJSONBody struct {
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType       *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
-	Airline            *AirlineSpec          `json:"airline,omitempty"`
-	DaysOfWeek         *DaysOfWeek           `json:"daysOfWeek,omitempty"`
-	DestinationAirport *AirportSpec          `json:"destinationAirport,omitempty"`
-	EndDate            *openapi_types.Date   `json:"endDate,omitempty"`
-	Number             *FlightNumber         `json:"number,omitempty"`
-	OriginAirport      *AirportSpec          `json:"originAirport,omitempty"`
-	Published          *bool                 `json:"published,omitempty"`
-	StartDate          *openapi_types.Date   `json:"startDate,omitempty"`
+	AircraftType *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
+	Airline      *AirlineSpec          `json:"airline,omitempty"`
+
+	// ArrivalTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
+	ArrivalTime *TimeOfDay  `json:"arrivalTime,omitempty"`
+	DaysOfWeek  *DaysOfWeek `json:"daysOfWeek,omitempty"`
+
+	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
+	DepartureTime      *TimeOfDay          `json:"departureTime,omitempty"`
+	DestinationAirport *AirportSpec        `json:"destinationAirport,omitempty"`
+	EndDate            *openapi_types.Date `json:"endDate,omitempty"`
+	Number             *FlightNumber       `json:"number,omitempty"`
+	OriginAirport      *AirportSpec        `json:"originAirport,omitempty"`
+	Published          *bool               `json:"published,omitempty"`
+	StartDate          *openapi_types.Date `json:"startDate,omitempty"`
 }
 
 // CreateAircraftJSONRequestBody defines body for CreateAircraft for application/json ContentType.
@@ -231,6 +286,9 @@ type CreateAirportJSONRequestBody CreateAirportJSONBody
 
 // UpdateAirportJSONRequestBody defines body for UpdateAirport for application/json ContentType.
 type UpdateAirportJSONRequestBody UpdateAirportJSONBody
+
+// CreateFlightInstanceJSONRequestBody defines body for CreateFlightInstance for application/json ContentType.
+type CreateFlightInstanceJSONRequestBody CreateFlightInstanceJSONBody
 
 // UpdateFlightInstanceJSONRequestBody defines body for UpdateFlightInstance for application/json ContentType.
 type UpdateFlightInstanceJSONRequestBody UpdateFlightInstanceJSONBody
@@ -498,7 +556,10 @@ type ServerInterface interface {
 	// List all flight instances
 	// (GET /flight-instances)
 	ListFlightInstances(w http.ResponseWriter, r *http.Request)
-	// Delete a flight instance
+	// Create a new single flight instance from manual input, not from a flight schedule
+	// (POST /flight-instances)
+	CreateFlightInstance(w http.ResponseWriter, r *http.Request)
+	// Delete a flight instance created from manual input
 	// (DELETE /flight-instances/{id})
 	DeleteFlightInstance(w http.ResponseWriter, r *http.Request, id int)
 
@@ -1002,6 +1063,20 @@ func (siw *ServerInterfaceWrapper) ListFlightInstances(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
+// CreateFlightInstance operation middleware
+func (siw *ServerInterfaceWrapper) CreateFlightInstance(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateFlightInstance(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // DeleteFlightInstance operation middleware
 func (siw *ServerInterfaceWrapper) DeleteFlightInstance(w http.ResponseWriter, r *http.Request) {
 
@@ -1415,6 +1490,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("PATCH "+options.BaseURL+"/airports/{airportSpec}", wrapper.UpdateAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}/flight-schedules", wrapper.ListFlightSchedulesByAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances", wrapper.ListFlightInstances)
+	m.HandleFunc("POST "+options.BaseURL+"/flight-instances", wrapper.CreateFlightInstance)
 	m.HandleFunc("DELETE "+options.BaseURL+"/flight-instances/{id}", wrapper.DeleteFlightInstance)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances/{id}", wrapper.GetFlightInstance)
 	m.HandleFunc("PATCH "+options.BaseURL+"/flight-instances/{id}", wrapper.UpdateFlightInstance)
@@ -1932,6 +2008,31 @@ func (response ListFlightInstances200JSONResponse) VisitListFlightInstancesRespo
 	return json.NewEncoder(w).Encode(response)
 }
 
+type CreateFlightInstanceRequestObject struct {
+	Body *CreateFlightInstanceJSONRequestBody
+}
+
+type CreateFlightInstanceResponseObject interface {
+	VisitCreateFlightInstanceResponse(w http.ResponseWriter) error
+}
+
+type CreateFlightInstance201JSONResponse FlightInstance
+
+func (response CreateFlightInstance201JSONResponse) VisitCreateFlightInstanceResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateFlightInstance400Response struct {
+}
+
+func (response CreateFlightInstance400Response) VisitCreateFlightInstanceResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
 type DeleteFlightInstanceRequestObject struct {
 	Id int `json:"id"`
 }
@@ -1945,6 +2046,14 @@ type DeleteFlightInstance204Response struct {
 
 func (response DeleteFlightInstance204Response) VisitDeleteFlightInstanceResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteFlightInstance400Response struct {
+}
+
+func (response DeleteFlightInstance400Response) VisitDeleteFlightInstanceResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
 	return nil
 }
 
@@ -1997,6 +2106,14 @@ func (response UpdateFlightInstance200JSONResponse) VisitUpdateFlightInstanceRes
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateFlightInstance400Response struct {
+}
+
+func (response UpdateFlightInstance400Response) VisitUpdateFlightInstanceResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
 }
 
 type UpdateFlightInstance404Response struct {
@@ -2293,7 +2410,10 @@ type StrictServerInterface interface {
 	// List all flight instances
 	// (GET /flight-instances)
 	ListFlightInstances(ctx context.Context, request ListFlightInstancesRequestObject) (ListFlightInstancesResponseObject, error)
-	// Delete a flight instance
+	// Create a new single flight instance from manual input, not from a flight schedule
+	// (POST /flight-instances)
+	CreateFlightInstance(ctx context.Context, request CreateFlightInstanceRequestObject) (CreateFlightInstanceResponseObject, error)
+	// Delete a flight instance created from manual input
 	// (DELETE /flight-instances/{id})
 	DeleteFlightInstance(ctx context.Context, request DeleteFlightInstanceRequestObject) (DeleteFlightInstanceResponseObject, error)
 
@@ -2974,6 +3094,37 @@ func (sh *strictHandler) ListFlightInstances(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ListFlightInstancesResponseObject); ok {
 		if err := validResponse.VisitListFlightInstancesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateFlightInstance operation middleware
+func (sh *strictHandler) CreateFlightInstance(w http.ResponseWriter, r *http.Request) {
+	var request CreateFlightInstanceRequestObject
+
+	var body CreateFlightInstanceJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateFlightInstance(ctx, request.(CreateFlightInstanceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateFlightInstance")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateFlightInstanceResponseObject); ok {
+		if err := validResponse.VisitCreateFlightInstanceResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

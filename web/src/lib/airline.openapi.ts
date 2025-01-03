@@ -268,7 +268,8 @@ export interface paths {
         /** List all flight instances */
         get: operations["listFlightInstances"];
         put?: never;
-        post?: never;
+        /** Create a new single flight instance from manual input, not from a flight schedule */
+        post: operations["createFlightInstance"];
         delete?: never;
         options?: never;
         head?: never;
@@ -285,7 +286,7 @@ export interface paths {
         get: operations["getFlightInstance"];
         put?: never;
         post?: never;
-        /** Delete a flight instance */
+        /** Delete a flight instance created from manual input */
         delete: operations["deleteFlightInstance"];
         options?: never;
         head?: never;
@@ -374,6 +375,8 @@ export interface components {
             latitude: number;
         };
         DaysOfWeek: (0 | 1 | 2 | 3 | 4 | 5 | 6)[];
+        /** @description A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone. */
+        TimeOfDay: string;
         FlightSchedule: {
             id: number;
             airline: components["schemas"]["Airline"];
@@ -388,17 +391,30 @@ export interface components {
             /** Format: date */
             endDate: string;
             daysOfWeek: components["schemas"]["DaysOfWeek"];
+            departureTime: components["schemas"]["TimeOfDay"];
+            arrivalTime: components["schemas"]["TimeOfDay"];
             published: boolean;
         };
         FlightNumber: string;
-        /** @description A single flight, associated with the FlightSchedule template that defined it. */
+        /** @description A single flight, either created and synced automatically from a flight schedule or created manually. */
         FlightInstance: {
             id: number;
-            source: components["schemas"]["FlightSchedule"];
+            scheduleID?: number;
             /** Format: date */
-            instanceDate: string;
+            scheduleInstanceDate?: string;
+            airline: components["schemas"]["Airline"];
+            number: components["schemas"]["FlightNumber"];
+            originAirport: components["schemas"]["Airport"];
+            destinationAirport: components["schemas"]["Airport"];
+            aircraftType: components["schemas"]["AircraftType"];
             aircraft?: components["schemas"]["Aircraft"];
-            notes?: string;
+            /** Format: date */
+            departureDateTime: string;
+            /** Format: date */
+            arrivalDateTime: string;
+            notes: string;
+            /** @default false */
+            published: boolean;
         };
         Route: {
             originAirport: components["schemas"]["Airport"];
@@ -1081,6 +1097,8 @@ export interface operations {
                     /** Format: date */
                     endDate: string;
                     daysOfWeek: components["schemas"]["DaysOfWeek"];
+                    departureTime: components["schemas"]["TimeOfDay"];
+                    arrivalTime: components["schemas"]["TimeOfDay"];
                     /** @default false */
                     published?: boolean;
                 };
@@ -1201,6 +1219,8 @@ export interface operations {
                     /** Format: date */
                     endDate?: string;
                     daysOfWeek?: components["schemas"]["DaysOfWeek"];
+                    departureTime?: components["schemas"]["TimeOfDay"];
+                    arrivalTime?: components["schemas"]["TimeOfDay"];
                     published?: boolean;
                 };
             };
@@ -1273,6 +1293,51 @@ export interface operations {
             };
         };
     };
+    createFlightInstance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    airline: components["schemas"]["AirlineSpec"];
+                    number: components["schemas"]["FlightNumber"];
+                    originAirport: components["schemas"]["AirportSpec"];
+                    destinationAirport: components["schemas"]["AirportSpec"];
+                    aircraftType: components["schemas"]["AircraftTypeICAOCode"];
+                    aircraft?: components["schemas"]["AircraftSpec"];
+                    /** Format: date */
+                    departureDateTime: string;
+                    /** Format: date */
+                    arrivalDateTime: string;
+                    notes: string;
+                    /** @default false */
+                    published?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Flight instance created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlightInstance"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getFlightInstance: {
         parameters: {
             query?: never;
@@ -1320,6 +1385,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Flight instance created from a flight schedule can't be deleted. Edit the flight schedule instead. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Flight instance not found */
             404: {
                 headers: {
@@ -1341,8 +1413,19 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
+                    airline?: components["schemas"]["AirlineSpec"];
+                    number?: components["schemas"]["FlightNumber"];
+                    originAirport?: components["schemas"]["AirportSpec"];
+                    destinationAirport?: components["schemas"]["AirportSpec"];
+                    aircraftType?: components["schemas"]["AircraftTypeICAOCode"];
                     aircraft?: components["schemas"]["AircraftSpec"];
+                    /** Format: date */
+                    departureDateTime?: string;
+                    /** Format: date */
+                    arrivalDateTime?: string;
                     notes?: string;
+                    /** @default false */
+                    published?: boolean;
                 };
             };
         };
@@ -1355,6 +1438,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["FlightInstance"];
                 };
+            };
+            /** @description Flight instance created from flight schedule can't update fields set by the flight schedule. Edit the flight schedule instead. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Flight instance not found */
             404: {

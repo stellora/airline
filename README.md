@@ -25,3 +25,4 @@ See `mise run` for development commands.
 
 - Offer both light and dark themes.
 - Always render flight numbers (e.g., `UA123`) and IATA airport codes (e.g., `SFO`) in monospace (`font-mono` class).
+- DateTime means TODO!(sqs), time and date mean 

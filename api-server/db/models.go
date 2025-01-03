@@ -38,11 +38,44 @@ type Airport struct {
 }
 
 type FlightInstance struct {
-	ID                     int64
-	SourceFlightScheduleID int64
-	InstanceDate           time.Time
-	AircraftID             sql.NullInt64
-	Notes                  string
+	ID                               int64
+	SourceFlightScheduleID           sql.NullInt64
+	SourceFlightScheduleInstanceDate sql.NullTime
+	AirlineID                        int64
+	Number                           string
+	OriginAirportID                  int64
+	DestinationAirportID             int64
+	AircraftType                     string
+	AircraftID                       sql.NullInt64
+	DepartureDatetime                time.Time
+	ArrivalDatetime                  time.Time
+	Notes                            string
+	Published                        bool
+}
+
+type FlightInstancesView struct {
+	ID                               int64
+	SourceFlightScheduleID           sql.NullInt64
+	SourceFlightScheduleInstanceDate sql.NullTime
+	AirlineID                        int64
+	Number                           string
+	OriginAirportID                  int64
+	DestinationAirportID             int64
+	AircraftType                     string
+	AircraftID                       sql.NullInt64
+	DepartureDatetime                time.Time
+	ArrivalDatetime                  time.Time
+	Notes                            string
+	Published                        bool
+	AirlineIataCode                  string
+	AirlineName                      string
+	OriginAirportIataCode            string
+	OriginAirportOadbID              sql.NullInt64
+	DestinationAirportIataCode       string
+	DestinationAirportOadbID         sql.NullInt64
+	AircraftRegistration             string
+	AircraftAircraftType             string
+	AircraftAirlineID                int64
 }
 
 type FlightSchedule struct {
@@ -55,6 +88,8 @@ type FlightSchedule struct {
 	StartDate            time.Time
 	EndDate              time.Time
 	DaysOfWeek           string
+	DepartureTime        string
+	ArrivalTime          string
 	Published            bool
 }
 
@@ -68,13 +103,15 @@ type FlightSchedulesView struct {
 	StartDate                  time.Time
 	EndDate                    time.Time
 	DaysOfWeek                 string
+	DepartureTime              string
+	ArrivalTime                string
 	Published                  bool
+	AirlineIataCode            string
+	AirlineName                string
 	OriginAirportIataCode      string
 	OriginAirportOadbID        sql.NullInt64
 	DestinationAirportIataCode string
 	DestinationAirportOadbID   sql.NullInt64
-	AirlineIataCode            string
-	AirlineName                string
 }
 
 type Route struct {

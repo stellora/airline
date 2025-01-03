@@ -33,7 +33,9 @@ CREATE TABLE IF NOT EXISTS flight_schedules (
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
   days_of_week TEXT NOT NULL,
-  published BOOLEAN NOT NULL DEFAULT FALSE,
+  departure_time TEXT NOT NULL,
+  arrival_time TEXT NOT NULL,
+  published BOOLEAN NOT NULL,
   FOREIGN KEY (airline_id) REFERENCES airlines(id),
   FOREIGN KEY (origin_airport_id) REFERENCES airports(id),
   FOREIGN KEY (destination_airport_id) REFERENCES airports(id)
@@ -41,12 +43,12 @@ CREATE TABLE IF NOT EXISTS flight_schedules (
 
 CREATE VIEW IF NOT EXISTS flight_schedules_view AS
 SELECT flight_schedules.*,
+  airlines.iata_code AS airline_iata_code,
+  airlines.name AS airline_name,
   origin_airport.iata_code AS origin_airport_iata_code,
   origin_airport.oadb_id AS origin_airport_oadb_id,
   destination_airport.iata_code AS destination_airport_iata_code,
-  destination_airport.oadb_id AS destination_airport_oadb_id,
-  airlines.iata_code AS airline_iata_code,
-  airlines.name AS airline_name
+  destination_airport.oadb_id AS destination_airport_oadb_id
 FROM flight_schedules
 JOIN airlines airlines ON airlines.id=flight_schedules.airline_id
 JOIN airports origin_airport ON origin_airport.id=flight_schedules.origin_airport_id
@@ -54,16 +56,45 @@ JOIN airports destination_airport ON destination_airport.id=flight_schedules.des
 
 CREATE TABLE IF NOT EXISTS flight_instances (
   id INTEGER PRIMARY KEY,
-  source_flight_schedule_id INTEGER NOT NULL,
-  instance_date DATE NOT NULL,
+  source_flight_schedule_id INTEGER,
+  source_flight_schedule_instance_date DATE,
+  airline_id INTEGER NOT NULL,
+  number TEXT NOT NULL,
+  origin_airport_id INTEGER NOT NULL,
+  destination_airport_id INTEGER NOT NULL,
+  aircraft_type TEXT NOT NULL,
   aircraft_id INTEGER,
+  departure_datetime DATETIME NOT NULL,
+  arrival_datetime DATETIME NOT NULL,
   notes TEXT NOT NULL,
+  published BOOLEAN NOT NULL,
   FOREIGN KEY (source_flight_schedule_id) REFERENCES flight_schedules(id),
+  FOREIGN KEY (airline_id) REFERENCES airlines(id),
+  FOREIGN KEY (origin_airport_id) REFERENCES airports(id),
+  FOREIGN KEY (destination_airport_id) REFERENCES airports(id),
   FOREIGN KEY (aircraft_id) REFERENCES aircraft(id)
 );
 
+CREATE VIEW IF NOT EXISTS flight_instances_view AS
+SELECT flight_instances.*,
+  airlines.iata_code AS airline_iata_code,
+  airlines.name AS airline_name,
+  origin_airport.iata_code AS origin_airport_iata_code,
+  origin_airport.oadb_id AS origin_airport_oadb_id,
+  destination_airport.iata_code AS destination_airport_iata_code,
+  destination_airport.oadb_id AS destination_airport_oadb_id,
+  aircraft.registration AS aircraft_registration,
+  aircraft.aircraft_type AS aircraft_aircraft_type,
+  aircraft.airline_id AS aircraft_airline_id
+FROM flight_instances
+JOIN airlines ON airlines.id=flight_instances.airline_id
+JOIN airports origin_airport ON origin_airport.id=flight_instances.origin_airport_id
+JOIN airports destination_airport ON destination_airport.id=flight_instances.destination_airport_id
+JOIN aircraft ON aircraft.id=flight_instances.aircraft_id;
+
 CREATE UNIQUE INDEX IF NOT EXISTS unique_flight_instance_for_date_in_flight_schedule
-ON flight_instances(source_flight_schedule_id, instance_date);
+ON flight_instances(source_flight_schedule_id, instance_date)
+WHERE source_flight_schedule_id IS NOT NULL;
 
 CREATE VIEW IF NOT EXISTS routes AS
 SELECT origin_airport_id, destination_airport_id,
