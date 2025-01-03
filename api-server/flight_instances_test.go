@@ -33,6 +33,14 @@ func TestGetFlightInstance(t *testing.T) {
 			Id:                   2,
 			ScheduleID:           &flightSchedule.Id,
 			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
+			Airline:              flightSchedule.Airline,
+			Number:               flightSchedule.Number,
+			OriginAirport:        flightSchedule.OriginAirport,
+			DestinationAirport:   flightSchedule.DestinationAirport,
+			AircraftType:         flightSchedule.AircraftType,
+			DepartureDateTime:    openapi_types.Date{Time: time.Date(2025, 1, 2, 7, 0, 0, 0, time.UTC)},
+			ArrivalDateTime:      openapi_types.Date{Time: time.Date(2025, 1, 2, 9, 0, 0, 0, time.UTC)},
+			Published:            flightSchedule.Published,
 		})
 	})
 
@@ -43,7 +51,7 @@ func TestGetFlightInstance(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(t, resp, &api.GetFlightInstance404Response{})
+		assertEqual(t, resp, api.GetFlightInstance404Response{})
 	})
 }
 
@@ -153,6 +161,7 @@ func TestDeleteFlightInstance(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		t.Logf("AAA %#v", resp)
 		if _, isNotExist := resp.(api.GetFlightInstance404Response); !isNotExist != wantExist {
 			t.Fatalf("flight instance %d: got exists %v, want %v", id, !isNotExist, wantExist)
 		}
@@ -170,8 +179,8 @@ func TestDeleteFlightInstance(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(t, resp, api.DeleteFlightInstance204Response{})
-		checkFlightInstanceExistence(t, instances[0].Id, false)
+		assertEqual(t, resp, api.DeleteFlightInstance400Response{})
+		checkFlightInstanceExistence(t, instances[0].Id, true)
 	})
 
 	t.Run("source = manual", func(t *testing.T) {

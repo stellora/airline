@@ -56,7 +56,7 @@ func (h *Handler) GetFlightInstance(ctx context.Context, request api.GetFlightIn
 	row, err := h.queries.GetFlightInstance(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.GetFlightInstance404Response{}, nil
+			return api.GetFlightInstance404Response{}, nil
 		}
 	}
 	return api.GetFlightInstance200JSONResponse(fromDBFlightInstance(row)), nil
