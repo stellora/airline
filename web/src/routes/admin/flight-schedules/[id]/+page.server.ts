@@ -25,10 +25,6 @@ export const actions: Actions = {
 		if (!resp.response.ok || !resp.data) {
 			return message(form, resp.error, { status: 400 })
 		}
-		redirect(
-			303,
-			route('/admin/flight-schedules/[id]', { params: { id: resp.data.id.toString() } }),
-		)
 	},
 	setFlightSchedulePublished: async ({ request, params }) => {
 		// TODO!(sqs): make this use the id from the URL not the form data

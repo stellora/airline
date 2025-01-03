@@ -42,7 +42,7 @@ export function formDataToFlightScheduleRequest(
 	f: FormSchema['static'],
 ):
 	| paths['/flight-schedules']['post']['requestBody']['content']['application/json']
-	| paths['/flight-schedules']['post']['requestBody']['content']['application/json'] {
+	| paths['/flight-schedules/{id}']['patch']['requestBody']['content']['application/json'] {
 	return {
 		airline: f.airline,
 		number: f.number,

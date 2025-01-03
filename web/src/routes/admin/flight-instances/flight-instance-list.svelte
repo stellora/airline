@@ -26,14 +26,14 @@
 				{#each flightInstances as flight (flight.id)}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell>
-							{flight.instanceDate}
+							{flight.scheduleInstanceDate}
 						</Table.Cell>
 						<Table.Cell>
-							<FlightTitle flight={flight.source} as="span" showRoute={true} />
+							<FlightTitle {flight} as="span" showRoute={true} />
 						</Table.Cell>
 						<Table.Cell
 							><div class="inline-flex flex-col gap-1">
-								<AircraftTypeCode aircraftType={flight.source.aircraftType} />
+								<AircraftTypeCode aircraftType={flight.aircraftType} />
 							</div></Table.Cell
 						>
 						<Table.Cell class="text-right">

@@ -19,7 +19,7 @@ export function formDataToAirportRequest(
 	f: FormSchema['static'],
 ):
 	| paths['/airports']['post']['requestBody']['content']['application/json']
-	| paths['/airports']['post']['requestBody']['content']['application/json'] {
+	| paths['/airports/{airportSpec}']['patch']['requestBody']['content']['application/json'] {
 	return {
 		iataCode: f.iataCode,
 	}

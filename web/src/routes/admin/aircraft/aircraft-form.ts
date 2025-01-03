@@ -23,7 +23,7 @@ export function formDataToAircraftRequest(
 	f: FormSchema['static'],
 ):
 	| paths['/aircraft']['post']['requestBody']['content']['application/json']
-	| paths['/aircraft']['post']['requestBody']['content']['application/json'] {
+	| paths['/aircraft/{aircraftSpec}']['patch']['requestBody']['content']['application/json'] {
 	return {
 		registration: f.registration,
 		aircraftType: f.aircraftType,

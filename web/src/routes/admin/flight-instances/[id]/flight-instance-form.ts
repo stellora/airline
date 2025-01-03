@@ -1,10 +1,11 @@
+import type { paths } from '$lib/airline.openapi'
 import type { FlightInstance } from '$lib/types'
 import { Type, type TProperties } from '@sinclair/typebox'
 
-const commonProperties: TProperties = {
+const commonProperties = {
 	aircraft: Type.Optional(Type.Integer()),
 	notes: Type.Optional(Type.String()),
-}
+} satisfies TProperties
 
 export const flightInstanceFromScheduleFormSchema = Type.Object(commonProperties)
 
@@ -15,15 +16,15 @@ export const flightInstanceFromManualInputFormSchema = Type.Object({
 	originAirport: Type.String({ minLength: 3, maxLength: 3 }),
 	destinationAirport: Type.String({ minLength: 3, maxLength: 3 }),
 	aircraftType: Type.String(),
-	departureDateTime: Type.Date(),
-	arrivalDateTime: Type.Date(),
+	departureDateTime: Type.String(),
+	arrivalDateTime: Type.String(),
 	published: Type.Boolean(),
 })
 
-export function existingFlightInstanceToFormData(
-	a: FlightInstance,
-): (typeof flightInstanceFromScheduleFormSchema)['static'] &
-	(typeof flightInstanceFromManualInputFormSchema)['static'] {
+type FormSchema = (typeof flightInstanceFromScheduleFormSchema)['static'] &
+	(typeof flightInstanceFromManualInputFormSchema)['static']
+
+export function existingFlightInstanceToFormData(a: FlightInstance): FormSchema {
 	return {
 		airline: a.airline.iataCode,
 		number: a.number,
@@ -31,9 +32,28 @@ export function existingFlightInstanceToFormData(
 		destinationAirport: a.destinationAirport.iataCode,
 		aircraftType: a.aircraftType.icaoCode,
 		aircraft: a.aircraft?.id,
-		departureDateTime: new Date(a.departureDateTime),
-		arrivalDateTime: new Date(a.arrivalDateTime),
+		departureDateTime: a.departureDateTime,
+		arrivalDateTime: a.arrivalDateTime,
 		notes: a.notes,
 		published: a.published,
+	}
+}
+
+export function formDataToFlightInstanceRequest(
+	f: FormSchema,
+):
+	| paths['/flight-instances']['post']['requestBody']['content']['application/json']
+	| paths['/flight-instances/{id}']['patch']['requestBody']['content']['application/json'] {
+	return {
+		airline: f.airline,
+		number: f.number,
+		originAirport: f.originAirport,
+		destinationAirport: f.destinationAirport,
+		aircraftType: f.aircraftType,
+		aircraft: f.aircraft,
+		departureDateTime: f.departureDateTime,
+		arrivalDateTime: f.arrivalDateTime,
+		notes: f.notes,
+		published: f.published,
 	}
 }

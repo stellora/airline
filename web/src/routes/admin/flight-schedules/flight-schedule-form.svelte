@@ -1,7 +1,7 @@
 <script lang="ts">
 	import AircraftTypeSelect from '$lib/components/aircraft-type-select.svelte'
 	import AirlineSelect from '$lib/components/airline-select.svelte'
-	import FlightDateRangeInput from '$lib/components/date-range-input.svelte'
+	import DateRangeInput from '$lib/components/date-range-input.svelte'
 	import DaysOfWeekControls from '$lib/components/days-of-week-controls.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import { Checkbox } from '$lib/components/ui/checkbox'
@@ -29,6 +29,8 @@
 		dataType: 'json',
 	})
 	const { form: formData, enhance, message, constraints } = form
+
+	// TODO!(sqs): dedupe with FlightInstanceForm
 </script>
 
 <form
@@ -36,7 +38,7 @@
 	{action}
 	use:enhance
 	class="flex flex-col gap-6 items-start"
-	data-testid="flight-form"
+	data-testid="flight-schedule-form"
 >
 	<FormFieldGroup legend="Flight number">
 		<Form.Field {form} name="airline">
@@ -121,7 +123,7 @@
 			<Form.Control>
 				{#snippet children({ props })}
 					<Form.Label>Date range</Form.Label>
-					<FlightDateRangeInput
+					<DateRangeInput
 						{...props}
 						bind:value={() => ({
 							start: parseDate($formData.startEndDate.start),

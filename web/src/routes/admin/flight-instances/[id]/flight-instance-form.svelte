@@ -1,29 +1,51 @@
 <script lang="ts">
+	import AircraftTypeSelect from '$lib/components/aircraft-type-select.svelte'
 	import AirlineSelect from '$lib/components/airline-select.svelte'
-	import FlightDateRangeInput from '$lib/components/date-range-input.svelte'
+	import DateInput from '$lib/components/date-input.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import { Checkbox } from '$lib/components/ui/checkbox'
 	import * as Form from '$lib/components/ui/form'
 	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
 	import { Input } from '$lib/components/ui/input'
+	import { type FlightInstance } from '$lib/types'
+	import { type DateValue, parseDate } from '@internationalized/date'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
-	import type { PageServerData } from '../$types'
-	import { flightInstanceFromScheduleFormSchema } from './flight-instance-form'
+	import type { PageServerData } from './$types'
+	import {
+		flightInstanceFromManualInputFormSchema,
+		flightInstanceFromScheduleFormSchema,
+	} from './flight-instance-form'
 
 	const {
+		flightInstance,
 		action,
 		submitLabel,
 		...props
-	}: { action: string; submitLabel: string; form: PageServerData['form'] } = $props()
+	}: {
+		flightInstance: Pick<FlightInstance, 'scheduleID'>
+		action: string
+		submitLabel: string
+		form: PageServerData['form']
+	} = $props()
+
+	const isFromManualInput = flightInstance.scheduleID === undefined
+
 	const form = superForm(props.form, {
-		validators: typebox(flightInstanceFromScheduleFormSchema),
+		validators: typebox(
+			isFromManualInput
+				? flightInstanceFromManualInputFormSchema
+				: flightInstanceFromScheduleFormSchema,
+		),
 		onError({ result }) {
 			$message = result.error.message || 'Unknown error'
 		},
+		dataType: 'json',
 	})
 	const { form: formData, enhance, message, constraints } = form
+
+	// TODO!(sqs): dedupe with FlightScheduleForm
 </script>
 
 <form
@@ -31,7 +53,7 @@
 	{action}
 	use:enhance
 	class="flex flex-col gap-6 items-start"
-	data-testid="flight-form"
+	data-testid="flight-instance-form"
 >
 	<FormFieldGroup legend="Flight number">
 		<Form.Field {form} name="airline">
@@ -60,7 +82,7 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
-	<FormFieldGroup legend="Route">
+	<FormFieldGroup legend="Route" horizontal>
 		<Form.Field {form} name="originAirport">
 			<Form.Control>
 				{#snippet children({ props })}
@@ -97,15 +119,50 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
-	<Form.Field {form} name="dateRange">
+	<Form.Field {form} name="aircraftType">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label>Date range</Form.Label>
-				<FlightDateRangeInput {...props} bind:value={$formData.dateRange} />
+				<Form.Label>Aircraft type</Form.Label>
+				<AircraftTypeSelect
+					{...props}
+					bind:value={$formData.aircraftType}
+					{...$constraints.aircraftType}
+				/>
 			{/snippet}
 		</Form.Control>
+		<Form.Description>IATA code</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
+	<Form.Field {form} name="aircraft">
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Aircraft</Form.Label>
+				{'<AircraftSelect {...props} bind:value={$formData.aircraft} {...$constraints.aircraft} />'}
+				<!-- TODO!(sqs) -->
+			{/snippet}
+		</Form.Control>
+		<Form.Description>When known closer to departure</Form.Description>
+		<Form.FieldErrors />
+	</Form.Field>
+	<FormFieldGroup legend="Timing">
+		<Form.Field {form} name="departureDateTime">
+			<Form.Control>
+				{#snippet children({ props })}
+					<Form.Label>Departure</Form.Label>
+					<DateInput
+						{...props}
+						bind:value={() => parseDate($formData.departureDateTime),
+						(v: DateValue | undefined) => {
+							if (v) {
+								$formData.departureDateTime = v.toString()
+							}
+						}}
+					/>
+				{/snippet}
+			</Form.Control>
+			<Form.FieldErrors />
+		</Form.Field>
+	</FormFieldGroup>
 	<FormFieldGroup legend="Options">
 		<Form.Field {form} name="published">
 			<Form.Control>

@@ -13,7 +13,7 @@ export function formDataToAirlineRequest(
 	f: FormSchema['static'],
 ):
 	| paths['/airlines']['post']['requestBody']['content']['application/json']
-	| paths['/airlines']['post']['requestBody']['content']['application/json'] {
+	| paths['/airlines/{airlineSpec}']['patch']['requestBody']['content']['application/json'] {
 	return {
 		iataCode: f.iataCode,
 		name: f.name,

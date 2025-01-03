@@ -7,14 +7,11 @@
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
-	import CalendarDays from 'lucide-svelte/icons/calendar-days'
-	import Eye from 'lucide-svelte/icons/eye'
-	import EyeOff from 'lucide-svelte/icons/eye-off'
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
-	import FlightInstanceForm from './flight-instance-form.svelte'
 	import Users from 'lucide-svelte/icons/users'
+	import FlightInstanceForm from './flight-instance-form.svelte'
 
 	const { children, data } = $props()
 </script>
@@ -74,6 +71,7 @@
 					<Dialog.Title>Edit flight instance</Dialog.Title>
 				</Dialog.Header>
 				<FlightInstanceForm
+					flightInstance={data.flightInstance}
 					action={route('/admin/flight-instances/[id]', {
 						params: { id: page.params.id },
 						query: '/update',
