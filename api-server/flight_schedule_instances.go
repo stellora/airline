@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"sort"
 
 	"github.com/stellora/airline/api-server/api"
@@ -84,7 +83,6 @@ func planFlightScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries,
 
 		hasInstance := curInstance != nil
 		shouldHaveInstance := daysOfWeekContains(daysOfWeek, curDate.Weekday())
-		log.Printf("date=%s (Weekday %v %d); daysOfWeek=%v; has instance=%v; should have=%v", curDate, curDate.Weekday(), curDate.Weekday(), daysOfWeek, hasInstance, shouldHaveInstance)
 
 		if hasInstance && !shouldHaveInstance {
 			// Delete the instance.

@@ -91,9 +91,9 @@ func insertAirlines(ctx context.Context, handler *Handler, airlines map[string]s
 
 var (
 	fixtureDate1      = openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)}
-	fixtureDate2      = openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)}
-	fixtureDate3      = openapi_types.Date{Time: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC)}
-	fixtureDate4      = openapi_types.Date{Time: time.Date(2025, 1, 4, 0, 0, 0, 0, time.UTC)}
+	fixtureDate2      = openapi_types.Date{Time: time.Date(2025, 1, 20, 0, 0, 0, 0, time.UTC)}
+	fixtureDate3      = openapi_types.Date{Time: time.Date(2025, 1, 25, 0, 0, 0, 0, time.UTC)}
+	fixtureDate4      = openapi_types.Date{Time: time.Date(2025, 2, 7, 0, 0, 0, 0, time.UTC)}
 	fixtureDaysOfWeek = []int{1, 5, 6}
 	fixtureB77W       = api.AircraftType{IcaoCode: "B77W", Name: "Boeing 777-300ER"}
 

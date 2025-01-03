@@ -3,8 +3,8 @@ import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
-import { formSchema } from '../flight-instance-form'
 import type { Actions, PageServerLoad } from './$types'
+import { formSchema } from './flight-instance-form'
 
 export const load: PageServerLoad = async ({ params }) => {
 	return {}

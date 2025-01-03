@@ -9,7 +9,7 @@
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
-	import type { PageServerData } from './$types'
+	import type { PageServerData } from '../$types'
 	import { formSchema } from './flight-instance-form'
 
 	const {

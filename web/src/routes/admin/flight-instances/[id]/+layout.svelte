@@ -13,7 +13,7 @@
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
-	import FlightInstanceForm from '../flight-instance-form.svelte'
+	import FlightInstanceForm from './flight-instance-form.svelte'
 
 	const { children, data } = $props()
 </script>

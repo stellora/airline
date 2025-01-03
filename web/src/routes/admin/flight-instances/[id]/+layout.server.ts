@@ -5,8 +5,8 @@ import { route } from '$lib/route-helpers'
 import { error } from '@sveltejs/kit'
 import { superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
-import { existingFlightInstanceToFormData, formSchema } from '../flight-instance-form'
 import type { LayoutServerLoad } from './$types'
+import { existingFlightInstanceToFormData, formSchema } from './flight-instance-form'
 
 export const load: LayoutServerLoad = async ({ params, parent }) => {
 	const id = Number.parseInt(params.id)

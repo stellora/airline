@@ -59,7 +59,7 @@
 				{/each}
 			</Table.Body>
 		{:else}
-			<Table.Caption class="mb-4">No flights found</Table.Caption>
+			<Table.Caption class="mb-4">No flight instances found</Table.Caption>
 		{/if}
 	</Table.Root>
 </Card>
