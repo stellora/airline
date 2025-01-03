@@ -32,11 +32,13 @@ func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 			IataCode: a.DestinationAirportIataCode,
 			OadbID:   a.DestinationAirportOadbID,
 		}),
-		AircraftType: fromAircraftTypeCode(a.AircraftType),
-		StartDate:    openapi_types.Date{Time: a.StartDate},
-		EndDate:      openapi_types.Date{Time: a.EndDate},
-		DaysOfWeek:   daysOfWeek,
-		Published:    a.Published,
+		AircraftType:  fromAircraftTypeCode(a.AircraftType),
+		StartDate:     openapi_types.Date{Time: a.StartDate},
+		EndDate:       openapi_types.Date{Time: a.EndDate},
+		DaysOfWeek:    daysOfWeek,
+		DepartureTime: a.DepartureTime,
+		ArrivalTime:   a.ArrivalTime,
+		Published:     a.Published,
 	}
 	b.DistanceMiles = distanceMilesBetweenAirports(b.OriginAirport, b.DestinationAirport)
 	return b
@@ -109,6 +111,8 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		StartDate:            request.Body.StartDate.Time,
 		EndDate:              request.Body.EndDate.Time,
 		DaysOfWeek:           toDBDaysOfWeek(request.Body.DaysOfWeek),
+		DepartureTime:        request.Body.DepartureTime,
+		ArrivalTime:          request.Body.ArrivalTime,
 		Published:            request.Body.Published != nil && *request.Body.Published,
 	})
 	if err != nil {
@@ -177,6 +181,12 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 	}
 	if request.Body.DaysOfWeek != nil {
 		params.DaysOfWeek = sql.NullString{String: toDBDaysOfWeek(*request.Body.DaysOfWeek), Valid: true}
+	}
+	if request.Body.DepartureTime != nil {
+		params.DepartureTime = sql.NullString{String: *request.Body.DepartureTime, Valid: true}
+	}
+	if request.Body.ArrivalTime != nil {
+		params.ArrivalTime = sql.NullString{String: *request.Body.ArrivalTime, Valid: true}
 	}
 	if request.Body.Published != nil {
 		params.Published = sql.NullBool{Bool: *request.Body.Published, Valid: true}

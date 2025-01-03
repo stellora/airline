@@ -6,7 +6,10 @@ import { error } from '@sveltejs/kit'
 import { superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
 import type { LayoutServerLoad } from './$types'
-import { existingFlightInstanceToFormData, formSchema } from './flight-instance-form'
+import {
+	existingFlightInstanceToFormData,
+	flightInstanceFromScheduleFormSchema,
+} from './flight-instance-form'
 
 export const load: LayoutServerLoad = async ({ params, parent }) => {
 	const id = Number.parseInt(params.id)
@@ -27,7 +30,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 		flightInstance,
 		form: await superValidate(
 			existingFlightInstanceToFormData(flightInstance),
-			typebox(formSchema),
+			typebox(flightInstanceFromScheduleFormSchema),
 		),
 	}
 }

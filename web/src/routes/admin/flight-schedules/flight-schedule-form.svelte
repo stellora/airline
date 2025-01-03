@@ -1,11 +1,12 @@
 <script lang="ts">
 	import AirlineSelect from '$lib/components/airline-select.svelte'
-	import FlightDateRangeInput from '$lib/components/flight-date-range-input.svelte'
+	import FlightDateRangeInput from '$lib/components/date-range-input.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import { Checkbox } from '$lib/components/ui/checkbox'
 	import * as Form from '$lib/components/ui/form'
 	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
 	import { Input } from '$lib/components/ui/input'
+	import { DateValue, parseDate } from '@internationalized/date'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
@@ -97,11 +98,23 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
-	<Form.Field {form} name="dateRange">
+	<Form.Field {form} name="startEndDate">
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label>Date range</Form.Label>
-				<FlightDateRangeInput {...props} bind:value={$formData.dateRange} />
+				<FlightDateRangeInput
+					{...props}
+					bind:value={() => ({
+						start: parseDate($formData.startEndDate.start),
+						end: parseDate($formData.startEndDate.end),
+					}),
+					(v: { start: DateValue; end: DateValue }) => {
+						$formData.startEndDate = {
+							start: v.start.toString(),
+							end: v.end.toString(),
+						}
+					}}
+				/>
 			{/snippet}
 		</Form.Control>
 		<Form.FieldErrors />

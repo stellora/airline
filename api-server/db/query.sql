@@ -229,7 +229,7 @@ WHERE id=?;
 -- name: ListFlightInstancesForFlightSchedule :many
 SELECT *
 FROM flight_instances_view
-WHERE source_flight_schedule_id=sqlc.arg('flight_schedule_id')
+WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_id=sqlc.arg('flight_schedule_id')
 ORDER BY id ASC;
 
 ------------------------------------------------------------------------------- routes

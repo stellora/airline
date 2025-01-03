@@ -76,6 +76,8 @@ type FlightInstancesView struct {
 	AircraftRegistration             string
 	AircraftAircraftType             string
 	AircraftAirlineID                int64
+	AircraftAirlineIataCode          string
+	AircraftAirlineName              string
 }
 
 type FlightSchedule struct {

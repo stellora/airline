@@ -85,16 +85,18 @@ SELECT flight_instances.*,
   destination_airport.oadb_id AS destination_airport_oadb_id,
   aircraft.registration AS aircraft_registration,
   aircraft.aircraft_type AS aircraft_aircraft_type,
-  aircraft.airline_id AS aircraft_airline_id
+  aircraft.airline_id AS aircraft_airline_id,
+  aircraft.airline_iata_code AS aircraft_airline_iata_code,
+  aircraft.airline_name AS aircraft_airline_name
 FROM flight_instances
 JOIN airlines ON airlines.id=flight_instances.airline_id
 JOIN airports origin_airport ON origin_airport.id=flight_instances.origin_airport_id
 JOIN airports destination_airport ON destination_airport.id=flight_instances.destination_airport_id
-JOIN aircraft ON aircraft.id=flight_instances.aircraft_id;
+JOIN aircraft_view aircraft ON aircraft.id=flight_instances.aircraft_id;
 
 CREATE UNIQUE INDEX IF NOT EXISTS unique_flight_instance_for_date_in_flight_schedule
-ON flight_instances(source_flight_schedule_id, instance_date)
-WHERE source_flight_schedule_id IS NOT NULL;
+ON flight_instances(source_flight_schedule_id, source_flight_schedule_instance_date)
+WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_instance_date IS NOT NULL;
 
 CREATE VIEW IF NOT EXISTS routes AS
 SELECT origin_airport_id, destination_airport_id,

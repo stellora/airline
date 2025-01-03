@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"sort"
 	"strings"
@@ -204,4 +205,19 @@ func daysOfWeekContains(daysOfWeek []int, day time.Weekday) bool {
 
 func ptrTo[T any](v T) *T {
 	return &v
+}
+
+func nullInt64(nv sql.NullInt64) *int {
+	if nv.Valid {
+		v := int(nv.Int64)
+		return &v
+	}
+	return nil
+}
+
+func nullTime(nv sql.NullTime) *openapi_types.Date {
+	if nv.Valid {
+		return &openapi_types.Date{Time: nv.Time}
+	}
+	return nil
 }

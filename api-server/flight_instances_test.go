@@ -30,9 +30,9 @@ func TestGetFlightInstance(t *testing.T) {
 		}
 
 		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
-			Id:           2,
-			Source:       flightSchedule,
-			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
+			Id:                   2,
+			ScheduleID:           &flightSchedule.Id,
+			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
 		})
 	})
 
@@ -64,19 +64,19 @@ func TestListFlightInstances(t *testing.T) {
 
 	assertEqual(t, resp, api.ListFlightInstances200JSONResponse{
 		{
-			Id:           1,
-			Source:       flightSchedule,
-			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)},
+			Id:                   1,
+			ScheduleID:           &flightSchedule.Id,
+			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)},
 		},
 		{
-			Id:           2,
-			Source:       flightSchedule,
-			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
+			Id:                   2,
+			ScheduleID:           &flightSchedule.Id,
+			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
 		},
 		{
-			Id:           3,
-			Source:       flightSchedule,
-			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC)},
+			Id:                   3,
+			ScheduleID:           &flightSchedule.Id,
+			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC)},
 		},
 	})
 }
@@ -106,8 +106,8 @@ func TestUpdateFlightInstance(t *testing.T) {
 		if _, ok := resp.(api.UpdateFlightInstance200JSONResponse); !ok {
 			t.Errorf("got %#v", resp)
 		}
-		if got := resp.(api.UpdateFlightInstance200JSONResponse); *got.Notes != notes {
-			t.Errorf("got notes %q, want %q", *got.Notes, notes)
+		if got := resp.(api.UpdateFlightInstance200JSONResponse); got.Notes != notes {
+			t.Errorf("got notes %q, want %q", got.Notes, notes)
 		}
 	}
 
@@ -119,10 +119,10 @@ func TestUpdateFlightInstance(t *testing.T) {
 		}
 
 		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
-			Id:           1,
-			Source:       flightSchedule,
-			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)},
-			Notes:        ptrTo("abc"),
+			Id:                   1,
+			ScheduleID:           &flightSchedule.Id,
+			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)},
+			Notes:                "abc",
 		})
 	}
 }
@@ -131,7 +131,16 @@ func TestDeleteFlightInstance(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	manualFlightInstanceID := insertFlightInstanceT(t, handler)
+	manualFlightInstance := insertFlightInstanceT(t, handler, api.CreateFlightInstanceJSONRequestBody{
+		Airline:            api.NewAirlineSpec(0, "XX"),
+		Number:             "222",
+		OriginAirport:      api.NewAirportSpec(0, "AAA"),
+		DestinationAirport: api.NewAirportSpec(0, "BBB"),
+		AircraftType:       fixtureB77W.IcaoCode,
+		DepartureDateTime:  fixtureDate1,
+		ArrivalDateTime:    openapi_types.Date{Time: fixtureDate1.Time.Add(3 * time.Hour)},
+		Published:          ptrTo(true),
+	})
 	flightSchedule := insertFlightScheduleT(t, handler,
 		time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC),
@@ -166,13 +175,13 @@ func TestDeleteFlightInstance(t *testing.T) {
 	})
 
 	t.Run("source = manual", func(t *testing.T) {
-		checkFlightInstanceExistence(t, manualFlightInstanceID, true)
-		resp, err := handler.DeleteFlightInstance(ctx, api.DeleteFlightInstanceRequestObject{Id: manualFlightInstanceID})
+		checkFlightInstanceExistence(t, manualFlightInstance.Id, true)
+		resp, err := handler.DeleteFlightInstance(ctx, api.DeleteFlightInstanceRequestObject{Id: manualFlightInstance.Id})
 		if err != nil {
 			t.Fatal(err)
 		}
 		assertEqual(t, resp, api.DeleteFlightInstance204Response{})
-		checkFlightInstanceExistence(t, manualFlightInstanceID, false)
+		checkFlightInstanceExistence(t, manualFlightInstance.Id, false)
 	})
 }
 
@@ -185,12 +194,12 @@ func checkFlightInstances(t *testing.T, handler *Handler, flightScheduleID int, 
 	}
 
 	toDescription := func(instance api.FlightInstance) string {
-		parts := []string{instance.InstanceDate.Time.Format("2006-01-02")}
+		parts := []string{instance.ScheduleInstanceDate.Time.Format("2006-01-02")}
 		if instance.Aircraft != nil {
 			parts = append(parts, fmt.Sprintf("aircraft=%s", instance.Aircraft.AircraftType))
 		}
-		if instance.Notes != nil {
-			parts = append(parts, fmt.Sprintf("notes=%s", *instance.Notes))
+		if instance.Notes != "" {
+			parts = append(parts, fmt.Sprintf("notes=%s", instance.Notes))
 		}
 		return strings.Join(parts, " ")
 	}

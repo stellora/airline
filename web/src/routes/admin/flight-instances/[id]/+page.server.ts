@@ -4,7 +4,7 @@ import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
 import type { Actions, PageServerLoad } from './$types'
-import { formSchema } from './flight-instance-form'
+import { flightInstanceFromScheduleFormSchema } from './flight-instance-form'
 
 export const load: PageServerLoad = async ({ params }) => {
 	return {}
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 export const actions: Actions = {
 	update: async ({ params, request }) => {
-		const form = await superValidate(request, typebox(formSchema))
+		const form = await superValidate(request, typebox(flightInstanceFromScheduleFormSchema))
 		if (!form.valid) {
 			return fail(400, { form })
 		}

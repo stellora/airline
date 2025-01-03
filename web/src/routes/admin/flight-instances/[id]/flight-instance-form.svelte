@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AirlineSelect from '$lib/components/airline-select.svelte'
-	import FlightDateRangeInput from '$lib/components/flight-date-range-input.svelte'
+	import FlightDateRangeInput from '$lib/components/date-range-input.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import { Checkbox } from '$lib/components/ui/checkbox'
 	import * as Form from '$lib/components/ui/form'
@@ -10,7 +10,7 @@
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
 	import type { PageServerData } from '../$types'
-	import { formSchema } from './flight-instance-form'
+	import { flightInstanceFromScheduleFormSchema } from './flight-instance-form'
 
 	const {
 		action,
@@ -18,7 +18,7 @@
 		...props
 	}: { action: string; submitLabel: string; form: PageServerData['form'] } = $props()
 	const form = superForm(props.form, {
-		validators: typebox(formSchema),
+		validators: typebox(flightInstanceFromScheduleFormSchema),
 		onError({ result }) {
 			$message = result.error.message || 'Unknown error'
 		},

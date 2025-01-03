@@ -71,19 +71,19 @@ func TestListFlightInstancesForFlightSchedule(t *testing.T) {
 
 	assertEqual(t, resp, api.ListFlightInstancesForFlightSchedule200JSONResponse{
 		{
-			Id:           4,
-			Source:       flightSchedule2,
-			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
+			Id:                   4,
+			ScheduleID:           &flightSchedule2.Id,
+			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
 		},
 		{
-			Id:           5,
-			Source:       flightSchedule2,
-			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC)},
+			Id:                   5,
+			ScheduleID:           &flightSchedule2.Id,
+			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC)},
 		},
 		{
-			Id:           6,
-			Source:       flightSchedule2,
-			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 4, 0, 0, 0, 0, time.UTC)},
+			Id:                   6,
+			ScheduleID:           &flightSchedule2.Id,
+			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 4, 0, 0, 0, 0, time.UTC)},
 		},
 	})
 }

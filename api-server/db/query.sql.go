@@ -361,7 +361,7 @@ func (q *Queries) GetAirportByIATACode(ctx context.Context, iataCode string) (Ai
 
 const getFlightInstance = `-- name: GetFlightInstance :one
 
-SELECT id, source_flight_schedule_id, source_flight_schedule_instance_date, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id
+SELECT id, source_flight_schedule_id, source_flight_schedule_instance_date, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
 FROM flight_instances_view
 WHERE id=?1 LIMIT 1
 `
@@ -393,6 +393,8 @@ func (q *Queries) GetFlightInstance(ctx context.Context, id int64) (FlightInstan
 		&i.AircraftRegistration,
 		&i.AircraftAircraftType,
 		&i.AircraftAirlineID,
+		&i.AircraftAirlineIataCode,
+		&i.AircraftAirlineName,
 	)
 	return i, err
 }
@@ -587,7 +589,7 @@ func (q *Queries) ListAirports(ctx context.Context) ([]Airport, error) {
 }
 
 const listFlightInstances = `-- name: ListFlightInstances :many
-SELECT id, source_flight_schedule_id, source_flight_schedule_instance_date, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id
+SELECT id, source_flight_schedule_id, source_flight_schedule_instance_date, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
 FROM flight_instances_view
 ORDER BY id ASC
 `
@@ -624,6 +626,8 @@ func (q *Queries) ListFlightInstances(ctx context.Context) ([]FlightInstancesVie
 			&i.AircraftRegistration,
 			&i.AircraftAircraftType,
 			&i.AircraftAirlineID,
+			&i.AircraftAirlineIataCode,
+			&i.AircraftAirlineName,
 		); err != nil {
 			return nil, err
 		}
@@ -639,9 +643,9 @@ func (q *Queries) ListFlightInstances(ctx context.Context) ([]FlightInstancesVie
 }
 
 const listFlightInstancesForFlightSchedule = `-- name: ListFlightInstancesForFlightSchedule :many
-SELECT id, source_flight_schedule_id, source_flight_schedule_instance_date, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id
+SELECT id, source_flight_schedule_id, source_flight_schedule_instance_date, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
 FROM flight_instances_view
-WHERE source_flight_schedule_id=?1
+WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_id=?1
 ORDER BY id ASC
 `
 
@@ -677,6 +681,8 @@ func (q *Queries) ListFlightInstancesForFlightSchedule(ctx context.Context, flig
 			&i.AircraftRegistration,
 			&i.AircraftAircraftType,
 			&i.AircraftAirlineID,
+			&i.AircraftAirlineIataCode,
+			&i.AircraftAirlineName,
 		); err != nil {
 			return nil, err
 		}
