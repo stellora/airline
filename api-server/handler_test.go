@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
 )
 
@@ -51,6 +53,27 @@ func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...stri
 		t.Fatal(err)
 	}
 	return ids
+}
+
+func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate time.Time, daysOfWeek []int) api.FlightSchedule {
+	t.Helper()
+	flightSchedule, err := insertFlightSchedule(context.Background(), handler, startDate, endDate, daysOfWeek)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return flightSchedule
+}
+
+func setNotesForFlightInstance(t *testing.T, handler *Handler, id int, notes string) {
+	t.Helper()
+	if _, err := handler.UpdateFlightInstance(context.Background(), api.UpdateFlightInstanceRequestObject{
+		Id: id,
+		Body: &api.UpdateFlightInstanceJSONRequestBody{
+			Notes: ptrTo(notes),
+		},
+	}); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func assertEqual(t *testing.T, got any, want any) {

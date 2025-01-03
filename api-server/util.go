@@ -96,6 +96,9 @@ var (
 	fixtureDate4      = openapi_types.Date{Time: time.Date(2025, 1, 1, 23, 24, 0, 0, time.UTC)}
 	fixtureDaysOfWeek = []int{1, 5, 6}
 	fixtureB77W       = api.AircraftType{IcaoCode: "B77W", Name: "Boeing 777-300ER"}
+
+	allDaysOfWeek    = []int{0, 1, 2, 3, 4, 5, 6}
+	allDaysOfWeekStr = "0123456"
 )
 
 func insertFlightSchedules(ctx context.Context, handler *Handler, flightTitles ...string) (ids []int, err error) {
@@ -121,6 +124,26 @@ func insertFlightSchedules(ctx context.Context, handler *Handler, flightTitles .
 		ids[i] = v.(api.CreateFlightSchedule201JSONResponse).Id
 	}
 	return ids, nil
+}
+
+func insertFlightSchedule(ctx context.Context, handler *Handler, startDate, endDate time.Time, daysOfWeek []int) (api.FlightSchedule, error) {
+	v, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{
+		Body: &api.CreateFlightScheduleJSONRequestBody{
+			Airline:            api.NewAirlineSpec(0, "XX"),
+			Number:             "1",
+			OriginAirport:      api.NewAirportSpec(0, "AAA"),
+			DestinationAirport: api.NewAirportSpec(0, "BBB"),
+			AircraftType:       fixtureB77W.IcaoCode,
+			StartDate:          openapi_types.Date{Time: startDate},
+			EndDate:            openapi_types.Date{Time: endDate},
+			DaysOfWeek:         daysOfWeek,
+			Published:          ptrTo(true),
+		},
+	})
+	if err != nil {
+		return api.FlightSchedule{}, err
+	}
+	return api.FlightSchedule(v.(api.CreateFlightSchedule201JSONResponse)), nil
 }
 
 func distanceMilesBetweenAirports(a, b api.Airport) *float64 {
