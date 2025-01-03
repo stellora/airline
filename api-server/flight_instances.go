@@ -42,11 +42,11 @@ func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 	if a.AircraftID.Valid {
 		b.Aircraft = ptrTo(fromDBAircraft(db.AircraftView{
 			ID:              a.AircraftID.Int64,
-			Registration:    a.AircraftRegistration,
-			AircraftType:    a.AircraftAircraftType,
-			AirlineID:       a.AircraftAirlineID,
-			AirlineIataCode: a.AircraftAirlineIataCode,
-			AirlineName:     a.AircraftAirlineName,
+			Registration:    a.AircraftRegistration.String,
+			AircraftType:    a.AircraftAircraftType.String,
+			AirlineID:       a.AircraftAirlineID.Int64,
+			AirlineIataCode: a.AircraftAirlineIataCode.String,
+			AirlineName:     a.AircraftAirlineName.String,
 		}))
 	}
 	return b
@@ -192,9 +192,36 @@ func (h *Handler) UpdateFlightInstance(ctx context.Context, request api.UpdateFl
 }
 
 func (h *Handler) DeleteFlightInstance(ctx context.Context, request api.DeleteFlightInstanceRequestObject) (api.DeleteFlightInstanceResponseObject, error) {
-	if err := h.queries.DeleteFlightInstance(ctx, int64(request.Id)); err != nil {
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
+
+	row, err := queriesTx.GetFlightInstance(ctx, int64(request.Id))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return api.DeleteFlightInstance404Response{}, nil
+		}
+		return nil, err
+	}
+
+	// Only flight instances created from manual input can be deleted. To delete a flight instances
+	// created from a flight schedule, you need to edit the flight schedule so that it deletes the
+	// instance when it syncs the new schedule definition.
+	if row.SourceFlightScheduleID.Valid {
+		return api.DeleteFlightInstance400Response{}, nil
+	}
+
+	if err := queriesTx.DeleteFlightInstance(ctx, int64(request.Id)); err != nil {
 		// TODO(sqs): check if it was actually deleted
 		return nil, err
 	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return api.DeleteFlightInstance204Response{}, nil
 }

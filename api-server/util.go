@@ -116,6 +116,8 @@ func insertFlightSchedules(ctx context.Context, handler *Handler, flightTitles .
 				StartDate:          fixtureDate1,
 				EndDate:            fixtureDate2,
 				DaysOfWeek:         fixtureDaysOfWeek,
+				DepartureTime:      "7:00",
+				ArrivalTime:        "9:00",
 				Published:          ptrTo(true),
 			},
 		})
@@ -138,6 +140,8 @@ func insertFlightSchedule(ctx context.Context, handler *Handler, startDate, endD
 			StartDate:          openapi_types.Date{Time: startDate},
 			EndDate:            openapi_types.Date{Time: endDate},
 			DaysOfWeek:         daysOfWeek,
+			DepartureTime:      "7:00",
+			ArrivalTime:        "9:00",
 			Published:          ptrTo(true),
 		},
 	})

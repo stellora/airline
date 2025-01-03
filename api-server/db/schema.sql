@@ -92,7 +92,7 @@ FROM flight_instances
 JOIN airlines ON airlines.id=flight_instances.airline_id
 JOIN airports origin_airport ON origin_airport.id=flight_instances.origin_airport_id
 JOIN airports destination_airport ON destination_airport.id=flight_instances.destination_airport_id
-JOIN aircraft_view aircraft ON aircraft.id=flight_instances.aircraft_id;
+LEFT JOIN aircraft_view aircraft ON aircraft.id=flight_instances.aircraft_id;
 
 CREATE UNIQUE INDEX IF NOT EXISTS unique_flight_instance_for_date_in_flight_schedule
 ON flight_instances(source_flight_schedule_id, source_flight_schedule_instance_date)

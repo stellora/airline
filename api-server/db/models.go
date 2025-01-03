@@ -73,11 +73,11 @@ type FlightInstancesView struct {
 	OriginAirportOadbID              sql.NullInt64
 	DestinationAirportIataCode       string
 	DestinationAirportOadbID         sql.NullInt64
-	AircraftRegistration             string
-	AircraftAircraftType             string
-	AircraftAirlineID                int64
-	AircraftAirlineIataCode          string
-	AircraftAirlineName              string
+	AircraftRegistration             sql.NullString
+	AircraftAircraftType             sql.NullString
+	AircraftAirlineID                sql.NullInt64
+	AircraftAirlineIataCode          sql.NullString
+	AircraftAirlineName              sql.NullString
 }
 
 type FlightSchedule struct {

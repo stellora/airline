@@ -23,6 +23,8 @@ func TestListFlightSchedulesByAirport(t *testing.T) {
 			StartDate:          fixtureDate1,
 			EndDate:            fixtureDate2,
 			DaysOfWeek:         fixtureDaysOfWeek,
+			DepartureTime:      "7:00",
+			ArrivalTime:        "9:00",
 			Published:          true},
 		{
 			Id:                 2,
@@ -34,6 +36,8 @@ func TestListFlightSchedulesByAirport(t *testing.T) {
 			StartDate:          fixtureDate1,
 			EndDate:            fixtureDate2,
 			DaysOfWeek:         fixtureDaysOfWeek,
+			DepartureTime:      "7:00",
+			ArrivalTime:        "9:00",
 			Published:          true}}
 
 	t.Run("by id", func(t *testing.T) {

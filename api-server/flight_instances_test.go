@@ -104,7 +104,7 @@ func TestUpdateFlightInstance(t *testing.T) {
 			t.Fatal(err)
 		}
 		if _, ok := resp.(api.UpdateFlightInstance200JSONResponse); !ok {
-			t.Errorf("got %#v", resp)
+			t.Fatalf("got %T, want non-error response", resp)
 		}
 		if got := resp.(api.UpdateFlightInstance200JSONResponse); got.Notes != notes {
 			t.Errorf("got notes %q, want %q", got.Notes, notes)

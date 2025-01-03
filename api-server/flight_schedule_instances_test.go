@@ -87,3 +87,22 @@ func TestListFlightInstancesForFlightSchedule(t *testing.T) {
 		},
 	})
 }
+
+func TestScheduleToInstanceDateTime(t *testing.T) {
+	date := time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)
+	tests := []struct {
+		timeOfDay string
+		want      time.Time
+	}{}
+	for _, test := range tests {
+		t.Run(test.timeOfDay, func(t *testing.T) {
+			got, err := scheduleToInstanceDateTime(date, test.timeOfDay)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !got.Equal(test.want) {
+				t.Errorf("got %s, want %s", got, test.want)
+			}
+		})
+	}
+}

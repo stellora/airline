@@ -32,6 +32,8 @@ func TestGetFlightSchedule(t *testing.T) {
 			StartDate:          fixtureDate1,
 			EndDate:            fixtureDate2,
 			DaysOfWeek:         fixtureDaysOfWeek,
+			DepartureTime:      "7:00",
+			ArrivalTime:        "9:00",
 			Published:          true,
 		}
 		assertEqual(t, resp, want)
@@ -70,6 +72,8 @@ func TestListFlightSchedules(t *testing.T) {
 			StartDate:          fixtureDate1,
 			EndDate:            fixtureDate2,
 			DaysOfWeek:         fixtureDaysOfWeek,
+			DepartureTime:      "7:00",
+			ArrivalTime:        "9:00",
 			Published:          true,
 		},
 		api.FlightSchedule{
@@ -82,6 +86,8 @@ func TestListFlightSchedules(t *testing.T) {
 			StartDate:          fixtureDate1,
 			EndDate:            fixtureDate2,
 			DaysOfWeek:         fixtureDaysOfWeek,
+			DepartureTime:      "7:00",
+			ArrivalTime:        "9:00",
 			Published:          true,
 		},
 	}
@@ -101,13 +107,15 @@ func TestCreateFlightSchedule(t *testing.T) {
 				OriginAirport:      api.NewAirportSpec(1, ""),
 				DestinationAirport: api.NewAirportSpec(2, ""),
 				AircraftType:       "B77W",
+				DepartureTime:      "7:00",
+				ArrivalTime:        "9:00",
 			},
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 		if _, ok := resp.(api.CreateFlightSchedule201JSONResponse); !ok {
-			t.Errorf("got %#v", resp)
+			t.Errorf("got %T, want non-error response", resp)
 		}
 		checkFlightTitles(t, handler, []string{"XX1 AAA-BBB"})
 	})
@@ -124,13 +132,15 @@ func TestCreateFlightSchedule(t *testing.T) {
 				OriginAirport:      api.NewAirportSpec(0, "AAA"),
 				DestinationAirport: api.NewAirportSpec(0, "BBB"),
 				AircraftType:       "B77W",
+				DepartureTime:      "7:00",
+				ArrivalTime:        "9:00",
 			},
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 		if _, ok := resp.(api.CreateFlightSchedule201JSONResponse); !ok {
-			t.Errorf("got %#v", resp)
+			t.Errorf("got %T, want non-error response", resp)
 		}
 		checkFlightTitles(t, handler, []string{"XX1 AAA-BBB"})
 	})
@@ -155,6 +165,8 @@ func TestUpdateFlightSchedule(t *testing.T) {
 				StartDate:          &fixtureDate3,
 				EndDate:            &fixtureDate4,
 				DaysOfWeek:         ptrTo([]int{1, 5}),
+				DepartureTime:      ptrTo("8:15"),
+				ArrivalTime:        ptrTo("10:45"),
 				Published:          ptrTo(true),
 			},
 		})
@@ -162,7 +174,7 @@ func TestUpdateFlightSchedule(t *testing.T) {
 			t.Fatal(err)
 		}
 		if _, ok := resp.(api.UpdateFlightSchedule200JSONResponse); !ok {
-			t.Errorf("got %#v", resp)
+			t.Errorf("got %T, want non-error response", resp)
 		}
 		checkFlightTitles(t, handler, []string{"YY100 BBB-AAA"})
 	}
@@ -184,6 +196,8 @@ func TestUpdateFlightSchedule(t *testing.T) {
 			StartDate:          fixtureDate3,
 			EndDate:            fixtureDate4,
 			DaysOfWeek:         []int{1, 5},
+			DepartureTime:      "8:15",
+			ArrivalTime:        "10:45",
 			Published:          true,
 		}
 		assertEqual(t, resp, want)
