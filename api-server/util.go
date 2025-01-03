@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -89,6 +89,15 @@ func insertAirlines(ctx context.Context, handler *Handler, airlines map[string]s
 	return ids, nil
 }
 
+var (
+	fixtureDate1      = openapi_types.Date{Time: time.Date(2025, 1, 1, 18, 19, 0, 0, time.UTC)}
+	fixtureDate2      = openapi_types.Date{Time: time.Date(2025, 1, 1, 20, 21, 0, 0, time.UTC)}
+	fixtureDate3      = openapi_types.Date{Time: time.Date(2025, 1, 1, 22, 23, 0, 0, time.UTC)}
+	fixtureDate4      = openapi_types.Date{Time: time.Date(2025, 1, 1, 23, 24, 0, 0, time.UTC)}
+	fixtureDaysOfWeek = []int{1, 5, 6}
+	fixtureB77W       = api.AircraftType{IcaoCode: "B77W", Name: "Boeing 777-300ER"}
+)
+
 func insertFlightSchedules(ctx context.Context, handler *Handler, flightTitles ...string) (ids []int, err error) {
 	ids = make([]int, len(flightTitles))
 	for i, flight := range flightTitles {
@@ -99,10 +108,10 @@ func insertFlightSchedules(ctx context.Context, handler *Handler, flightTitles .
 				Number:             flightNumber,
 				OriginAirport:      api.NewAirportSpec(0, originIATACode),
 				DestinationAirport: api.NewAirportSpec(0, destinationIATACode),
-				AircraftType:       "B77W",
-				StartDate:          openapi_types.Date{Time: time.Date(2025, 1, 1, 18, 19, 0, 0, time.UTC)},
-				EndDate:            openapi_types.Date{Time: time.Date(2025, 1, 1, 20, 21, 0, 0, time.UTC)},
-				DaysOfWeek:         []int{1, 3, 5, 6, 7},
+				AircraftType:       fixtureB77W.IcaoCode,
+				StartDate:          fixtureDate1,
+				EndDate:            fixtureDate2,
+				DaysOfWeek:         fixtureDaysOfWeek,
 				Published:          ptrTo(true),
 			},
 		})
@@ -127,21 +136,28 @@ func distanceMilesBetweenAirports(a, b api.Airport) *float64 {
 // parseDaysOfWeek parses a string like `01356` to a slice with those numbers (representing the days
 // of the week).
 func parseDaysOfWeek(str string) (days []int, err error) {
+	seen := make([]bool, 7)
 	for _, c := range str {
 		if c < '0' || c > '6' {
 			return nil, errors.New("invalid day of week")
 		}
-		days = append(days, int(c-'0'))
+		day := int(c - '0')
+		if seen[day] {
+			continue
+		}
+		seen[day] = true
+		days = append(days, day)
 	}
+	sort.Ints(days)
 	return days, nil
 }
 
-var intString = regexp.MustCompile(`^\d+$`)
-
-// isIntString returns true if str is a string of one or more digits. Unlike strconv.Atoi or
-// strconv.ParseInt, it does not allow leading '-' or '+' characters.
-func isIntString(str string) bool {
-	return intString.MatchString(str)
+func toDBDaysOfWeek(days []int) string {
+	s := make([]byte, len(days))
+	for i, day := range days {
+		s[i] = byte('0' + day)
+	}
+	return string(s)
 }
 
 func ptrTo[T any](v T) *T {

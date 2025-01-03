@@ -28,6 +28,10 @@ func TestGetFlightSchedule(t *testing.T) {
 			Number:             "1",
 			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
 			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
+			AircraftType:       fixtureB77W,
+			StartDate:          fixtureDate1,
+			EndDate:            fixtureDate2,
+			DaysOfWeek:         fixtureDaysOfWeek,
 			Published:          true,
 		}
 		assertEqual(t, resp, want)
@@ -62,6 +66,10 @@ func TestListFlightSchedules(t *testing.T) {
 			Number:             "1",
 			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
 			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
+			AircraftType:       fixtureB77W,
+			StartDate:          fixtureDate1,
+			EndDate:            fixtureDate2,
+			DaysOfWeek:         fixtureDaysOfWeek,
 			Published:          true,
 		},
 		api.FlightSchedule{
@@ -70,6 +78,10 @@ func TestListFlightSchedules(t *testing.T) {
 			Number:             "2",
 			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
 			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
+			AircraftType:       fixtureB77W,
+			StartDate:          fixtureDate1,
+			EndDate:            fixtureDate2,
+			DaysOfWeek:         fixtureDaysOfWeek,
 			Published:          true,
 		},
 	}
@@ -88,6 +100,7 @@ func TestCreateFlightSchedule(t *testing.T) {
 				Number:             "1",
 				OriginAirport:      api.NewAirportSpec(1, ""),
 				DestinationAirport: api.NewAirportSpec(2, ""),
+				AircraftType:       "B77W",
 			},
 		})
 		if err != nil {
@@ -110,6 +123,7 @@ func TestCreateFlightSchedule(t *testing.T) {
 				Number:             "1",
 				OriginAirport:      api.NewAirportSpec(0, "AAA"),
 				DestinationAirport: api.NewAirportSpec(0, "BBB"),
+				AircraftType:       "B77W",
 			},
 		})
 		if err != nil {
@@ -137,6 +151,10 @@ func TestUpdateFlightSchedule(t *testing.T) {
 				Number:             ptrTo("100"),
 				OriginAirport:      ptrTo(api.NewAirportSpec(2, "")),
 				DestinationAirport: ptrTo(api.NewAirportSpec(0, "AAA")),
+				AircraftType:       ptrTo("B789"),
+				StartDate:          &fixtureDate3,
+				EndDate:            &fixtureDate4,
+				DaysOfWeek:         ptrTo([]int{1, 5}),
 				Published:          ptrTo(true),
 			},
 		})
@@ -162,6 +180,10 @@ func TestUpdateFlightSchedule(t *testing.T) {
 			Number:             "100",
 			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
 			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
+			AircraftType:       api.AircraftType{IcaoCode: "B789", Name: "Boeing 787-9"},
+			StartDate:          fixtureDate3,
+			EndDate:            fixtureDate4,
+			DaysOfWeek:         []int{1, 5},
 			Published:          true,
 		}
 		assertEqual(t, resp, want)

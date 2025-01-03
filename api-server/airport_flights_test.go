@@ -13,9 +13,28 @@ func TestListFlightSchedulesByAirport(t *testing.T) {
 	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 CCC-BBB")
 
 	want := api.ListFlightSchedulesByAirport200JSONResponse{
-		{Id: 1, Airline: api.Airline{Id: 1, IataCode: "XX"}, Number: "1", OriginAirport: api.Airport{Id: 1, IataCode: "AAA"}, DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"}, Published: true},
-		{Id: 2, Airline: api.Airline{Id: 1, IataCode: "XX"}, Number: "2", OriginAirport: api.Airport{Id: 2, IataCode: "BBB"}, DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"}, Published: true},
-	}
+		{
+			Id:                 1,
+			Airline:            api.Airline{Id: 1, IataCode: "XX"},
+			Number:             "1",
+			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
+			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
+			AircraftType:       fixtureB77W,
+			StartDate:          fixtureDate1,
+			EndDate:            fixtureDate2,
+			DaysOfWeek:         fixtureDaysOfWeek,
+			Published:          true},
+		{
+			Id:                 2,
+			Airline:            api.Airline{Id: 1, IataCode: "XX"},
+			Number:             "2",
+			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
+			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
+			AircraftType:       fixtureB77W,
+			StartDate:          fixtureDate1,
+			EndDate:            fixtureDate2,
+			DaysOfWeek:         fixtureDaysOfWeek,
+			Published:          true}}
 
 	t.Run("by id", func(t *testing.T) {
 		resp, err := handler.ListFlightSchedulesByAirport(ctx, api.ListFlightSchedulesByAirportRequestObject{

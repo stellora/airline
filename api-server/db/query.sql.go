@@ -117,9 +117,9 @@ func (q *Queries) CreateFlightInstance(ctx context.Context, arg CreateFlightInst
 
 const createFlightSchedule = `-- name: CreateFlightSchedule :one
 INSERT INTO flight_schedules (
-  airline_id, number, origin_airport_id, destination_airport_id, published
+  airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_date, end_date, days_of_week, published
 ) VALUES (
-  ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 RETURNING id
 `
@@ -129,6 +129,10 @@ type CreateFlightScheduleParams struct {
 	Number               string
 	OriginAirportID      int64
 	DestinationAirportID int64
+	AircraftType         string
+	StartDate            time.Time
+	EndDate              time.Time
+	DaysOfWeek           string
 	Published            bool
 }
 
@@ -138,6 +142,10 @@ func (q *Queries) CreateFlightSchedule(ctx context.Context, arg CreateFlightSche
 		arg.Number,
 		arg.OriginAirportID,
 		arg.DestinationAirportID,
+		arg.AircraftType,
+		arg.StartDate,
+		arg.EndDate,
+		arg.DaysOfWeek,
 		arg.Published,
 	)
 	var id int64
@@ -997,8 +1005,12 @@ airline_id = COALESCE(?1, airline_id),
 number = COALESCE(?2, number),
 origin_airport_id = COALESCE(?3, origin_airport_id),
 destination_airport_id = COALESCE(?4, destination_airport_id),
-published = COALESCE(?5, published)
-WHERE id=?6
+aircraft_type = COALESCE(?5, aircraft_type),
+start_date = COALESCE(?6, start_date),
+end_date = COALESCE(?7, end_date),
+days_of_week = COALESCE(?8, days_of_week),
+published = COALESCE(?9, published)
+WHERE id=?10
 RETURNING id
 `
 
@@ -1007,6 +1019,10 @@ type UpdateFlightScheduleParams struct {
 	Number               sql.NullString
 	OriginAirportID      sql.NullInt64
 	DestinationAirportID sql.NullInt64
+	AircraftType         sql.NullString
+	StartDate            sql.NullTime
+	EndDate              sql.NullTime
+	DaysOfWeek           sql.NullString
 	Published            sql.NullBool
 	ID                   int64
 }
@@ -1017,6 +1033,10 @@ func (q *Queries) UpdateFlightSchedule(ctx context.Context, arg UpdateFlightSche
 		arg.Number,
 		arg.OriginAirportID,
 		arg.DestinationAirportID,
+		arg.AircraftType,
+		arg.StartDate,
+		arg.EndDate,
+		arg.DaysOfWeek,
 		arg.Published,
 		arg.ID,
 	)

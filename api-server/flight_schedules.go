@@ -12,6 +12,8 @@ import (
 )
 
 func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
+	daysOfWeek, _ := parseDaysOfWeek(a.DaysOfWeek)
+
 	b := api.FlightSchedule{
 		Id: int(a.ID),
 		Airline: fromDBAirline(db.Airline{
@@ -33,7 +35,7 @@ func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 		AircraftType: fromAircraftTypeCode(a.AircraftType),
 		StartDate:    openapi_types.Date{Time: a.StartDate},
 		EndDate:      openapi_types.Date{Time: a.EndDate},
-		DaysOfWeek:   a.DaysOfWeek,
+		DaysOfWeek:   daysOfWeek,
 		Published:    a.Published,
 	}
 	b.DistanceMiles = distanceMilesBetweenAirports(b.OriginAirport, b.DestinationAirport)
@@ -94,11 +96,19 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		return nil, fmt.Errorf("looking up destinationAirport: %w", err)
 	}
 
+	if request.Body.AircraftType == "" {
+		return nil, errors.New("aircraftType must not be empty")
+	}
+
 	created, err := queriesTx.CreateFlightSchedule(ctx, db.CreateFlightScheduleParams{
 		AirlineID:            airline.ID,
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
 		DestinationAirportID: destinationAirport.ID,
+		AircraftType:         request.Body.AircraftType,
+		StartDate:            request.Body.StartDate.Time,
+		EndDate:              request.Body.EndDate.Time,
+		DaysOfWeek:           toDBDaysOfWeek(request.Body.DaysOfWeek),
 		Published:            request.Body.Published != nil && *request.Body.Published,
 	})
 	if err != nil {
@@ -151,6 +161,18 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 			return nil, err
 		}
 		params.DestinationAirportID = sql.NullInt64{Int64: destinationAirport.ID, Valid: true}
+	}
+	if request.Body.AircraftType != nil {
+		params.AircraftType = sql.NullString{String: *request.Body.AircraftType, Valid: true}
+	}
+	if request.Body.StartDate != nil {
+		params.StartDate = sql.NullTime{Time: request.Body.StartDate.Time, Valid: true}
+	}
+	if request.Body.EndDate != nil {
+		params.EndDate = sql.NullTime{Time: request.Body.EndDate.Time, Valid: true}
+	}
+	if request.Body.DaysOfWeek != nil {
+		params.DaysOfWeek = sql.NullString{String: toDBDaysOfWeek(*request.Body.DaysOfWeek), Valid: true}
 	}
 	if request.Body.Published != nil {
 		params.Published = sql.NullBool{Bool: *request.Body.Published, Valid: true}
