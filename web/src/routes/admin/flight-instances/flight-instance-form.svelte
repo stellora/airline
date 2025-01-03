@@ -10,7 +10,7 @@
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
 	import type { PageServerData } from './$types'
-	import { formSchema } from './flight-schedule-form'
+	import { formSchema } from './flight-instance-form'
 
 	const {
 		action,

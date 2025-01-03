@@ -6,11 +6,12 @@ import (
 	"errors"
 	"fmt"
 
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
 )
 
-func fromDBFlight(a db.FlightSchedulesView) api.FlightSchedule {
+func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 	b := api.FlightSchedule{
 		Id: int(a.ID),
 		Airline: fromDBAirline(db.Airline{
@@ -29,7 +30,11 @@ func fromDBFlight(a db.FlightSchedulesView) api.FlightSchedule {
 			IataCode: a.DestinationAirportIataCode,
 			OadbID:   a.DestinationAirportOadbID,
 		}),
-		Published: a.Published,
+		AircraftType: fromAircraftTypeCode(a.AircraftType),
+		StartDate:    openapi_types.Date{Time: a.StartDate},
+		EndDate:      openapi_types.Date{Time: a.EndDate},
+		DaysOfWeek:   a.DaysOfWeek,
+		Published:    a.Published,
 	}
 	b.DistanceMiles = distanceMilesBetweenAirports(b.OriginAirport, b.DestinationAirport)
 	return b
@@ -42,7 +47,7 @@ func (h *Handler) GetFlightSchedule(ctx context.Context, request api.GetFlightSc
 			return &api.GetFlightSchedule404Response{}, nil
 		}
 	}
-	return api.GetFlightSchedule200JSONResponse(fromDBFlight(flight)), nil
+	return api.GetFlightSchedule200JSONResponse(fromDBFlightSchedule(flight)), nil
 }
 
 func (h *Handler) ListFlightSchedules(ctx context.Context, request api.ListFlightSchedulesRequestObject) (api.ListFlightSchedulesResponseObject, error) {
@@ -50,7 +55,7 @@ func (h *Handler) ListFlightSchedules(ctx context.Context, request api.ListFligh
 	if err != nil {
 		return nil, err
 	}
-	return api.ListFlightSchedules200JSONResponse(mapSlice(fromDBFlight, flights)), nil
+	return api.ListFlightSchedules200JSONResponse(mapSlice(fromDBFlightSchedule, flights)), nil
 }
 
 func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFlightScheduleRequestObject) (api.CreateFlightScheduleResponseObject, error) {
@@ -109,7 +114,7 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		return nil, err
 	}
 
-	return api.CreateFlightSchedule201JSONResponse(fromDBFlight(flight)), nil
+	return api.CreateFlightSchedule201JSONResponse(fromDBFlightSchedule(flight)), nil
 }
 
 func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFlightScheduleRequestObject) (api.UpdateFlightScheduleResponseObject, error) {
@@ -170,7 +175,7 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 		return nil, err
 	}
 
-	return api.UpdateFlightSchedule200JSONResponse(fromDBFlight(flight)), nil
+	return api.UpdateFlightSchedule200JSONResponse(fromDBFlightSchedule(flight)), nil
 }
 
 func (h *Handler) DeleteFlightSchedule(ctx context.Context, request api.DeleteFlightScheduleRequestObject) (api.DeleteFlightScheduleResponseObject, error) {

@@ -65,6 +65,15 @@ var aircraftTypes = []api.AircraftType{
 	{IcaoCode: "AT45", Name: "ATR 42-500"},
 }
 
+func fromAircraftTypeCode(code string) api.AircraftType {
+	for _, at := range aircraftTypes {
+		if at.IcaoCode == code {
+			return at
+		}
+	}
+	panic("aircraft type not found: " + code)
+}
+
 func (h *Handler) ListAircraftTypes(ctx context.Context, request api.ListAircraftTypesRequestObject) (api.ListAircraftTypesResponseObject, error) {
 	return api.ListAircraftTypes200JSONResponse(aircraftTypes), nil
 }

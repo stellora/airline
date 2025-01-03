@@ -1,0 +1,30 @@
+<script lang="ts">
+	import FlightTitle from '$lib/components/flight-title.svelte'
+	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
+	import { Card, CardHeader, CardTitle } from '$lib/components/ui/card'
+	import Page from '$lib/components/ui/page/page.svelte'
+	import { flightTitle } from '$lib/flight-helpers'
+
+	let { data } = $props()
+</script>
+
+<Page title={`${flightTitle(data.flightInstance)} schedule`} showTitleHeading={true}>
+	{#snippet titleElement(className)}
+		<FlightTitle flight={data.flightInstance} class={className} subtitleClass="text-base" as="h1" />
+	{/snippet}
+
+	<div class="flex flex-wrap-reverse gap-4">
+		<Card class="flex-grow-[1]">
+			<CardHeader>
+				<CardTitle>Route</CardTitle>
+			</CardHeader>
+		</Card>
+
+		<Card class="overflow-hidden flex-grow-[2] basis-[350px] min-w-[350px]">
+			<GreatCircleRoute
+				routes={[[data.flightInstance.originAirport, data.flightInstance.destinationAirport]]}
+				detailLevel="high"
+			/>
+		</Card>
+	</div>
+</Page>

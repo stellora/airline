@@ -6,6 +6,7 @@ package db
 
 import (
 	"database/sql"
+	"time"
 )
 
 type Aircraft struct {
@@ -36,12 +37,24 @@ type Airport struct {
 	OadbID   sql.NullInt64
 }
 
+type FlightInstance struct {
+	ID                     int64
+	SourceFlightScheduleID int64
+	InstanceDate           time.Time
+	AircraftID             sql.NullInt64
+	Notes                  string
+}
+
 type FlightSchedule struct {
 	ID                   int64
 	AirlineID            int64
 	Number               string
 	OriginAirportID      int64
 	DestinationAirportID int64
+	AircraftType         string
+	StartDate            time.Time
+	EndDate              time.Time
+	DaysOfWeek           string
 	Published            bool
 }
 
@@ -51,6 +64,10 @@ type FlightSchedulesView struct {
 	Number                     string
 	OriginAirportID            int64
 	DestinationAirportID       int64
+	AircraftType               string
+	StartDate                  time.Time
+	EndDate                    time.Time
+	DaysOfWeek                 string
 	Published                  bool
 	OriginAirportIataCode      string
 	OriginAirportOadbID        sql.NullInt64

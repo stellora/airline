@@ -135,9 +135,9 @@ ORDER BY id ASC;
 
 -- name: CreateFlightSchedule :one
 INSERT INTO flight_schedules (
-  airline_id, number, origin_airport_id, destination_airport_id, published
+  airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_date, end_date, days_of_week, published
 ) VALUES (
-  ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 RETURNING id;
 
@@ -147,6 +147,10 @@ airline_id = COALESCE(sqlc.narg('airline_id'), airline_id),
 number = COALESCE(sqlc.narg('number'), number),
 origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
 destination_airport_id = COALESCE(sqlc.narg('destination_airport_id'), destination_airport_id),
+aircraft_type = COALESCE(sqlc.narg('aircraft_type'), aircraft_type),
+start_date = COALESCE(sqlc.narg('start_date'), start_date),
+end_date = COALESCE(sqlc.narg('end_date'), end_date),
+days_of_week = COALESCE(sqlc.narg('days_of_week'), days_of_week),
 published = COALESCE(sqlc.narg('published'), published)
 WHERE id=sqlc.arg('id')
 RETURNING id;
@@ -169,6 +173,49 @@ SELECT *
 FROM flight_schedules_view
 WHERE origin_airport_id=:origin_airport OR destination_airport_id=:destination_airport
 ORDER BY id ASC;
+
+------------------------------------------------------------------------------- flight_instances
+
+-- name: GetFlightInstance :one
+SELECT sqlc.embed(flight_instances), sqlc.embed(flight_schedules_view)
+FROM flight_instances
+JOIN flight_schedules_view ON flight_instances.source_flight_schedule_id=flight_schedules_view.id
+WHERE flight_instances.id=sqlc.arg('id') LIMIT 1;
+
+-- name: ListFlightInstances :many
+SELECT sqlc.embed(flight_instances), sqlc.embed(flight_schedules_view)
+FROM flight_instances
+JOIN flight_schedules_view ON flight_instances.source_flight_schedule_id=flight_schedules_view.id
+ORDER BY flight_instances.id ASC;
+
+-- name: CreateFlightInstance :one
+INSERT INTO flight_instances (
+  source_flight_schedule_id,
+  instance_date,
+  aircraft_id,
+  notes
+) VALUES (
+  ?, ?, ?, ?
+)
+RETURNING id;
+
+-- name: UpdateFlightInstance :one
+UPDATE flight_instances SET
+aircraft_id = COALESCE(sqlc.narg('aircraft_id'), aircraft_id),
+notes = COALESCE(sqlc.narg('notes'), notes)
+WHERE id=sqlc.arg('id')
+RETURNING id;
+
+-- name: DeleteFlightInstance :exec
+DELETE FROM flight_schedules
+WHERE id=?;
+
+-- name: ListFlightInstancesForFlightSchedule :many
+SELECT sqlc.embed(flight_instances), sqlc.embed(flight_schedules_view)
+FROM flight_instances
+JOIN flight_schedules_view ON flight_instances.source_flight_schedule_id=flight_schedules_view.id
+WHERE source_flight_schedule_id=sqlc.arg('flight_schedule_id')
+ORDER BY flight_instances.id ASC;
 
 ------------------------------------------------------------------------------- routes
 

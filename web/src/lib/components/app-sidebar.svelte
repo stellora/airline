@@ -10,6 +10,7 @@
 	import List from 'lucide-svelte/icons/list'
 	import MapPin from 'lucide-svelte/icons/map-pin'
 	import Plane from 'lucide-svelte/icons/plane'
+	import PlaneTakeoff from 'lucide-svelte/icons/plane-takeoff'
 	import TicketsPlane from 'lucide-svelte/icons/tickets-plane'
 	import User from 'lucide-svelte/icons/user'
 	import Users from 'lucide-svelte/icons/users'
@@ -44,6 +45,11 @@
 			title: 'Flight schedule',
 			url: route('/admin/flight-schedules'),
 			icon: CalendarRange,
+		},
+		{
+			title: 'Flights',
+			url: route('/admin/flight-instances'),
+			icon: PlaneTakeoff,
 		},
 		{
 			title: 'Routes',

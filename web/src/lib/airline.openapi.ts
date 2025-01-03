@@ -241,6 +241,56 @@ export interface paths {
         patch: operations["updateFlightSchedule"];
         trace?: never;
     };
+    "/flight-schedules/{id}/instances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get flight instances defined by a flight schedule */
+        get: operations["listFlightInstancesForFlightSchedule"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/flight-instances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all flight instances */
+        get: operations["listFlightInstances"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/flight-instances/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getFlightInstance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["updateFlightInstance"];
+        trace?: never;
+    };
     "/routes": {
         parameters: {
             query?: never;
@@ -322,6 +372,7 @@ export interface components {
             /** Format: double */
             latitude: number;
         };
+        DaysOfWeek: (0 | 1 | 2 | 3 | 4 | 5 | 6)[];
         FlightSchedule: {
             id: number;
             airline: components["schemas"]["Airline"];
@@ -330,9 +381,24 @@ export interface components {
             destinationAirport: components["schemas"]["Airport"];
             /** Format: double */
             distanceMiles?: number;
+            aircraftType: components["schemas"]["AircraftType"];
+            /** Format: date */
+            startDate: string;
+            /** Format: date */
+            endDate: string;
+            daysOfWeek: components["schemas"]["DaysOfWeek"];
             published: boolean;
         };
         FlightNumber: string;
+        /** @description A single flight, associated with the FlightSchedule template that defined it. */
+        FlightInstance: {
+            id: number;
+            source: components["schemas"]["FlightSchedule"];
+            /** Format: date */
+            instanceDate: string;
+            aircraft?: components["schemas"]["Aircraft"];
+            notes?: string;
+        };
         Route: {
             originAirport: components["schemas"]["Airport"];
             destinationAirport: components["schemas"]["Airport"];
@@ -1008,6 +1074,12 @@ export interface operations {
                     number: components["schemas"]["FlightNumber"];
                     originAirport: components["schemas"]["AirportSpec"];
                     destinationAirport: components["schemas"]["AirportSpec"];
+                    aircraftType: components["schemas"]["AircraftTypeICAOCode"];
+                    /** Format: date */
+                    startDate: string;
+                    /** Format: date */
+                    endDate: string;
+                    daysOfWeek: components["schemas"]["DaysOfWeek"];
                     /** @default false */
                     published?: boolean;
                 };
@@ -1122,6 +1194,12 @@ export interface operations {
                     number?: components["schemas"]["FlightNumber"];
                     originAirport?: components["schemas"]["AirportSpec"];
                     destinationAirport?: components["schemas"]["AirportSpec"];
+                    aircraftType?: components["schemas"]["AircraftTypeICAOCode"];
+                    /** Format: date */
+                    startDate?: string;
+                    /** Format: date */
+                    endDate?: string;
+                    daysOfWeek?: components["schemas"]["DaysOfWeek"];
                     published?: boolean;
                 };
             };
@@ -1137,6 +1215,120 @@ export interface operations {
                 };
             };
             /** @description Flight schedule not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFlightInstancesForFlightSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of flight instances */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlightInstance"][];
+                };
+            };
+            /** @description Flight schedule not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFlightInstances: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of flight instances */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlightInstance"][];
+                };
+            };
+        };
+    };
+    getFlightInstance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Flight instance found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlightInstance"];
+                };
+            };
+            /** @description Flight instance not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateFlightInstance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    aircraft?: components["schemas"]["AircraftSpec"];
+                    notes?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Flight instance updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlightInstance"];
+                };
+            };
+            /** @description Flight instance not found */
             404: {
                 headers: {
                     [name: string]: unknown;

@@ -28,5 +28,5 @@ func (h *Handler) ListFlightSchedulesByAirport(ctx context.Context, request api.
 	if err != nil {
 		return nil, err
 	}
-	return api.ListFlightSchedulesByAirport200JSONResponse(mapSlice(fromDBFlight, flights)), nil
+	return api.ListFlightSchedulesByAirport200JSONResponse(mapSlice(fromDBFlightSchedule, flights)), nil
 }

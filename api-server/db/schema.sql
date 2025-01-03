@@ -29,6 +29,10 @@ CREATE TABLE IF NOT EXISTS flight_schedules (
   number TEXT NOT NULL,
   origin_airport_id INTEGER NOT NULL,
   destination_airport_id INTEGER NOT NULL,
+  aircraft_type TEXT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  days_of_week TEXT NOT NULL,
   published BOOLEAN NOT NULL DEFAULT FALSE,
   FOREIGN KEY (airline_id) REFERENCES airlines(id),
   FOREIGN KEY (origin_airport_id) REFERENCES airports(id),
@@ -47,6 +51,19 @@ FROM flight_schedules
 JOIN airlines airlines ON airlines.id=flight_schedules.airline_id
 JOIN airports origin_airport ON origin_airport.id=flight_schedules.origin_airport_id
 JOIN airports destination_airport ON destination_airport.id=flight_schedules.destination_airport_id;
+
+CREATE TABLE IF NOT EXISTS flight_instances (
+  id INTEGER PRIMARY KEY,
+  source_flight_schedule_id INTEGER NOT NULL,
+  instance_date DATE NOT NULL,
+  aircraft_id INTEGER,
+  notes TEXT NOT NULL,
+  FOREIGN KEY (source_flight_schedule_id) REFERENCES flight_schedules(id),
+  FOREIGN KEY (aircraft_id) REFERENCES aircraft(id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS unique_flight_instance_for_date_in_flight_schedule
+ON flight_instances(source_flight_schedule_id, instance_date);
 
 CREATE VIEW IF NOT EXISTS routes AS
 SELECT origin_airport_id, destination_airport_id,

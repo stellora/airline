@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"errors"
 	"regexp"
 	"strings"
+	"time"
 
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stellora/airline/api-server/api"
 	"github.com/tidwall/geodesic"
 )
@@ -96,6 +99,10 @@ func insertFlightSchedules(ctx context.Context, handler *Handler, flightTitles .
 				Number:             flightNumber,
 				OriginAirport:      api.NewAirportSpec(0, originIATACode),
 				DestinationAirport: api.NewAirportSpec(0, destinationIATACode),
+				AircraftType:       "B77W",
+				StartDate:          openapi_types.Date{Time: time.Date(2025, 1, 1, 18, 19, 0, 0, time.UTC)},
+				EndDate:            openapi_types.Date{Time: time.Date(2025, 1, 1, 20, 21, 0, 0, time.UTC)},
+				DaysOfWeek:         []int{1, 3, 5, 6, 7},
 				Published:          ptrTo(true),
 			},
 		})
@@ -115,6 +122,18 @@ func distanceMilesBetweenAirports(a, b api.Airport) *float64 {
 		return ptrTo(distanceMeters * metersPerMile)
 	}
 	return nil
+}
+
+// parseDaysOfWeek parses a string like `01356` to a slice with those numbers (representing the days
+// of the week).
+func parseDaysOfWeek(str string) (days []int, err error) {
+	for _, c := range str {
+		if c < '0' || c > '6' {
+			return nil, errors.New("invalid day of week")
+		}
+		days = append(days, int(c-'0'))
+	}
+	return days, nil
 }
 
 var intString = regexp.MustCompile(`^\d+$`)

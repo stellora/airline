@@ -4,21 +4,21 @@
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import Plus from 'lucide-svelte/icons/plus'
-	import FlightScheduleForm from './flight-schedule-form.svelte'
-	import FlightScheduleList from './flight-schedule-list.svelte'
+	import FlightScheduleForm from './flight-instance-form.svelte'
+	import FlightScheduleList from './flight-instance-list.svelte'
 
 	let { data } = $props()
 </script>
 
 <PageNav>
 	{#snippet actions()}
-		<Dialog.RootByNavigationState id="new-flight-schedule">
+		<Dialog.RootByNavigationState id="new-flight-instance">
 			<Dialog.Trigger>
-				<Button variant="secondary" size="pageNavbar"><Plus /> New flight schedule</Button>
+				<Button variant="secondary" size="pageNavbar"><Plus /> New flight instance</Button>
 			</Dialog.Trigger>
 			<Dialog.Content>
 				<Dialog.Header>
-					<Dialog.Title>New flight schedule</Dialog.Title>
+					<Dialog.Title>New flight instance</Dialog.Title>
 				</Dialog.Header>
 				<FlightScheduleForm action="?/create" submitLabel="Create" form={data.form} />
 			</Dialog.Content>
@@ -26,6 +26,6 @@
 	{/snippet}
 </PageNav>
 
-<Page title="Flight schedules">
-	<FlightScheduleList flightSchedules={data.flightSchedules} />
+<Page title="Flight instances">
+	<FlightScheduleList flightInstances={data.flightInstances} />
 </Page>
