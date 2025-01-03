@@ -128,6 +128,8 @@ func TestUpdateFlightInstance(t *testing.T) {
 }
 
 func checkFlightInstances(t *testing.T, handler *Handler, flightScheduleID int, want []string) {
+	t.Helper()
+
 	resp, err := handler.ListFlightInstancesForFlightSchedule(context.Background(), api.ListFlightInstancesForFlightScheduleRequestObject{Id: flightScheduleID})
 	if err != nil {
 		t.Fatal(err)
@@ -141,7 +143,7 @@ func checkFlightInstances(t *testing.T, handler *Handler, flightScheduleID int, 
 		if instance.Notes != nil {
 			parts = append(parts, fmt.Sprintf("notes=%s", *instance.Notes))
 		}
-		return strings.Join(parts, ",")
+		return strings.Join(parts, " ")
 	}
 
 	instances := resp.(api.ListFlightInstancesForFlightSchedule200JSONResponse)

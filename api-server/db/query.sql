@@ -207,7 +207,7 @@ WHERE id=sqlc.arg('id')
 RETURNING id;
 
 -- name: DeleteFlightInstance :exec
-DELETE FROM flight_schedules
+DELETE FROM flight_instances
 WHERE id=?;
 
 -- name: ListFlightInstancesForFlightSchedule :many

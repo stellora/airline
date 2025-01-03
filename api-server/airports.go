@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"regexp"
 
 	"github.com/stellora/airline/api-server/api"
@@ -121,7 +120,7 @@ func (h *Handler) CreateAirport(ctx context.Context, request api.CreateAirportRe
 	return api.CreateAirport201JSONResponse(fromDBAirport(created)), nil
 }
 
-func createAirport(ctx context.Context, queries *db.Queries, request api.CreateAirportRequestObject) (db.Airport, error) {
+func createAirport(ctx context.Context, queriesTx *db.Queries, request api.CreateAirportRequestObject) (db.Airport, error) {
 	if !validAirportIATACode.MatchString(request.Body.IataCode) {
 		return db.Airport{}, fmt.Errorf("invalid IATA code: %s", request.Body.IataCode)
 	}
@@ -132,7 +131,7 @@ func createAirport(ctx context.Context, queries *db.Queries, request api.CreateA
 	if info := extdata.Airports.AirportByIATACode(request.Body.IataCode); info != nil {
 		params.OadbID = sql.NullInt64{Int64: int64(info.Airport.ID), Valid: true}
 	}
-	created, err := queries.CreateAirport(ctx, params)
+	created, err := queriesTx.CreateAirport(ctx, params)
 	if err != nil {
 		return db.Airport{}, fmt.Errorf("failed to create airport %q: %w", request.Body.IataCode, err)
 	}
@@ -168,7 +167,6 @@ func (h *Handler) UpdateAirport(ctx context.Context, request api.UpdateAirportRe
 
 	updated, err := queriesTx.UpdateAirport(ctx, params)
 	if err != nil {
-		log.Println("XX11", err)
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateAirport404Response{}, nil
 		}

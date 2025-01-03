@@ -120,6 +120,10 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		return nil, err
 	}
 
+	if err := syncFlightScheduleInstances(ctx, queriesTx, flight); err != nil {
+		return nil, err
+	}
+
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
@@ -190,6 +194,10 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateFlightSchedule404Response{}, nil
 		}
+		return nil, err
+	}
+
+	if err := syncFlightScheduleInstances(ctx, queriesTx, flight); err != nil {
 		return nil, err
 	}
 

@@ -220,7 +220,7 @@ func (q *Queries) DeleteAllFlightSchedules(ctx context.Context) error {
 }
 
 const deleteFlightInstance = `-- name: DeleteFlightInstance :exec
-DELETE FROM flight_schedules
+DELETE FROM flight_instances
 WHERE id=?
 `
 

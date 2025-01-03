@@ -90,10 +90,10 @@ func insertAirlines(ctx context.Context, handler *Handler, airlines map[string]s
 }
 
 var (
-	fixtureDate1      = openapi_types.Date{Time: time.Date(2025, 1, 1, 18, 19, 0, 0, time.UTC)}
-	fixtureDate2      = openapi_types.Date{Time: time.Date(2025, 1, 1, 20, 21, 0, 0, time.UTC)}
-	fixtureDate3      = openapi_types.Date{Time: time.Date(2025, 1, 1, 22, 23, 0, 0, time.UTC)}
-	fixtureDate4      = openapi_types.Date{Time: time.Date(2025, 1, 1, 23, 24, 0, 0, time.UTC)}
+	fixtureDate1      = openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)}
+	fixtureDate2      = openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)}
+	fixtureDate3      = openapi_types.Date{Time: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC)}
+	fixtureDate4      = openapi_types.Date{Time: time.Date(2025, 1, 4, 0, 0, 0, 0, time.UTC)}
 	fixtureDaysOfWeek = []int{1, 5, 6}
 	fixtureB77W       = api.AircraftType{IcaoCode: "B77W", Name: "Boeing 777-300ER"}
 
@@ -157,7 +157,7 @@ func distanceMilesBetweenAirports(a, b api.Airport) *float64 {
 }
 
 // parseDaysOfWeek parses a string like `01356` to a slice with those numbers (representing the days
-// of the week).
+// of the week). Sunday is 0.
 func parseDaysOfWeek(str string) (days []int, err error) {
 	seen := make([]bool, 7)
 	for _, c := range str {
@@ -181,6 +181,15 @@ func toDBDaysOfWeek(days []int) string {
 		s[i] = byte('0' + day)
 	}
 	return string(s)
+}
+
+func daysOfWeekContains(daysOfWeek []int, day time.Weekday) bool {
+	for _, d := range daysOfWeek {
+		if d == int(day) {
+			return true
+		}
+	}
+	return false
 }
 
 func ptrTo[T any](v T) *T {

@@ -21,8 +21,8 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 
 	// Ensure that the flight instances are preserved when updating the schedule.
 	setNotesForFlightInstance(t, handler, 1, "a")
-	setNotesForFlightInstance(t, handler, 1, "b")
-	setNotesForFlightInstance(t, handler, 1, "c")
+	setNotesForFlightInstance(t, handler, 2, "b")
+	setNotesForFlightInstance(t, handler, 3, "c")
 	checkFlightInstances(t, handler, flightSchedule1.Id, []string{
 		"2025-01-01 notes=a",
 		"2025-01-02 notes=b",
@@ -33,7 +33,7 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 		Id: flightSchedule1.Id,
 		Body: &api.UpdateFlightScheduleJSONRequestBody{
 			EndDate:    ptrTo(openapi_types.Date{Time: time.Date(2025, 1, 5, 0, 0, 0, 0, time.UTC)}),
-			DaysOfWeek: ptrTo([]int{2, 4, 6}),
+			DaysOfWeek: ptrTo([]int{0, 3, 5, 6}),
 		},
 	})
 	if err != nil {
@@ -69,19 +69,19 @@ func TestListFlightInstancesForFlightSchedule(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assertEqual(t, resp, api.ListFlightInstances200JSONResponse{
+	assertEqual(t, resp, api.ListFlightInstancesForFlightSchedule200JSONResponse{
 		{
-			Id:           1,
+			Id:           4,
 			Source:       flightSchedule2,
 			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
 		},
 		{
-			Id:           2,
+			Id:           5,
 			Source:       flightSchedule2,
 			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC)},
 		},
 		{
-			Id:           3,
+			Id:           6,
 			Source:       flightSchedule2,
 			InstanceDate: openapi_types.Date{Time: time.Date(2025, 1, 4, 0, 0, 0, 0, time.UTC)},
 		},

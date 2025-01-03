@@ -11,12 +11,12 @@ import (
 	"github.com/stellora/airline/api-server/db"
 )
 
-func getAirlineBySpec(ctx context.Context, queries *db.Queries, spec api.AirlineSpec) (db.Airline, error) {
+func getAirlineBySpec(ctx context.Context, queriesTx *db.Queries, spec api.AirlineSpec) (db.Airline, error) {
 	if id, err := spec.AsAirlineID(); err == nil {
-		return queries.GetAirline(ctx, int64(id))
+		return queriesTx.GetAirline(ctx, int64(id))
 	}
 	if iataCode, err := spec.AsAirlineIATACode(); err == nil {
-		return queries.GetAirlineByIATACode(ctx, iataCode)
+		return queriesTx.GetAirlineByIATACode(ctx, iataCode)
 	}
 	panic("invalid AirlineSpec: " + fmt.Sprintf("%#v", spec))
 }
