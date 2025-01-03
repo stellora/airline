@@ -4,7 +4,7 @@ import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
 import type { Actions, PageServerLoad } from './$types'
-import { formSchema } from './flight-schedule-form'
+import { formDataToFlightScheduleRequest, formSchema } from './flight-schedule-form'
 
 export const load: PageServerLoad = async () => {
 	const flightSchedules = await apiClient
@@ -24,13 +24,7 @@ export const actions: Actions = {
 		}
 
 		const resp = await apiClient.POST('/flight-schedules', {
-			body: {
-				airline: form.data.airline,
-				number: form.data.number,
-				originAirport: form.data.originAirport,
-				destinationAirport: form.data.destinationAirport,
-				published: form.data.published,
-			},
+			body: formDataToFlightScheduleRequest(form.data),
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {

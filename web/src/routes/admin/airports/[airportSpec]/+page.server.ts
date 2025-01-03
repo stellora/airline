@@ -3,8 +3,8 @@ import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
-import { formSchema } from '../airport-form'
-import type { Actions, PageServerLoad } from './$types'
+import { formDataToAirportRequest, formSchema } from '../airport-form'
+import type { Actions } from './$types'
 
 export const actions: Actions = {
 	update: async ({ params, request }) => {
@@ -14,9 +14,7 @@ export const actions: Actions = {
 		}
 		const resp = await apiClient.PATCH('/airports/{airportSpec}', {
 			params: { path: { airportSpec: params.airportSpec } },
-			body: {
-				iataCode: form.data.iataCode,
-			},
+			body: formDataToAirportRequest(form.data),
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {

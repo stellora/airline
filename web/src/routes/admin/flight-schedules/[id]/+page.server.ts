@@ -3,7 +3,7 @@ import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
-import { formSchema } from '../flight-schedule-form'
+import { formDataToFlightScheduleRequest, formSchema } from '../flight-schedule-form'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -19,13 +19,7 @@ export const actions: Actions = {
 
 		const resp = await apiClient.PATCH('/flight-schedules/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
-			body: {
-				airline: form.data.airline,
-				number: form.data.number,
-				originAirport: form.data.originAirport,
-				destinationAirport: form.data.destinationAirport,
-				published: form.data.published,
-			},
+			body: formDataToFlightScheduleRequest(form.data),
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {

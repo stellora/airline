@@ -3,7 +3,7 @@ import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
-import { formSchema } from '../aircraft-form'
+import { formDataToAircraftRequest, formSchema } from '../aircraft-form'
 import type { Actions } from './$types'
 
 export const actions: Actions = {
@@ -14,11 +14,7 @@ export const actions: Actions = {
 		}
 		const resp = await apiClient.PATCH('/aircraft/{aircraftSpec}', {
 			params: { path: { aircraftSpec: params.aircraftSpec } },
-			body: {
-				registration: form.data.registration,
-				aircraftType: form.data.aircraftType,
-				airline: form.data.airline,
-			},
+			body: formDataToAircraftRequest(form.data),
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {

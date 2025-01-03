@@ -1,3 +1,4 @@
+import type { paths } from '$lib/airline.openapi'
 import type { Aircraft } from '$lib/types'
 import { Type } from '@sinclair/typebox'
 
@@ -15,5 +16,17 @@ export function existingAircraftToFormData(a: Aircraft): FormSchema['static'] {
 		registration: a.registration,
 		aircraftType: a.aircraftType,
 		airline: a.airline.iataCode,
+	}
+}
+
+export function formDataToAircraftRequest(
+	f: FormSchema['static'],
+):
+	| paths['/aircraft']['post']['requestBody']['content']['application/json']
+	| paths['/aircraft']['post']['requestBody']['content']['application/json'] {
+	return {
+		registration: f.registration,
+		aircraftType: f.aircraftType,
+		airline: f.airline,
 	}
 }

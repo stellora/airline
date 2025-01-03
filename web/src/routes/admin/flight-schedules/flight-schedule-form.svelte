@@ -1,12 +1,15 @@
 <script lang="ts">
+	import AircraftTypeSelect from '$lib/components/aircraft-type-select.svelte'
 	import AirlineSelect from '$lib/components/airline-select.svelte'
 	import FlightDateRangeInput from '$lib/components/date-range-input.svelte'
+	import DaysOfWeekControls from '$lib/components/days-of-week-controls.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import { Checkbox } from '$lib/components/ui/checkbox'
 	import * as Form from '$lib/components/ui/form'
 	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
 	import { Input } from '$lib/components/ui/input'
-	import { DateValue, parseDate } from '@internationalized/date'
+	import { type DaysOfWeek } from '$lib/types'
+	import { type DateValue, parseDate } from '@internationalized/date'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
@@ -23,6 +26,7 @@
 		onError({ result }) {
 			$message = result.error.message || 'Unknown error'
 		},
+		dataType: 'json',
 	})
 	const { form: formData, enhance, message, constraints } = form
 </script>
@@ -61,7 +65,7 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
-	<FormFieldGroup legend="Route">
+	<FormFieldGroup legend="Route" horizontal>
 		<Form.Field {form} name="originAirport">
 			<Form.Control>
 				{#snippet children({ props })}
@@ -98,27 +102,49 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
-	<Form.Field {form} name="startEndDate">
+	<Form.Field {form} name="aircraftType">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label>Date range</Form.Label>
-				<FlightDateRangeInput
+				<Form.Label>Aircraft type</Form.Label>
+				<AircraftTypeSelect
 					{...props}
-					bind:value={() => ({
-						start: parseDate($formData.startEndDate.start),
-						end: parseDate($formData.startEndDate.end),
-					}),
-					(v: { start: DateValue; end: DateValue }) => {
-						$formData.startEndDate = {
-							start: v.start.toString(),
-							end: v.end.toString(),
-						}
-					}}
+					bind:value={$formData.aircraftType}
+					{...$constraints.aircraftType}
 				/>
 			{/snippet}
 		</Form.Control>
+		<Form.Description>IATA code</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
+	<FormFieldGroup legend="Schedule">
+		<Form.Field {form} name="startEndDate">
+			<Form.Control>
+				{#snippet children({ props })}
+					<Form.Label>Date range</Form.Label>
+					<FlightDateRangeInput
+						{...props}
+						bind:value={() => ({
+							start: parseDate($formData.startEndDate.start),
+							end: parseDate($formData.startEndDate.end),
+						}),
+						(v: { start: DateValue | undefined; end: DateValue | undefined }) => {
+							if (v.start && v.end) {
+								$formData.startEndDate = {
+									start: v.start.toString(),
+									end: v.end.toString(),
+								}
+							}
+						}}
+					/>
+				{/snippet}
+			</Form.Control>
+			<Form.FieldErrors />
+		</Form.Field>
+		<Form.Fieldset {form} name="daysOfWeek">
+			<Form.Legend>Days of week</Form.Legend>
+			<DaysOfWeekControls bind:value={$formData.daysOfWeek as DaysOfWeek} />
+		</Form.Fieldset>
+	</FormFieldGroup>
 	<FormFieldGroup legend="Options">
 		<Form.Field {form} name="published">
 			<Form.Control>

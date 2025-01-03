@@ -4,7 +4,7 @@ import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
 import type { Actions, PageServerLoad } from './$types'
-import { formSchema } from './airport-form'
+import { formDataToAirportRequest, formSchema } from './airport-form'
 
 export const load: PageServerLoad = async () => {
 	return {
@@ -21,9 +21,7 @@ export const actions: Actions = {
 		}
 
 		const resp = await apiClient.POST('/airports', {
-			body: {
-				iataCode: form.data.iataCode,
-			},
+			body: formDataToAirportRequest(form.data),
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {

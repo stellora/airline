@@ -4,7 +4,7 @@ import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
 import type { Actions, PageServerLoad } from './$types'
-import { formSchema } from './aircraft-form'
+import { formDataToAircraftRequest, formSchema } from './aircraft-form'
 
 export const load: PageServerLoad = async () => {
 	return {
@@ -21,11 +21,7 @@ export const actions: Actions = {
 		}
 
 		const resp = await apiClient.POST('/aircraft', {
-			body: {
-				registration: form.data.registration,
-				aircraftType: form.data.aircraftType,
-				airline: form.data.airline,
-			},
+			body: formDataToAircraftRequest(form.data),
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {
