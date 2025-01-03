@@ -14,6 +14,7 @@
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
 	import FlightInstanceForm from './flight-instance-form.svelte'
+	import Users from 'lucide-svelte/icons/users'
 
 	const { children, data } = $props()
 </script>
@@ -28,44 +29,17 @@
 			icon: SquareMenu,
 		},
 		{
-			title: 'Instances',
-			url: route('/admin/flight-instances/[id]/instances', {
+			title: 'Passengers',
+			url: route('/admin/flight-instances/[id]/passengers', {
 				params: { id: page.params.id },
 			}),
-			icon: CalendarDays,
+			icon: Users,
 		},
 	]}
 >
 	{#snippet breadcrumbActions()}
 		<PageNavbarBreadcrumbActionsDropdownMenu>
 			<DropdownMenu.Group>
-				<DropdownMenu.Item>
-					{#snippet child({ props })}
-						<form
-							method="POST"
-							action={route('/admin/flight-instances/[id]', {
-								params: { id: page.params.id },
-								query: '/setFlightInstancePublished',
-							})}
-							use:enhance
-							class="w-full [&>button]:w-full"
-						>
-							<input
-								type="hidden"
-								name="published"
-								value={data.flightInstance.published ? 'false' : 'true'}
-							/>
-							<button type="submit" {...props}>
-								{#if data.flightInstance.published}
-									<EyeOff /> Unpublish
-								{:else}
-									<Eye /> Publish
-								{/if}
-							</button>
-						</form>
-					{/snippet}
-				</DropdownMenu.Item>
-				<DropdownMenu.Separator />
 				<DropdownMenu.Item>
 					{#snippet child({ props })}
 						<form

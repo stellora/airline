@@ -1,6 +1,6 @@
 import { apiClient } from '$lib/api'
 import { breadcrumbEntry } from '$lib/components/breadcrumbs'
-import { flightTitle } from '$lib/flight-helpers'
+import { flightInstanceTitle } from '$lib/flight-helpers'
 import { route } from '$lib/route-helpers'
 import { error } from '@sveltejs/kit'
 import { superValidate } from 'sveltekit-superforms'
@@ -22,7 +22,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 	return {
 		...(await breadcrumbEntry(parent, {
 			url: route('/admin/flight-instances/[id]', { params: { id: flightInstance.id.toString() } }),
-			title: flightTitle(flightInstance),
+			title: flightInstanceTitle(flightInstance),
 		})),
 		flightInstance,
 		form: await superValidate(

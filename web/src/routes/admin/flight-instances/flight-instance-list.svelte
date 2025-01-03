@@ -1,7 +1,5 @@
 <script lang="ts">
-	import AirportCode from '$lib/components/airport-code.svelte'
-	import Distance from '$lib/components/distance.svelte'
-	import FlightSparkRoute from '$lib/components/flight-spark-route.svelte'
+	import AircraftTypeCode from '$lib/components/aircraft-type-code.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
@@ -16,9 +14,10 @@
 <Card>
 	<Table.Root>
 		<Table.Header>
-			<Table.Row class="!hover:bg-none">
-				<Table.Head class="w-[200px]">Flight number</Table.Head>
-				<Table.Head>Route</Table.Head>
+			<Table.Row>
+				<Table.Head class="w-[125px]">Date</Table.Head>
+				<Table.Head class="w-[140px]">Flight number</Table.Head>
+				<Table.Head>Aircraft</Table.Head>
 				<Table.Head class="text-right" />
 			</Table.Row>
 		</Table.Header>
@@ -26,24 +25,17 @@
 			<Table.Body>
 				{#each flightInstances as flight (flight.id)}
 					<Table.Row class="stretched-link-container group">
-						<Table.Cell class="font-bold text-lg">
-							<FlightTitle {flight} as="span" showRoute={false} />
+						<Table.Cell>
+							{flight.instanceDate}
 						</Table.Cell>
-						<Table.Cell class="flex items-center gap-2"
+						<Table.Cell>
+							<FlightTitle flight={flight.source} as="span" showRoute={true} />
+						</Table.Cell>
+						<Table.Cell
 							><div class="inline-flex flex-col gap-1">
-								<span
-									><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
-										airport={flight.destinationAirport}
-									/></span
-								>
-								<span class="text-muted-foreground text-xs">
-									<Distance distanceMiles={flight.distanceMiles} /></span
-								>
-							</div>
-							<div class="border rounded">
-								<FlightSparkRoute {flight} width={100} height={36} />
-							</div>
-						</Table.Cell>
+								<AircraftTypeCode aircraftType={flight.source.aircraftType} />
+							</div></Table.Cell
+						>
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"

@@ -285,7 +285,8 @@ export interface paths {
         get: operations["getFlightInstance"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete a flight instance */
+        delete: operations["deleteFlightInstance"];
         options?: never;
         head?: never;
         patch: operations["updateFlightInstance"];
@@ -1291,6 +1292,33 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["FlightInstance"];
                 };
+            };
+            /** @description Flight instance not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteFlightInstance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Flight instance deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Flight instance not found */
             404: {

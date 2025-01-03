@@ -498,6 +498,9 @@ type ServerInterface interface {
 	// List all flight instances
 	// (GET /flight-instances)
 	ListFlightInstances(w http.ResponseWriter, r *http.Request)
+	// Delete a flight instance
+	// (DELETE /flight-instances/{id})
+	DeleteFlightInstance(w http.ResponseWriter, r *http.Request, id int)
 
 	// (GET /flight-instances/{id})
 	GetFlightInstance(w http.ResponseWriter, r *http.Request, id int)
@@ -999,6 +1002,31 @@ func (siw *ServerInterfaceWrapper) ListFlightInstances(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
+// DeleteFlightInstance operation middleware
+func (siw *ServerInterfaceWrapper) DeleteFlightInstance(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteFlightInstance(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetFlightInstance operation middleware
 func (siw *ServerInterfaceWrapper) GetFlightInstance(w http.ResponseWriter, r *http.Request) {
 
@@ -1387,6 +1415,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("PATCH "+options.BaseURL+"/airports/{airportSpec}", wrapper.UpdateAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}/flight-schedules", wrapper.ListFlightSchedulesByAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances", wrapper.ListFlightInstances)
+	m.HandleFunc("DELETE "+options.BaseURL+"/flight-instances/{id}", wrapper.DeleteFlightInstance)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances/{id}", wrapper.GetFlightInstance)
 	m.HandleFunc("PATCH "+options.BaseURL+"/flight-instances/{id}", wrapper.UpdateFlightInstance)
 	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules", wrapper.DeleteAllFlightSchedules)
@@ -1903,6 +1932,30 @@ func (response ListFlightInstances200JSONResponse) VisitListFlightInstancesRespo
 	return json.NewEncoder(w).Encode(response)
 }
 
+type DeleteFlightInstanceRequestObject struct {
+	Id int `json:"id"`
+}
+
+type DeleteFlightInstanceResponseObject interface {
+	VisitDeleteFlightInstanceResponse(w http.ResponseWriter) error
+}
+
+type DeleteFlightInstance204Response struct {
+}
+
+func (response DeleteFlightInstance204Response) VisitDeleteFlightInstanceResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteFlightInstance404Response struct {
+}
+
+func (response DeleteFlightInstance404Response) VisitDeleteFlightInstanceResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
 type GetFlightInstanceRequestObject struct {
 	Id int `json:"id"`
 }
@@ -2240,6 +2293,9 @@ type StrictServerInterface interface {
 	// List all flight instances
 	// (GET /flight-instances)
 	ListFlightInstances(ctx context.Context, request ListFlightInstancesRequestObject) (ListFlightInstancesResponseObject, error)
+	// Delete a flight instance
+	// (DELETE /flight-instances/{id})
+	DeleteFlightInstance(ctx context.Context, request DeleteFlightInstanceRequestObject) (DeleteFlightInstanceResponseObject, error)
 
 	// (GET /flight-instances/{id})
 	GetFlightInstance(ctx context.Context, request GetFlightInstanceRequestObject) (GetFlightInstanceResponseObject, error)
@@ -2918,6 +2974,32 @@ func (sh *strictHandler) ListFlightInstances(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ListFlightInstancesResponseObject); ok {
 		if err := validResponse.VisitListFlightInstancesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteFlightInstance operation middleware
+func (sh *strictHandler) DeleteFlightInstance(w http.ResponseWriter, r *http.Request, id int) {
+	var request DeleteFlightInstanceRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteFlightInstance(ctx, request.(DeleteFlightInstanceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteFlightInstance")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteFlightInstanceResponseObject); ok {
+		if err := validResponse.VisitDeleteFlightInstanceResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

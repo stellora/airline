@@ -16,7 +16,7 @@
 <Card>
 	<Table.Root>
 		<Table.Header>
-			<Table.Row class="!hover:bg-none">
+			<Table.Row>
 				<Table.Head class="w-[200px]">Flight number</Table.Head>
 				<Table.Head>Route</Table.Head>
 				<Table.Head class="text-right" />

@@ -8,9 +8,17 @@
 	let { data } = $props()
 </script>
 
-<Page title={`${flightTitle(data.flightInstance)} schedule`} showTitleHeading={true}>
+<Page
+	title={`${flightTitle(data.flightInstance.source)} flight on ${data.flightInstance.instanceDate}`}
+	showTitleHeading={true}
+>
 	{#snippet titleElement(className)}
-		<FlightTitle flight={data.flightInstance} class={className} subtitleClass="text-base" as="h1" />
+		<FlightTitle
+			flight={data.flightInstance.source}
+			class={className}
+			subtitleClass="text-base"
+			as="h1"
+		/>
 	{/snippet}
 
 	<div class="flex flex-wrap-reverse gap-4">
@@ -22,7 +30,9 @@
 
 		<Card class="overflow-hidden flex-grow-[2] basis-[350px] min-w-[350px]">
 			<GreatCircleRoute
-				routes={[[data.flightInstance.originAirport, data.flightInstance.destinationAirport]]}
+				routes={[
+					[data.flightInstance.source.originAirport, data.flightInstance.source.destinationAirport],
+				]}
 				detailLevel="high"
 			/>
 		</Card>

@@ -64,6 +64,15 @@ func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate ti
 	return flightSchedule
 }
 
+func insertFlightInstanceT(t *testing.T, handler *Handler, newInstance api.CreateFlightInstanceJSONRequestBody) api.FlightSchedule {
+	t.Helper()
+	instance, err := insertFlightInstance(context.Background(), handler, newInstance)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return instance
+}
+
 func setNotesForFlightInstance(t *testing.T, handler *Handler, id int, notes string) {
 	t.Helper()
 	if _, err := handler.UpdateFlightInstance(context.Background(), api.UpdateFlightInstanceRequestObject{

@@ -20,11 +20,8 @@ export const actions: Actions = {
 		const resp = await apiClient.PATCH('/flight-instances/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
 			body: {
-				airline: form.data.airline,
-				number: form.data.number,
-				originAirport: form.data.originAirport,
-				destinationAirport: form.data.destinationAirport,
-				published: form.data.published,
+				aircraft: form.data.aircraft,
+				notes: form.data.notes,
 			},
 			fetch,
 		})
@@ -35,32 +32,6 @@ export const actions: Actions = {
 			303,
 			route('/admin/flight-instances/[id]', { params: { id: resp.data.id.toString() } }),
 		)
-	},
-	setFlightInstancePublished: async ({ request, params }) => {
-		// TODO!(sqs): make this use the id from the URL not the form data
-		const data = await request.formData()
-
-		const publishedStr = data.get('published')
-		if (publishedStr !== 'true' && publishedStr !== 'false') {
-			return fail(400, {
-				published: undefined,
-				error: 'published must be "true" or "false"',
-			})
-		}
-		const published = publishedStr === 'true'
-
-		const resp = await apiClient.PATCH('/flight-instances/{id}', {
-			params: { path: { id: Number.parseInt(params.id) } },
-			body: { published },
-			fetch,
-		})
-		if (!resp.response.ok) {
-			// TODO(sqs)
-			return fail(422, {
-				published: undefined,
-				error: await resp.response.text(),
-			})
-		}
 	},
 	delete: async ({ params, request }) => {
 		const data = await request.formData()

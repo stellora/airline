@@ -551,6 +551,57 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FlightInstance'
+    post:
+      operationId: createFlightInstance
+      summary: Create a new single flight instance from manual input, not from a flight schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                airline:
+                  $ref: '#/components/schemas/AirlineSpec'
+                number:
+                  $ref: '#/components/schemas/FlightNumber'
+                originAirport:
+                  $ref: '#/components/schemas/AirportSpec'
+                destinationAirport:
+                  $ref: '#/components/schemas/AirportSpec'
+                aircraftType:
+                  $ref: '#/components/schemas/AircraftTypeICAOCode'
+                aircraft:
+                  $ref: '#/components/schemas/AircraftSpec'
+                departureDateTime:
+                  type: string
+                  format: date
+                arrivalDateTime:
+                  type: string
+                  format: date
+                notes:
+                  type: string
+                published:
+                  type: boolean
+                  default: false
+              required:
+                - airline
+                - number
+                - originAirport
+                - destinationAirport
+                - aircraftType
+                - departureDateTime
+                - arrivalDateTime
+                - notes
+      responses:
+        '201':
+          description: Flight instance created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightInstance'
+        '400':
+          description: Invalid request
   /flight-instances/{id}:
     get:
       operationId: getFlightInstance
@@ -584,10 +635,29 @@ paths:
             schema:
               type: object
               properties:
+                airline:
+                  $ref: '#/components/schemas/AirlineSpec'
+                number:
+                  $ref: '#/components/schemas/FlightNumber'
+                originAirport:
+                  $ref: '#/components/schemas/AirportSpec'
+                destinationAirport:
+                  $ref: '#/components/schemas/AirportSpec'
+                aircraftType:
+                  $ref: '#/components/schemas/AircraftTypeICAOCode'
                 aircraft:
                   $ref: '#/components/schemas/AircraftSpec'
+                departureDateTime:
+                  type: string
+                  format: date
+                arrivalDateTime:
+                  type: string
+                  format: date
                 notes:
                   type: string
+                published:
+                  type: boolean
+                  default: false
       responses:
         '200':
           description: Flight instance updated
@@ -595,6 +665,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlightInstance'
+        '400':
+          description: Flight instance created from flight schedule can't update fields set by the flight schedule. Edit the flight schedule instead.
+        '404':
+          description: Flight instance not found
+    delete:
+      operationId: deleteFlightInstance
+      summary: Delete a flight instance created from manual input
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Flight instance deleted
+        '400':
+          description: Flight instance created from a flight schedule can't be deleted. Edit the flight schedule instead.
         '404':
           description: Flight instance not found
   /routes:
@@ -821,23 +909,49 @@ components:
       maxLength: 4
     FlightInstance:
       type: object
-      description: A single flight, associated with the FlightSchedule template that defined it.
+      description: A single flight, either created and synced automatically from a flight schedule or created manually.
       properties:
         id:
           type: integer
-        source:
-          $ref: '#/components/schemas/FlightSchedule'
-        instanceDate:
+        scheduleID:
+          type: integer
+        scheduleInstanceDate:
           type: string
           format: date
+        airline:
+          $ref: '#/components/schemas/Airline'
+        number:
+          $ref: '#/components/schemas/FlightNumber'
+        originAirport:
+           $ref: '#/components/schemas/Airport'
+        destinationAirport:
+           $ref: '#/components/schemas/Airport'
+        aircraftType:
+           $ref: '#/components/schemas/AircraftType'
         aircraft:
-          $ref: '#/components/schemas/Aircraft'
+           $ref: '#/components/schemas/Aircraft'
+        departureDateTime:
+           type: string
+           format: date
+        arrivalDateTime:
+           type: string
+           format: date
         notes:
-          type: string
+           type: string
+        published:
+           type: boolean
+           default: false
       required:
         - id
-        - source
-        - instanceDate
+        - airline
+        - number
+        - originAirport
+        - destinationAirport
+        - aircraftType
+        - departureDateTime
+        - arrivalDateTime
+        - notes
+        - published
     Route:
       type: object
       properties:

@@ -146,6 +146,16 @@ func insertFlightSchedule(ctx context.Context, handler *Handler, startDate, endD
 	return api.FlightSchedule(v.(api.CreateFlightSchedule201JSONResponse)), nil
 }
 
+func insertFlightInstance(ctx context.Context, handler *Handler, newInstance api.CreateFlightInstanceJSONRequestBody) (api.FlightInstance, error) {
+	v, err := handler.CreateFlightInstance(ctx, api.CreateFlightInstanceRequestObject{
+		Body: &newInstance,
+	})
+	if err != nil {
+		return api.FlightInstance{}, err
+	}
+	return api.FlightInstance(v.(api.CreateFlightInstance201JSONResponse)), nil
+}
+
 func distanceMilesBetweenAirports(a, b api.Airport) *float64 {
 	if (a.Point != api.Point{} && b.Point != api.Point{}) {
 		var distanceMeters float64

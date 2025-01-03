@@ -95,3 +95,11 @@ func (h *Handler) UpdateFlightInstance(ctx context.Context, request api.UpdateFl
 
 	return api.UpdateFlightInstance200JSONResponse(fromDBFlightInstance(row.FlightInstance, row.FlightSchedulesView, nil)), nil
 }
+
+func (h *Handler) DeleteFlightInstance(ctx context.Context, request api.DeleteFlightInstanceRequestObject) (api.DeleteFlightInstanceResponseObject, error) {
+	if err := h.queries.DeleteFlightInstance(ctx, int64(request.Id)); err != nil {
+		// TODO(sqs): check if it was actually deleted
+		return nil, err
+	}
+	return api.DeleteFlightInstance204Response{}, nil
+}
