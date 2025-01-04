@@ -32,8 +32,8 @@ func TestGetFlightSchedule(t *testing.T) {
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
-			DepartureTime:      "7:00",
-			ArrivalTime:        "9:00",
+			DepartureTime:      "07:00",
+			ArrivalTime:        "09:00",
 			Published:          true,
 		}
 		assertEqual(t, resp, want)
@@ -72,8 +72,8 @@ func TestListFlightSchedules(t *testing.T) {
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
-			DepartureTime:      "7:00",
-			ArrivalTime:        "9:00",
+			DepartureTime:      "07:00",
+			ArrivalTime:        "09:00",
 			Published:          true,
 		},
 		api.FlightSchedule{
@@ -86,8 +86,8 @@ func TestListFlightSchedules(t *testing.T) {
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
-			DepartureTime:      "7:00",
-			ArrivalTime:        "9:00",
+			DepartureTime:      "07:00",
+			ArrivalTime:        "09:00",
 			Published:          true,
 		},
 	}
@@ -107,8 +107,10 @@ func TestCreateFlightSchedule(t *testing.T) {
 				OriginAirport:      api.NewAirportSpec(1, ""),
 				DestinationAirport: api.NewAirportSpec(2, ""),
 				AircraftType:       "B77W",
-				DepartureTime:      "7:00",
-				ArrivalTime:        "9:00",
+				StartDate:          fixtureLocalDate1.String(),
+				EndDate:            fixtureLocalDate2.String(),
+				DepartureTime:      "07:00",
+				ArrivalTime:        "09:00",
 			},
 		})
 		if err != nil {
@@ -132,8 +134,10 @@ func TestCreateFlightSchedule(t *testing.T) {
 				OriginAirport:      api.NewAirportSpec(0, "AAA"),
 				DestinationAirport: api.NewAirportSpec(0, "BBB"),
 				AircraftType:       "B77W",
-				DepartureTime:      "7:00",
-				ArrivalTime:        "9:00",
+				StartDate:          fixtureLocalDate1.String(),
+				EndDate:            fixtureLocalDate2.String(),
+				DepartureTime:      "07:00",
+				ArrivalTime:        "09:00",
 			},
 		})
 		if err != nil {
@@ -165,7 +169,7 @@ func TestUpdateFlightSchedule(t *testing.T) {
 				StartDate:          ptrTo(fixtureLocalDate3.String()),
 				EndDate:            ptrTo(fixtureLocalDate4.String()),
 				DaysOfWeek:         ptrTo([]int{1, 5}),
-				DepartureTime:      ptrTo("8:15"),
+				DepartureTime:      ptrTo("08:15"),
 				ArrivalTime:        ptrTo("10:45"),
 				Published:          ptrTo(true),
 			},
@@ -196,7 +200,7 @@ func TestUpdateFlightSchedule(t *testing.T) {
 			StartDate:          fixtureLocalDate3.String(),
 			EndDate:            fixtureLocalDate4.String(),
 			DaysOfWeek:         []int{1, 5},
-			DepartureTime:      "8:15",
+			DepartureTime:      "08:15",
 			ArrivalTime:        "10:45",
 			Published:          true,
 		}

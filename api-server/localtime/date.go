@@ -1,6 +1,7 @@
 package localtime
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"time"
 )
@@ -31,7 +32,18 @@ func (d LocalDate) Date(loc *time.Location) time.Time {
 	if loc == nil || loc.String() == "UTC" {
 		panic("converting a LocalDate to UTC is almost always a mistake")
 	}
+	return d.date(loc)
+}
+
+func (d LocalDate) date(loc *time.Location) time.Time {
 	return time.Date(d.Year, d.Month, d.Day, 0, 0, 0, 0, loc)
+}
+
+func (d LocalDate) TimeOfDay(loc *time.Location, at TimeOfDay) time.Time {
+	if loc == nil || loc.String() == "UTC" {
+		panic("converting a LocalDate to UTC is almost always a mistake")
+	}
+	return time.Date(d.Year, d.Month, d.Day, at.Hour, at.Minute, 0, 0, loc)
 }
 
 func (d LocalDate) Equal(other LocalDate) bool {
@@ -59,13 +71,37 @@ func (d LocalDate) Before(other LocalDate) bool {
 }
 
 func (d LocalDate) Weekday() time.Weekday {
-	return d.Date(time.UTC).Weekday()
+	return d.date(time.UTC).Weekday()
 }
 
 func (d LocalDate) AddDays(days int) LocalDate {
-	return NewLocalDate(d.Year, d.Month, d.Day+days)
+	t := d.date(time.UTC).AddDate(0, 0, days)
+	return NewLocalDate(t.Year(), t.Month(), t.Day())
 }
 
 func (d LocalDate) String() string {
 	return fmt.Sprintf("%04d-%02d-%02d", d.Year, d.Month, d.Day)
+}
+
+// Scan implements the [sql.Scanner] interface.
+func (d *LocalDate) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	switch v := value.(type) {
+	case string:
+		dv, err := ParseLocalDate(v)
+		if err != nil {
+			return fmt.Errorf("scan LocalDate: %v", err)
+		}
+		*d = dv
+		return nil
+	default:
+		return fmt.Errorf("scan LocalDate: invalid type %T", value)
+	}
+}
+
+// Value implements the [driver.Valuer] interface.
+func (d LocalDate) Value() (driver.Value, error) {
+	return d.String(), nil
 }

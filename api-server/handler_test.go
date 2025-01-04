@@ -169,8 +169,8 @@ func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...stri
 					StartDate:          fixtureLocalDate1.String(),
 					EndDate:            fixtureLocalDate2.String(),
 					DaysOfWeek:         fixtureDaysOfWeek,
-					DepartureTime:      "7:00",
-					ArrivalTime:        "9:00",
+					DepartureTime:      "07:00",
+					ArrivalTime:        "09:00",
 					Published:          ptrTo(true),
 				},
 			})
@@ -202,8 +202,8 @@ func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate lo
 				StartDate:          startDate.String(),
 				EndDate:            endDate.String(),
 				DaysOfWeek:         daysOfWeek,
-				DepartureTime:      "7:00",
-				ArrivalTime:        "9:00",
+				DepartureTime:      "07:00",
+				ArrivalTime:        "09:00",
 				Published:          ptrTo(true),
 			},
 		})

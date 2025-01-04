@@ -23,8 +23,8 @@ func TestListFlightSchedulesByAirline(t *testing.T) {
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
-			DepartureTime:      "7:00",
-			ArrivalTime:        "9:00",
+			DepartureTime:      "07:00",
+			ArrivalTime:        "09:00",
 			Published:          true,
 		},
 		api.FlightSchedule{
@@ -37,8 +37,8 @@ func TestListFlightSchedulesByAirline(t *testing.T) {
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
-			DepartureTime:      "7:00",
-			ArrivalTime:        "9:00",
+			DepartureTime:      "07:00",
+			ArrivalTime:        "09:00",
 			Published:          true,
 		},
 	}

@@ -1,16 +1,10 @@
 package localtime
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"time"
 )
-
-func (d LocalDate) TimeOfDay(loc *time.Location, at TimeOfDay) time.Time {
-	if loc == nil || loc.String() == "UTC" {
-		panic("converting a LocalDate to UTC is almost always a mistake")
-	}
-	return time.Date(d.Year, d.Month, d.Day, at.Hour, at.Minute, 0, 0, loc)
-}
 
 // A TimeOfDay is a timezone-naive time of day. It is a time of day that does not have a
 // timezone attached to it.
@@ -39,4 +33,27 @@ func ParseTimeOfDay(s string) (TimeOfDay, error) {
 
 func (t TimeOfDay) String() string {
 	return fmt.Sprintf("%02d:%02d", t.Hour, t.Minute)
+}
+
+// Scan implements the [sql.Scanner] interface.
+func (t *TimeOfDay) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	switch v := value.(type) {
+	case string:
+		dv, err := ParseTimeOfDay(v)
+		if err != nil {
+			return fmt.Errorf("scan TimeOfDay: %v", err)
+		}
+		*t = dv
+		return nil
+	default:
+		return fmt.Errorf("scan TimeOfDay: invalid type %T", value)
+	}
+}
+
+// Value implements the [driver.Valuer] interface.
+func (t TimeOfDay) Value() (driver.Value, error) {
+	return t.String(), nil
 }
