@@ -95,8 +95,8 @@ JOIN airports destination_airport ON destination_airport.id=flight_instances.des
 LEFT JOIN aircraft_view aircraft ON aircraft.id=flight_instances.aircraft_id;
 
 CREATE UNIQUE INDEX IF NOT EXISTS unique_flight_instance_for_date_in_flight_schedule
-ON flight_instances(source_flight_schedule_id, source_flight_schedule_instance_date)
-WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_instance_date IS NOT NULL;
+ON flight_instances(source_flight_schedule_id, source_flight_schedule_instance_localdate)
+WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_instance_localdate IS NOT NULL;
 
 CREATE VIEW IF NOT EXISTS routes AS
 SELECT origin_airport_id, destination_airport_id,

@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stellora/airline/api-server/api"
 )
 
@@ -14,8 +13,8 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 
 	flightSchedule1 := insertFlightScheduleT(t, handler,
-		time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
-		time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC),
+		mustParseLocalDate("2025-01-01"),
+		mustParseLocalDate("2025-01-03"),
 		allDaysOfWeek,
 	)
 
@@ -32,8 +31,8 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 	_, err := handler.UpdateFlightSchedule(ctx, api.UpdateFlightScheduleRequestObject{
 		Id: flightSchedule1.Id,
 		Body: &api.UpdateFlightScheduleJSONRequestBody{
-			EndLocaldate: ptrTo(openapi_types.Date{Time: time.Date(2025, 1, 5, 0, 0, 0, 0, time.UTC)}),
-			DaysOfWeek:   ptrTo([]int{0, 3, 5, 6}),
+			EndDate:    ptrTo("2025-01-05"),
+			DaysOfWeek: ptrTo([]int{0, 3, 5, 6}),
 		},
 	})
 	if err != nil {
@@ -52,13 +51,13 @@ func TestListFlightInstancesForFlightSchedule(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	insertFlightScheduleT(t, handler,
-		time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
-		time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC),
+		mustParseLocalDate("2025-01-01"),
+		mustParseLocalDate("2025-01-03"),
 		allDaysOfWeek,
 	)
 	flightSchedule2 := insertFlightScheduleT(t, handler,
-		time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC),
-		time.Date(2025, 1, 4, 0, 0, 0, 0, time.UTC),
+		mustParseLocalDate("2025-01-02"),
+		mustParseLocalDate("2025-01-04"),
 		allDaysOfWeek,
 	)
 
@@ -73,40 +72,40 @@ func TestListFlightInstancesForFlightSchedule(t *testing.T) {
 		{
 			Id:                   4,
 			ScheduleID:           &flightSchedule2.Id,
-			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
+			ScheduleInstanceDate: ptrTo("2025-01-02"),
 			Airline:              flightSchedule2.Airline,
 			Number:               flightSchedule2.Number,
 			OriginAirport:        flightSchedule2.OriginAirport,
 			DestinationAirport:   flightSchedule2.DestinationAirport,
 			AircraftType:         flightSchedule2.AircraftType,
-			DepartureDateTime:    time.Date(2025, 1, 2, 7, 0, 0, 0, time.UTC),
-			ArrivalDateTime:      time.Date(2025, 1, 2, 9, 0, 0, 0, time.UTC),
+			DepartureDateTime:    time.Date(2025, 1, 2, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID)),
+			ArrivalDateTime:      time.Date(2025, 1, 2, 9, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID)),
 			Published:            flightSchedule2.Published,
 		},
 		{
 			Id:                   5,
 			ScheduleID:           &flightSchedule2.Id,
-			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC)},
+			ScheduleInstanceDate: ptrTo("2025-01-03"),
 			Airline:              flightSchedule2.Airline,
 			Number:               flightSchedule2.Number,
 			OriginAirport:        flightSchedule2.OriginAirport,
 			DestinationAirport:   flightSchedule2.DestinationAirport,
 			AircraftType:         flightSchedule2.AircraftType,
-			DepartureDateTime:    time.Date(2025, 1, 3, 7, 0, 0, 0, time.UTC),
-			ArrivalDateTime:      time.Date(2025, 1, 3, 9, 0, 0, 0, time.UTC),
+			DepartureDateTime:    time.Date(2025, 1, 3, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID)),
+			ArrivalDateTime:      time.Date(2025, 1, 3, 9, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID)),
 			Published:            flightSchedule2.Published,
 		},
 		{
 			Id:                   6,
 			ScheduleID:           &flightSchedule2.Id,
-			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 4, 0, 0, 0, 0, time.UTC)},
+			ScheduleInstanceDate: ptrTo("2025-01-04"),
 			Airline:              flightSchedule2.Airline,
 			Number:               flightSchedule2.Number,
 			OriginAirport:        flightSchedule2.OriginAirport,
 			DestinationAirport:   flightSchedule2.DestinationAirport,
 			AircraftType:         flightSchedule2.AircraftType,
-			DepartureDateTime:    time.Date(2025, 1, 4, 7, 0, 0, 0, time.UTC),
-			ArrivalDateTime:      time.Date(2025, 1, 4, 9, 0, 0, 0, time.UTC),
+			DepartureDateTime:    time.Date(2025, 1, 4, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID)),
+			ArrivalDateTime:      time.Date(2025, 1, 4, 9, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID)),
 			Published:            flightSchedule2.Published,
 		},
 	})

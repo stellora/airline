@@ -15,9 +15,7 @@ import (
 func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 	// TODO!(sqs): bring in aircraft
 	b := api.FlightInstance{
-		Id:                   int(a.ID),
-		ScheduleID:           nullInt64(a.SourceFlightScheduleID),
-		ScheduleInstanceDate: nullTime(a.SourceFlightScheduleInstanceLocaldate),
+		Id: int(a.ID),
 		Airline: fromDBAirline(db.Airline{
 			ID:       a.AirlineID,
 			IataCode: a.AirlineIataCode,
@@ -50,6 +48,12 @@ func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 			AirlineName:     a.AircraftAirlineName.String,
 		}))
 	}
+
+	if a.SourceFlightScheduleID.Valid {
+		b.ScheduleID = ptrTo(int(a.SourceFlightScheduleID.Int64))
+		b.ScheduleInstanceDate = ptrTo(a.SourceFlightScheduleInstanceLocaldate.String())
+	}
+
 	return b
 }
 

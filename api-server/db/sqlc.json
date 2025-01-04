@@ -28,14 +28,14 @@
 							"column": "flight_schedules.departure_localtime",
 							"go_type": {
 								"import": "github.com/stellora/airline/api-server/localtime",
-								"type": "LocalTimeOfDay"
+								"type": "TimeOfDay"
 							}
 						},
 						{
 							"column": "flight_schedules.arrival_localtime",
 							"go_type": {
 								"import": "github.com/stellora/airline/api-server/localtime",
-								"type": "LocalTimeOfDay"
+								"type": "TimeOfDay"
 							}
 						},
 						{
@@ -56,14 +56,14 @@
 							"column": "flight_schedules_view.departure_localtime",
 							"go_type": {
 								"import": "github.com/stellora/airline/api-server/localtime",
-								"type": "LocalTimeOfDay"
+								"type": "TimeOfDay"
 							}
 						},
 						{
 							"column": "flight_schedules_view.arrival_localtime",
 							"go_type": {
 								"import": "github.com/stellora/airline/api-server/localtime",
-								"type": "LocalTimeOfDay"
+								"type": "TimeOfDay"
 							}
 						},
 

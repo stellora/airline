@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
 	"github.com/stellora/airline/api-server/extdata"
@@ -65,6 +64,14 @@ func init() {
 			},
 		},
 	}
+}
+
+func mustGetTzLocation(tzID string) *time.Location {
+	loc, err := time.LoadLocation(tzID)
+	if err != nil {
+		panic(err)
+	}
+	return loc
 }
 
 func mustParseLocalDate(s string) localtime.LocalDate {
@@ -159,8 +166,8 @@ func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...stri
 					OriginAirport:      api.NewAirportSpec(0, originIATACode),
 					DestinationAirport: api.NewAirportSpec(0, destinationIATACode),
 					AircraftType:       fixtureB77W.IcaoCode,
-					StartDate:          fixtureLocalDate1,
-					EndDate:            fixtureLocalDate2,
+					StartDate:          fixtureLocalDate1.String(),
+					EndDate:            fixtureLocalDate2.String(),
 					DaysOfWeek:         fixtureDaysOfWeek,
 					DepartureTime:      "7:00",
 					ArrivalTime:        "9:00",
@@ -183,8 +190,8 @@ func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...stri
 	return ids
 }
 
-func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate time.Time, daysOfWeek []int) api.FlightSchedule {
-	insertFlightSchedule := func(ctx context.Context, handler *Handler, startDate, endDate time.Time, daysOfWeek []int) (api.FlightSchedule, error) {
+func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate localtime.LocalDate, daysOfWeek []int) api.FlightSchedule {
+	insertFlightSchedule := func(ctx context.Context, handler *Handler, startDate, endDate localtime.LocalDate, daysOfWeek []int) (api.FlightSchedule, error) {
 		v, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{
 			Body: &api.CreateFlightScheduleJSONRequestBody{
 				Airline:            api.NewAirlineSpec(0, "XX"),
@@ -192,8 +199,8 @@ func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate ti
 				OriginAirport:      api.NewAirportSpec(0, "AAA"),
 				DestinationAirport: api.NewAirportSpec(0, "BBB"),
 				AircraftType:       fixtureB77W.IcaoCode,
-				StartDate:          openapi_types.Date{Time: startDate},
-				EndDate:            openapi_types.Date{Time: endDate},
+				StartDate:          startDate.String(),
+				EndDate:            endDate.String(),
 				DaysOfWeek:         daysOfWeek,
 				DepartureTime:      "7:00",
 				ArrivalTime:        "9:00",

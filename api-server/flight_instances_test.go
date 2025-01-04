@@ -16,8 +16,8 @@ func TestGetFlightInstance(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	flightSchedule := insertFlightScheduleT(t, handler,
-		time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
-		time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC),
+		mustParseLocalDate("2025-01-01"),
+		mustParseLocalDate("2025-01-03"),
 		allDaysOfWeek,
 	)
 
@@ -60,8 +60,8 @@ func TestListFlightInstances(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	flightSchedule := insertFlightScheduleT(t, handler,
-		time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
-		time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC),
+		mustParseLocalDate("2025-01-01"),
+		mustParseLocalDate("2025-01-03"),
 		allDaysOfWeek,
 	)
 
@@ -151,8 +151,8 @@ func TestUpdateFlightInstance(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
 	flightSchedule := insertFlightScheduleT(t, handler,
-		time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
-		time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC),
+		mustParseLocalDate("2025-01-01"),
+		mustParseLocalDate("2025-01-03"),
 		allDaysOfWeek,
 	)
 
@@ -225,8 +225,8 @@ func TestDeleteFlightInstance(t *testing.T) {
 		Published:          ptrTo(true),
 	})
 	flightSchedule := insertFlightScheduleT(t, handler,
-		time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
-		time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC),
+		mustParseLocalDate("2025-01-01"),
+		mustParseLocalDate("2025-01-03"),
 		allDaysOfWeek,
 	)
 
