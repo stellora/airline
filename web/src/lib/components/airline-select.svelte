@@ -16,13 +16,11 @@
 	const layoutData = page.data as unknown as LayoutData
 </script>
 
-<Select.Root type="single" {name} bind:value>
+<Select.Root type="single" {name} bind:value allowDeselect={false}>
 	<Select.Trigger class={cn('w-auto', className)} {...restProps}>
-		{#if value}
-			<span class="font-mono">{value}</span>
-		{:else}
-			<span class="font-mono">&nbsp;&nbsp;</span>
-		{/if}
+		<span class="font-mono pr-1.5"
+			>{#if value}{value}{:else}&nbsp;&nbsp;{/if}</span
+		>
 	</Select.Trigger>
 	<Select.Content align="start">
 		{#each layoutData.allAirlines as airline (airline.id)}

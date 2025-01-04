@@ -40,7 +40,7 @@
 	class="flex flex-col gap-6 items-start"
 	data-testid="flight-schedule-form"
 >
-	<FormFieldGroup legend="Flight number">
+	<FormFieldGroup legend="Flight number" horizontal>
 		<Form.Field {form} name="airline">
 			<Form.Control>
 				{#snippet children({ props })}
@@ -134,7 +134,7 @@
 			<Form.Legend>Days of week</Form.Legend>
 			<DaysOfWeekControls bind:value={$formData.daysOfWeek as DaysOfWeek} />
 		</Form.Fieldset>
-		<div class="flex gap-2">
+		<div class="flex gap-4">
 			<Form.Field {form} name="departureTime">
 				<Form.Control>
 					{#snippet children({ props })}

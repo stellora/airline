@@ -70,8 +70,8 @@ importers:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
       bits-ui:
-        specifier: 1.0.0-next.76
-        version: 1.0.0-next.76(svelte@5.16.0)
+        specifier: 1.0.0-next.77
+        version: 1.0.0-next.77(svelte@5.16.0)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -138,6 +138,9 @@ importers:
       typescript-eslint:
         specifier: ^8.0.0
         version: 8.18.2(eslint@9.17.0(jiti@1.21.7))(typescript@5.7.2)
+      vaul-svelte:
+        specifier: 1.0.0-next.3
+        version: 1.0.0-next.3(svelte@5.16.0)
       vite:
         specifier: ^6.0.5
         version: 6.0.5(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.6.1)
@@ -1127,8 +1130,8 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
-  bits-ui@1.0.0-next.76:
-    resolution: {integrity: sha512-BtTBlAQgdtA7l1V2EarM2QJlD8pkH4DAKACjCy4KMIVWMXdg15BGwALoXw1IWk4Xe4nCXI5Bz+lIB6nSgrzo6Q==}
+  bits-ui@1.0.0-next.77:
+    resolution: {integrity: sha512-IV0AyVEvsRkXv4s/fl4iea5E9W2b9EBf98s9mRMKMc1xHxM9MmtM2r6MZMqftHQ/c+gHTIt3A9EKuTlh7uay8w==}
     engines: {node: '>=18', pnpm: '>=8.7.0'}
     peerDependencies:
       svelte: ^5.11.0
@@ -2382,6 +2385,12 @@ packages:
       svelte:
         optional: true
 
+  svelte-toolbelt@0.4.6:
+    resolution: {integrity: sha512-k8OUvXBUifHZcAlWeY/HLg/4J0v5m2iOfOhn8fDmjt4AP8ZluaDh9eBFus9lFiLX6O5l6vKqI1dKL5wy7090NQ==}
+    engines: {node: '>=18', pnpm: '>=8.7.0'}
+    peerDependencies:
+      svelte: ^5.0.0-next.126
+
   svelte-toolbelt@0.5.0:
     resolution: {integrity: sha512-t3tenZcnfQoIeRuQf/jBU7bvTeT3TGkcEE+1EUr5orp0lR7NEpprflpuie3x9Dn0W9nOKqs3HwKGJeeN5Ok1sQ==}
     engines: {node: '>=18', pnpm: '>=8.7.0'}
@@ -2580,6 +2589,12 @@ packages:
   validator@13.12.0:
     resolution: {integrity: sha512-c1Q0mCiPlgdTVVVIJIrBuxNicYE+t/7oKeI9MWLj3fh/uq2Pxh/3eeWbVZ4OcGW1TUf53At0njHw5SMdA3tmMg==}
     engines: {node: '>= 0.10'}
+
+  vaul-svelte@1.0.0-next.3:
+    resolution: {integrity: sha512-bqlCc28z1I6f23Sjv5W6UlNJdAPeX8tZbYZ3+ycOn/4hTvv2fo/5Le4bAX26RyFkpT6n5FXXCZN1/uNs8biyrQ==}
+    engines: {node: '>=18', pnpm: '>=8.7.0'}
+    peerDependencies:
+      svelte: ^5.0.0
 
   vite-node@2.1.8:
     resolution: {integrity: sha512-uPAwSr57kYjAUux+8E2j0q0Fxpn8M9VoyfGiRI8Kfktz9NcYMCenwY5RnZxnF1WTu3TGiYipirIzacLL3VVGFg==}
@@ -3708,7 +3723,7 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
-  bits-ui@1.0.0-next.76(svelte@5.16.0):
+  bits-ui@1.0.0-next.77(svelte@5.16.0):
     dependencies:
       '@floating-ui/core': 1.6.8
       '@floating-ui/dom': 1.6.12
@@ -4986,6 +5001,12 @@ snapshots:
     optionalDependencies:
       svelte: 5.16.0
 
+  svelte-toolbelt@0.4.6(svelte@5.16.0):
+    dependencies:
+      clsx: 2.1.1
+      style-to-object: 1.0.8
+      svelte: 5.16.0
+
   svelte-toolbelt@0.5.0(svelte@5.16.0):
     dependencies:
       clsx: 2.1.1
@@ -5212,6 +5233,12 @@ snapshots:
 
   validator@13.12.0:
     optional: true
+
+  vaul-svelte@1.0.0-next.3(svelte@5.16.0):
+    dependencies:
+      bits-ui: 1.0.0-next.77(svelte@5.16.0)
+      svelte: 5.16.0
+      svelte-toolbelt: 0.4.6(svelte@5.16.0)
 
   vite-node@2.1.8(@types/node@22.10.2):
     dependencies:
