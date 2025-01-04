@@ -139,6 +139,33 @@ func insertAirlinesWithIATACodesT(t *testing.T, handler *Handler, iataCodes ...s
 }
 
 func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...string) (ids []int) {
+	insertFlightSchedules := func(ctx context.Context, handler *Handler, flightTitles ...string) (ids []int, err error) {
+		ids = make([]int, len(flightTitles))
+		for i, flight := range flightTitles {
+			airlineIATACode, flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
+			v, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{
+				Body: &api.CreateFlightScheduleJSONRequestBody{
+					Airline:            api.NewAirlineSpec(0, airlineIATACode),
+					Number:             flightNumber,
+					OriginAirport:      api.NewAirportSpec(0, originIATACode),
+					DestinationAirport: api.NewAirportSpec(0, destinationIATACode),
+					AircraftType:       fixtureB77W.IcaoCode,
+					StartDate:          fixtureDate1,
+					EndDate:            fixtureDate2,
+					DaysOfWeek:         fixtureDaysOfWeek,
+					DepartureTime:      "7:00",
+					ArrivalTime:        "9:00",
+					Published:          ptrTo(true),
+				},
+			})
+			if err != nil {
+				return nil, err
+			}
+			ids[i] = v.(api.CreateFlightSchedule201JSONResponse).Id
+		}
+		return ids, nil
+	}
+
 	t.Helper()
 	ids, err := insertFlightSchedules(context.Background(), handler, flightTitles...)
 	if err != nil {
@@ -148,6 +175,28 @@ func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...stri
 }
 
 func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate time.Time, daysOfWeek []int) api.FlightSchedule {
+	insertFlightSchedule := func(ctx context.Context, handler *Handler, startDate, endDate time.Time, daysOfWeek []int) (api.FlightSchedule, error) {
+		v, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{
+			Body: &api.CreateFlightScheduleJSONRequestBody{
+				Airline:            api.NewAirlineSpec(0, "XX"),
+				Number:             "1",
+				OriginAirport:      api.NewAirportSpec(0, "AAA"),
+				DestinationAirport: api.NewAirportSpec(0, "BBB"),
+				AircraftType:       fixtureB77W.IcaoCode,
+				StartDate:          openapi_types.Date{Time: startDate},
+				EndDate:            openapi_types.Date{Time: endDate},
+				DaysOfWeek:         daysOfWeek,
+				DepartureTime:      "7:00",
+				ArrivalTime:        "9:00",
+				Published:          ptrTo(true),
+			},
+		})
+		if err != nil {
+			return api.FlightSchedule{}, err
+		}
+		return api.FlightSchedule(v.(api.CreateFlightSchedule201JSONResponse)), nil
+	}
+
 	t.Helper()
 	flightSchedule, err := insertFlightSchedule(context.Background(), handler, startDate, endDate, daysOfWeek)
 	if err != nil {

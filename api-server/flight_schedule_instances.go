@@ -133,7 +133,7 @@ func planFlightScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries,
 	return plan, nil
 }
 
-func scheduleToInstanceDateTime(instanceDate time.Time, timeOfDay string) (time.Time, error) {
+func scheduleToInstanceDateTime(instanceDate time.Time, timeOfDay string, loc *time.Location) (time.Time, error) {
 	const HourMinuteOnly = "15:04"
 	tm, err := time.Parse(HourMinuteOnly, timeOfDay)
 	if err != nil {
