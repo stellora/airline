@@ -156,11 +156,11 @@ type CreateFlightScheduleParams struct {
 	OriginAirportID      int64
 	DestinationAirportID int64
 	AircraftType         string
-	StartLocaldate       localtime.LocalDate
-	EndLocaldate         localtime.LocalDate
+	StartLocaldate       *localtime.LocalDate
+	EndLocaldate         *localtime.LocalDate
 	DaysOfWeek           string
-	DepartureLocaltime   localtime.TimeOfDay
-	ArrivalLocaltime     localtime.TimeOfDay
+	DepartureLocaltime   *localtime.TimeOfDay
+	ArrivalLocaltime     *localtime.TimeOfDay
 	Published            bool
 }
 
@@ -1081,11 +1081,11 @@ type UpdateFlightScheduleParams struct {
 	OriginAirportID      sql.NullInt64
 	DestinationAirportID sql.NullInt64
 	AircraftType         sql.NullString
-	StartLocaldate       localtime.LocalDate
-	EndLocaldate         localtime.LocalDate
+	StartLocaldate       *localtime.LocalDate
+	EndLocaldate         *localtime.LocalDate
 	DaysOfWeek           sql.NullString
-	DepartureLocaltime   localtime.TimeOfDay
-	ArrivalLocaltime     localtime.TimeOfDay
+	DepartureLocaltime   *localtime.TimeOfDay
+	ArrivalLocaltime     *localtime.TimeOfDay
 	Published            sql.NullBool
 	ID                   int64
 }

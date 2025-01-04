@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/localtime"
@@ -16,8 +15,8 @@ func TestGetFlightInstance(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	flightSchedule := insertFlightScheduleT(t, handler,
-		mustParseLocalDate("2025-01-01"),
-		mustParseLocalDate("2025-01-03"),
+		fixtureLocalDate1,
+		fixtureLocalDate1.AddDays(2),
 		allDaysOfWeek,
 	)
 
@@ -32,14 +31,14 @@ func TestGetFlightInstance(t *testing.T) {
 		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
 			Id:                   2,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: ptrTo("2025-01-02"),
+			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.AddDays(1).String()),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    time.Date(2025, 1, 2, 7, 0, 0, 0, time.UTC),
-			ArrivalDateTime:      time.Date(2025, 1, 2, 9, 0, 0, 0, time.UTC),
+			DepartureDateTime:    fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
 			Published:            flightSchedule.Published,
 		})
 	})
@@ -60,8 +59,8 @@ func TestListFlightInstances(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	flightSchedule := insertFlightScheduleT(t, handler,
-		mustParseLocalDate("2025-01-01"),
-		mustParseLocalDate("2025-01-03"),
+		fixtureLocalDate1,
+		fixtureLocalDate1.AddDays(2),
 		allDaysOfWeek,
 	)
 
@@ -74,40 +73,40 @@ func TestListFlightInstances(t *testing.T) {
 		{
 			Id:                   1,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: ptrTo("2025-01-01"),
+			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.String()),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    time.Date(2025, 1, 1, 7, 0, 0, 0, time.UTC),
-			ArrivalDateTime:      time.Date(2025, 1, 1, 9, 0, 0, 0, time.UTC),
+			DepartureDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
 			Published:            flightSchedule.Published,
 		},
 		{
 			Id:                   2,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: ptrTo("2025-01-02"),
+			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.AddDays(1).String()),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    time.Date(2025, 1, 2, 7, 0, 0, 0, time.UTC),
-			ArrivalDateTime:      time.Date(2025, 1, 2, 9, 0, 0, 0, time.UTC),
+			DepartureDateTime:    fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
 			Published:            flightSchedule.Published,
 		},
 		{
 			Id:                   3,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: ptrTo("2025-01-03"),
+			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.AddDays(2).String()),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    time.Date(2025, 1, 3, 7, 0, 0, 0, time.UTC),
-			ArrivalDateTime:      time.Date(2025, 1, 3, 9, 0, 0, 0, time.UTC),
+			DepartureDateTime:    fixtureLocalDate1.AddDays(2).TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.AddDays(2).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
 			Published:            flightSchedule.Published,
 		},
 	})
@@ -118,15 +117,6 @@ func TestCreateFlightInstance(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 
-	aaaTz, err := time.LoadLocation("America/Los_Angeles")
-	if err != nil {
-		t.Fatal(err)
-	}
-	bbbTz, err := time.LoadLocation("America/New_York")
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	resp, err := handler.CreateFlightInstance(ctx, api.CreateFlightInstanceRequestObject{
 		Body: &api.CreateFlightInstanceJSONRequestBody{
 			Airline:            api.NewAirlineSpec(0, "XX"),
@@ -134,8 +124,8 @@ func TestCreateFlightInstance(t *testing.T) {
 			OriginAirport:      api.NewAirportSpec(0, "AAA"),
 			DestinationAirport: api.NewAirportSpec(0, "BBB"),
 			AircraftType:       fixtureB77W.IcaoCode,
-			DepartureDateTime:  fixtureLocalDate1.TimeOfDay(aaaTz, localtime.NewTimeOfDay(7, 0)),
-			ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(bbbTz, localtime.NewTimeOfDay(10, 0)),
+			DepartureDateTime:  fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
+			ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(10, 0)),
 			Published:          ptrTo(true),
 		}})
 	if err != nil {
@@ -151,8 +141,8 @@ func TestUpdateFlightInstance(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
 	flightSchedule := insertFlightScheduleT(t, handler,
-		mustParseLocalDate("2025-01-01"),
-		mustParseLocalDate("2025-01-03"),
+		fixtureLocalDate1,
+		fixtureLocalDate1.AddDays(2),
 		allDaysOfWeek,
 	)
 
@@ -186,14 +176,14 @@ func TestUpdateFlightInstance(t *testing.T) {
 		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
 			Id:                   1,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: ptrTo("2025-01-01"),
+			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.String()),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    time.Date(2025, 1, 1, 7, 0, 0, 0, time.UTC),
-			ArrivalDateTime:      time.Date(2025, 1, 1, 9, 0, 0, 0, time.UTC),
+			DepartureDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
 			Published:            flightSchedule.Published,
 			Notes:                "abc",
 		})
@@ -205,23 +195,14 @@ func TestDeleteFlightInstance(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 
-	aaaTz, err := time.LoadLocation("America/Los_Angeles")
-	if err != nil {
-		t.Fatal(err)
-	}
-	bbbTz, err := time.LoadLocation("America/New_York")
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	manualFlightInstance := insertFlightInstanceT(t, handler, api.CreateFlightInstanceJSONRequestBody{
 		Airline:            api.NewAirlineSpec(0, "XX"),
 		Number:             "222",
 		OriginAirport:      api.NewAirportSpec(0, "AAA"),
 		DestinationAirport: api.NewAirportSpec(0, "BBB"),
 		AircraftType:       fixtureB77W.IcaoCode,
-		DepartureDateTime:  fixtureLocalDate1.TimeOfDay(aaaTz, localtime.NewTimeOfDay(7, 0)),
-		ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(bbbTz, localtime.NewTimeOfDay(10, 0)),
+		DepartureDateTime:  fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
+		ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(10, 0)),
 		Published:          ptrTo(true),
 	})
 	flightSchedule := insertFlightScheduleT(t, handler,
@@ -236,7 +217,6 @@ func TestDeleteFlightInstance(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		t.Logf("AAA %#v", resp)
 		if _, isNotExist := resp.(api.GetFlightInstance404Response); !isNotExist != wantExist {
 			t.Fatalf("flight instance %d: got exists %v, want %v", id, !isNotExist, wantExist)
 		}

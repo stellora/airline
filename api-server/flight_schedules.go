@@ -125,11 +125,11 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		OriginAirportID:      originAirport.ID,
 		DestinationAirportID: destinationAirport.ID,
 		AircraftType:         request.Body.AircraftType,
-		StartLocaldate:       startDate,
-		EndLocaldate:         endDate,
+		StartLocaldate:       &startDate,
+		EndLocaldate:         &endDate,
 		DaysOfWeek:           toDBDaysOfWeek(request.Body.DaysOfWeek),
-		DepartureLocaltime:   departureTime,
-		ArrivalLocaltime:     arrivalTime,
+		DepartureLocaltime:   &departureTime,
+		ArrivalLocaltime:     &arrivalTime,
 		Published:            request.Body.Published != nil && *request.Body.Published,
 	})
 	if err != nil {
@@ -195,14 +195,14 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 		if err != nil {
 			return nil, fmt.Errorf("parsing startDate: %w", err)
 		}
-		params.StartLocaldate = startDate
+		params.StartLocaldate = &startDate
 	}
 	if request.Body.EndDate != nil {
 		endDate, err := localtime.ParseLocalDate(*request.Body.EndDate)
 		if err != nil {
 			return nil, fmt.Errorf("parsing endDate: %w", err)
 		}
-		params.EndLocaldate = endDate
+		params.EndLocaldate = &endDate
 	}
 	if request.Body.DaysOfWeek != nil {
 		params.DaysOfWeek = sql.NullString{String: toDBDaysOfWeek(*request.Body.DaysOfWeek), Valid: true}
@@ -212,14 +212,14 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 		if err != nil {
 			return nil, fmt.Errorf("parsing departureTime: %w", err)
 		}
-		params.DepartureLocaltime = departureTime
+		params.DepartureLocaltime = &departureTime
 	}
 	if request.Body.ArrivalTime != nil {
 		arrivalTime, err := localtime.ParseTimeOfDay(*request.Body.ArrivalTime)
 		if err != nil {
 			return nil, fmt.Errorf("parsing arrivalTime: %w", err)
 		}
-		params.ArrivalLocaltime = arrivalTime
+		params.ArrivalLocaltime = &arrivalTime
 	}
 	if request.Body.Published != nil {
 		params.Published = sql.NullBool{Bool: *request.Body.Published, Valid: true}
