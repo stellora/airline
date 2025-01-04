@@ -14,7 +14,6 @@ import (
 
 	"github.com/oapi-codegen/runtime"
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Aircraft defines model for Aircraft.
@@ -99,19 +98,21 @@ type DaysOfWeek = []int
 
 // FlightInstance A single flight, either created and synced automatically from a flight schedule or created manually.
 type FlightInstance struct {
-	Aircraft             *Aircraft           `json:"aircraft,omitempty"`
-	AircraftType         AircraftType        `json:"aircraftType"`
-	Airline              Airline             `json:"airline"`
-	ArrivalDateTime      time.Time           `json:"arrivalDateTime"`
-	DepartureDateTime    time.Time           `json:"departureDateTime"`
-	DestinationAirport   Airport             `json:"destinationAirport"`
-	Id                   int                 `json:"id"`
-	Notes                string              `json:"notes"`
-	Number               FlightNumber        `json:"number"`
-	OriginAirport        Airport             `json:"originAirport"`
-	Published            bool                `json:"published"`
-	ScheduleID           *int                `json:"scheduleID,omitempty"`
-	ScheduleInstanceDate *openapi_types.Date `json:"scheduleInstanceDate,omitempty"`
+	Aircraft           *Aircraft    `json:"aircraft,omitempty"`
+	AircraftType       AircraftType `json:"aircraftType"`
+	Airline            Airline      `json:"airline"`
+	ArrivalDateTime    time.Time    `json:"arrivalDateTime"`
+	DepartureDateTime  time.Time    `json:"departureDateTime"`
+	DestinationAirport Airport      `json:"destinationAirport"`
+	Id                 int          `json:"id"`
+	Notes              string       `json:"notes"`
+	Number             FlightNumber `json:"number"`
+	OriginAirport      Airport      `json:"originAirport"`
+	Published          bool         `json:"published"`
+	ScheduleID         *int         `json:"scheduleID,omitempty"`
+
+	// ScheduleInstanceDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
+	ScheduleInstanceDate *LocalDate `json:"scheduleInstanceDate,omitempty"`
 }
 
 // FlightNumber defines model for FlightNumber.
@@ -127,16 +128,23 @@ type FlightSchedule struct {
 	DaysOfWeek  DaysOfWeek `json:"daysOfWeek"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
-	DepartureTime      TimeOfDay          `json:"departureTime"`
-	DestinationAirport Airport            `json:"destinationAirport"`
-	DistanceMiles      *float64           `json:"distanceMiles,omitempty"`
-	EndDate            openapi_types.Date `json:"endDate"`
-	Id                 int                `json:"id"`
-	Number             FlightNumber       `json:"number"`
-	OriginAirport      Airport            `json:"originAirport"`
-	Published          bool               `json:"published"`
-	StartDate          openapi_types.Date `json:"startDate"`
+	DepartureTime      TimeOfDay `json:"departureTime"`
+	DestinationAirport Airport   `json:"destinationAirport"`
+	DistanceMiles      *float64  `json:"distanceMiles,omitempty"`
+
+	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
+	EndDate       LocalDate    `json:"endDate"`
+	Id            int          `json:"id"`
+	Number        FlightNumber `json:"number"`
+	OriginAirport Airport      `json:"originAirport"`
+	Published     bool         `json:"published"`
+
+	// StartDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
+	StartDate LocalDate `json:"startDate"`
 }
+
+// LocalDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
+type LocalDate = string
 
 // Point defines model for Point.
 type Point struct {
@@ -244,13 +252,17 @@ type CreateFlightScheduleJSONBody struct {
 	DaysOfWeek  DaysOfWeek `json:"daysOfWeek"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
-	DepartureTime      TimeOfDay          `json:"departureTime"`
-	DestinationAirport AirportSpec        `json:"destinationAirport"`
-	EndDate            openapi_types.Date `json:"endDate"`
-	Number             FlightNumber       `json:"number"`
-	OriginAirport      AirportSpec        `json:"originAirport"`
-	Published          *bool              `json:"published,omitempty"`
-	StartDate          openapi_types.Date `json:"startDate"`
+	DepartureTime      TimeOfDay   `json:"departureTime"`
+	DestinationAirport AirportSpec `json:"destinationAirport"`
+
+	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
+	EndDate       LocalDate    `json:"endDate"`
+	Number        FlightNumber `json:"number"`
+	OriginAirport AirportSpec  `json:"originAirport"`
+	Published     *bool        `json:"published,omitempty"`
+
+	// StartDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
+	StartDate LocalDate `json:"startDate"`
 }
 
 // UpdateFlightScheduleJSONBody defines parameters for UpdateFlightSchedule.
@@ -264,13 +276,17 @@ type UpdateFlightScheduleJSONBody struct {
 	DaysOfWeek  *DaysOfWeek `json:"daysOfWeek,omitempty"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
-	DepartureTime      *TimeOfDay          `json:"departureTime,omitempty"`
-	DestinationAirport *AirportSpec        `json:"destinationAirport,omitempty"`
-	EndDate            *openapi_types.Date `json:"endDate,omitempty"`
-	Number             *FlightNumber       `json:"number,omitempty"`
-	OriginAirport      *AirportSpec        `json:"originAirport,omitempty"`
-	Published          *bool               `json:"published,omitempty"`
-	StartDate          *openapi_types.Date `json:"startDate,omitempty"`
+	DepartureTime      *TimeOfDay   `json:"departureTime,omitempty"`
+	DestinationAirport *AirportSpec `json:"destinationAirport,omitempty"`
+
+	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
+	EndDate       *LocalDate    `json:"endDate,omitempty"`
+	Number        *FlightNumber `json:"number,omitempty"`
+	OriginAirport *AirportSpec  `json:"originAirport,omitempty"`
+	Published     *bool         `json:"published,omitempty"`
+
+	// StartDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
+	StartDate *LocalDate `json:"startDate,omitempty"`
 }
 
 // CreateAircraftJSONRequestBody defines body for CreateAircraft for application/json ContentType.

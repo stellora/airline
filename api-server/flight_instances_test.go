@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/localtime"
 )
 
 func TestGetFlightInstance(t *testing.T) {
@@ -32,7 +32,7 @@ func TestGetFlightInstance(t *testing.T) {
 		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
 			Id:                   2,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
+			ScheduleInstanceDate: ptrTo("2025-01-02"),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
@@ -74,7 +74,7 @@ func TestListFlightInstances(t *testing.T) {
 		{
 			Id:                   1,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)},
+			ScheduleInstanceDate: ptrTo("2025-01-01"),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
@@ -87,7 +87,7 @@ func TestListFlightInstances(t *testing.T) {
 		{
 			Id:                   2,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)},
+			ScheduleInstanceDate: ptrTo("2025-01-02"),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
@@ -100,7 +100,7 @@ func TestListFlightInstances(t *testing.T) {
 		{
 			Id:                   3,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC)},
+			ScheduleInstanceDate: ptrTo("2025-01-03"),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
@@ -134,8 +134,8 @@ func TestCreateFlightInstance(t *testing.T) {
 			OriginAirport:      api.NewAirportSpec(0, "AAA"),
 			DestinationAirport: api.NewAirportSpec(0, "BBB"),
 			AircraftType:       fixtureB77W.IcaoCode,
-			DepartureDateTime:  fixtureDate1.Time.In(aaaTz),
-			ArrivalDateTime:    fixtureDate1.Time.Add(3 * time.Hour).In(bbbTz),
+			DepartureDateTime:  fixtureLocalDate1.TimeOfDay(aaaTz, localtime.NewTimeOfDay(7, 0)),
+			ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(bbbTz, localtime.NewTimeOfDay(10, 0)),
 			Published:          ptrTo(true),
 		}})
 	if err != nil {
@@ -186,7 +186,7 @@ func TestUpdateFlightInstance(t *testing.T) {
 		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
 			Id:                   1,
 			ScheduleID:           &flightSchedule.Id,
-			ScheduleInstanceDate: &openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)},
+			ScheduleInstanceDate: ptrTo("2025-01-01"),
 			Airline:              flightSchedule.Airline,
 			Number:               flightSchedule.Number,
 			OriginAirport:        flightSchedule.OriginAirport,
@@ -220,8 +220,8 @@ func TestDeleteFlightInstance(t *testing.T) {
 		OriginAirport:      api.NewAirportSpec(0, "AAA"),
 		DestinationAirport: api.NewAirportSpec(0, "BBB"),
 		AircraftType:       fixtureB77W.IcaoCode,
-		DepartureDateTime:  fixtureDate1.Time.In(aaaTz),
-		ArrivalDateTime:    fixtureDate1.Time.Add(3 * time.Hour).In(bbbTz),
+		DepartureDateTime:  fixtureLocalDate1.TimeOfDay(aaaTz, localtime.NewTimeOfDay(7, 0)),
+		ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(bbbTz, localtime.NewTimeOfDay(10, 0)),
 		Published:          ptrTo(true),
 	})
 	flightSchedule := insertFlightScheduleT(t, handler,
@@ -278,7 +278,7 @@ func checkFlightInstances(t *testing.T, handler *Handler, flightScheduleID int, 
 	}
 
 	toDescription := func(instance api.FlightInstance) string {
-		parts := []string{instance.ScheduleInstanceDate.Time.Format("2006-01-02")}
+		parts := []string{*instance.ScheduleInstanceDate}
 		if instance.Aircraft != nil {
 			parts = append(parts, fmt.Sprintf("aircraft=%s", instance.Aircraft.AircraftType))
 		}

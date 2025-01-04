@@ -376,6 +376,8 @@ export interface components {
             /** Format: double */
             latitude: number;
         };
+        /** @description A date in YYYY-MM-DD format, with no timezone (timezone-naive). */
+        LocalDate: string;
         DaysOfWeek: (0 | 1 | 2 | 3 | 4 | 5 | 6)[];
         /** @description A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone. */
         TimeOfDay: string;
@@ -388,10 +390,8 @@ export interface components {
             /** Format: double */
             distanceMiles?: number;
             aircraftType: components["schemas"]["AircraftType"];
-            /** Format: date */
-            startDate: string;
-            /** Format: date */
-            endDate: string;
+            startDate: components["schemas"]["LocalDate"];
+            endDate: components["schemas"]["LocalDate"];
             daysOfWeek: components["schemas"]["DaysOfWeek"];
             departureTime: components["schemas"]["TimeOfDay"];
             arrivalTime: components["schemas"]["TimeOfDay"];
@@ -402,8 +402,7 @@ export interface components {
         FlightInstance: {
             id: number;
             scheduleID?: number;
-            /** Format: date */
-            scheduleInstanceDate?: string;
+            scheduleInstanceDate?: components["schemas"]["LocalDate"];
             airline: components["schemas"]["Airline"];
             number: components["schemas"]["FlightNumber"];
             originAirport: components["schemas"]["Airport"];
@@ -1094,10 +1093,8 @@ export interface operations {
                     originAirport: components["schemas"]["AirportSpec"];
                     destinationAirport: components["schemas"]["AirportSpec"];
                     aircraftType: components["schemas"]["AircraftTypeICAOCode"];
-                    /** Format: date */
-                    startDate: string;
-                    /** Format: date */
-                    endDate: string;
+                    startDate: components["schemas"]["LocalDate"];
+                    endDate: components["schemas"]["LocalDate"];
                     daysOfWeek: components["schemas"]["DaysOfWeek"];
                     departureTime: components["schemas"]["TimeOfDay"];
                     arrivalTime: components["schemas"]["TimeOfDay"];
@@ -1216,10 +1213,8 @@ export interface operations {
                     originAirport?: components["schemas"]["AirportSpec"];
                     destinationAirport?: components["schemas"]["AirportSpec"];
                     aircraftType?: components["schemas"]["AircraftTypeICAOCode"];
-                    /** Format: date */
-                    startDate?: string;
-                    /** Format: date */
-                    endDate?: string;
+                    startDate?: components["schemas"]["LocalDate"];
+                    endDate?: components["schemas"]["LocalDate"];
                     daysOfWeek?: components["schemas"]["DaysOfWeek"];
                     departureTime?: components["schemas"]["TimeOfDay"];
                     arrivalTime?: components["schemas"]["TimeOfDay"];

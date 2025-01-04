@@ -17,7 +17,7 @@ func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 	b := api.FlightInstance{
 		Id:                   int(a.ID),
 		ScheduleID:           nullInt64(a.SourceFlightScheduleID),
-		ScheduleInstanceDate: nullTime(a.SourceFlightScheduleInstanceDate),
+		ScheduleInstanceDate: nullTime(a.SourceFlightScheduleInstanceLocaldate),
 		Airline: fromDBAirline(db.Airline{
 			ID:       a.AirlineID,
 			IataCode: a.AirlineIataCode,

@@ -10,6 +10,7 @@ import (
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
 	"github.com/stellora/airline/api-server/extdata"
+	"github.com/stellora/airline/api-server/localtime"
 )
 
 func init() {
@@ -66,11 +67,19 @@ func init() {
 	}
 }
 
+func mustParseLocalDate(s string) localtime.LocalDate {
+	d, err := localtime.ParseLocalDate(s)
+	if err != nil {
+		panic(err)
+	}
+	return d
+}
+
 var (
-	fixtureDate1      = openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)}
-	fixtureDate2      = openapi_types.Date{Time: time.Date(2025, 1, 20, 0, 0, 0, 0, time.UTC)}
-	fixtureDate3      = openapi_types.Date{Time: time.Date(2025, 1, 25, 0, 0, 0, 0, time.UTC)}
-	fixtureDate4      = openapi_types.Date{Time: time.Date(2025, 2, 7, 0, 0, 0, 0, time.UTC)}
+	fixtureLocalDate1 = mustParseLocalDate("2025-01-01")
+	fixtureLocalDate2 = mustParseLocalDate("2025-01-20")
+	fixtureLocalDate3 = mustParseLocalDate("2025-01-25")
+	fixtureLocalDate4 = mustParseLocalDate("2025-02-07")
 	fixtureDaysOfWeek = []int{1, 5, 6}
 	fixtureB77W       = api.AircraftType{IcaoCode: "B77W", Name: "Boeing 777-300ER"}
 
@@ -150,8 +159,8 @@ func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...stri
 					OriginAirport:      api.NewAirportSpec(0, originIATACode),
 					DestinationAirport: api.NewAirportSpec(0, destinationIATACode),
 					AircraftType:       fixtureB77W.IcaoCode,
-					StartDate:          fixtureDate1,
-					EndDate:            fixtureDate2,
+					StartDate:          fixtureLocalDate1,
+					EndDate:            fixtureLocalDate2,
 					DaysOfWeek:         fixtureDaysOfWeek,
 					DepartureTime:      "7:00",
 					ArrivalTime:        "9:00",

@@ -7,6 +7,8 @@ package db
 import (
 	"database/sql"
 	"time"
+
+	"github.com/stellora/airline/api-server/localtime"
 )
 
 type Aircraft struct {
@@ -38,46 +40,46 @@ type Airport struct {
 }
 
 type FlightInstance struct {
-	ID                               int64
-	SourceFlightScheduleID           sql.NullInt64
-	SourceFlightScheduleInstanceDate sql.NullTime
-	AirlineID                        int64
-	Number                           string
-	OriginAirportID                  int64
-	DestinationAirportID             int64
-	AircraftType                     string
-	AircraftID                       sql.NullInt64
-	DepartureDatetime                time.Time
-	ArrivalDatetime                  time.Time
-	Notes                            string
-	Published                        bool
+	ID                                    int64
+	SourceFlightScheduleID                sql.NullInt64
+	SourceFlightScheduleInstanceLocaldate *localtime.LocalDate
+	AirlineID                             int64
+	Number                                string
+	OriginAirportID                       int64
+	DestinationAirportID                  int64
+	AircraftType                          string
+	AircraftID                            sql.NullInt64
+	DepartureDatetime                     time.Time
+	ArrivalDatetime                       time.Time
+	Notes                                 string
+	Published                             bool
 }
 
 type FlightInstancesView struct {
-	ID                               int64
-	SourceFlightScheduleID           sql.NullInt64
-	SourceFlightScheduleInstanceDate sql.NullTime
-	AirlineID                        int64
-	Number                           string
-	OriginAirportID                  int64
-	DestinationAirportID             int64
-	AircraftType                     string
-	AircraftID                       sql.NullInt64
-	DepartureDatetime                time.Time
-	ArrivalDatetime                  time.Time
-	Notes                            string
-	Published                        bool
-	AirlineIataCode                  string
-	AirlineName                      string
-	OriginAirportIataCode            string
-	OriginAirportOadbID              sql.NullInt64
-	DestinationAirportIataCode       string
-	DestinationAirportOadbID         sql.NullInt64
-	AircraftRegistration             sql.NullString
-	AircraftAircraftType             sql.NullString
-	AircraftAirlineID                sql.NullInt64
-	AircraftAirlineIataCode          sql.NullString
-	AircraftAirlineName              sql.NullString
+	ID                                    int64
+	SourceFlightScheduleID                sql.NullInt64
+	SourceFlightScheduleInstanceLocaldate *localtime.LocalDate
+	AirlineID                             int64
+	Number                                string
+	OriginAirportID                       int64
+	DestinationAirportID                  int64
+	AircraftType                          string
+	AircraftID                            sql.NullInt64
+	DepartureDatetime                     time.Time
+	ArrivalDatetime                       time.Time
+	Notes                                 string
+	Published                             bool
+	AirlineIataCode                       string
+	AirlineName                           string
+	OriginAirportIataCode                 string
+	OriginAirportOadbID                   sql.NullInt64
+	DestinationAirportIataCode            string
+	DestinationAirportOadbID              sql.NullInt64
+	AircraftRegistration                  sql.NullString
+	AircraftAircraftType                  sql.NullString
+	AircraftAirlineID                     sql.NullInt64
+	AircraftAirlineIataCode               sql.NullString
+	AircraftAirlineName                   sql.NullString
 }
 
 type FlightSchedule struct {
@@ -87,11 +89,11 @@ type FlightSchedule struct {
 	OriginAirportID      int64
 	DestinationAirportID int64
 	AircraftType         string
-	StartDate            time.Time
-	EndDate              time.Time
+	StartLocaldate       localtime.LocalDate
+	EndLocaldate         localtime.LocalDate
 	DaysOfWeek           string
-	DepartureTime        string
-	ArrivalTime          string
+	DepartureLocaltime   localtime.TimeOfDay
+	ArrivalLocaltime     localtime.TimeOfDay
 	Published            bool
 }
 
@@ -102,11 +104,11 @@ type FlightSchedulesView struct {
 	OriginAirportID            int64
 	DestinationAirportID       int64
 	AircraftType               string
-	StartDate                  time.Time
-	EndDate                    time.Time
+	StartLocaldate             localtime.LocalDate
+	EndLocaldate               localtime.LocalDate
 	DaysOfWeek                 string
-	DepartureTime              string
-	ArrivalTime                string
+	DepartureLocaltime         localtime.TimeOfDay
+	ArrivalLocaltime           localtime.TimeOfDay
 	Published                  bool
 	AirlineIataCode            string
 	AirlineName                string

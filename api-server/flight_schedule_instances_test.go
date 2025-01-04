@@ -32,8 +32,8 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 	_, err := handler.UpdateFlightSchedule(ctx, api.UpdateFlightScheduleRequestObject{
 		Id: flightSchedule1.Id,
 		Body: &api.UpdateFlightScheduleJSONRequestBody{
-			EndDate:    ptrTo(openapi_types.Date{Time: time.Date(2025, 1, 5, 0, 0, 0, 0, time.UTC)}),
-			DaysOfWeek: ptrTo([]int{0, 3, 5, 6}),
+			EndLocaldate: ptrTo(openapi_types.Date{Time: time.Date(2025, 1, 5, 0, 0, 0, 0, time.UTC)}),
+			DaysOfWeek:   ptrTo([]int{0, 3, 5, 6}),
 		},
 	})
 	if err != nil {
@@ -110,23 +110,4 @@ func TestListFlightInstancesForFlightSchedule(t *testing.T) {
 			Published:            flightSchedule2.Published,
 		},
 	})
-}
-
-func TestScheduleToInstanceDateTime(t *testing.T) {
-	date := time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC)
-	tests := []struct {
-		timeOfDay string
-		want      time.Time
-	}{}
-	for _, test := range tests {
-		t.Run(test.timeOfDay, func(t *testing.T) {
-			got, err := scheduleToInstanceDateTime(date, test.timeOfDay)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !got.Equal(test.want) {
-				t.Errorf("got %s, want %s", got, test.want)
-			}
-		})
-	}
 }

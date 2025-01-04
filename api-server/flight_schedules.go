@@ -6,14 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
+	"github.com/stellora/airline/api-server/localtime"
 )
 
 func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 	daysOfWeek, _ := parseDaysOfWeek(a.DaysOfWeek)
-
 	b := api.FlightSchedule{
 		Id: int(a.ID),
 		Airline: fromDBAirline(db.Airline{
@@ -33,11 +32,11 @@ func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 			OadbID:   a.DestinationAirportOadbID,
 		}),
 		AircraftType:  fromAircraftTypeCode(a.AircraftType),
-		StartDate:     openapi_types.Date{Time: a.StartDate},
-		EndDate:       openapi_types.Date{Time: a.EndDate},
+		StartDate:     a.StartLocaldate.String(),
+		EndDate:       a.EndLocaldate.String(),
 		DaysOfWeek:    daysOfWeek,
-		DepartureTime: a.DepartureTime,
-		ArrivalTime:   a.ArrivalTime,
+		DepartureTime: a.DepartureLocaltime.String(),
+		ArrivalTime:   a.ArrivalLocaltime.String(),
 		Published:     a.Published,
 	}
 	b.DistanceMiles = distanceMilesBetweenAirports(b.OriginAirport, b.DestinationAirport)
@@ -102,17 +101,35 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		return nil, errors.New("aircraftType must not be empty")
 	}
 
+	startDate, err := localtime.ParseLocalDate(request.Body.StartDate)
+	if err != nil {
+		return nil, fmt.Errorf("parsing startDate: %w", err)
+	}
+	endDate, err := localtime.ParseLocalDate(request.Body.EndDate)
+	if err != nil {
+		return nil, fmt.Errorf("parsing endDate: %w", err)
+	}
+
+	departureTime, err := localtime.ParseTimeOfDay(request.Body.DepartureTime)
+	if err != nil {
+		return nil, fmt.Errorf("parsing departureTime: %w", err)
+	}
+	arrivalTime, err := localtime.ParseTimeOfDay(request.Body.ArrivalTime)
+	if err != nil {
+		return nil, fmt.Errorf("parsing arrivalTime: %w", err)
+	}
+
 	created, err := queriesTx.CreateFlightSchedule(ctx, db.CreateFlightScheduleParams{
 		AirlineID:            airline.ID,
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
 		DestinationAirportID: destinationAirport.ID,
 		AircraftType:         request.Body.AircraftType,
-		StartDate:            request.Body.StartDate.Time,
-		EndDate:              request.Body.EndDate.Time,
+		StartLocaldate:       startDate,
+		EndLocaldate:         endDate,
 		DaysOfWeek:           toDBDaysOfWeek(request.Body.DaysOfWeek),
-		DepartureTime:        request.Body.DepartureTime,
-		ArrivalTime:          request.Body.ArrivalTime,
+		DepartureLocaltime:   departureTime,
+		ArrivalLocaltime:     arrivalTime,
 		Published:            request.Body.Published != nil && *request.Body.Published,
 	})
 	if err != nil {
@@ -174,19 +191,35 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 		params.AircraftType = sql.NullString{String: *request.Body.AircraftType, Valid: true}
 	}
 	if request.Body.StartDate != nil {
-		params.StartDate = sql.NullTime{Time: request.Body.StartDate.Time, Valid: true}
+		startDate, err := localtime.ParseLocalDate(*request.Body.StartDate)
+		if err != nil {
+			return nil, fmt.Errorf("parsing startDate: %w", err)
+		}
+		params.StartLocaldate = startDate
 	}
 	if request.Body.EndDate != nil {
-		params.EndDate = sql.NullTime{Time: request.Body.EndDate.Time, Valid: true}
+		endDate, err := localtime.ParseLocalDate(*request.Body.EndDate)
+		if err != nil {
+			return nil, fmt.Errorf("parsing endDate: %w", err)
+		}
+		params.EndLocaldate = endDate
 	}
 	if request.Body.DaysOfWeek != nil {
 		params.DaysOfWeek = sql.NullString{String: toDBDaysOfWeek(*request.Body.DaysOfWeek), Valid: true}
 	}
 	if request.Body.DepartureTime != nil {
-		params.DepartureTime = sql.NullString{String: *request.Body.DepartureTime, Valid: true}
+		departureTime, err := localtime.ParseTimeOfDay(*request.Body.DepartureTime)
+		if err != nil {
+			return nil, fmt.Errorf("parsing departureTime: %w", err)
+		}
+		params.DepartureLocaltime = departureTime
 	}
 	if request.Body.ArrivalTime != nil {
-		params.ArrivalTime = sql.NullString{String: *request.Body.ArrivalTime, Valid: true}
+		arrivalTime, err := localtime.ParseTimeOfDay(*request.Body.ArrivalTime)
+		if err != nil {
+			return nil, fmt.Errorf("parsing arrivalTime: %w", err)
+		}
+		params.ArrivalLocaltime = arrivalTime
 	}
 	if request.Body.Published != nil {
 		params.Published = sql.NullBool{Bool: *request.Body.Published, Valid: true}

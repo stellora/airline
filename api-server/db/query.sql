@@ -135,7 +135,7 @@ ORDER BY id ASC;
 
 -- name: CreateFlightSchedule :one
 INSERT INTO flight_schedules (
-  airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_date, end_date, days_of_week, departure_time, arrival_time, published
+  airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, arrival_localtime, published
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
@@ -148,11 +148,11 @@ number = COALESCE(sqlc.narg('number'), number),
 origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
 destination_airport_id = COALESCE(sqlc.narg('destination_airport_id'), destination_airport_id),
 aircraft_type = COALESCE(sqlc.narg('aircraft_type'), aircraft_type),
-start_date = COALESCE(sqlc.narg('start_date'), start_date),
-end_date = COALESCE(sqlc.narg('end_date'), end_date),
+start_localdate = COALESCE(sqlc.narg('start_localdate'), start_localdate),
+end_localdate = COALESCE(sqlc.narg('end_localdate'), end_localdate),
 days_of_week = COALESCE(sqlc.narg('days_of_week'), days_of_week),
-departure_time = COALESCE(sqlc.narg('departure_time'), departure_time),
-arrival_time = COALESCE(sqlc.narg('arrival_time'), arrival_time),
+departure_localtime = COALESCE(sqlc.narg('departure_localtime'), departure_localtime),
+arrival_localtime = COALESCE(sqlc.narg('arrival_localtime'), arrival_localtime),
 published = COALESCE(sqlc.narg('published'), published)
 WHERE id=sqlc.arg('id')
 RETURNING id;
@@ -191,7 +191,7 @@ ORDER BY departure_datetime ASC, arrival_datetime ASC, id ASC;
 -- name: CreateFlightInstance :one
 INSERT INTO flight_instances (
   source_flight_schedule_id,
-  source_flight_schedule_instance_date,
+  source_flight_schedule_instance_localdate,
   airline_id,
   number,
   origin_airport_id,

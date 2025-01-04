@@ -8,7 +8,83 @@
 			"gen": {
 				"go": {
 					"package": "db",
-					"out": "."
+					"out": ".",
+					"overrides": [
+						{
+							"column": "flight_schedules.start_localdate",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalDate"
+							}
+						},
+						{
+							"column": "flight_schedules.end_localdate",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalDate"
+							}
+						},
+						{
+							"column": "flight_schedules.departure_localtime",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalTimeOfDay"
+							}
+						},
+						{
+							"column": "flight_schedules.arrival_localtime",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalTimeOfDay"
+							}
+						},
+						{
+							"column": "flight_schedules_view.start_localdate",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalDate"
+							}
+						},
+						{
+							"column": "flight_schedules_view.end_localdate",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalDate"
+							}
+						},
+						{
+							"column": "flight_schedules_view.departure_localtime",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalTimeOfDay"
+							}
+						},
+						{
+							"column": "flight_schedules_view.arrival_localtime",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalTimeOfDay"
+							}
+						},
+
+
+						{
+							"column": "flight_instances.source_flight_schedule_instance_localdate",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalDate",
+								"pointer": true
+							}
+						},
+						{
+							"column": "flight_instances_view.source_flight_schedule_instance_localdate",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/localtime",
+								"type": "LocalDate",
+								"pointer": true
+							}
+						}
+					]
 				}
 			}
 		}

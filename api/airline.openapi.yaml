@@ -405,11 +405,9 @@ paths:
                 aircraftType:
                   $ref: '#/components/schemas/AircraftTypeICAOCode'
                 startDate:
-                  type: string
-                  format: date
+                  $ref: '#/components/schemas/LocalDate'
                 endDate:
-                  type: string
-                  format: date
+                  $ref: '#/components/schemas/LocalDate'
                 daysOfWeek:
                   $ref: '#/components/schemas/DaysOfWeek'
                 departureTime:
@@ -491,11 +489,9 @@ paths:
                 aircraftType:
                   $ref: '#/components/schemas/AircraftTypeICAOCode'
                 startDate:
-                  type: string
-                  format: date
+                  $ref: '#/components/schemas/LocalDate'
                 endDate:
-                  type: string
-                  format: date
+                  $ref: '#/components/schemas/LocalDate'
                 daysOfWeek:
                   $ref: '#/components/schemas/DaysOfWeek'
                 departureTime:
@@ -868,6 +864,10 @@ components:
       required:
         - longitude
         - latitude
+    LocalDate:
+      type: string
+      description: A date in YYYY-MM-DD format, with no timezone (timezone-naive).
+      pattern: '^\d{4}-\d{2}-\d{2}$'
     DaysOfWeek:
       type: array
       items:
@@ -900,11 +900,9 @@ components:
         aircraftType:
           $ref: '#/components/schemas/AircraftType'
         startDate:
-          type: string
-          format: date
+          $ref: '#/components/schemas/LocalDate'
         endDate:
-          type: string
-          format: date
+          $ref: '#/components/schemas/LocalDate'
         daysOfWeek:
           $ref: '#/components/schemas/DaysOfWeek'
         departureTime:
@@ -940,8 +938,7 @@ components:
         scheduleID:
           type: integer
         scheduleInstanceDate:
-          type: string
-          format: date
+          $ref: '#/components/schemas/LocalDate'
         airline:
           $ref: '#/components/schemas/Airline'
         number:

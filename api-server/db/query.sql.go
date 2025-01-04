@@ -9,6 +9,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/stellora/airline/api-server/localtime"
 )
 
 const createAircraft = `-- name: CreateAircraft :one
@@ -87,7 +89,7 @@ func (q *Queries) CreateAirport(ctx context.Context, arg CreateAirportParams) (A
 const createFlightInstance = `-- name: CreateFlightInstance :one
 INSERT INTO flight_instances (
   source_flight_schedule_id,
-  source_flight_schedule_instance_date,
+  source_flight_schedule_instance_localdate,
   airline_id,
   number,
   origin_airport_id,
@@ -105,24 +107,24 @@ RETURNING id
 `
 
 type CreateFlightInstanceParams struct {
-	SourceFlightScheduleID           sql.NullInt64
-	SourceFlightScheduleInstanceDate sql.NullTime
-	AirlineID                        int64
-	Number                           string
-	OriginAirportID                  int64
-	DestinationAirportID             int64
-	AircraftType                     string
-	AircraftID                       sql.NullInt64
-	DepartureDatetime                time.Time
-	ArrivalDatetime                  time.Time
-	Notes                            string
-	Published                        bool
+	SourceFlightScheduleID                sql.NullInt64
+	SourceFlightScheduleInstanceLocaldate *localtime.LocalDate
+	AirlineID                             int64
+	Number                                string
+	OriginAirportID                       int64
+	DestinationAirportID                  int64
+	AircraftType                          string
+	AircraftID                            sql.NullInt64
+	DepartureDatetime                     time.Time
+	ArrivalDatetime                       time.Time
+	Notes                                 string
+	Published                             bool
 }
 
 func (q *Queries) CreateFlightInstance(ctx context.Context, arg CreateFlightInstanceParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createFlightInstance,
 		arg.SourceFlightScheduleID,
-		arg.SourceFlightScheduleInstanceDate,
+		arg.SourceFlightScheduleInstanceLocaldate,
 		arg.AirlineID,
 		arg.Number,
 		arg.OriginAirportID,
@@ -141,7 +143,7 @@ func (q *Queries) CreateFlightInstance(ctx context.Context, arg CreateFlightInst
 
 const createFlightSchedule = `-- name: CreateFlightSchedule :one
 INSERT INTO flight_schedules (
-  airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_date, end_date, days_of_week, departure_time, arrival_time, published
+  airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, arrival_localtime, published
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
@@ -154,11 +156,11 @@ type CreateFlightScheduleParams struct {
 	OriginAirportID      int64
 	DestinationAirportID int64
 	AircraftType         string
-	StartDate            time.Time
-	EndDate              time.Time
+	StartLocaldate       localtime.LocalDate
+	EndLocaldate         localtime.LocalDate
 	DaysOfWeek           string
-	DepartureTime        string
-	ArrivalTime          string
+	DepartureLocaltime   localtime.TimeOfDay
+	ArrivalLocaltime     localtime.TimeOfDay
 	Published            bool
 }
 
@@ -169,11 +171,11 @@ func (q *Queries) CreateFlightSchedule(ctx context.Context, arg CreateFlightSche
 		arg.OriginAirportID,
 		arg.DestinationAirportID,
 		arg.AircraftType,
-		arg.StartDate,
-		arg.EndDate,
+		arg.StartLocaldate,
+		arg.EndLocaldate,
 		arg.DaysOfWeek,
-		arg.DepartureTime,
-		arg.ArrivalTime,
+		arg.DepartureLocaltime,
+		arg.ArrivalLocaltime,
 		arg.Published,
 	)
 	var id int64
@@ -361,7 +363,7 @@ func (q *Queries) GetAirportByIATACode(ctx context.Context, iataCode string) (Ai
 
 const getFlightInstance = `-- name: GetFlightInstance :one
 
-SELECT id, source_flight_schedule_id, source_flight_schedule_instance_date, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
+SELECT id, source_flight_schedule_id, source_flight_schedule_instance_localdate, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
 FROM flight_instances_view
 WHERE id=?1 LIMIT 1
 `
@@ -373,7 +375,7 @@ func (q *Queries) GetFlightInstance(ctx context.Context, id int64) (FlightInstan
 	err := row.Scan(
 		&i.ID,
 		&i.SourceFlightScheduleID,
-		&i.SourceFlightScheduleInstanceDate,
+		&i.SourceFlightScheduleInstanceLocaldate,
 		&i.AirlineID,
 		&i.Number,
 		&i.OriginAirportID,
@@ -401,7 +403,7 @@ func (q *Queries) GetFlightInstance(ctx context.Context, id int64) (FlightInstan
 
 const getFlightSchedule = `-- name: GetFlightSchedule :one
 
-SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_date, end_date, days_of_week, departure_time, arrival_time, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id FROM flight_schedules_view
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, arrival_localtime, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id FROM flight_schedules_view
 WHERE id=? LIMIT 1
 `
 
@@ -416,11 +418,11 @@ func (q *Queries) GetFlightSchedule(ctx context.Context, id int64) (FlightSchedu
 		&i.OriginAirportID,
 		&i.DestinationAirportID,
 		&i.AircraftType,
-		&i.StartDate,
-		&i.EndDate,
+		&i.StartLocaldate,
+		&i.EndLocaldate,
 		&i.DaysOfWeek,
-		&i.DepartureTime,
-		&i.ArrivalTime,
+		&i.DepartureLocaltime,
+		&i.ArrivalLocaltime,
 		&i.Published,
 		&i.AirlineIataCode,
 		&i.AirlineName,
@@ -589,7 +591,7 @@ func (q *Queries) ListAirports(ctx context.Context) ([]Airport, error) {
 }
 
 const listFlightInstances = `-- name: ListFlightInstances :many
-SELECT id, source_flight_schedule_id, source_flight_schedule_instance_date, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
+SELECT id, source_flight_schedule_id, source_flight_schedule_instance_localdate, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
 FROM flight_instances_view
 ORDER BY departure_datetime ASC, arrival_datetime ASC, id ASC
 `
@@ -606,7 +608,7 @@ func (q *Queries) ListFlightInstances(ctx context.Context) ([]FlightInstancesVie
 		if err := rows.Scan(
 			&i.ID,
 			&i.SourceFlightScheduleID,
-			&i.SourceFlightScheduleInstanceDate,
+			&i.SourceFlightScheduleInstanceLocaldate,
 			&i.AirlineID,
 			&i.Number,
 			&i.OriginAirportID,
@@ -643,7 +645,7 @@ func (q *Queries) ListFlightInstances(ctx context.Context) ([]FlightInstancesVie
 }
 
 const listFlightInstancesForFlightSchedule = `-- name: ListFlightInstancesForFlightSchedule :many
-SELECT id, source_flight_schedule_id, source_flight_schedule_instance_date, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
+SELECT id, source_flight_schedule_id, source_flight_schedule_instance_localdate, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
 FROM flight_instances_view
 WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_id=?1
 ORDER BY departure_datetime ASC, arrival_datetime ASC, id ASC
@@ -661,7 +663,7 @@ func (q *Queries) ListFlightInstancesForFlightSchedule(ctx context.Context, flig
 		if err := rows.Scan(
 			&i.ID,
 			&i.SourceFlightScheduleID,
-			&i.SourceFlightScheduleInstanceDate,
+			&i.SourceFlightScheduleInstanceLocaldate,
 			&i.AirlineID,
 			&i.Number,
 			&i.OriginAirportID,
@@ -698,7 +700,7 @@ func (q *Queries) ListFlightInstancesForFlightSchedule(ctx context.Context, flig
 }
 
 const listFlightSchedules = `-- name: ListFlightSchedules :many
-SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_date, end_date, days_of_week, departure_time, arrival_time, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id FROM flight_schedules_view
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, arrival_localtime, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id FROM flight_schedules_view
 ORDER BY id ASC
 `
 
@@ -718,11 +720,11 @@ func (q *Queries) ListFlightSchedules(ctx context.Context) ([]FlightSchedulesVie
 			&i.OriginAirportID,
 			&i.DestinationAirportID,
 			&i.AircraftType,
-			&i.StartDate,
-			&i.EndDate,
+			&i.StartLocaldate,
+			&i.EndLocaldate,
 			&i.DaysOfWeek,
-			&i.DepartureTime,
-			&i.ArrivalTime,
+			&i.DepartureLocaltime,
+			&i.ArrivalLocaltime,
 			&i.Published,
 			&i.AirlineIataCode,
 			&i.AirlineName,
@@ -745,7 +747,7 @@ func (q *Queries) ListFlightSchedules(ctx context.Context) ([]FlightSchedulesVie
 }
 
 const listFlightSchedulesByAirline = `-- name: ListFlightSchedulesByAirline :many
-SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_date, end_date, days_of_week, departure_time, arrival_time, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, arrival_localtime, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
 FROM flight_schedules_view
 WHERE airline_id=?1
 ORDER BY id ASC
@@ -767,11 +769,11 @@ func (q *Queries) ListFlightSchedulesByAirline(ctx context.Context, airline int6
 			&i.OriginAirportID,
 			&i.DestinationAirportID,
 			&i.AircraftType,
-			&i.StartDate,
-			&i.EndDate,
+			&i.StartLocaldate,
+			&i.EndLocaldate,
 			&i.DaysOfWeek,
-			&i.DepartureTime,
-			&i.ArrivalTime,
+			&i.DepartureLocaltime,
+			&i.ArrivalLocaltime,
 			&i.Published,
 			&i.AirlineIataCode,
 			&i.AirlineName,
@@ -794,7 +796,7 @@ func (q *Queries) ListFlightSchedulesByAirline(ctx context.Context, airline int6
 }
 
 const listFlightSchedulesByAirport = `-- name: ListFlightSchedulesByAirport :many
-SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_date, end_date, days_of_week, departure_time, arrival_time, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, arrival_localtime, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
 FROM flight_schedules_view
 WHERE origin_airport_id=?1 OR destination_airport_id=?1
 ORDER BY id ASC
@@ -816,11 +818,11 @@ func (q *Queries) ListFlightSchedulesByAirport(ctx context.Context, airport int6
 			&i.OriginAirportID,
 			&i.DestinationAirportID,
 			&i.AircraftType,
-			&i.StartDate,
-			&i.EndDate,
+			&i.StartLocaldate,
+			&i.EndLocaldate,
 			&i.DaysOfWeek,
-			&i.DepartureTime,
-			&i.ArrivalTime,
+			&i.DepartureLocaltime,
+			&i.ArrivalLocaltime,
 			&i.Published,
 			&i.AirlineIataCode,
 			&i.AirlineName,
@@ -843,7 +845,7 @@ func (q *Queries) ListFlightSchedulesByAirport(ctx context.Context, airport int6
 }
 
 const listFlightSchedulesByRoute = `-- name: ListFlightSchedulesByRoute :many
-SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_date, end_date, days_of_week, departure_time, arrival_time, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
+SELECT id, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, arrival_localtime, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
 FROM flight_schedules_view
 WHERE origin_airport_id=?1 OR destination_airport_id=?2
 ORDER BY id ASC
@@ -870,11 +872,11 @@ func (q *Queries) ListFlightSchedulesByRoute(ctx context.Context, arg ListFlight
 			&i.OriginAirportID,
 			&i.DestinationAirportID,
 			&i.AircraftType,
-			&i.StartDate,
-			&i.EndDate,
+			&i.StartLocaldate,
+			&i.EndLocaldate,
 			&i.DaysOfWeek,
-			&i.DepartureTime,
-			&i.ArrivalTime,
+			&i.DepartureLocaltime,
+			&i.ArrivalLocaltime,
 			&i.Published,
 			&i.AirlineIataCode,
 			&i.AirlineName,
@@ -1063,11 +1065,11 @@ number = COALESCE(?2, number),
 origin_airport_id = COALESCE(?3, origin_airport_id),
 destination_airport_id = COALESCE(?4, destination_airport_id),
 aircraft_type = COALESCE(?5, aircraft_type),
-start_date = COALESCE(?6, start_date),
-end_date = COALESCE(?7, end_date),
+start_localdate = COALESCE(?6, start_localdate),
+end_localdate = COALESCE(?7, end_localdate),
 days_of_week = COALESCE(?8, days_of_week),
-departure_time = COALESCE(?9, departure_time),
-arrival_time = COALESCE(?10, arrival_time),
+departure_localtime = COALESCE(?9, departure_localtime),
+arrival_localtime = COALESCE(?10, arrival_localtime),
 published = COALESCE(?11, published)
 WHERE id=?12
 RETURNING id
@@ -1079,11 +1081,11 @@ type UpdateFlightScheduleParams struct {
 	OriginAirportID      sql.NullInt64
 	DestinationAirportID sql.NullInt64
 	AircraftType         sql.NullString
-	StartDate            sql.NullTime
-	EndDate              sql.NullTime
+	StartLocaldate       localtime.LocalDate
+	EndLocaldate         localtime.LocalDate
 	DaysOfWeek           sql.NullString
-	DepartureTime        sql.NullString
-	ArrivalTime          sql.NullString
+	DepartureLocaltime   localtime.TimeOfDay
+	ArrivalLocaltime     localtime.TimeOfDay
 	Published            sql.NullBool
 	ID                   int64
 }
@@ -1095,11 +1097,11 @@ func (q *Queries) UpdateFlightSchedule(ctx context.Context, arg UpdateFlightSche
 		arg.OriginAirportID,
 		arg.DestinationAirportID,
 		arg.AircraftType,
-		arg.StartDate,
-		arg.EndDate,
+		arg.StartLocaldate,
+		arg.EndLocaldate,
 		arg.DaysOfWeek,
-		arg.DepartureTime,
-		arg.ArrivalTime,
+		arg.DepartureLocaltime,
+		arg.ArrivalLocaltime,
 		arg.Published,
 		arg.ID,
 	)
