@@ -580,11 +580,9 @@ paths:
                 aircraft:
                   $ref: '#/components/schemas/AircraftSpec'
                 departureDateTime:
-                  type: string
-                  format: date-time
+                  $ref: '#/components/schemas/ZonedDateTime'
                 arrivalDateTime:
-                  type: string
-                  format: date-time
+                  $ref: '#/components/schemas/ZonedDateTime'
                 notes:
                   type: string
                 published:
@@ -654,11 +652,9 @@ paths:
                 aircraft:
                   $ref: '#/components/schemas/AircraftSpec'
                 departureDateTime:
-                  type: string
-                  format: date-time
+                  $ref: '#/components/schemas/ZonedDateTime'
                 arrivalDateTime:
-                  type: string
-                  format: date-time
+                  $ref: '#/components/schemas/ZonedDateTime'
                 notes:
                   type: string
                 published:
@@ -745,6 +741,11 @@ components:
       schema:
         $ref: '#/components/schemas/AirlineSpec'
   schemas:
+    ZonedDateTime:
+      type: string
+      description: An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
+      format: date-time
+      x-go-type: ZonedDateTime_
     AircraftID:
       type: integer
     AircraftRegistration:
@@ -952,11 +953,9 @@ components:
         aircraft:
            $ref: '#/components/schemas/Aircraft'
         departureDateTime:
-           type: string
-           format: date-time
+           $ref: '#/components/schemas/ZonedDateTime'
         arrivalDateTime:
-           type: string
-           format: date-time
+           $ref: '#/components/schemas/ZonedDateTime'
         notes:
            type: string
         published:

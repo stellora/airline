@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/oapi-codegen/runtime"
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
@@ -98,18 +97,22 @@ type DaysOfWeek = []int
 
 // FlightInstance A single flight, either created and synced automatically from a flight schedule or created manually.
 type FlightInstance struct {
-	Aircraft           *Aircraft    `json:"aircraft,omitempty"`
-	AircraftType       AircraftType `json:"aircraftType"`
-	Airline            Airline      `json:"airline"`
-	ArrivalDateTime    time.Time    `json:"arrivalDateTime"`
-	DepartureDateTime  time.Time    `json:"departureDateTime"`
-	DestinationAirport Airport      `json:"destinationAirport"`
-	Id                 int          `json:"id"`
-	Notes              string       `json:"notes"`
-	Number             FlightNumber `json:"number"`
-	OriginAirport      Airport      `json:"originAirport"`
-	Published          bool         `json:"published"`
-	ScheduleID         *int         `json:"scheduleID,omitempty"`
+	Aircraft     *Aircraft    `json:"aircraft,omitempty"`
+	AircraftType AircraftType `json:"aircraftType"`
+	Airline      Airline      `json:"airline"`
+
+	// ArrivalDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
+	ArrivalDateTime ZonedDateTime `json:"arrivalDateTime"`
+
+	// DepartureDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
+	DepartureDateTime  ZonedDateTime `json:"departureDateTime"`
+	DestinationAirport Airport       `json:"destinationAirport"`
+	Id                 int           `json:"id"`
+	Notes              string        `json:"notes"`
+	Number             FlightNumber  `json:"number"`
+	OriginAirport      Airport       `json:"originAirport"`
+	Published          bool          `json:"published"`
+	ScheduleID         *int          `json:"scheduleID,omitempty"`
 
 	// ScheduleInstanceDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
 	ScheduleInstanceDate *LocalDate `json:"scheduleInstanceDate,omitempty"`
@@ -163,6 +166,9 @@ type Route struct {
 // TimeOfDay A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
 type TimeOfDay = string
 
+// ZonedDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
+type ZonedDateTime = ZonedDateTime_
+
 // CreateAircraftJSONBody defines parameters for CreateAircraft.
 type CreateAircraftJSONBody struct {
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
@@ -214,15 +220,19 @@ type CreateFlightInstanceJSONBody struct {
 	Aircraft *AircraftSpec `json:"aircraft,omitempty"`
 
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType       AircraftTypeICAOCode `json:"aircraftType"`
-	Airline            AirlineSpec          `json:"airline"`
-	ArrivalDateTime    time.Time            `json:"arrivalDateTime"`
-	DepartureDateTime  time.Time            `json:"departureDateTime"`
-	DestinationAirport AirportSpec          `json:"destinationAirport"`
-	Notes              string               `json:"notes"`
-	Number             FlightNumber         `json:"number"`
-	OriginAirport      AirportSpec          `json:"originAirport"`
-	Published          *bool                `json:"published,omitempty"`
+	AircraftType AircraftTypeICAOCode `json:"aircraftType"`
+	Airline      AirlineSpec          `json:"airline"`
+
+	// ArrivalDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
+	ArrivalDateTime ZonedDateTime `json:"arrivalDateTime"`
+
+	// DepartureDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
+	DepartureDateTime  ZonedDateTime `json:"departureDateTime"`
+	DestinationAirport AirportSpec   `json:"destinationAirport"`
+	Notes              string        `json:"notes"`
+	Number             FlightNumber  `json:"number"`
+	OriginAirport      AirportSpec   `json:"originAirport"`
+	Published          *bool         `json:"published,omitempty"`
 }
 
 // UpdateFlightInstanceJSONBody defines parameters for UpdateFlightInstance.
@@ -230,15 +240,19 @@ type UpdateFlightInstanceJSONBody struct {
 	Aircraft *AircraftSpec `json:"aircraft,omitempty"`
 
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType       *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
-	Airline            *AirlineSpec          `json:"airline,omitempty"`
-	ArrivalDateTime    *time.Time            `json:"arrivalDateTime,omitempty"`
-	DepartureDateTime  *time.Time            `json:"departureDateTime,omitempty"`
-	DestinationAirport *AirportSpec          `json:"destinationAirport,omitempty"`
-	Notes              *string               `json:"notes,omitempty"`
-	Number             *FlightNumber         `json:"number,omitempty"`
-	OriginAirport      *AirportSpec          `json:"originAirport,omitempty"`
-	Published          *bool                 `json:"published,omitempty"`
+	AircraftType *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
+	Airline      *AirlineSpec          `json:"airline,omitempty"`
+
+	// ArrivalDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
+	ArrivalDateTime *ZonedDateTime `json:"arrivalDateTime,omitempty"`
+
+	// DepartureDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
+	DepartureDateTime  *ZonedDateTime `json:"departureDateTime,omitempty"`
+	DestinationAirport *AirportSpec   `json:"destinationAirport,omitempty"`
+	Notes              *string        `json:"notes,omitempty"`
+	Number             *FlightNumber  `json:"number,omitempty"`
+	OriginAirport      *AirportSpec   `json:"originAirport,omitempty"`
+	Published          *bool          `json:"published,omitempty"`
 }
 
 // CreateFlightScheduleJSONBody defines parameters for CreateFlightSchedule.

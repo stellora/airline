@@ -331,6 +331,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * Format: date-time
+         * @description An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
+         */
+        ZonedDateTime: string;
         AircraftID: number;
         /** @description Registration code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_registration_prefixes. */
         AircraftRegistration: string;
@@ -409,10 +414,8 @@ export interface components {
             destinationAirport: components["schemas"]["Airport"];
             aircraftType: components["schemas"]["AircraftType"];
             aircraft?: components["schemas"]["Aircraft"];
-            /** Format: date-time */
-            departureDateTime: string;
-            /** Format: date-time */
-            arrivalDateTime: string;
+            departureDateTime: components["schemas"]["ZonedDateTime"];
+            arrivalDateTime: components["schemas"]["ZonedDateTime"];
             notes: string;
             /** @default false */
             published: boolean;
@@ -1306,10 +1309,8 @@ export interface operations {
                     destinationAirport: components["schemas"]["AirportSpec"];
                     aircraftType: components["schemas"]["AircraftTypeICAOCode"];
                     aircraft?: components["schemas"]["AircraftSpec"];
-                    /** Format: date-time */
-                    departureDateTime: string;
-                    /** Format: date-time */
-                    arrivalDateTime: string;
+                    departureDateTime: components["schemas"]["ZonedDateTime"];
+                    arrivalDateTime: components["schemas"]["ZonedDateTime"];
                     notes: string;
                     /** @default false */
                     published?: boolean;
@@ -1416,10 +1417,8 @@ export interface operations {
                     destinationAirport?: components["schemas"]["AirportSpec"];
                     aircraftType?: components["schemas"]["AircraftTypeICAOCode"];
                     aircraft?: components["schemas"]["AircraftSpec"];
-                    /** Format: date-time */
-                    departureDateTime?: string;
-                    /** Format: date-time */
-                    arrivalDateTime?: string;
+                    departureDateTime?: components["schemas"]["ZonedDateTime"];
+                    arrivalDateTime?: components["schemas"]["ZonedDateTime"];
                     notes?: string;
                     /** @default false */
                     published?: boolean;
