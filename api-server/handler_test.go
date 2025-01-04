@@ -77,11 +77,28 @@ var (
 	allDaysOfWeek = []int{0, 1, 2, 3, 4, 5, 6}
 
 	aaaAirport = api.Airport{
-		Id:       1,
-		IataCode: "AAA",
-		Name:     "AAA Airport",
-		Region:   "California",
-		Country:  "US",
+		Id:         1,
+		IataCode:   "AAA",
+		Name:       "AAA Airport",
+		Region:     "California",
+		Country:    "US",
+		TimezoneID: "America/Los_Angeles",
+	}
+	bbbAirport = api.Airport{
+		Id:         2,
+		IataCode:   "BBB",
+		Name:       "BBB Airport",
+		Region:     "New York",
+		Country:    "US",
+		TimezoneID: "America/New_York",
+	}
+	cccAirport = api.Airport{
+		Id:         3,
+		IataCode:   "CCC",
+		Name:       "CCC Airport",
+		Region:     "Illinois",
+		Country:    "US",
+		TimezoneID: "America/Chicago",
 	}
 )
 

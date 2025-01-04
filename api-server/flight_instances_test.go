@@ -113,6 +113,39 @@ func TestListFlightInstances(t *testing.T) {
 	})
 }
 
+func TestCreateFlightInstance(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+
+	aaaTz, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		t.Fatal(err)
+	}
+	bbbTz, err := time.LoadLocation("America/New_York")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := handler.CreateFlightInstance(ctx, api.CreateFlightInstanceRequestObject{
+		Body: &api.CreateFlightInstanceJSONRequestBody{
+			Airline:            api.NewAirlineSpec(0, "XX"),
+			Number:             "222",
+			OriginAirport:      api.NewAirportSpec(0, "AAA"),
+			DestinationAirport: api.NewAirportSpec(0, "BBB"),
+			AircraftType:       fixtureB77W.IcaoCode,
+			DepartureDateTime:  fixtureDate1.Time.In(aaaTz),
+			ArrivalDateTime:    fixtureDate1.Time.Add(3 * time.Hour).In(bbbTz),
+			Published:          ptrTo(true),
+		}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := resp.(api.CreateFlightInstance201JSONResponse); !ok {
+		t.Fatalf("got %T, want non-error response", resp)
+	}
+}
+
 func TestUpdateFlightInstance(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
@@ -171,14 +204,24 @@ func TestDeleteFlightInstance(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
+
+	aaaTz, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		t.Fatal(err)
+	}
+	bbbTz, err := time.LoadLocation("America/New_York")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	manualFlightInstance := insertFlightInstanceT(t, handler, api.CreateFlightInstanceJSONRequestBody{
 		Airline:            api.NewAirlineSpec(0, "XX"),
 		Number:             "222",
 		OriginAirport:      api.NewAirportSpec(0, "AAA"),
 		DestinationAirport: api.NewAirportSpec(0, "BBB"),
 		AircraftType:       fixtureB77W.IcaoCode,
-		DepartureDateTime:  fixtureDate1.Time,
-		ArrivalDateTime:    fixtureDate1.Time.Add(3 * time.Hour),
+		DepartureDateTime:  fixtureDate1.Time.In(aaaTz),
+		ArrivalDateTime:    fixtureDate1.Time.Add(3 * time.Hour).In(bbbTz),
 		Published:          ptrTo(true),
 	})
 	flightSchedule := insertFlightScheduleT(t, handler,

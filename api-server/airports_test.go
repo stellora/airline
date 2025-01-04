@@ -19,10 +19,7 @@ func TestGetAirport(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			assertEqual(t, resp, api.GetAirport200JSONResponse{
-				Id:       1,
-				IataCode: "AAA",
-			})
+			assertEqual(t, resp, api.GetAirport200JSONResponse(aaaAirport))
 		})
 		t.Run("by IATA code", func(t *testing.T) {
 			resp, err := handler.GetAirport(ctx, api.GetAirportRequestObject{
@@ -31,10 +28,7 @@ func TestGetAirport(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			assertEqual(t, resp, api.GetAirport200JSONResponse{
-				Id:       1,
-				IataCode: "AAA",
-			})
+			assertEqual(t, resp, api.GetAirport200JSONResponse(aaaAirport))
 		})
 	})
 	t.Run("does not exist", func(t *testing.T) {
@@ -61,18 +55,17 @@ func TestGetAirport(t *testing.T) {
 
 func TestListAirports(t *testing.T) {
 	ctx, handler := handlerTest(t)
-	ids := insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 
 	resp, err := handler.ListAirports(ctx, api.ListAirportsRequestObject{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := api.ListAirports200JSONResponse{
-		api.Airport{Id: int(ids[0]), IataCode: "AAA"},
-		api.Airport{Id: int(ids[1]), IataCode: "BBB"},
-	}
-	assertEqual(t, resp, want)
+	assertEqual(t, resp, api.ListAirports200JSONResponse{
+		aaaAirport,
+		bbbAirport,
+	})
 }
 
 func TestCreateAirport(t *testing.T) {
@@ -87,12 +80,7 @@ func TestCreateAirport(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := api.CreateAirport201JSONResponse{
-		Id:       1,
-		IataCode: "AAA",
-	}
-	assertEqual(t, resp, want)
-
+	assertEqual(t, resp, api.CreateAirport201JSONResponse(aaaAirport))
 	checkAirportIATACodes(t, handler, []string{"AAA"})
 }
 
@@ -107,9 +95,7 @@ func TestDeleteAirport(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := api.DeleteAirport204Response{}
-	assertEqual(t, resp, want)
-
+	assertEqual(t, resp, api.DeleteAirport204Response{})
 	checkAirportIATACodes(t, handler, []string{"BBB"})
 }
 
@@ -122,9 +108,7 @@ func TestDeleteAllAirports(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := api.DeleteAllAirports204Response{}
-	assertEqual(t, resp, want)
-
+	assertEqual(t, resp, api.DeleteAllAirports204Response{})
 	checkAirportIATACodes(t, handler, []string{})
 }
 

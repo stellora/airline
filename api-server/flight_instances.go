@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/stellora/airline/api-server/api"
@@ -77,7 +76,6 @@ func (h *Handler) ListFlightInstances(ctx context.Context, request api.ListFligh
 func checkDepartureArrivalDateTimesMatchAirportTimezones(departure, arrival *time.Time, origin, destination db.Airport) error {
 	dateTimeMatchesAirport := func(t time.Time, a db.Airport) (wantTzID string, matches bool) {
 		info := extdata.Airports.AirportByOAID(int(a.OadbID.Int64))
-		log.Printf("LOC %#v", t.Location())
 		if t.Location().String() != info.Airport.TimezoneID {
 			return info.Airport.TimezoneID, false
 		}

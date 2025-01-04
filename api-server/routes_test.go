@@ -96,20 +96,20 @@ func TestListRoutes(t *testing.T) {
 
 	want := api.ListRoutes200JSONResponse{
 		{
-			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
-			DestinationAirport: api.Airport{Id: 3, IataCode: "CCC"},
-			FlightSchedulesCount:       2,
+			OriginAirport:        aaaAirport,
+			DestinationAirport:   cccAirport,
+			FlightSchedulesCount: 2,
 		},
 		{
-			OriginAirport:      api.Airport{Id: 1, IataCode: "AAA"},
-			DestinationAirport: api.Airport{Id: 2, IataCode: "BBB"},
-			FlightSchedulesCount:       1,
+			OriginAirport:        aaaAirport,
+			DestinationAirport:   bbbAirport,
+			FlightSchedulesCount: 1,
 		},
 		{
-			OriginAirport:      api.Airport{Id: 2, IataCode: "BBB"},
-			DestinationAirport: api.Airport{Id: 1, IataCode: "AAA"},
-			FlightSchedulesCount:       1,
+			OriginAirport:        bbbAirport,
+			DestinationAirport:   aaaAirport,
+			FlightSchedulesCount: 1,
 		},
 	}
-	assertEqual(t, want, resp)
+	assertEqual(t, resp, want)
 }
