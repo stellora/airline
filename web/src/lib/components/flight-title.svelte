@@ -4,12 +4,12 @@
 	import { cn } from '$lib/utils'
 	import type { HTMLAttributes } from 'svelte/elements'
 	import AirlineCode from './airline-code.svelte'
-	import AirlineIcon from './airline-icon.svelte'
 	import AirportCode from './airport-code.svelte'
 
-	const {
+	let {
 		flight,
 		prefix,
+		showAirlineIcon = true,
 		showRoute = true,
 		link = false,
 		class: className,
@@ -22,6 +22,7 @@
 			destinationAirport: Pick<FlightSchedule['destinationAirport'], 'iataCode' | 'name'>
 		}
 		prefix?: string
+		showAirlineIcon?: boolean
 		showRoute?: boolean
 		link?: boolean
 		class?: HTMLAttributes<never>['class']
@@ -32,7 +33,6 @@
 
 <svelte:element this={as} class={cn(className, 'flex items-baseline gap-1.5')}>
 	{prefix}
-	<AirlineIcon airline={flight.airline} class="self-stretch" />
 	<span
 		class={{
 			'underline decoration-dotted decoration-2 decoration-muted-foreground italic text-muted-foreground':
@@ -44,10 +44,14 @@
 			<a
 				href={route('/admin/flight-schedules/[id]', {
 					params: { id: flight.id.toString() },
-				})}><AirlineCode airline={flight.airline} />&ThinSpace;{flight.number}</a
+				})}
+				><AirlineCode
+					airline={flight.airline}
+					icon={showAirlineIcon}
+				/>&ThinSpace;{flight.number}</a
 			>
 		{:else}
-			<AirlineCode airline={flight.airline} />&ThinSpace;{flight.number}
+			<AirlineCode airline={flight.airline} icon={showAirlineIcon} />&ThinSpace;{flight.number}
 		{/if}
 	</span>
 

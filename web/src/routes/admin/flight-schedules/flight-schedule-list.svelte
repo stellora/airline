@@ -27,7 +27,7 @@
 				{#each flightSchedules as flight (flight.id)}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell class="font-bold text-lg">
-							<FlightTitle {flight} as="span" showRoute={false} />
+							<FlightTitle {flight} as="span" showAirlineIcon={true} showRoute={false} />
 						</Table.Cell>
 						<Table.Cell class="flex items-center gap-2"
 							><div class="inline-flex flex-col gap-1">

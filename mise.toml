@@ -4,11 +4,22 @@ run = "pnpm -C web gen && (cd api-server && go generate ./...)"
 [tasks.dev]
 run = "mise watch dev:api-server ::: dev:web"
 
+[tasks.dev--sqslinux]
+run = "mise run dev:api-server--sqslinux ::: dev:web"
+
 [tasks."dev:api-server"]
 run = "go run ."
 dir = "api-server"
 sources = ["api-server/**/*.go"]
 
+[tasks."dev:api-server--sqslinux"]
+run = "gow run ."
+dir = "api-server"
+
 [tasks."dev:web"]
 run = "pnpm run dev"
 dir = "web"
+
+[tasks."reset-db"]
+run = "rm -f airline.db && go run . -sampledata"
+dir = "api-server"

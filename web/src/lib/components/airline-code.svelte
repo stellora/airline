@@ -28,13 +28,16 @@
 		{#snippet child({ props })}
 			<svelte:element
 				this={as}
-				class={cn(className, 'font-mono hover:underline hover:decoration-dotted leading-none', {
-					'cursor-help': !link,
-					'inline-flex items-baseline gap-1.5': icon,
-				})}
+				class={cn(
+					className,
+					'font-mono hover:underline hover:decoration-dotted inline-flex items-baseline gap-1.5',
+					{
+						'cursor-help': !link,
+					},
+				)}
 				{...props}
 			>
-				{#if icon}<AirlineIcon {airline} />{/if}
+				{#if icon}<AirlineIcon {airline} class="self-center -mt-0.5" />{/if}
 				{#if link}
 					<a
 						href={route('/admin/airlines/[airlineSpec]', {

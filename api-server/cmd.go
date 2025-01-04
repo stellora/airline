@@ -45,6 +45,8 @@ func main() {
 		if err := insertSampleData(ctx, handler); err != nil {
 			log.Fatal(err)
 		}
+		log.Printf("Sample data added to %s. Exiting.", *dbFile)
+		os.Exit(0)
 	}
 
 	server := api.HandlerWithOptions(
