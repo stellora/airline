@@ -3,6 +3,7 @@
 	import AirlineSelect from '$lib/components/airline-select.svelte'
 	import DateRangeInput from '$lib/components/date-range-input.svelte'
 	import DaysOfWeekControls from '$lib/components/days-of-week-controls.svelte'
+	import TimeOfDayInput from '$lib/components/time-of-day-input.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import { Checkbox } from '$lib/components/ui/checkbox'
 	import * as Form from '$lib/components/ui/form'
@@ -28,7 +29,7 @@
 		},
 		dataType: 'json',
 	})
-	const { form: formData, enhance, message, constraints } = form
+	const { form: formData, enhance, message, constraints, errors } = form
 
 	// TODO!(sqs): dedupe with FlightInstanceForm
 </script>
@@ -139,7 +140,7 @@
 				<Form.Control>
 					{#snippet children({ props })}
 						<Form.Label>Departure time</Form.Label>
-						<Input
+						<TimeOfDayInput
 							{...props}
 							bind:value={$formData.departureTime}
 							autocomplete="off"
@@ -148,7 +149,11 @@
 						/>
 					{/snippet}
 				</Form.Control>
-				<Form.Description>Local airport time</Form.Description>
+				<Form.Description
+					>Local time at {$errors.originAirport || !$formData.originAirport
+						? 'airport'
+						: $formData.originAirport}</Form.Description
+				>
 				<Form.FieldErrors />
 			</Form.Field>
 			<span class="relative top-[31px] left-[-4px] w-[1px]">&ndash;</span>
@@ -156,7 +161,7 @@
 				<Form.Control>
 					{#snippet children({ props })}
 						<Form.Label>Arrival time</Form.Label>
-						<Input
+						<TimeOfDayInput
 							{...props}
 							bind:value={$formData.arrivalTime}
 							autocomplete="off"
@@ -165,7 +170,11 @@
 						/>
 					{/snippet}
 				</Form.Control>
-				<Form.Description>Local airport time</Form.Description>
+				<Form.Description
+					>Local time at {$errors.destinationAirport || !$formData.destinationAirport
+						? 'airport'
+						: $formData.destinationAirport}</Form.Description
+				>
 				<Form.FieldErrors />
 			</Form.Field>
 		</div>

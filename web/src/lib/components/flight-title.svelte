@@ -35,8 +35,7 @@
 	{prefix}
 	<span
 		class={{
-			'underline decoration-dotted decoration-2 decoration-muted-foreground italic text-muted-foreground':
-				!flight.published,
+			'italic text-muted-foreground': !flight.published,
 			'font-mono tracking-tight whitespace-nowrap leading-none': true,
 		}}
 	>
@@ -45,13 +44,17 @@
 				href={route('/admin/flight-schedules/[id]', {
 					params: { id: flight.id.toString() },
 				})}
-				><AirlineCode
-					airline={flight.airline}
-					icon={showAirlineIcon}
-				/>&ThinSpace;{flight.number}</a
+				><AirlineCode airline={flight.airline} icon={showAirlineIcon} /><span
+					class="font-sans text-xs"
+					>&nbsp;
+				</span>{flight.number}</a
 			>
 		{:else}
-			<AirlineCode airline={flight.airline} icon={showAirlineIcon} />&ThinSpace;{flight.number}
+			<AirlineCode airline={flight.airline} icon={showAirlineIcon} /><span
+				class="font-sans text-xs"
+			>
+				&nbsp;
+			</span>{flight.number}
 		{/if}
 	</span>
 
