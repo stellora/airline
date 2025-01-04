@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
+	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
-	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
@@ -91,24 +91,26 @@
 		</PageNavbarBreadcrumbActionsDropdownMenu>
 	{/snippet}
 	{#snippet actions()}
-		<Dialog.RootByNavigationState id="edit-flight-schedule">
-			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+		<Drawer.DrawerByNavigationState id="edit-flight-schedule" direction="right">
+			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
 				<Settings2 /> Edit
-			</Dialog.Trigger>
-			<Dialog.Content>
-				<Dialog.Header>
-					<Dialog.Title>Edit flight schedule</Dialog.Title>
-				</Dialog.Header>
-				<FlightScheduleForm
-					action={route('/admin/flight-schedules/[id]', {
-						params: { id: page.params.id },
-						query: '/update',
-					})}
-					submitLabel="Save"
-					form={data.form}
-				/>
-			</Dialog.Content>
-		</Dialog.RootByNavigationState>
+			</Drawer.Trigger>
+			<Drawer.Content>
+				<Drawer.Header>
+					<Drawer.Title>Edit flight schedule</Drawer.Title>
+				</Drawer.Header>
+				<Drawer.ScrollArea>
+					<FlightScheduleForm
+						action={route('/admin/flight-schedules/[id]', {
+							params: { id: page.params.id },
+							query: '/update',
+						})}
+						submitLabel="Save"
+						form={data.form}
+					/>
+				</Drawer.ScrollArea>
+			</Drawer.Content>
+		</Drawer.DrawerByNavigationState>
 	{/snippet}
 </PageNav>
 

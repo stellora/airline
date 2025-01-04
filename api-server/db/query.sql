@@ -186,7 +186,7 @@ WHERE id=sqlc.arg('id') LIMIT 1;
 -- name: ListFlightInstances :many
 SELECT *
 FROM flight_instances_view
-ORDER BY id ASC;
+ORDER BY departure_datetime ASC, arrival_datetime ASC, id ASC;
 
 -- name: CreateFlightInstance :one
 INSERT INTO flight_instances (
@@ -230,7 +230,7 @@ WHERE id=?;
 SELECT *
 FROM flight_instances_view
 WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_id=sqlc.arg('flight_schedule_id')
-ORDER BY id ASC;
+ORDER BY departure_datetime ASC, arrival_datetime ASC, id ASC;
 
 ------------------------------------------------------------------------------- routes
 

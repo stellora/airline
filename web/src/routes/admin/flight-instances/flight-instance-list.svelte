@@ -1,22 +1,27 @@
 <script lang="ts">
+	import { page } from '$app/state'
 	import AircraftTypeCode from '$lib/components/aircraft-type-code.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
+	import { formatterForFlightDateTime } from '$lib/datetime-helpers'
 	import { route } from '$lib/route-helpers'
 	import type { FlightInstance } from '$lib/types'
+	import { parseDateTime } from '@internationalized/date'
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
 	let { flightInstances }: { flightInstances: FlightInstance[] } = $props()
 </script>
 
+<FlightTitle flight={page.data.flightSchedule} as="span" showRoute={true} />
+
 <Card>
 	<Table.Root>
 		<Table.Header>
 			<Table.Row>
-				<Table.Head class="w-[125px]">Date</Table.Head>
-				<Table.Head class="w-[140px]">Flight number</Table.Head>
+				<Table.Head class="w-[125px]">Departure</Table.Head>
+				<Table.Head class="w-[125px]">Arrival</Table.Head>
 				<Table.Head>Aircraft</Table.Head>
 				<Table.Head class="text-right" />
 			</Table.Row>
@@ -24,13 +29,13 @@
 		{#if flightInstances && flightInstances.length > 0}
 			<Table.Body>
 				{#each flightInstances as flight (flight.id)}
+					{@const departureDateTime = parseDateTime(flight.departureDateTime).toDate('UTC')}
+					{@const arrivalDateTime = parseDateTime(flight.arrivalDateTime).toDate('UTC')}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell>
-							{flight.scheduleInstanceDate}
-						</Table.Cell>
-						<Table.Cell>
-							<FlightTitle {flight} as="span" showRoute={true} />
-						</Table.Cell>
+							{formatterForFlightDateTime(departureDateTime).format(departureDateTime)}</Table.Cell
+						>
+						<Table.Cell>{flight.arrivalDateTime}</Table.Cell>
 						<Table.Cell
 							><div class="inline-flex flex-col gap-1">
 								<AircraftTypeCode aircraftType={flight.aircraftType} />

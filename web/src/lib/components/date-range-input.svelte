@@ -2,14 +2,11 @@
 	import { buttonVariants } from '$lib/components/ui/button'
 	import * as Popover from '$lib/components/ui/popover/index.js'
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js'
+	import { dateFormatter } from '$lib/datetime-helpers'
 	import { cn } from '$lib/utils.js'
-	import { DateFormatter, getLocalTimeZone } from '@internationalized/date'
+	import { getLocalTimeZone } from '@internationalized/date'
 	import type { DateRange } from 'bits-ui'
 	import CalendarIcon from 'lucide-svelte/icons/calendar'
-
-	const df = new DateFormatter('en-US', {
-		dateStyle: 'medium',
-	})
 
 	let { value = $bindable() }: { value: DateRange } = $props()
 	let contentRef = $state<HTMLElement | null>(null)
@@ -28,7 +25,7 @@
 	>
 		<CalendarIcon />
 		{#if value && value.start && value.end}
-			{df.format(value.start.toDate(getLocalTimeZone()))} – {df.format(
+			{dateFormatter.format(value.start.toDate(getLocalTimeZone()))} – {dateFormatter.format(
 				value.end.toDate(getLocalTimeZone()),
 			)}
 		{:else}
