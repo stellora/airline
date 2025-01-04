@@ -126,15 +126,13 @@ type FlightNumber = string
 type FlightSchedule struct {
 	AircraftType AircraftType `json:"aircraftType"`
 	Airline      Airline      `json:"airline"`
-
-	// ArrivalTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
-	ArrivalTime TimeOfDay  `json:"arrivalTime"`
-	DaysOfWeek  DaysOfWeek `json:"daysOfWeek"`
+	DaysOfWeek   DaysOfWeek   `json:"daysOfWeek"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
 	DepartureTime      TimeOfDay `json:"departureTime"`
 	DestinationAirport Airport   `json:"destinationAirport"`
 	DistanceMiles      *float64  `json:"distanceMiles,omitempty"`
+	DurationSec        int       `json:"durationSec"`
 
 	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
 	EndDate       LocalDate    `json:"endDate"`
@@ -261,14 +259,12 @@ type CreateFlightScheduleJSONBody struct {
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
 	AircraftType AircraftTypeICAOCode `json:"aircraftType"`
 	Airline      AirlineSpec          `json:"airline"`
-
-	// ArrivalTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
-	ArrivalTime TimeOfDay  `json:"arrivalTime"`
-	DaysOfWeek  DaysOfWeek `json:"daysOfWeek"`
+	DaysOfWeek   DaysOfWeek           `json:"daysOfWeek"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
 	DepartureTime      TimeOfDay   `json:"departureTime"`
 	DestinationAirport AirportSpec `json:"destinationAirport"`
+	DurationSec        int         `json:"durationSec"`
 
 	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
 	EndDate       LocalDate    `json:"endDate"`
@@ -285,14 +281,12 @@ type UpdateFlightScheduleJSONBody struct {
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
 	AircraftType *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
 	Airline      *AirlineSpec          `json:"airline,omitempty"`
-
-	// ArrivalTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
-	ArrivalTime *TimeOfDay  `json:"arrivalTime,omitempty"`
-	DaysOfWeek  *DaysOfWeek `json:"daysOfWeek,omitempty"`
+	DaysOfWeek   *DaysOfWeek           `json:"daysOfWeek,omitempty"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
 	DepartureTime      *TimeOfDay   `json:"departureTime,omitempty"`
 	DestinationAirport *AirportSpec `json:"destinationAirport,omitempty"`
+	DurationSec        *int         `json:"durationSec,omitempty"`
 
 	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
 	EndDate       *LocalDate    `json:"endDate,omitempty"`

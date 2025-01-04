@@ -399,7 +399,7 @@ export interface components {
             endDate: components["schemas"]["LocalDate"];
             daysOfWeek: components["schemas"]["DaysOfWeek"];
             departureTime: components["schemas"]["TimeOfDay"];
-            arrivalTime: components["schemas"]["TimeOfDay"];
+            durationSec: number;
             published: boolean;
         };
         FlightNumber: string;
@@ -1100,7 +1100,7 @@ export interface operations {
                     endDate: components["schemas"]["LocalDate"];
                     daysOfWeek: components["schemas"]["DaysOfWeek"];
                     departureTime: components["schemas"]["TimeOfDay"];
-                    arrivalTime: components["schemas"]["TimeOfDay"];
+                    durationSec: number;
                     /** @default false */
                     published?: boolean;
                 };
@@ -1220,7 +1220,7 @@ export interface operations {
                     endDate?: components["schemas"]["LocalDate"];
                     daysOfWeek?: components["schemas"]["DaysOfWeek"];
                     departureTime?: components["schemas"]["TimeOfDay"];
-                    arrivalTime?: components["schemas"]["TimeOfDay"];
+                    durationSec?: number;
                     published?: boolean;
                 };
             };

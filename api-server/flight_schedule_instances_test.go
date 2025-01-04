@@ -79,8 +79,8 @@ func TestListFlightInstancesForFlightSchedule(t *testing.T) {
 			OriginAirport:        flightSchedule2.OriginAirport,
 			DestinationAirport:   flightSchedule2.DestinationAirport,
 			AircraftType:         flightSchedule2.AircraftType,
-			DepartureDateTime:    zonedtime.ZonedTime{time.Date(2025, 1, 2, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID))},
-			ArrivalDateTime:      zonedtime.ZonedTime{time.Date(2025, 1, 2, 9, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID))},
+			DepartureDateTime:    zonedtime.ZonedTime{Time: time.Date(2025, 1, 2, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID))},
+			ArrivalDateTime:      zonedtime.ZonedTime{Time: time.Date(2025, 1, 2, 12, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID))},
 			Published:            flightSchedule2.Published,
 		},
 		{
@@ -92,8 +92,8 @@ func TestListFlightInstancesForFlightSchedule(t *testing.T) {
 			OriginAirport:        flightSchedule2.OriginAirport,
 			DestinationAirport:   flightSchedule2.DestinationAirport,
 			AircraftType:         flightSchedule2.AircraftType,
-			DepartureDateTime:    zonedtime.ZonedTime{time.Date(2025, 1, 3, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID))},
-			ArrivalDateTime:      zonedtime.ZonedTime{time.Date(2025, 1, 3, 9, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID))},
+			DepartureDateTime:    zonedtime.ZonedTime{Time: time.Date(2025, 1, 3, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID))},
+			ArrivalDateTime:      zonedtime.ZonedTime{Time: time.Date(2025, 1, 3, 12, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID))},
 			Published:            flightSchedule2.Published,
 		},
 		{
@@ -105,8 +105,8 @@ func TestListFlightInstancesForFlightSchedule(t *testing.T) {
 			OriginAirport:        flightSchedule2.OriginAirport,
 			DestinationAirport:   flightSchedule2.DestinationAirport,
 			AircraftType:         flightSchedule2.AircraftType,
-			DepartureDateTime:    zonedtime.ZonedTime{time.Date(2025, 1, 4, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID))},
-			ArrivalDateTime:      zonedtime.ZonedTime{time.Date(2025, 1, 4, 9, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID))},
+			DepartureDateTime:    zonedtime.ZonedTime{Time: time.Date(2025, 1, 4, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID))},
+			ArrivalDateTime:      zonedtime.ZonedTime{Time: time.Date(2025, 1, 4, 12, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID))},
 			Published:            flightSchedule2.Published,
 		},
 	})

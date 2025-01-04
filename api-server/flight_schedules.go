@@ -36,7 +36,7 @@ func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 		EndDate:       a.EndLocaldate.String(),
 		DaysOfWeek:    daysOfWeek,
 		DepartureTime: a.DepartureLocaltime.String(),
-		ArrivalTime:   a.ArrivalLocaltime.String(),
+		DurationSec:   int(a.DurationSec),
 		Published:     a.Published,
 	}
 	b.DistanceMiles = distanceMilesBetweenAirports(b.OriginAirport, b.DestinationAirport)
@@ -114,10 +114,6 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 	if err != nil {
 		return nil, fmt.Errorf("parsing departureTime: %w", err)
 	}
-	arrivalTime, err := localtime.ParseTimeOfDay(request.Body.ArrivalTime)
-	if err != nil {
-		return nil, fmt.Errorf("parsing arrivalTime: %w", err)
-	}
 
 	created, err := queriesTx.CreateFlightSchedule(ctx, db.CreateFlightScheduleParams{
 		AirlineID:            airline.ID,
@@ -129,7 +125,7 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		EndLocaldate:         &endDate,
 		DaysOfWeek:           toDBDaysOfWeek(request.Body.DaysOfWeek),
 		DepartureLocaltime:   &departureTime,
-		ArrivalLocaltime:     &arrivalTime,
+		DurationSec:          int64(request.Body.DurationSec),
 		Published:            request.Body.Published != nil && *request.Body.Published,
 	})
 	if err != nil {
@@ -214,12 +210,8 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 		}
 		params.DepartureLocaltime = &departureTime
 	}
-	if request.Body.ArrivalTime != nil {
-		arrivalTime, err := localtime.ParseTimeOfDay(*request.Body.ArrivalTime)
-		if err != nil {
-			return nil, fmt.Errorf("parsing arrivalTime: %w", err)
-		}
-		params.ArrivalLocaltime = &arrivalTime
+	if request.Body.DurationSec != nil {
+		params.DurationSec = sql.NullInt64{Int64: int64(*request.Body.DurationSec), Valid: true}
 	}
 	if request.Body.Published != nil {
 		params.Published = sql.NullBool{Bool: *request.Body.Published, Valid: true}

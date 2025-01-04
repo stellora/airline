@@ -17,14 +17,27 @@ export function formatFlightDate(value: ZonedDateTime): string {
 	return f.format(value.toDate())
 }
 
-export function formatFlightTime(value: ZonedDateTime): string {
+export function formatFlightTime(
+	value: ZonedDateTime,
+	{ plusMinusDaysFrom }: { plusMinusDaysFrom?: ZonedDateTime } = {},
+): string {
 	const f = new DateFormatter('en-US', {
 		hour: '2-digit',
 		minute: '2-digit',
 		hour12: false,
 		timeZone: value.timeZone,
 	})
-	return f.format(value.toDate())
+	let result = f.format(value.toDate())
+
+	if (plusMinusDaysFrom) {
+		// TODO!(sqs): support wrapping around months/years
+		const daysDelta = value.day - plusMinusDaysFrom.day
+		if (daysDelta !== 0) {
+			result += `${daysDelta < 0 ? '-' : '+'}${Math.abs(daysDelta)}`
+		}
+	}
+
+	return result
 }
 
 export function formatFlightDuration(start: ZonedDateTime, end: ZonedDateTime): string {

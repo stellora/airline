@@ -95,8 +95,7 @@ func planFlightScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries,
 		} else if !hasInstance && shouldHaveInstance {
 			// Create an instance.
 			departureDateTime := curDate.TimeOfDay(originAirportLoc, schedule.DepartureLocaltime)
-			// TODO!(sqs): handle when the arrival is on a different day from the departure
-			arrivalDateTime := curDate.TimeOfDay(destinationAirportLoc, schedule.ArrivalLocaltime)
+			arrivalDateTime := api.ZonedDateTime{Time: departureDateTime.Add(time.Second * time.Duration(schedule.DurationSec)).In(destinationAirportLoc)}
 			plan = append(plan, syncFlightScheduleAction{create: &db.CreateFlightInstanceParams{
 				SourceFlightScheduleID:                scheduleID,
 				SourceFlightScheduleInstanceLocaldate: &curDate,
@@ -114,8 +113,7 @@ func planFlightScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries,
 		} else if hasInstance && shouldHaveInstance {
 			// Update the existing instance.
 			departureDateTime := curDate.TimeOfDay(originAirportLoc, schedule.DepartureLocaltime)
-			arrivalDateTime := curDate.TimeOfDay(destinationAirportLoc, schedule.ArrivalLocaltime)
-			// TODO!(sqs): handle when the arrival is on a different day from the departure
+			arrivalDateTime := api.ZonedDateTime{Time: departureDateTime.Add(time.Second * time.Duration(schedule.DurationSec)).In(destinationAirportLoc)}
 			plan = append(plan, syncFlightScheduleAction{update: &db.UpdateFlightInstanceParams{
 				ID:                   curInstance.ID,
 				AirlineID:            sql.NullInt64{Valid: true, Int64: schedule.AirlineID},

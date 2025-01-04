@@ -135,7 +135,7 @@ ORDER BY id ASC;
 
 -- name: CreateFlightSchedule :one
 INSERT INTO flight_schedules (
-  airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, arrival_localtime, published
+  airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, duration_sec, published
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
@@ -152,7 +152,7 @@ start_localdate = COALESCE(sqlc.narg('start_localdate'), start_localdate),
 end_localdate = COALESCE(sqlc.narg('end_localdate'), end_localdate),
 days_of_week = COALESCE(sqlc.narg('days_of_week'), days_of_week),
 departure_localtime = COALESCE(sqlc.narg('departure_localtime'), departure_localtime),
-arrival_localtime = COALESCE(sqlc.narg('arrival_localtime'), arrival_localtime),
+duration_sec = COALESCE(sqlc.narg('duration_sec'), duration_sec),
 published = COALESCE(sqlc.narg('published'), published)
 WHERE id=sqlc.arg('id')
 RETURNING id;

@@ -178,6 +178,9 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		}
 	}
 
+	durationSec := func(hours, minutes int) int {
+		return (hours*60 + minutes) * 60
+	}
 	flightSchedules := []*api.CreateFlightScheduleJSONRequestBody{
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -189,7 +192,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 2, 4, 6},
 			DepartureTime:      "23:35",
-			ArrivalTime:        "06:15",
+			DurationSec:        durationSec(16, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -201,7 +204,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{1, 3, 5, 0},
 			DepartureTime:      "10:10",
-			ArrivalTime:        "09:20",
+			DurationSec:        durationSec(17, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "SQ"),
@@ -213,7 +216,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{1, 3, 5, 0},
 			DepartureTime:      "22:35",
-			ArrivalTime:        "05:15",
+			DurationSec:        durationSec(16, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "SQ"),
@@ -225,7 +228,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{1, 3, 5, 0},
 			DepartureTime:      "09:20",
-			ArrivalTime:        "08:45",
+			DurationSec:        durationSec(16, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "SQ"),
@@ -237,7 +240,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 2, 4, 6},
 			DepartureTime:      "20:35",
-			ArrivalTime:        "03:15",
+			DurationSec:        durationSec(16, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "SQ"),
@@ -249,7 +252,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{1, 3, 5, 0},
 			DepartureTime:      "07:20",
-			ArrivalTime:        "06:45",
+			DurationSec:        durationSec(16, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "SQ"),
@@ -261,7 +264,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{1, 3, 5, 0},
 			DepartureTime:      "11:45",
-			ArrivalTime:        "05:55",
+			DurationSec:        durationSec(12, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "SQ"),
@@ -273,7 +276,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{1, 3, 5, 0},
 			DepartureTime:      "01:30",
-			ArrivalTime:        "08:15",
+			DurationSec:        durationSec(12, 45),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -285,7 +288,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "13:30",
-			ArrivalTime:        "22:00",
+			DurationSec:        durationSec(5, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -297,7 +300,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "06:30",
-			ArrivalTime:        "15:00",
+			DurationSec:        durationSec(5, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -309,7 +312,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "22:30",
-			ArrivalTime:        "07:00",
+			DurationSec:        durationSec(5, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -321,7 +324,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "17:30",
-			ArrivalTime:        "21:00",
+			DurationSec:        durationSec(5, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -333,7 +336,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "08:30",
-			ArrivalTime:        "12:00",
+			DurationSec:        durationSec(5, 55),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -345,7 +348,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "19:30",
-			ArrivalTime:        "23:00",
+			DurationSec:        durationSec(5, 55),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -357,7 +360,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 2, 4, 6},
 			DepartureTime:      "23:35",
-			ArrivalTime:        "06:15",
+			DurationSec:        durationSec(5, 45),
 		},
 
 		{
@@ -370,7 +373,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 2, 4, 6},
 			DepartureTime:      "07:30",
-			ArrivalTime:        "14:10",
+			DurationSec:        durationSec(5, 15),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -382,7 +385,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "11:00",
-			ArrivalTime:        "17:40",
+			DurationSec:        durationSec(5, 45),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -394,7 +397,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "22:45",
-			ArrivalTime:        "06:30",
+			DurationSec:        durationSec(14, 25),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -406,7 +409,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "11:30",
-			ArrivalTime:        "07:15",
+			DurationSec:        durationSec(14, 35),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -418,7 +421,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "08:30",
-			ArrivalTime:        "14:15",
+			DurationSec:        durationSec(4, 15),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -430,7 +433,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "15:30",
-			ArrivalTime:        "17:45",
+			DurationSec:        durationSec(4, 45),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -442,7 +445,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "18:30",
-			ArrivalTime:        "06:30",
+			DurationSec:        durationSec(6, 15),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -454,7 +457,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "22:30",
-			ArrivalTime:        "10:30",
+			DurationSec:        durationSec(6, 15),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -466,7 +469,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "10:15",
-			ArrivalTime:        "13:45",
+			DurationSec:        durationSec(12, 30),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "KL"),
@@ -478,7 +481,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "07:45",
-			ArrivalTime:        "09:00",
+			DurationSec:        durationSec(0, 53),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "BA"),
@@ -490,7 +493,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "06:45",
-			ArrivalTime:        "09:00",
+			DurationSec:        durationSec(0, 59),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -502,7 +505,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "09:30",
-			ArrivalTime:        "15:00",
+			DurationSec:        durationSec(4, 45),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -514,7 +517,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "16:30",
-			ArrivalTime:        "18:45",
+			DurationSec:        durationSec(4, 59),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -526,7 +529,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "13:30",
-			ArrivalTime:        "21:45",
+			DurationSec:        durationSec(5, 15),
 		},
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
@@ -538,7 +541,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},
 			DepartureTime:      "07:30",
-			ArrivalTime:        "10:45",
+			DurationSec:        durationSec(5, 45),
 		},
 	}
 	for _, f := range flightSchedules {

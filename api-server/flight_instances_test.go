@@ -38,7 +38,7 @@ func TestGetFlightInstance(t *testing.T) {
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
 			DepartureDateTime:    fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
-			ArrivalDateTime:      fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
 			Published:            flightSchedule.Published,
 		})
 	})
@@ -80,7 +80,7 @@ func TestListFlightInstances(t *testing.T) {
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
 			DepartureDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
-			ArrivalDateTime:      fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
 			Published:            flightSchedule.Published,
 		},
 		{
@@ -93,7 +93,7 @@ func TestListFlightInstances(t *testing.T) {
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
 			DepartureDateTime:    fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
-			ArrivalDateTime:      fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
 			Published:            flightSchedule.Published,
 		},
 		{
@@ -106,7 +106,7 @@ func TestListFlightInstances(t *testing.T) {
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
 			DepartureDateTime:    fixtureLocalDate1.AddDays(2).TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
-			ArrivalDateTime:      fixtureLocalDate1.AddDays(2).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.AddDays(2).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
 			Published:            flightSchedule.Published,
 		},
 	})
@@ -183,7 +183,7 @@ func TestUpdateFlightInstance(t *testing.T) {
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
 			DepartureDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
-			ArrivalDateTime:      fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(9, 0)),
+			ArrivalDateTime:      fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
 			Published:            flightSchedule.Published,
 			Notes:                "abc",
 		})

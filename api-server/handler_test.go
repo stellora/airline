@@ -82,6 +82,10 @@ func mustParseLocalDate(s string) localtime.LocalDate {
 	return d
 }
 
+func durationSec(hours, minutes int) int {
+	return (hours*60 + minutes) * 60
+}
+
 var (
 	fixtureLocalDate1 = mustParseLocalDate("2025-01-01")
 	fixtureLocalDate2 = mustParseLocalDate("2025-01-20")
@@ -170,7 +174,7 @@ func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...stri
 					EndDate:            fixtureLocalDate2.String(),
 					DaysOfWeek:         fixtureDaysOfWeek,
 					DepartureTime:      "07:00",
-					ArrivalTime:        "09:00",
+					DurationSec:        durationSec(2, 0),
 					Published:          ptrTo(true),
 				},
 			})
@@ -203,7 +207,7 @@ func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate lo
 				EndDate:            endDate.String(),
 				DaysOfWeek:         daysOfWeek,
 				DepartureTime:      "07:00",
-				ArrivalTime:        "09:00",
+				DurationSec:        durationSec(2, 0),
 				Published:          ptrTo(true),
 			},
 		})

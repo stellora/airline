@@ -55,7 +55,11 @@
 						>
 						<Table.Cell>{formatFlightDuration(departureDateTime, arrivalDateTime)}</Table.Cell>
 						<Table.Cell>{formatFlightTime(departureDateTime)}</Table.Cell>
-						<Table.Cell>{formatFlightTime(arrivalDateTime)}</Table.Cell>
+						<Table.Cell
+							>{formatFlightTime(arrivalDateTime, {
+								plusMinusDaysFrom: departureDateTime,
+							})}</Table.Cell
+						>
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"

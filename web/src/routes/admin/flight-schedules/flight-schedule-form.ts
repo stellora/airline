@@ -14,7 +14,7 @@ export const formSchema = Type.Object({
 	}),
 	daysOfWeek: Type.Array(Type.Integer(), { uniqueItems: true, minItems: 0, maxItems: 7 }),
 	departureTime: Type.String(),
-	arrivalTime: Type.String(),
+	durationSec: Type.Integer(),
 	published: Type.Boolean(),
 })
 
@@ -33,7 +33,7 @@ export function existingFlightScheduleToFormData(a: FlightSchedule): FormSchema[
 		},
 		daysOfWeek: a.daysOfWeek,
 		departureTime: a.departureTime,
-		arrivalTime: a.arrivalTime,
+		durationSec: a.durationSec,
 		published: a.published,
 	}
 }
@@ -53,7 +53,7 @@ export function formDataToFlightScheduleRequest(
 		endDate: f.startEndDate.end,
 		daysOfWeek: f.daysOfWeek as DaysOfWeek,
 		departureTime: f.departureTime,
-		arrivalTime: f.arrivalTime,
+		durationSec: f.durationSec,
 		published: f.published,
 	}
 }

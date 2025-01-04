@@ -98,7 +98,7 @@ type FlightSchedule struct {
 	EndLocaldate         *localtime.LocalDate
 	DaysOfWeek           string
 	DepartureLocaltime   *localtime.TimeOfDay
-	ArrivalLocaltime     *localtime.TimeOfDay
+	DurationSec          int64
 	Published            bool
 }
 
@@ -113,7 +113,7 @@ type FlightSchedulesView struct {
 	EndLocaldate               localtime.LocalDate
 	DaysOfWeek                 string
 	DepartureLocaltime         localtime.TimeOfDay
-	ArrivalLocaltime           localtime.TimeOfDay
+	DurationSec                int64
 	Published                  bool
 	AirlineIataCode            string
 	AirlineName                string

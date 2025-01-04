@@ -2,14 +2,17 @@
 	import { buttonVariants } from '$lib/components/ui/button'
 	import * as Popover from '$lib/components/ui/popover/index.js'
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js'
-	import { dateFormatter } from '$lib/datetime-helpers'
 	import { cn } from '$lib/utils.js'
-	import { getLocalTimeZone } from '@internationalized/date'
+	import { DateFormatter, getLocalTimeZone } from '@internationalized/date'
 	import type { DateRange } from 'bits-ui'
 	import CalendarIcon from 'lucide-svelte/icons/calendar'
 
 	let { value = $bindable() }: { value: DateRange } = $props()
 	let contentRef = $state<HTMLElement | null>(null)
+
+	const dateFormatter = new DateFormatter('en-US', {
+		dateStyle: 'short',
+	})
 </script>
 
 <Popover.Root>

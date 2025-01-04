@@ -33,7 +33,7 @@ func TestGetFlightSchedule(t *testing.T) {
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
 			DepartureTime:      "07:00",
-			ArrivalTime:        "09:00",
+			DurationSec:        durationSec(2, 0),
 			Published:          true,
 		}
 		assertEqual(t, resp, want)
@@ -73,7 +73,7 @@ func TestListFlightSchedules(t *testing.T) {
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
 			DepartureTime:      "07:00",
-			ArrivalTime:        "09:00",
+			DurationSec:        durationSec(2, 0),
 			Published:          true,
 		},
 		api.FlightSchedule{
@@ -87,7 +87,7 @@ func TestListFlightSchedules(t *testing.T) {
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
 			DepartureTime:      "07:00",
-			ArrivalTime:        "09:00",
+			DurationSec:        durationSec(2, 0),
 			Published:          true,
 		},
 	}
@@ -110,7 +110,7 @@ func TestCreateFlightSchedule(t *testing.T) {
 				StartDate:          fixtureLocalDate1.String(),
 				EndDate:            fixtureLocalDate2.String(),
 				DepartureTime:      "07:00",
-				ArrivalTime:        "09:00",
+				DurationSec:        durationSec(2, 0),
 			},
 		})
 		if err != nil {
@@ -137,7 +137,7 @@ func TestCreateFlightSchedule(t *testing.T) {
 				StartDate:          fixtureLocalDate1.String(),
 				EndDate:            fixtureLocalDate2.String(),
 				DepartureTime:      "07:00",
-				ArrivalTime:        "09:00",
+				DurationSec:        durationSec(2, 0),
 			},
 		})
 		if err != nil {
@@ -170,7 +170,7 @@ func TestUpdateFlightSchedule(t *testing.T) {
 				EndDate:            ptrTo(fixtureLocalDate4.String()),
 				DaysOfWeek:         ptrTo([]int{1, 5}),
 				DepartureTime:      ptrTo("08:15"),
-				ArrivalTime:        ptrTo("10:45"),
+				DurationSec:        ptrTo(durationSec(2, 30)),
 				Published:          ptrTo(true),
 			},
 		})
@@ -201,7 +201,7 @@ func TestUpdateFlightSchedule(t *testing.T) {
 			EndDate:            fixtureLocalDate4.String(),
 			DaysOfWeek:         []int{1, 5},
 			DepartureTime:      "08:15",
-			ArrivalTime:        "10:45",
+			DurationSec:        durationSec(2, 30),
 			Published:          true,
 		}
 		assertEqual(t, resp, want)

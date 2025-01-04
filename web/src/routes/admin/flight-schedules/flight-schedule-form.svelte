@@ -10,7 +10,7 @@
 	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
 	import { Input } from '$lib/components/ui/input'
 	import { type DaysOfWeek } from '$lib/types'
-	import { type DateValue, parseZonedDateTime } from '@internationalized/date'
+	import { type DateValue, parseDateTime } from '@internationalized/date'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
@@ -114,10 +114,10 @@
 						{...props}
 						bind:value={() => ({
 							start: $formData.startEndDate.start
-								? parseZonedDateTime($formData.startEndDate.start)
+								? parseDateTime($formData.startEndDate.start)
 								: undefined,
 							end: $formData.startEndDate.end
-								? parseZonedDateTime($formData.startEndDate.end)
+								? parseDateTime($formData.startEndDate.end)
 								: undefined,
 						}),
 						(v: { start: DateValue | undefined; end: DateValue | undefined }) => {
@@ -158,25 +158,20 @@
 				>
 				<Form.FieldErrors />
 			</Form.Field>
-			<span class="relative top-[31px] left-[-4px] w-[1px]">&ndash;</span>
-			<Form.Field {form} name="arrivalTime">
+			<Form.Field {form} name="durationSec">
 				<Form.Control>
 					{#snippet children({ props })}
-						<Form.Label>Arrival time</Form.Label>
-						<TimeOfDayInput
+						<Form.Label>Duration</Form.Label>
+						<Input
 							{...props}
-							bind:value={$formData.arrivalTime}
+							bind:value={$formData.durationSec}
+							type="number"
 							autocomplete="off"
 							size={10}
-							{...$constraints.arrivalTime}
+							{...$constraints.durationSec}
 						/>
 					{/snippet}
 				</Form.Control>
-				<Form.Description
-					>Local time at {$errors.destinationAirport || !$formData.destinationAirport
-						? 'airport'
-						: $formData.destinationAirport}</Form.Description
-				>
 				<Form.FieldErrors />
 			</Form.Field>
 		</div>

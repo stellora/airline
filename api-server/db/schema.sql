@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS flight_schedules (
   end_localdate TEXT NOT NULL,
   days_of_week TEXT NOT NULL,
   departure_localtime TEXT NOT NULL,
-  arrival_localtime TEXT NOT NULL,
+  duration_sec INTEGER NOT NULL,
   published BOOLEAN NOT NULL,
   FOREIGN KEY (airline_id) REFERENCES airlines(id),
   FOREIGN KEY (origin_airport_id) REFERENCES airports(id),

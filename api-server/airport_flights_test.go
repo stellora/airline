@@ -24,7 +24,7 @@ func TestListFlightSchedulesByAirport(t *testing.T) {
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
 			DepartureTime:      "07:00",
-			ArrivalTime:        "09:00",
+			DurationSec:        durationSec(2, 0),
 			Published:          true},
 		{
 			Id:                 2,
@@ -37,7 +37,7 @@ func TestListFlightSchedulesByAirport(t *testing.T) {
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
 			DepartureTime:      "07:00",
-			ArrivalTime:        "09:00",
+			DurationSec:        durationSec(2, 0),
 			Published:          true}}
 
 	t.Run("by id", func(t *testing.T) {

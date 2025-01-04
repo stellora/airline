@@ -412,8 +412,8 @@ paths:
                   $ref: '#/components/schemas/DaysOfWeek'
                 departureTime:
                   $ref: '#/components/schemas/TimeOfDay'
-                arrivalTime:
-                  $ref: '#/components/schemas/TimeOfDay'
+                durationSec:
+                  type: integer
                 published:
                   type: boolean
                   default: false
@@ -427,7 +427,7 @@ paths:
                 - endDate
                 - daysOfWeek
                 - departureTime
-                - arrivalTime
+                - durationSec
       responses:
         '201':
           description: Flight schedule created
@@ -496,8 +496,8 @@ paths:
                   $ref: '#/components/schemas/DaysOfWeek'
                 departureTime:
                   $ref: '#/components/schemas/TimeOfDay'
-                arrivalTime:
-                  $ref: '#/components/schemas/TimeOfDay'
+                durationSec:
+                  type: integer
                 published:
                   type: boolean
       responses:
@@ -911,8 +911,8 @@ components:
           $ref: '#/components/schemas/DaysOfWeek'
         departureTime:
           $ref: '#/components/schemas/TimeOfDay'
-        arrivalTime:
-          $ref: '#/components/schemas/TimeOfDay'
+        durationSec:
+          type: integer
         published:
           type: boolean
       required:
@@ -926,7 +926,7 @@ components:
         - endDate
         - daysOfWeek
         - departureTime
-        - arrivalTime
+        - durationSec
         - published
     FlightNumber:
       type: string
