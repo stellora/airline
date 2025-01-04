@@ -585,10 +585,10 @@ paths:
                   $ref: '#/components/schemas/AircraftSpec'
                 departureDateTime:
                   type: string
-                  format: date
+                  format: date-time
                 arrivalDateTime:
                   type: string
-                  format: date
+                  format: date-time
                 notes:
                   type: string
                 published:
@@ -659,10 +659,10 @@ paths:
                   $ref: '#/components/schemas/AircraftSpec'
                 departureDateTime:
                   type: string
-                  format: date
+                  format: date-time
                 arrivalDateTime:
                   type: string
-                  format: date
+                  format: date-time
                 notes:
                   type: string
                 published:
@@ -845,6 +845,9 @@ components:
           type: string        
         point:
           $ref: '#/components/schemas/Point'
+        timezoneID:
+          type: string
+          description: Tz database ID for the timezone of the airport, such as "America/New_York". See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
       required:
         - id
         - name
@@ -852,6 +855,7 @@ components:
         - country
         - region
         - point
+        - timezoneID
     Point:
       type: object
       properties:
@@ -952,10 +956,10 @@ components:
            $ref: '#/components/schemas/Aircraft'
         departureDateTime:
            type: string
-           format: date
+           format: date-time
         arrivalDateTime:
            type: string
-           format: date
+           format: date-time
         notes:
            type: string
         published:

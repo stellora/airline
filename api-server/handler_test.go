@@ -6,8 +6,83 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
+	"github.com/stellora/airline/api-server/extdata"
+)
+
+func init() {
+	extdata.Airports = extdata.AirportsDataset{
+		Airports: []extdata.Airport{
+			{
+				ID:         1,
+				IATACode:   "AAA",
+				TimezoneID: "America/Los_Angeles",
+				Name:       "AAA Airport",
+				ISOCountry: "US",
+				ISORegion:  "US-CA",
+			},
+			{
+				ID:         2,
+				IATACode:   "BBB",
+				TimezoneID: "America/New_York",
+				Name:       "BBB Airport",
+				ISOCountry: "US",
+				ISORegion:  "US-NY",
+			},
+			{
+				ID:         3,
+				IATACode:   "CCC",
+				TimezoneID: "America/Chicago",
+				Name:       "CCC Airport",
+				ISOCountry: "US",
+				ISORegion:  "US-IL",
+			},
+		},
+		Regions: map[extdata.ISORegion]extdata.Region{
+			"US-CA": {
+				Code:       "US-CA",
+				Name:       "California",
+				ISOCountry: "US",
+			},
+			"US-NY": {
+				Code:       "US-NY",
+				Name:       "New York",
+				ISOCountry: "US",
+			},
+			"US-IL": {
+				Code:       "US-IL",
+				Name:       "Illinois",
+				ISOCountry: "US",
+			},
+		},
+		Countries: map[extdata.ISOCountry]extdata.Country{
+			"US": {
+				Code: "US",
+				Name: "United States",
+			},
+		},
+	}
+}
+
+var (
+	fixtureDate1      = openapi_types.Date{Time: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)}
+	fixtureDate2      = openapi_types.Date{Time: time.Date(2025, 1, 20, 0, 0, 0, 0, time.UTC)}
+	fixtureDate3      = openapi_types.Date{Time: time.Date(2025, 1, 25, 0, 0, 0, 0, time.UTC)}
+	fixtureDate4      = openapi_types.Date{Time: time.Date(2025, 2, 7, 0, 0, 0, 0, time.UTC)}
+	fixtureDaysOfWeek = []int{1, 5, 6}
+	fixtureB77W       = api.AircraftType{IcaoCode: "B77W", Name: "Boeing 777-300ER"}
+
+	allDaysOfWeek = []int{0, 1, 2, 3, 4, 5, 6}
+
+	aaaAirport = api.Airport{
+		Id:       1,
+		IataCode: "AAA",
+		Name:     "AAA Airport",
+		Region:   "California",
+		Country:  "US",
+	}
 )
 
 func handlerTest(t *testing.T) (context.Context, *Handler) {

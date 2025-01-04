@@ -27,6 +27,10 @@
 	{/snippet}
 
 	<Card class="overflow-hidden">
+		Timezone: {data.airport.timezoneID}
+	</Card>
+
+	<Card class="overflow-hidden">
 		<WorldMap features={[geoFeature]} center={geoFeature} />
 	</Card>
 </Page>

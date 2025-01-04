@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/oapi-codegen/runtime"
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
@@ -77,6 +78,9 @@ type Airport struct {
 	Name     string          `json:"name"`
 	Point    Point           `json:"point"`
 	Region   string          `json:"region"`
+
+	// TimezoneID Tz database ID for the timezone of the airport, such as "America/New_York". See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
+	TimezoneID string `json:"timezoneID"`
 }
 
 // AirportIATACode IATA code for airport
@@ -98,8 +102,8 @@ type FlightInstance struct {
 	Aircraft             *Aircraft           `json:"aircraft,omitempty"`
 	AircraftType         AircraftType        `json:"aircraftType"`
 	Airline              Airline             `json:"airline"`
-	ArrivalDateTime      openapi_types.Date  `json:"arrivalDateTime"`
-	DepartureDateTime    openapi_types.Date  `json:"departureDateTime"`
+	ArrivalDateTime      time.Time           `json:"arrivalDateTime"`
+	DepartureDateTime    time.Time           `json:"departureDateTime"`
 	DestinationAirport   Airport             `json:"destinationAirport"`
 	Id                   int                 `json:"id"`
 	Notes                string              `json:"notes"`
@@ -204,8 +208,8 @@ type CreateFlightInstanceJSONBody struct {
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
 	AircraftType       AircraftTypeICAOCode `json:"aircraftType"`
 	Airline            AirlineSpec          `json:"airline"`
-	ArrivalDateTime    openapi_types.Date   `json:"arrivalDateTime"`
-	DepartureDateTime  openapi_types.Date   `json:"departureDateTime"`
+	ArrivalDateTime    time.Time            `json:"arrivalDateTime"`
+	DepartureDateTime  time.Time            `json:"departureDateTime"`
 	DestinationAirport AirportSpec          `json:"destinationAirport"`
 	Notes              string               `json:"notes"`
 	Number             FlightNumber         `json:"number"`
@@ -220,8 +224,8 @@ type UpdateFlightInstanceJSONBody struct {
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
 	AircraftType       *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
 	Airline            *AirlineSpec          `json:"airline,omitempty"`
-	ArrivalDateTime    *openapi_types.Date   `json:"arrivalDateTime,omitempty"`
-	DepartureDateTime  *openapi_types.Date   `json:"departureDateTime,omitempty"`
+	ArrivalDateTime    *time.Time            `json:"arrivalDateTime,omitempty"`
+	DepartureDateTime  *time.Time            `json:"departureDateTime,omitempty"`
 	DestinationAirport *AirportSpec          `json:"destinationAirport,omitempty"`
 	Notes              *string               `json:"notes,omitempty"`
 	Number             *FlightNumber         `json:"number,omitempty"`

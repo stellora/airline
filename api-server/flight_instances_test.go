@@ -38,8 +38,8 @@ func TestGetFlightInstance(t *testing.T) {
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    openapi_types.Date{Time: time.Date(2025, 1, 2, 7, 0, 0, 0, time.UTC)},
-			ArrivalDateTime:      openapi_types.Date{Time: time.Date(2025, 1, 2, 9, 0, 0, 0, time.UTC)},
+			DepartureDateTime:    time.Date(2025, 1, 2, 7, 0, 0, 0, time.UTC),
+			ArrivalDateTime:      time.Date(2025, 1, 2, 9, 0, 0, 0, time.UTC),
 			Published:            flightSchedule.Published,
 		})
 	})
@@ -80,8 +80,8 @@ func TestListFlightInstances(t *testing.T) {
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    openapi_types.Date{Time: time.Date(2025, 1, 1, 7, 0, 0, 0, time.UTC)},
-			ArrivalDateTime:      openapi_types.Date{Time: time.Date(2025, 1, 1, 9, 0, 0, 0, time.UTC)},
+			DepartureDateTime:    time.Date(2025, 1, 1, 7, 0, 0, 0, time.UTC),
+			ArrivalDateTime:      time.Date(2025, 1, 1, 9, 0, 0, 0, time.UTC),
 			Published:            flightSchedule.Published,
 		},
 		{
@@ -93,8 +93,8 @@ func TestListFlightInstances(t *testing.T) {
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    openapi_types.Date{Time: time.Date(2025, 1, 2, 7, 0, 0, 0, time.UTC)},
-			ArrivalDateTime:      openapi_types.Date{Time: time.Date(2025, 1, 2, 9, 0, 0, 0, time.UTC)},
+			DepartureDateTime:    time.Date(2025, 1, 2, 7, 0, 0, 0, time.UTC),
+			ArrivalDateTime:      time.Date(2025, 1, 2, 9, 0, 0, 0, time.UTC),
 			Published:            flightSchedule.Published,
 		},
 		{
@@ -106,8 +106,8 @@ func TestListFlightInstances(t *testing.T) {
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    openapi_types.Date{Time: time.Date(2025, 1, 3, 7, 0, 0, 0, time.UTC)},
-			ArrivalDateTime:      openapi_types.Date{Time: time.Date(2025, 1, 3, 9, 0, 0, 0, time.UTC)},
+			DepartureDateTime:    time.Date(2025, 1, 3, 7, 0, 0, 0, time.UTC),
+			ArrivalDateTime:      time.Date(2025, 1, 3, 9, 0, 0, 0, time.UTC),
 			Published:            flightSchedule.Published,
 		},
 	})
@@ -159,8 +159,8 @@ func TestUpdateFlightInstance(t *testing.T) {
 			OriginAirport:        flightSchedule.OriginAirport,
 			DestinationAirport:   flightSchedule.DestinationAirport,
 			AircraftType:         flightSchedule.AircraftType,
-			DepartureDateTime:    openapi_types.Date{Time: time.Date(2025, 1, 1, 7, 0, 0, 0, time.UTC)},
-			ArrivalDateTime:      openapi_types.Date{Time: time.Date(2025, 1, 1, 9, 0, 0, 0, time.UTC)},
+			DepartureDateTime:    time.Date(2025, 1, 1, 7, 0, 0, 0, time.UTC),
+			ArrivalDateTime:      time.Date(2025, 1, 1, 9, 0, 0, 0, time.UTC),
 			Published:            flightSchedule.Published,
 			Notes:                "abc",
 		})
@@ -177,8 +177,8 @@ func TestDeleteFlightInstance(t *testing.T) {
 		OriginAirport:      api.NewAirportSpec(0, "AAA"),
 		DestinationAirport: api.NewAirportSpec(0, "BBB"),
 		AircraftType:       fixtureB77W.IcaoCode,
-		DepartureDateTime:  fixtureDate1,
-		ArrivalDateTime:    openapi_types.Date{Time: fixtureDate1.Time.Add(3 * time.Hour)},
+		DepartureDateTime:  fixtureDate1.Time,
+		ArrivalDateTime:    fixtureDate1.Time.Add(3 * time.Hour),
 		Published:          ptrTo(true),
 	})
 	flightSchedule := insertFlightScheduleT(t, handler,

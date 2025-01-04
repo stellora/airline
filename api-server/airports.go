@@ -87,6 +87,7 @@ func fromDBAirport(a db.Airport) api.Airport {
 			Latitude:  info.Airport.LatitudeDeg,
 			Longitude: info.Airport.LongitudeDeg,
 		}
+		b.TimezoneID = info.Airport.TimezoneID
 	}
 	// TODO(sqs): handle case where there is no oadb_id or the OA database has no airport with the ID
 	return b

@@ -367,6 +367,8 @@ export interface components {
             country: string;
             region: string;
             point: components["schemas"]["Point"];
+            /** @description Tz database ID for the timezone of the airport, such as "America/New_York". See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones. */
+            timezoneID: string;
         };
         Point: {
             /** Format: double */
@@ -408,9 +410,9 @@ export interface components {
             destinationAirport: components["schemas"]["Airport"];
             aircraftType: components["schemas"]["AircraftType"];
             aircraft?: components["schemas"]["Aircraft"];
-            /** Format: date */
+            /** Format: date-time */
             departureDateTime: string;
-            /** Format: date */
+            /** Format: date-time */
             arrivalDateTime: string;
             notes: string;
             /** @default false */
@@ -1309,9 +1311,9 @@ export interface operations {
                     destinationAirport: components["schemas"]["AirportSpec"];
                     aircraftType: components["schemas"]["AircraftTypeICAOCode"];
                     aircraft?: components["schemas"]["AircraftSpec"];
-                    /** Format: date */
+                    /** Format: date-time */
                     departureDateTime: string;
-                    /** Format: date */
+                    /** Format: date-time */
                     arrivalDateTime: string;
                     notes: string;
                     /** @default false */
@@ -1419,9 +1421,9 @@ export interface operations {
                     destinationAirport?: components["schemas"]["AirportSpec"];
                     aircraftType?: components["schemas"]["AircraftTypeICAOCode"];
                     aircraft?: components["schemas"]["AircraftSpec"];
-                    /** Format: date */
+                    /** Format: date-time */
                     departureDateTime?: string;
-                    /** Format: date */
+                    /** Format: date-time */
                     arrivalDateTime?: string;
                     notes?: string;
                     /** @default false */

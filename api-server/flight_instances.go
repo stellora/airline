@@ -5,10 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
+	"time"
 
-	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
+	"github.com/stellora/airline/api-server/extdata"
 )
 
 func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
@@ -34,8 +36,8 @@ func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 			OadbID:   a.DestinationAirportOadbID,
 		}),
 		AircraftType:      fromAircraftTypeCode(a.AircraftType),
-		DepartureDateTime: openapi_types.Date{Time: a.DepartureDatetime},
-		ArrivalDateTime:   openapi_types.Date{Time: a.ArrivalDatetime},
+		DepartureDateTime: a.DepartureDatetime,
+		ArrivalDateTime:   a.ArrivalDatetime,
 		Notes:             a.Notes,
 		Published:         a.Published,
 	}
@@ -68,6 +70,31 @@ func (h *Handler) ListFlightInstances(ctx context.Context, request api.ListFligh
 		return nil, err
 	}
 	return api.ListFlightInstances200JSONResponse(mapSlice(fromDBFlightInstance, rows)), nil
+}
+
+// Ensure departure/arrival datetimes use the locations of the departure/arrival airports,
+// respectively.
+func checkDepartureArrivalDateTimesMatchAirportTimezones(departure, arrival *time.Time, origin, destination db.Airport) error {
+	dateTimeMatchesAirport := func(t time.Time, a db.Airport) (wantTzID string, matches bool) {
+		info := extdata.Airports.AirportByOAID(int(a.OadbID.Int64))
+		log.Printf("LOC %#v", t.Location())
+		if t.Location().String() != info.Airport.TimezoneID {
+			return info.Airport.TimezoneID, false
+		}
+		return "", true
+	}
+
+	if departure != nil {
+		if wantTz, ok := dateTimeMatchesAirport(*departure, origin); !ok {
+			return fmt.Errorf("departureDateTime must match timezone of origin airport %s: %q != %q", origin.IataCode, departure.Location(), wantTz)
+		}
+	}
+	if arrival != nil {
+		if wantTz, ok := dateTimeMatchesAirport(*arrival, destination); !ok {
+			return fmt.Errorf("arrivalDateTime must match timezone of destination airport %s: %q != %q", destination.IataCode, arrival.Location(), wantTz)
+		}
+	}
+	return nil
 }
 
 func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFlightInstanceRequestObject) (api.CreateFlightInstanceResponseObject, error) {
@@ -119,6 +146,10 @@ func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFl
 		aircraftID = sql.NullInt64{Valid: true, Int64: aircraft.ID}
 	}
 
+	if err := checkDepartureArrivalDateTimesMatchAirportTimezones(&request.Body.DepartureDateTime, &request.Body.ArrivalDateTime, originAirport, destinationAirport); err != nil {
+		return nil, err
+	}
+
 	created, err := queriesTx.CreateFlightInstance(ctx, db.CreateFlightInstanceParams{
 		AirlineID:            airline.ID,
 		Number:               request.Body.Number,
@@ -126,8 +157,8 @@ func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFl
 		DestinationAirportID: destinationAirport.ID,
 		AircraftType:         request.Body.AircraftType,
 		AircraftID:           aircraftID,
-		DepartureDatetime:    request.Body.DepartureDateTime.Time,
-		ArrivalDatetime:      request.Body.ArrivalDateTime.Time,
+		DepartureDatetime:    request.Body.DepartureDateTime,
+		ArrivalDatetime:      request.Body.ArrivalDateTime,
 		Notes:                request.Body.Notes,
 		Published:            request.Body.Published != nil && *request.Body.Published,
 	})
@@ -168,6 +199,13 @@ func (h *Handler) UpdateFlightInstance(ctx context.Context, request api.UpdateFl
 	if request.Body.Notes != nil {
 		params.Notes = sql.NullString{String: *request.Body.Notes, Valid: true}
 	}
+
+	// TODO!(sqs): update other fields
+
+	// TODO!(sqs): when doing this, ensure we use either the old or new airports, if theyre being updated in this call
+	// if err := checkDepartureArrivalDateTimesMatchAirportTimezones(request.Body.DepartureDateTime, request.Body.ArrivalDateTime, originAirport, destinationAirport); err != nil {
+	// 	return nil, err
+	// }
 
 	if _, err := queriesTx.UpdateFlightInstance(ctx, params); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

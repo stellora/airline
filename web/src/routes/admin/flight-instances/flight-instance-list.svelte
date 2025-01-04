@@ -5,10 +5,10 @@
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
-	import { formatterForFlightDateTime } from '$lib/datetime-helpers'
+	import { formatFlightDate, formatFlightTime } from '$lib/datetime-helpers'
 	import { route } from '$lib/route-helpers'
 	import type { FlightInstance } from '$lib/types'
-	import { parseDateTime } from '@internationalized/date'
+	import { parseZonedDateTime } from '@internationalized/date'
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
 	let { flightInstances }: { flightInstances: FlightInstance[] } = $props()
@@ -20,27 +20,29 @@
 	<Table.Root>
 		<Table.Header>
 			<Table.Row>
+				<Table.Head class="w-[155px]">Date</Table.Head>
+				<Table.Head>Aircraft</Table.Head>
 				<Table.Head class="w-[125px]">Departure</Table.Head>
 				<Table.Head class="w-[125px]">Arrival</Table.Head>
-				<Table.Head>Aircraft</Table.Head>
 				<Table.Head class="text-right" />
 			</Table.Row>
 		</Table.Header>
 		{#if flightInstances && flightInstances.length > 0}
 			<Table.Body>
 				{#each flightInstances as flight (flight.id)}
-					{@const departureDateTime = parseDateTime(flight.departureDateTime).toDate('UTC')}
-					{@const arrivalDateTime = parseDateTime(flight.arrivalDateTime).toDate('UTC')}
+					{@const departureDateTime = parseZonedDateTime(flight.departureDateTime).toDate()}
+					{@const arrivalDateTime = parseZonedDateTime(flight.arrivalDateTime).toDate()}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell>
-							{formatterForFlightDateTime(departureDateTime).format(departureDateTime)}</Table.Cell
+							{formatFlightDate(departureDateTime)}</Table.Cell
 						>
-						<Table.Cell>{flight.arrivalDateTime}</Table.Cell>
 						<Table.Cell
 							><div class="inline-flex flex-col gap-1">
 								<AircraftTypeCode aircraftType={flight.aircraftType} />
 							</div></Table.Cell
 						>
+						<Table.Cell>{formatFlightTime(departureDateTime)}</Table.Cell>
+						<Table.Cell>{formatFlightTime(arrivalDateTime)}</Table.Cell>
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"

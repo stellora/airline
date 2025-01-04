@@ -7,34 +7,42 @@ export const dateFormatter = new DateFormatter('en-US', {
 	hour12: false,
 })
 
-export const localTimeFormatter = new DateFormatter('en-US', {
-	hour: '2-digit',
-	minute: '2-digit',
-	hour12: false,
-})
-
-const flightDateTimeOptions: Intl.DateTimeFormatOptions = {
+const flightDateOptions: Intl.DateTimeFormatOptions = {
+	year: 'numeric',
 	month: 'short',
-	day: 'numeric',
-	weekday: 'short',
-	hour: '2-digit',
-	minute: '2-digit',
-	hour12: false,
+	day: '2-digit',
 }
 
-const sameYear = new DateFormatter('en-US', {
-	...flightDateTimeOptions,
-})
+const differentYear = new DateFormatter('en-GB', flightDateOptions)
 
-const differentYear = new DateFormatter('en-US', {
-	...flightDateTimeOptions,
-	year: 'numeric',
-})
+const omitCurrentYear = false
 
-export function formatterForFlightDateTime(value: Date): DateFormatter {
+const currentYear = omitCurrentYear
+	? new DateFormatter('en-GB', {
+			...flightDateOptions,
+			year: undefined, // omit the current year
+		})
+	: differentYear
+
+function formatterForFlightDateTime(value: Date): DateFormatter {
 	const thisYear = new Date().getFullYear()
 	if (value.getFullYear() === thisYear) {
-		return sameYear
+		return currentYear
 	}
 	return differentYear
+}
+
+export function formatFlightDate(value: Date): string {
+	const f = formatterForFlightDateTime(value)
+	return f.format(value)
+}
+
+export const flightTimeFormatter = new DateFormatter('en-US', {
+	hour: '2-digit',
+	minute: '2-digit',
+	hour12: false,
+})
+
+export function formatFlightTime(value: Date): string {
+	return flightTimeFormatter.format(value)
 }

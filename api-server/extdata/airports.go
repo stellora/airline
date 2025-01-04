@@ -62,6 +62,8 @@ type Airport struct {
 	HomeLink         string   `json:",omitempty"`
 	WikipediaLink    string   `json:",omitempty"`
 	Keywords         []string `json:",omitempty"`
+
+	TimezoneID string // addition, from the airports tzmap
 }
 
 type AirportsDataset struct {

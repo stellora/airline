@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/gob"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -27,16 +28,42 @@ func main() {
 
 	ctx := context.Background()
 
-	countries, err := readCountries(ctx)
+	data, err := getAirportsDataset(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	airports, err := readAirports(ctx, func(airport *extdata.Airport) bool {
-		return airport.ScheduledService || airport.Type == "large_airport" || airport.Type == "medium_airport"
-	})
+	out, err := os.Create(*outFile)
 	if err != nil {
 		log.Fatal(err)
+	}
+	defer out.Close()
+
+	switch *encodeFormat {
+	case "gob":
+		if err := gob.NewEncoder(out).Encode(data); err != nil {
+			log.Fatal(err)
+		}
+	case "json":
+		if err := json.NewEncoder(out).Encode(data); err != nil {
+			log.Fatal(err)
+		}
+	default:
+		log.Fatalf("unknown encode format %q", *encodeFormat)
+	}
+}
+
+func getAirportsDataset(ctx context.Context) (*extdata.AirportsDataset, error) {
+	countries, err := readCountries(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	airports, err := readAirports(ctx, func(airport *extdata.Airport) bool {
+		return airport.IATACode != "" && (airport.ScheduledService || airport.Type == "large_airport" || airport.Type == "medium_airport")
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	seenRegions := map[extdata.ISORegion]struct{}{}
@@ -52,33 +79,26 @@ func main() {
 		return seen
 	})
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	dataset := &extdata.AirportsDataset{
+	tzMap, err := readAirportsTzMap(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for i, airport := range airports {
+		if tzID := tzMap[airport.IATACode]; tzID != "" {
+			airports[i].TimezoneID = tzID
+		} else {
+			return nil, fmt.Errorf("no timezone ID for airport %s", airport.IATACode)
+		}
+	}
+
+	return &extdata.AirportsDataset{
 		Countries: countries,
 		Regions:   regions,
 		Airports:  airports,
-	}
-
-	out, err := os.Create(*outFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer out.Close()
-
-	switch *encodeFormat {
-	case "gob":
-		if err := gob.NewEncoder(out).Encode(dataset); err != nil {
-			log.Fatal(err)
-		}
-	case "json":
-		if err := json.NewEncoder(out).Encode(dataset); err != nil {
-			log.Fatal(err)
-		}
-	default:
-		log.Fatalf("unknown encode format %q", *encodeFormat)
-	}
+	}, nil
 }
 
 func readCountries(ctx context.Context) (map[extdata.ISOCountry]extdata.Country, error) {
@@ -250,6 +270,42 @@ func readAirports(ctx context.Context, filter func(airport *extdata.Airport) boo
 	}
 
 	return airports, nil
+}
+
+func readAirportsTzMap(ctx context.Context) (map[string]string, error) {
+	file, err := download(ctx, "https://raw.githubusercontent.com/hroptatyr/dateutils/tzmaps/iata.tzmap")
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	tzMap := make(map[string]string, 10000)
+
+	reader := csv.NewReader(file)
+	reader.FieldsPerRecord = 2
+	reader.ReuseRecord = true
+	reader.Comma = '\t'
+
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		// Some lines have erroneous trailing whitespace, so be tolerant of that error condition.
+		if err != nil && !errors.Is(err, csv.ErrFieldCount) {
+			return nil, fmt.Errorf("reading airports tzmap %v: %T %w", record, err, err)
+		}
+
+		tzMap[record[0]] = record[1]
+	}
+
+	// Add missing airports.
+	tzMap["QJB"] = "Asia/Riyadh"
+	tzMap["QMJ"] = "Asia/Tehran"
+	tzMap["QGU"] = "Asia/Tokyo"
+	tzMap["XYI"] = "Asia/Beijing"
+
+	return tzMap, nil
 }
 
 func splitKeywords(keywords string) []string {
