@@ -4,6 +4,8 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"time"
+
+	"github.com/stellora/airline/api-server/api"
 )
 
 // A LocalDate is a timezone-naive date. It is a calendar date that does not have a timezone
@@ -28,22 +30,22 @@ func NewLocalDate(year int, month time.Month, day int) LocalDate {
 	return LocalDate{Year: year, Month: month, Day: day}
 }
 
-func (d LocalDate) Date(loc *time.Location) time.Time {
+func (d LocalDate) Date(loc *time.Location) api.ZonedDateTime {
 	if loc == nil || loc.String() == "UTC" {
 		panic("converting a LocalDate to UTC is almost always a mistake")
 	}
 	return d.date(loc)
 }
 
-func (d LocalDate) date(loc *time.Location) time.Time {
-	return time.Date(d.Year, d.Month, d.Day, 0, 0, 0, 0, loc)
+func (d LocalDate) date(loc *time.Location) api.ZonedDateTime {
+	return api.ZonedDateTime{Time: time.Date(d.Year, d.Month, d.Day, 0, 0, 0, 0, loc)}
 }
 
-func (d LocalDate) TimeOfDay(loc *time.Location, at TimeOfDay) time.Time {
+func (d LocalDate) TimeOfDay(loc *time.Location, at TimeOfDay) api.ZonedDateTime {
 	if loc == nil || loc.String() == "UTC" {
 		panic("converting a LocalDate to UTC is almost always a mistake")
 	}
-	return time.Date(d.Year, d.Month, d.Day, at.Hour, at.Minute, 0, 0, loc)
+	return api.ZonedDateTime{Time: time.Date(d.Year, d.Month, d.Day, at.Hour, at.Minute, 0, 0, loc)}
 }
 
 func (d LocalDate) Equal(other LocalDate) bool {

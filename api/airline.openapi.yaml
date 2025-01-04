@@ -745,7 +745,9 @@ components:
       type: string
       description: An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
       format: date-time
-      x-go-type: ZonedDateTime_
+      x-go-type: zonedtime.ZonedTime
+      x-go-type-import:
+        path: github.com/stellora/airline/api-server/zonedtime
     AircraftID:
       type: integer
     AircraftRegistration:

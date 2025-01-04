@@ -13,6 +13,7 @@ import (
 
 	"github.com/oapi-codegen/runtime"
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
+	"github.com/stellora/airline/api-server/zonedtime"
 )
 
 // Aircraft defines model for Aircraft.
@@ -167,7 +168,7 @@ type Route struct {
 type TimeOfDay = string
 
 // ZonedDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
-type ZonedDateTime = ZonedDateTime_
+type ZonedDateTime = zonedtime.ZonedTime
 
 // CreateAircraftJSONBody defines parameters for CreateAircraft.
 type CreateAircraftJSONBody struct {

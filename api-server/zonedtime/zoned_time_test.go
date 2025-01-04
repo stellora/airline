@@ -7,19 +7,19 @@ import (
 	"time"
 )
 
-func TestZonedDateTime(t *testing.T) {
+func TestZonedTime(t *testing.T) {
 	// Pick an obscure but real time zone name so that this test doesn't pass just because it is being
 	// run on a machine set to this time zone.
 	loc, err := time.LoadLocation("America/Adak")
 	if err != nil {
 		t.Fatal(err)
 	}
-	zonedDateTime := ZonedDateTime{time.Date(2025, 1, 2, 3, 4, 5, 0, loc)}
+	zonedDateTime := ZonedTime{time.Date(2025, 1, 2, 3, 4, 5, 0, loc)}
 	rfc9557String := "2025-01-02T03:04:05-10:00[America/Adak]"
 	jsonString := fmt.Sprintf(`"%s"`, rfc9557String)
 
 	t.Run("MarshalJSON", func(t *testing.T) {
-		got, err := zonedDateTime.MarshalJSON()
+		got, err := json.Marshal(zonedDateTime)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -29,7 +29,7 @@ func TestZonedDateTime(t *testing.T) {
 	})
 
 	t.Run("UnmarshalJSON", func(t *testing.T) {
-		var zdt ZonedDateTime
+		var zdt ZonedTime
 		if err := json.Unmarshal([]byte(jsonString), &zdt); err != nil {
 			t.Fatal(err)
 		}
