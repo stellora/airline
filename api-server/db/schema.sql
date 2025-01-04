@@ -66,6 +66,8 @@ CREATE TABLE IF NOT EXISTS flight_instances (
   aircraft_id INTEGER,
   departure_datetime TEXT NOT NULL,
   arrival_datetime TEXT NOT NULL,
+  departure_datetime_utc DATETIME NOT NULL,
+  arrival_datetime_utc DATETIME NOT NULL,
   notes TEXT NOT NULL,
   published BOOLEAN NOT NULL,
   FOREIGN KEY (source_flight_schedule_id) REFERENCES flight_schedules(id),

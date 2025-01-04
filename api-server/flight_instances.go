@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
@@ -160,6 +161,8 @@ func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFl
 		AircraftID:           aircraftID,
 		DepartureDatetime:    &request.Body.DepartureDateTime,
 		ArrivalDatetime:      &request.Body.ArrivalDateTime,
+		DepartureDatetimeUtc: request.Body.DepartureDateTime.Time.In(time.UTC),
+		ArrivalDatetimeUtc:   request.Body.ArrivalDateTime.Time.In(time.UTC),
 		Notes:                request.Body.Notes,
 		Published:            request.Body.Published != nil && *request.Body.Published,
 	})

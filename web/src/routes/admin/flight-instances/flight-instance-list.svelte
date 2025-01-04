@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state'
 	import AircraftTypeCode from '$lib/components/aircraft-type-code.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
@@ -11,7 +10,10 @@
 	import { parseZonedDateTime } from '@internationalized/date'
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
-	let { flightInstances }: { flightInstances: FlightInstance[] } = $props()
+	let {
+		flightInstances,
+		showFlightInfo,
+	}: { flightInstances: FlightInstance[]; showFlightInfo?: boolean } = $props()
 </script>
 
 <Card>
@@ -19,6 +21,9 @@
 		<Table.Header>
 			<Table.Row>
 				<Table.Head class="w-[155px]">Date</Table.Head>
+				{#if showFlightInfo}
+					<Table.Head class="w-[180px]">Flight</Table.Head>
+				{/if}
 				<Table.Head>Aircraft</Table.Head>
 				<Table.Head class="w-[105px]">Flight time</Table.Head>
 				<Table.Head class="w-[105px]">Departure</Table.Head>
@@ -35,6 +40,9 @@
 						<Table.Cell>
 							{formatFlightDate(departureDateTime)}</Table.Cell
 						>
+						{#if showFlightInfo}
+							<Table.Cell><FlightTitle {flight} /></Table.Cell>
+						{/if}
 						<Table.Cell
 							><div class="inline-flex flex-col gap-1">
 								<AircraftTypeCode aircraftType={flight.aircraftType} />

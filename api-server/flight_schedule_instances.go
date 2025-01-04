@@ -107,6 +107,8 @@ func planFlightScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries,
 				AircraftType:                          schedule.AircraftType,
 				DepartureDatetime:                     &departureDateTime,
 				ArrivalDatetime:                       &arrivalDateTime,
+				DepartureDatetimeUtc:                  departureDateTime.Time.In(time.UTC),
+				ArrivalDatetimeUtc:                    arrivalDateTime.Time.In(time.UTC),
 				Published:                             schedule.Published,
 			}})
 		} else if hasInstance && shouldHaveInstance {
@@ -123,6 +125,8 @@ func planFlightScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries,
 				AircraftType:         sql.NullString{Valid: true, String: schedule.AircraftType},
 				DepartureDatetime:    &departureDateTime,
 				ArrivalDatetime:      &arrivalDateTime,
+				DepartureDatetimeUtc: sql.NullTime{Valid: true, Time: departureDateTime.Time.In(time.UTC)},
+				ArrivalDatetimeUtc:   sql.NullTime{Valid: true, Time: arrivalDateTime.Time.In(time.UTC)},
 				Published:            sql.NullBool{Valid: true, Bool: schedule.Published},
 			}})
 		}

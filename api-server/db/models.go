@@ -6,6 +6,7 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/stellora/airline/api-server/localtime"
 	"github.com/stellora/airline/api-server/zonedtime"
@@ -51,6 +52,8 @@ type FlightInstance struct {
 	AircraftID                            sql.NullInt64
 	DepartureDatetime                     *zonedtime.ZonedTime
 	ArrivalDatetime                       *zonedtime.ZonedTime
+	DepartureDatetimeUtc                  time.Time
+	ArrivalDatetimeUtc                    time.Time
 	Notes                                 string
 	Published                             bool
 }
@@ -67,6 +70,8 @@ type FlightInstancesView struct {
 	AircraftID                            sql.NullInt64
 	DepartureDatetime                     zonedtime.ZonedTime
 	ArrivalDatetime                       zonedtime.ZonedTime
+	DepartureDatetimeUtc                  time.Time
+	ArrivalDatetimeUtc                    time.Time
 	Notes                                 string
 	Published                             bool
 	AirlineIataCode                       string

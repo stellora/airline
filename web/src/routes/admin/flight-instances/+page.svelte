@@ -6,5 +6,5 @@
 </script>
 
 <Page title="Flight instances">
-	<FlightInstanceList flightInstances={data.flightInstances} />
+	<FlightInstanceList flightInstances={data.flightInstances} showFlightInfo />
 </Page>

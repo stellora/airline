@@ -186,7 +186,7 @@ WHERE id=sqlc.arg('id') LIMIT 1;
 -- name: ListFlightInstances :many
 SELECT *
 FROM flight_instances_view
-ORDER BY departure_datetime ASC, arrival_datetime ASC, id ASC;
+ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
 
 -- name: CreateFlightInstance :one
 INSERT INTO flight_instances (
@@ -200,10 +200,12 @@ INSERT INTO flight_instances (
   aircraft_id,
   departure_datetime,
   arrival_datetime,
+  departure_datetime_utc,
+  arrival_datetime_utc,
   notes,
   published
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 RETURNING id;
 
@@ -217,6 +219,8 @@ aircraft_type = COALESCE(sqlc.narg('aircraft_type'), aircraft_type),
 aircraft_id = COALESCE(sqlc.narg('aircraft_id'), aircraft_id),
 departure_datetime = COALESCE(sqlc.narg('departure_datetime'), departure_datetime),
 arrival_datetime = COALESCE(sqlc.narg('arrival_datetime'), arrival_datetime),
+departure_datetime_utc = COALESCE(sqlc.narg('departure_datetime_utc'), departure_datetime_utc),
+arrival_datetime_utc = COALESCE(sqlc.narg('arrival_datetime_utc'), arrival_datetime_utc),
 notes = COALESCE(sqlc.narg('notes'), notes),
 published = COALESCE(sqlc.narg('published'), published)
 WHERE id=sqlc.arg('id')
@@ -230,7 +234,7 @@ WHERE id=?;
 SELECT *
 FROM flight_instances_view
 WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_id=sqlc.arg('flight_schedule_id')
-ORDER BY departure_datetime ASC, arrival_datetime ASC, id ASC;
+ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
 
 ------------------------------------------------------------------------------- routes
 
