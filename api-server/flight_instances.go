@@ -13,7 +13,6 @@ import (
 )
 
 func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
-	// TODO!(sqs): bring in aircraft
 	b := api.FlightInstance{
 		Id: int(a.ID),
 		Airline: fromDBAirline(db.Airline{
