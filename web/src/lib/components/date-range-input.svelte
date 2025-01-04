@@ -3,17 +3,15 @@
 	import * as Popover from '$lib/components/ui/popover/index.js'
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js'
 	import { cn } from '$lib/utils.js'
-	import { DateFormatter, getLocalTimeZone, today, type DateValue } from '@internationalized/date'
+	import { DateFormatter, getLocalTimeZone } from '@internationalized/date'
+	import type { DateRange } from 'bits-ui'
 	import CalendarIcon from 'lucide-svelte/icons/calendar'
 
 	const df = new DateFormatter('en-US', {
 		dateStyle: 'medium',
 	})
 
-	const start = today(getLocalTimeZone())
-	const end = start.add({ months: 4 })
-
-	let { value = $bindable() }: { value: { start: DateValue; end: DateValue } } = $props()
+	let { value = $bindable() }: { value: DateRange } = $props()
 	let contentRef = $state<HTMLElement | null>(null)
 </script>
 

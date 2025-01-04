@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js'
+	import * as Tooltip from '$lib/components/ui/tooltip'
 	import { cn } from '$lib/utils.js'
-	import PanelLeft from 'lucide-svelte/icons/panel-left'
+	import PanelLeftClose from 'lucide-svelte/icons/panel-left-close'
+	import PanelLeftOpen from 'lucide-svelte/icons/panel-left-open'
 	import type { ComponentProps } from 'svelte'
 	import { useSidebar } from './context.svelte.js'
 
@@ -9,30 +11,42 @@
 		ref = $bindable(null),
 		class: className,
 		onclick,
-		mobileOnly,
+		location,
 		...restProps
 	}: ComponentProps<typeof Button> & {
 		onclick?: (e: MouseEvent) => void
-		mobileOnly?: boolean
+		location: 'navbar' | 'sidebar'
 	} = $props()
 
 	const sidebar = useSidebar()
 </script>
 
-{#if !mobileOnly || sidebar.isMobile || !sidebar.open}
-	<Button
-		type="button"
-		onclick={(e) => {
-			onclick?.(e)
-			sidebar.toggle()
-		}}
-		data-sidebar="trigger"
-		variant="ghost"
-		size="icon"
-		class={cn('h-7 w-7', className)}
-		{...restProps}
-	>
-		<PanelLeft />
-		<span class="sr-only">Toggle Sidebar</span>
-	</Button>
+{#if location === 'sidebar' || !(sidebar.isMobile ? sidebar.openMobile : sidebar.open)}
+	<Tooltip.Root>
+		<Tooltip.Trigger>
+			{#snippet child({ props })}
+				<Button
+					{...props}
+					type="button"
+					onclick={(e) => {
+						onclick?.(e)
+						sidebar.toggle()
+					}}
+					data-sidebar="trigger"
+					variant="ghost"
+					size="icon"
+					class={cn('h-7 w-7', className)}
+					{...restProps}
+				>
+					{#if location === 'navbar'}
+						<PanelLeftOpen />
+					{:else if location === 'sidebar'}
+						<PanelLeftClose />
+					{/if}
+					<span class="sr-only">Toggle Sidebar</span>
+				</Button>
+			{/snippet}
+		</Tooltip.Trigger>
+		<Tooltip.Content>{sidebar.open ? 'Close' : 'Open'} sidebar</Tooltip.Content>
+	</Tooltip.Root>
 {/if}

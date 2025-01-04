@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
+	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
@@ -11,7 +12,6 @@
 	import Trash from 'lucide-svelte/icons/trash'
 	import Users from 'lucide-svelte/icons/users'
 	import FlightInstanceForm from './flight-instance-form.svelte'
-tance-form.svelte'
 
 	const { children, data } = $props()
 </script>

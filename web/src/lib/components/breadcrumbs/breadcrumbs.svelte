@@ -6,7 +6,7 @@
 	let { entries }: { entries: BreadcrumbEntry[] } = $props()
 </script>
 
-<Breadcrumb.Root>
+<Breadcrumb.Root class="[&>ol>li:not(:last-child)]:max-md:hidden">
 	<Breadcrumb.List>
 		{#each entries as entry, index (index)}
 			<BreadcrumbItem {entry} isLast={index === entries.length - 1} />

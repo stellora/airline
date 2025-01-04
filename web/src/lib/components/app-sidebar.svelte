@@ -15,6 +15,7 @@
 	import User from 'lucide-svelte/icons/user'
 	import Users from 'lucide-svelte/icons/users'
 	import Waypoints from 'lucide-svelte/icons/waypoints'
+	import { buttonVariants } from './ui/button'
 
 	type Item = {
 		title: string
@@ -95,7 +96,17 @@
 <Sidebar.Root collapsible="offcanvas" variant="sidebar">
 	<Sidebar.Content>
 		<Sidebar.Group>
-			<Sidebar.GroupLabel>Stellora Airlines</Sidebar.GroupLabel>
+			<Sidebar.GroupLabel>
+				Stellora Airlines
+				<Sidebar.Trigger
+					location="sidebar"
+					class={buttonVariants({
+						variant: 'ghost',
+						size: 'pageNavbar',
+						class: '[&>svg]:!size-4 px-2 -mr-2 ml-auto',
+					})}
+				/>
+			</Sidebar.GroupLabel>
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
 					{#each items as item (item.title)}

@@ -12,10 +12,10 @@
 </script>
 
 <div
-	class="flex items-center overflow-x-auto overflow-y-hidden gap-2 px-4 py-2 sticky top-0 z-10 border-b bg-background h-[47px]"
+	class="flex items-center overflow-x-auto overflow-y-hidden gap-2 px-4 py-2 sticky top-0 border-b bg-background h-[47px]"
 >
 	<Sidebar.Trigger
-		mobileOnly={true}
+		location="navbar"
 		class={buttonVariants({
 			variant: 'pageNavbarIcon',
 			size: 'pageNavbar',

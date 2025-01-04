@@ -126,8 +126,10 @@
 					<DateRangeInput
 						{...props}
 						bind:value={() => ({
-							start: parseDate($formData.startEndDate.start),
-							end: parseDate($formData.startEndDate.end),
+							start: $formData.startEndDate.start
+								? parseDate($formData.startEndDate.start)
+								: undefined,
+							end: $formData.startEndDate.end ? parseDate($formData.startEndDate.end) : undefined,
 						}),
 						(v: { start: DateValue | undefined; end: DateValue | undefined }) => {
 							if (v.start && v.end) {
@@ -146,6 +148,41 @@
 			<Form.Legend>Days of week</Form.Legend>
 			<DaysOfWeekControls bind:value={$formData.daysOfWeek as DaysOfWeek} />
 		</Form.Fieldset>
+		<div class="flex gap-2">
+			<Form.Field {form} name="departureTime">
+				<Form.Control>
+					{#snippet children({ props })}
+						<Form.Label>Departure time</Form.Label>
+						<Input
+							{...props}
+							bind:value={$formData.departureTime}
+							autocomplete="off"
+							size={10}
+							{...$constraints.departureTime}
+						/>
+					{/snippet}
+				</Form.Control>
+				<Form.Description>Local airport time</Form.Description>
+				<Form.FieldErrors />
+			</Form.Field>
+			<span class="relative top-[31px] left-[-4px] w-[1px]">&ndash;</span>
+			<Form.Field {form} name="arrivalTime">
+				<Form.Control>
+					{#snippet children({ props })}
+						<Form.Label>Arrival time</Form.Label>
+						<Input
+							{...props}
+							bind:value={$formData.arrivalTime}
+							autocomplete="off"
+							size={10}
+							{...$constraints.arrivalTime}
+						/>
+					{/snippet}
+				</Form.Control>
+				<Form.Description>Local airport time</Form.Description>
+				<Form.FieldErrors />
+			</Form.Field>
+		</div>
 	</FormFieldGroup>
 	<FormFieldGroup legend="Options">
 		<Form.Field {form} name="published">
