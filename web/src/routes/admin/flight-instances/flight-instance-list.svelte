@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AircraftRegistration from '$lib/components/aircraft-registration.svelte'
 	import AircraftTypeCode from '$lib/components/aircraft-type-code.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { Button } from '$lib/components/ui/button'
@@ -45,7 +46,11 @@
 						{/if}
 						<Table.Cell
 							><div class="inline-flex flex-col gap-1">
-								<AircraftTypeCode aircraftType={flight.aircraftType} />
+								{#if flight.aircraft}
+									<AircraftRegistration aircraft={flight.aircraft} showAircraftType />
+								{:else}
+									<AircraftTypeCode aircraftType={flight.aircraftType} />
+								{/if}
 							</div></Table.Cell
 						>
 						<Table.Cell>{formatFlightDuration(departureDateTime, arrivalDateTime)}</Table.Cell>
