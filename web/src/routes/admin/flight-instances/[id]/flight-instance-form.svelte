@@ -8,7 +8,7 @@
 	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
 	import { Input } from '$lib/components/ui/input'
 	import { type FlightInstance } from '$lib/types'
-	import { type DateValue, parseDate } from '@internationalized/date'
+	import { type DateValue, parseZonedDateTime } from '@internationalized/date'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
@@ -151,7 +151,7 @@
 					<Form.Label>Departure</Form.Label>
 					<DateInput
 						{...props}
-						bind:value={() => parseDate($formData.departureDateTime),
+						bind:value={() => parseZonedDateTime($formData.departureDateTime),
 						(v: DateValue | undefined) => {
 							if (v) {
 								$formData.departureDateTime = v.toString()

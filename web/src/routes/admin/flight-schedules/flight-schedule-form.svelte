@@ -10,7 +10,7 @@
 	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
 	import { Input } from '$lib/components/ui/input'
 	import { type DaysOfWeek } from '$lib/types'
-	import { type DateValue, parseDate } from '@internationalized/date'
+	import { type DateValue, parseZonedDateTime } from '@internationalized/date'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
@@ -114,9 +114,11 @@
 						{...props}
 						bind:value={() => ({
 							start: $formData.startEndDate.start
-								? parseDate($formData.startEndDate.start)
+								? parseZonedDateTime($formData.startEndDate.start)
 								: undefined,
-							end: $formData.startEndDate.end ? parseDate($formData.startEndDate.end) : undefined,
+							end: $formData.startEndDate.end
+								? parseZonedDateTime($formData.startEndDate.end)
+								: undefined,
 						}),
 						(v: { start: DateValue | undefined; end: DateValue | undefined }) => {
 							if (v.start && v.end) {

@@ -5,7 +5,7 @@
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
-	import { formatFlightDate, formatFlightTime } from '$lib/datetime-helpers'
+	import { formatFlightDate, formatFlightDuration, formatFlightTime } from '$lib/datetime-helpers'
 	import { route } from '$lib/route-helpers'
 	import type { FlightInstance } from '$lib/types'
 	import { parseZonedDateTime } from '@internationalized/date'
@@ -22,16 +22,17 @@
 			<Table.Row>
 				<Table.Head class="w-[155px]">Date</Table.Head>
 				<Table.Head>Aircraft</Table.Head>
-				<Table.Head class="w-[125px]">Departure</Table.Head>
-				<Table.Head class="w-[125px]">Arrival</Table.Head>
+				<Table.Head class="w-[105px]">Flight time</Table.Head>
+				<Table.Head class="w-[105px]">Departure</Table.Head>
+				<Table.Head class="w-[105px]">Arrival</Table.Head>
 				<Table.Head class="text-right" />
 			</Table.Row>
 		</Table.Header>
 		{#if flightInstances && flightInstances.length > 0}
 			<Table.Body>
 				{#each flightInstances as flight (flight.id)}
-					{@const departureDateTime = parseZonedDateTime(flight.departureDateTime).toDate()}
-					{@const arrivalDateTime = parseZonedDateTime(flight.arrivalDateTime).toDate()}
+					{@const departureDateTime = parseZonedDateTime(flight.departureDateTime)}
+					{@const arrivalDateTime = parseZonedDateTime(flight.arrivalDateTime)}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell>
 							{formatFlightDate(departureDateTime)}</Table.Cell
@@ -41,6 +42,7 @@
 								<AircraftTypeCode aircraftType={flight.aircraftType} />
 							</div></Table.Cell
 						>
+						<Table.Cell>{formatFlightDuration(departureDateTime, arrivalDateTime)}</Table.Cell>
 						<Table.Cell>{formatFlightTime(departureDateTime)}</Table.Cell>
 						<Table.Cell>{formatFlightTime(arrivalDateTime)}</Table.Cell>
 						<Table.Cell class="text-right">
