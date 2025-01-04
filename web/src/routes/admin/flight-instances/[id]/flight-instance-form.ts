@@ -3,7 +3,7 @@ import type { FlightInstance } from '$lib/types'
 import { Type, type TProperties } from '@sinclair/typebox'
 
 const commonProperties = {
-	aircraft: Type.Optional(Type.Integer()),
+	aircraft: Type.Optional(Type.String()),
 	notes: Type.Optional(Type.String()),
 } satisfies TProperties
 
@@ -31,7 +31,7 @@ export function existingFlightInstanceToFormData(a: FlightInstance): FormSchema 
 		originAirport: a.originAirport.iataCode,
 		destinationAirport: a.destinationAirport.iataCode,
 		aircraftType: a.aircraftType.icaoCode,
-		aircraft: a.aircraft?.id,
+		aircraft: a.aircraft?.registration,
 		departureDateTime: a.departureDateTime,
 		arrivalDateTime: a.arrivalDateTime,
 		notes: a.notes,

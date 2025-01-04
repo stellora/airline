@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
@@ -13,6 +14,9 @@ import (
 )
 
 func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
+	log.Println(a.ID)
+	log.Println(a.ID, a.DepartureDatetime.Time.Location(), a.ArrivalDatetime.Time.Location())
+
 	// TODO!(sqs): bring in aircraft
 	b := api.FlightInstance{
 		Id: int(a.ID),

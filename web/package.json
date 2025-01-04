@@ -10,7 +10,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "concurrently 'PORT=4173 API_SERVER_PORT=4174 vite preview' 'cd ../api-server && PORT=4174 go run .'",
+		"preview": "concurrently 'PORT=4173 PUBLIC_API_PORT=4174 vite preview' 'cd ../api-server && PORT=4174 go run .'",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "npm run -s test:e2e && npm run -s test:unit -- --run",

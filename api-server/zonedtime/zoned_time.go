@@ -15,8 +15,17 @@ type ZonedTime struct {
 	time.Time
 }
 
+// rfc3339WithNoZ is like time.RFC3339, but it always includes the zone offset (e.g., "+0:00"
+// instead of "Z"). This is important for locations like Europe/London, which are equivalent during
+// summer months to UTC but which we want to not contain "Z" because ZonedDateTime parsers in other
+// languages will reject strings with "Z".
+const rfc3339WithNoZ = "2006-01-02T15:04:05-07:00"
+
 func (t ZonedTime) FormatRFC9557() string {
-	return fmt.Sprintf("%s[%s]", t.Time.Format(time.RFC3339), t.Time.Location().String())
+	if t.Time.Location().String() == "UTC" {
+		panic("a ZonedTime in UTC is almost always a mistake")
+	}
+	return fmt.Sprintf("%s[%s]", t.Time.Format(rfc3339WithNoZ), t.Time.Location().String())
 }
 
 func (t ZonedTime) MarshalText() ([]byte, error) {
@@ -36,8 +45,11 @@ func (t *ZonedTime) UnmarshalText(data []byte) error {
 	if err != nil {
 		return fmt.Errorf("invalid ZonedTime (invalid time zone name): %q", tzName)
 	}
+	if loc.String() == "UTC" {
+		panic("a ZonedTime in UTC is almost always a mistake")
+	}
 
-	parsed, err := time.ParseInLocation(time.RFC3339, timeWithoutTzName, loc)
+	parsed, err := time.ParseInLocation(rfc3339WithNoZ, timeWithoutTzName, loc)
 	if err != nil {
 		return err
 	}

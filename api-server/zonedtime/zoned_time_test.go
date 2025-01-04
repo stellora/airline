@@ -40,4 +40,33 @@ func TestZonedTime(t *testing.T) {
 			t.Errorf("got %v, want %v", got, want)
 		}
 	})
+
+	t.Run("no automatic mapping of Europe/London to UTC", func(t *testing.T) {
+		t.Run("MarshalText", func(t *testing.T) {
+			europeLondon, err := time.LoadLocation("Europe/London")
+			if err != nil {
+				t.Fatal(err)
+			}
+			tm := time.Date(2025, 2, 6, 10, 30, 0, 0, europeLondon)
+			zdt := ZonedTime{tm}
+			text, err := zdt.MarshalText()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got, want := string(text), "2025-02-06T10:30:00+00:00[Europe/London]"; got != want {
+				t.Errorf("got %v, want %v", got, want)
+			}
+		})
+
+		t.Run("UnmarshalText", func(t *testing.T) {
+			rfc9557String := "2025-02-06T10:30:00+00:00[Europe/London]"
+			var zdt ZonedTime
+			if err := zdt.UnmarshalText([]byte(rfc9557String)); err != nil {
+				t.Fatal(err)
+			}
+			if got, want := zdt.Location().String(), "Europe/London"; got != want {
+				t.Errorf("got %v, want %v", got, want)
+			}
+		})
+	})
 }

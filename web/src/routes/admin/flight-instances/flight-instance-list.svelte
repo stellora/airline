@@ -14,8 +14,6 @@
 	let { flightInstances }: { flightInstances: FlightInstance[] } = $props()
 </script>
 
-<FlightTitle flight={page.data.flightSchedule} as="span" showRoute={true} />
-
 <Card>
 	<Table.Root>
 		<Table.Header>

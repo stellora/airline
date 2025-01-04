@@ -51,7 +51,16 @@ func main() {
 
 	server := api.HandlerWithOptions(
 		api.NewStrictHandler(handler, nil),
-		api.StdHTTPServerOptions{},
+		api.StdHTTPServerOptions{
+			Middlewares: []api.MiddlewareFunc{
+				func(next http.Handler) http.Handler {
+					return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.Header().Set("Access-Control-Allow-Origin", "*")
+						next.ServeHTTP(w, r)
+					})
+				},
+			},
+		},
 	)
 
 	log.Printf("Starting server on %s", *addr)

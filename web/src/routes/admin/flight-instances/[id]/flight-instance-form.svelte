@@ -1,18 +1,13 @@
 <script lang="ts">
-	import AircraftTypeSelect from '$lib/components/aircraft-type-select.svelte'
-	import AirlineSelect from '$lib/components/airline-select.svelte'
-	import DateInput from '$lib/components/date-input.svelte'
+	import AircraftSelect from '$lib/components/aircraft-select.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
-	import { Checkbox } from '$lib/components/ui/checkbox'
 	import * as Form from '$lib/components/ui/form'
-	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
-	import { Input } from '$lib/components/ui/input'
+	import { Textarea } from '$lib/components/ui/textarea'
 	import { type FlightInstance } from '$lib/types'
-	import { type DateValue, parseZonedDateTime } from '@internationalized/date'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
 	import { superForm } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
-	import type { PageServerData } from './$types'
+	import type { LayoutServerData } from './$types'
 	import {
 		flightInstanceFromManualInputFormSchema,
 		flightInstanceFromScheduleFormSchema,
@@ -24,10 +19,10 @@
 		submitLabel,
 		...props
 	}: {
-		flightInstance: Pick<FlightInstance, 'scheduleID'>
+		flightInstance: Pick<FlightInstance, 'scheduleID' | 'airline'>
 		action: string
 		submitLabel: string
-		form: PageServerData['form']
+		form: LayoutServerData['form']
 	} = $props()
 
 	const isFromManualInput = flightInstance.scheduleID === undefined
@@ -55,128 +50,35 @@
 	class="flex flex-col gap-6 items-start"
 	data-testid="flight-instance-form"
 >
-	<FormFieldGroup legend="Flight number">
-		<Form.Field {form} name="airline">
-			<Form.Control>
-				{#snippet children({ props })}
-					<Form.Label>Airline</Form.Label>
-					<AirlineSelect {...props} bind:value={$formData.airline} {...$constraints.airline} />
-				{/snippet}
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-		<Form.Field {form} name="number">
-			<Form.Control>
-				{#snippet children({ props })}
-					<Form.Label>Number</Form.Label>
-					<Input
-						{...props}
-						bind:value={$formData.number}
-						autocomplete="off"
-						size={8}
-						{...$constraints.number}
-						class="font-mono w-auto"
-					/>
-				{/snippet}
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-	</FormFieldGroup>
-	<FormFieldGroup legend="Route" horizontal>
-		<Form.Field {form} name="originAirport">
-			<Form.Control>
-				{#snippet children({ props })}
-					<Form.Label>Origin airport</Form.Label>
-					<Input
-						{...props}
-						bind:value={$formData.originAirport}
-						autocomplete="off"
-						size={3}
-						{...$constraints.originAirport}
-						class="font-mono"
-					/>
-				{/snippet}
-			</Form.Control>
-			<Form.Description>IATA code</Form.Description>
-			<Form.FieldErrors />
-		</Form.Field>
-		<span class="relative top-[31px] left-[-4px] w-[1px]">&ndash;</span>
-		<Form.Field {form} name="destinationAirport">
-			<Form.Control>
-				{#snippet children({ props })}
-					<Form.Label>Destination airport</Form.Label>
-					<Input
-						{...props}
-						bind:value={$formData.destinationAirport}
-						autocomplete="off"
-						size={3}
-						{...$constraints.destinationAirport}
-						class="font-mono"
-					/>
-				{/snippet}
-			</Form.Control>
-			<Form.Description>IATA code</Form.Description>
-			<Form.FieldErrors />
-		</Form.Field>
-	</FormFieldGroup>
-	<Form.Field {form} name="aircraftType">
-		<Form.Control>
-			{#snippet children({ props })}
-				<Form.Label>Aircraft type</Form.Label>
-				<AircraftTypeSelect
-					{...props}
-					bind:value={$formData.aircraftType}
-					{...$constraints.aircraftType}
-				/>
-			{/snippet}
-		</Form.Control>
-		<Form.Description>IATA code</Form.Description>
-		<Form.FieldErrors />
-	</Form.Field>
 	<Form.Field {form} name="aircraft">
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label>Aircraft</Form.Label>
-				{'<AircraftSelect {...props} bind:value={$formData.aircraft} {...$constraints.aircraft} />'}
-				<!-- TODO!(sqs) -->
+				<AircraftSelect
+					{...props}
+					byAirline={flightInstance.airline.id}
+					bind:value={$formData.aircraft}
+					{...$constraints.aircraft}
+				/>
 			{/snippet}
 		</Form.Control>
 		<Form.Description>When known closer to departure</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
-	<FormFieldGroup legend="Timing">
-		<Form.Field {form} name="departureDateTime">
-			<Form.Control>
-				{#snippet children({ props })}
-					<Form.Label>Departure</Form.Label>
-					<DateInput
-						{...props}
-						bind:value={() => parseZonedDateTime($formData.departureDateTime),
-						(v: DateValue | undefined) => {
-							if (v) {
-								$formData.departureDateTime = v.toString()
-							}
-						}}
-					/>
-				{/snippet}
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-	</FormFieldGroup>
-	<FormFieldGroup legend="Options">
-		<Form.Field {form} name="published">
-			<Form.Control>
-				{#snippet children({ props })}
-					<div class="flex items-center gap-2">
-						<Checkbox {...props} bind:checked={$formData.published} />
-						<Form.Label>Published</Form.Label>
-					</div>
-				{/snippet}
-			</Form.Control>
-			<Form.Description>Published flights are immediately available for booking</Form.Description>
-			<Form.FieldErrors />
-		</Form.Field>
-	</FormFieldGroup>
+	<Form.Field {form} name="notes" class="w-full">
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Notes</Form.Label>
+				<Textarea
+					{...props}
+					bind:value={$formData.notes}
+					{...$constraints.notes}
+					class="h-[130px]"
+				/>
+			{/snippet}
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
 	<Form.Button size="lg">{submitLabel}</Form.Button>
 	{#if $message}
 		<Alert variant="destructive" aria-live="polite">

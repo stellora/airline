@@ -20,6 +20,9 @@ dir = "api-server"
 run = "pnpm run dev"
 dir = "web"
 
+[tasks."db-console"]
+run = "sqlite3 api-server/airline.db"
+
 [tasks."reset-db"]
 run = "rm -f airline.db && go run . -sampledata"
 dir = "api-server"
