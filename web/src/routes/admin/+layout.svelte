@@ -6,6 +6,6 @@
 </script>
 
 <PageNavbar breadcrumbs={page.data.breadcrumbs} />
-<div class="p-4 max-w-screen-lg mx-auto">
+<div class="p-4 max-w-screen-lg mx-auto overflow-x-hidden overflow-y-auto min-h-screen">
 	{@render children?.()}
 </div>

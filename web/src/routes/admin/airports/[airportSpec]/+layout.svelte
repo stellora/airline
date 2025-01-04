@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
-	import Button from '$lib/components/ui/button/button.svelte'
+	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
@@ -63,8 +63,8 @@
 	{/snippet}
 	{#snippet actions()}
 		<Dialog.RootByNavigationState id="edit-airport">
-			<Dialog.Trigger>
-				<Button variant="secondary" size="pageNavbar"><Settings2 /> Edit</Button>
+			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+				<Settings2 /> Edit
 			</Dialog.Trigger>
 			<Dialog.Content>
 				<Dialog.Header>

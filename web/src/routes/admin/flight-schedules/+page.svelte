@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button'
+	import { buttonVariants } from '$lib/components/ui/button'
 	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
@@ -13,8 +13,8 @@
 <PageNav>
 	{#snippet actions()}
 		<Dialog.RootByNavigationState id="new-flight-schedule">
-			<Dialog.Trigger>
-				<Button variant="secondary" size="pageNavbar"><Plus /> New flight schedule</Button>
+			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+				<Plus /> New flight schedule
 			</Dialog.Trigger>
 			<Dialog.Content>
 				<Dialog.Header>

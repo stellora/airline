@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
-	import Button from '$lib/components/ui/button/button.svelte'
 	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
@@ -12,6 +11,7 @@
 	import Trash from 'lucide-svelte/icons/trash'
 	import Users from 'lucide-svelte/icons/users'
 	import FlightInstanceForm from './flight-instance-form.svelte'
+tance-form.svelte'
 
 	const { children, data } = $props()
 </script>
@@ -63,8 +63,8 @@
 	{/snippet}
 	{#snippet actions()}
 		<Dialog.RootByNavigationState id="edit-flight-instance">
-			<Dialog.Trigger>
-				<Button variant="secondary" size="pageNavbar"><Settings2 /> Edit</Button>
+			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+				<Settings2 /> Edit
 			</Dialog.Trigger>
 			<Dialog.Content>
 				<Dialog.Header>

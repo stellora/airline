@@ -19,7 +19,7 @@
 	} = $props()
 </script>
 
-<nav class="flex flex-wrap gap-2">
+<nav class="flex gap-2">
 	{#each tabs as tab (tab.url)}
 		<Button
 			variant="pageNavbarTab"

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import AircraftTypeCode from '$lib/components/aircraft-type-code.svelte'
 	import AirlineCode from '$lib/components/airline-code.svelte'
-	import { Button } from '$lib/components/ui/button'
+	import { Button, buttonVariants } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
@@ -18,8 +18,8 @@
 <PageNav>
 	{#snippet actions()}
 		<Dialog.RootByNavigationState id="new-aircraft">
-			<Dialog.Trigger>
-				<Button variant="secondary" size="pageNavbar"><Plus /> New aircraft</Button>
+			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+				<Plus /> New aircraft
 			</Dialog.Trigger>
 			<Dialog.Content>
 				<Dialog.Header>

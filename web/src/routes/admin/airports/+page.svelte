@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AirportCode from '$lib/components/airport-code.svelte'
-	import { Button } from '$lib/components/ui/button'
+	import { Button, buttonVariants } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
@@ -17,8 +17,8 @@
 <PageNav>
 	{#snippet actions()}
 		<Dialog.RootByNavigationState id="new-airport">
-			<Dialog.Trigger>
-				<Button variant="secondary" size="pageNavbar"><Plus /> New airport</Button>
+			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+				<Plus /> New airport
 			</Dialog.Trigger>
 			<Dialog.Content>
 				<Dialog.Header>

@@ -14,7 +14,7 @@
 <ol
 	bind:this={ref}
 	class={cn(
-		'text-muted-foreground flex flex-wrap items-center gap-1 break-words text-sm sm:gap-1.5',
+		'text-muted-foreground flex items-center gap-1 break-words text-sm sm:gap-1.5',
 		className,
 	)}
 	{...restProps}

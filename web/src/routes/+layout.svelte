@@ -9,8 +9,7 @@
 
 <Sidebar.Provider>
 	<AppSidebar />
-	<div class="w-full">
-		<Sidebar.Trigger mobileOnly={true} class="mb-2" />
+	<div class="w-full overflow-hidden h-screen flex flex-col">
 		<Tooltip.Provider delayDuration={0}>
 			{@render children?.()}
 		</Tooltip.Provider>
