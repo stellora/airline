@@ -104,20 +104,6 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</FormFieldGroup>
-	<Form.Field {form} name="aircraftType">
-		<Form.Control>
-			{#snippet children({ props })}
-				<Form.Label>Aircraft type</Form.Label>
-				<AircraftTypeSelect
-					{...props}
-					bind:value={$formData.aircraftType}
-					{...$constraints.aircraftType}
-				/>
-			{/snippet}
-		</Form.Control>
-		<Form.Description>IATA code</Form.Description>
-		<Form.FieldErrors />
-	</Form.Field>
 	<FormFieldGroup legend="Schedule">
 		<Form.Field {form} name="startEndDate">
 			<Form.Control>
@@ -184,6 +170,20 @@
 			</Form.Field>
 		</div>
 	</FormFieldGroup>
+	<Form.Field {form} name="aircraftType">
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Aircraft type</Form.Label>
+				<AircraftTypeSelect
+					{...props}
+					bind:value={$formData.aircraftType}
+					{...$constraints.aircraftType}
+				/>
+			{/snippet}
+		</Form.Control>
+		<Form.Description>IATA code</Form.Description>
+		<Form.FieldErrors />
+	</Form.Field>
 	<FormFieldGroup legend="Options">
 		<Form.Field {form} name="published">
 			<Form.Control>

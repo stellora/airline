@@ -43,7 +43,7 @@
 
 	const adminItems: Item[] = [
 		{
-			title: 'Flight schedule',
+			title: 'Schedules',
 			url: route('/admin/flight-schedules'),
 			icon: CalendarRange,
 		},
