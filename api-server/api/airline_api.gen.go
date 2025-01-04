@@ -13,7 +13,7 @@ import (
 
 	"github.com/oapi-codegen/runtime"
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
-	"github.com/stellora/airline/api-server/zonedtime"
+	zonedtime "github.com/stellora/airline/api-server/zonedtime"
 )
 
 // Aircraft defines model for Aircraft.

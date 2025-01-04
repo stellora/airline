@@ -748,6 +748,7 @@ components:
       x-go-type: zonedtime.ZonedTime
       x-go-type-import:
         path: github.com/stellora/airline/api-server/zonedtime
+        name: zonedtime
     AircraftID:
       type: integer
     AircraftRegistration:

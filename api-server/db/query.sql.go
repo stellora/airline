@@ -8,9 +8,9 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/stellora/airline/api-server/localtime"
+	"github.com/stellora/airline/api-server/zonedtime"
 )
 
 const createAircraft = `-- name: CreateAircraft :one
@@ -115,8 +115,8 @@ type CreateFlightInstanceParams struct {
 	DestinationAirportID                  int64
 	AircraftType                          string
 	AircraftID                            sql.NullInt64
-	DepartureDatetime                     time.Time
-	ArrivalDatetime                       time.Time
+	DepartureDatetime                     *zonedtime.ZonedTime
+	ArrivalDatetime                       *zonedtime.ZonedTime
 	Notes                                 string
 	Published                             bool
 }
@@ -1032,8 +1032,8 @@ type UpdateFlightInstanceParams struct {
 	DestinationAirportID sql.NullInt64
 	AircraftType         sql.NullString
 	AircraftID           sql.NullInt64
-	DepartureDatetime    sql.NullTime
-	ArrivalDatetime      sql.NullTime
+	DepartureDatetime    *zonedtime.ZonedTime
+	ArrivalDatetime      *zonedtime.ZonedTime
 	Notes                sql.NullString
 	Published            sql.NullBool
 	ID                   int64

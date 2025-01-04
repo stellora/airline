@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
 	"github.com/stellora/airline/api-server/extdata"
+	"github.com/stellora/airline/api-server/zonedtime"
 )
 
 func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
@@ -77,8 +77,8 @@ func (h *Handler) ListFlightInstances(ctx context.Context, request api.ListFligh
 
 // Ensure departure/arrival datetimes use the locations of the departure/arrival airports,
 // respectively.
-func checkDepartureArrivalDateTimesMatchAirportTimezones(departure, arrival *time.Time, origin, destination db.Airport) error {
-	dateTimeMatchesAirport := func(t time.Time, a db.Airport) (wantTzID string, matches bool) {
+func checkDepartureArrivalDateTimesMatchAirportTimezones(departure, arrival *zonedtime.ZonedTime, origin, destination db.Airport) error {
+	dateTimeMatchesAirport := func(t zonedtime.ZonedTime, a db.Airport) (wantTzID string, matches bool) {
 		info := extdata.Airports.AirportByOAID(int(a.OadbID.Int64))
 		if t.Location().String() != info.Airport.TimezoneID {
 			return info.Airport.TimezoneID, false
@@ -159,8 +159,8 @@ func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFl
 		DestinationAirportID: destinationAirport.ID,
 		AircraftType:         request.Body.AircraftType,
 		AircraftID:           aircraftID,
-		DepartureDatetime:    request.Body.DepartureDateTime,
-		ArrivalDatetime:      request.Body.ArrivalDateTime,
+		DepartureDatetime:    &request.Body.DepartureDateTime,
+		ArrivalDatetime:      &request.Body.ArrivalDateTime,
 		Notes:                request.Body.Notes,
 		Published:            request.Body.Published != nil && *request.Body.Published,
 	})

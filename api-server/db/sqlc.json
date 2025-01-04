@@ -11,6 +11,21 @@
 					"out": ".",
 					"overrides": [
 						{
+							"column": "*_view.*_datetime",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/zonedtime",
+								"type": "ZonedTime"
+							}
+						},
+						{
+							"column": "*.*_datetime",
+							"go_type": {
+								"import": "github.com/stellora/airline/api-server/zonedtime",
+								"type": "ZonedTime",
+								"pointer": true
+							}
+						},
+						{
 							"column": "*.source_flight_schedule_instance_localdate",
 							"go_type": {
 								"import": "github.com/stellora/airline/api-server/localtime",
