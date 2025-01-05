@@ -10,6 +10,17 @@ import (
 	"github.com/stellora/airline/api-server/localtime"
 )
 
+var fixtureManualFlightInstance = api.CreateFlightInstanceJSONRequestBody{
+	Airline:            api.NewAirlineSpec(0, "XX"),
+	Number:             "222",
+	OriginAirport:      api.NewAirportSpec(0, "AAA"),
+	DestinationAirport: api.NewAirportSpec(0, "BBB"),
+	AircraftType:       fixtureB77W.IcaoCode,
+	DepartureDateTime:  fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
+	ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(10, 0)),
+	Published:          ptrTo(true),
+}
+
 func TestGetFlightInstance(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")

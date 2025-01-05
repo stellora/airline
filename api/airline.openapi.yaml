@@ -872,7 +872,7 @@ paths:
                   minLength: 1
               required:
                 - flightInstanceIDs
-                - passengers
+                - passengerIDs
       responses:
         '201':
           description: Itinerary created

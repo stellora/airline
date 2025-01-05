@@ -125,11 +125,11 @@ func checkPassengerNames(t *testing.T, handler *Handler, want []string) {
 	}
 }
 
-func insertPassengersWithNamesT(t *testing.T, handler *Handler, names ...string) {
+func insertPassengersWithNamesT(t *testing.T, handler *Handler, names ...string) (ids []int) {
 	t.Helper()
 	ctx := context.Background()
 	for _, name := range names {
-		_, err := handler.CreatePassenger(ctx, api.CreatePassengerRequestObject{
+		resp, err := handler.CreatePassenger(ctx, api.CreatePassengerRequestObject{
 			Body: &api.CreatePassengerJSONRequestBody{
 				Name: name,
 			},
@@ -137,5 +137,7 @@ func insertPassengersWithNamesT(t *testing.T, handler *Handler, names ...string)
 		if err != nil {
 			t.Fatal(err)
 		}
+		ids = append(ids, resp.(api.CreatePassenger201JSONResponse).Id)
 	}
+	return ids
 }

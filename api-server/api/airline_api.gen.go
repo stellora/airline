@@ -345,8 +345,8 @@ type UpdateFlightScheduleJSONBody struct {
 
 // CreateItineraryJSONBody defines parameters for CreateItinerary.
 type CreateItineraryJSONBody struct {
-	FlightInstanceIDs []int  `json:"flightInstanceIDs"`
-	PassengerIDs      *[]int `json:"passengerIDs,omitempty"`
+	FlightInstanceIDs []int `json:"flightInstanceIDs"`
+	PassengerIDs      []int `json:"passengerIDs"`
 }
 
 // CreatePassengerJSONBody defines parameters for CreatePassenger.

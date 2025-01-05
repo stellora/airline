@@ -88,3 +88,28 @@ func NewAirlineSpec(id int, iataCode string) AirlineSpec {
 	}
 	return spec
 }
+
+func (a *ItinerarySpec) UnmarshalText(text []byte) error {
+	*a = itinerarySpecFromPathArg(string(text))
+	return nil
+}
+
+var _ encoding.TextUnmarshaler = (*ItinerarySpec)(nil)
+
+func itinerarySpecFromPathArg(arg string) ItinerarySpec {
+	if isIntString(arg) {
+		id, _ := strconv.Atoi(arg)
+		return NewItinerarySpec(id, "")
+	}
+	return NewItinerarySpec(0, arg)
+}
+
+func NewItinerarySpec(id int, recordLocator string) ItinerarySpec {
+	var spec ItinerarySpec
+	if id != 0 {
+		spec.FromItinerarySpec0(id)
+	} else {
+		spec.FromRecordLocator(recordLocator)
+	}
+	return spec
+}

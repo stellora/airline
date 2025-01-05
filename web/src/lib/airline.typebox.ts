@@ -938,7 +938,7 @@ const schema = {
         body: T.Object(
           {
             flightInstanceIDs: T.Array(T.Integer(), { minLength: 1 }),
-            passengerIDs: T.Optional(T.Array(T.Integer(), { minLength: 1 }))
+            passengerIDs: T.Array(T.Integer(), { minLength: 1 })
           },
           {
             'x-content-type': 'application/json'

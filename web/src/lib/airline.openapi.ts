@@ -1815,7 +1815,7 @@ export interface operations {
             content: {
                 "application/json": {
                     flightInstanceIDs: number[];
-                    passengerIDs?: number[];
+                    passengerIDs: number[];
                 };
             };
         };
