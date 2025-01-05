@@ -9,7 +9,6 @@
 
 <Drawer.Root
 	handleOnly
-	modal
 	bind:open={() => page.state.showModal === id,
 	(open) => {
 		if (open) {

@@ -1,5 +1,5 @@
 import { workaroundForMultiTypeUnions } from '$lib/api'
 
-export const ssr = true
+export const ssr = false
 
 workaroundForMultiTypeUnions()

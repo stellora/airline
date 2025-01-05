@@ -74,59 +74,57 @@
 	]}
 >
 	{#snippet breadcrumbActions()}
-		<PageNavbarBreadcrumbActionsDropdownMenu>
-			<DropdownMenu.Group>
-				<DropdownMenu.Item>
-					{#snippet child({ props })}
-						<Drawer.DrawerByNavigationState id="edit-airport" direction="right">
+		<Drawer.DrawerByNavigationState id="edit-airline" direction="right">
+			<PageNavbarBreadcrumbActionsDropdownMenu>
+				<DropdownMenu.Group>
+					<DropdownMenu.Item>
+						{#snippet child({ props })}
 							<Drawer.Trigger {...props} class={cn(props.class as ClassNameValue, 'w-full')}>
 								<Settings_2 /> Edit
 							</Drawer.Trigger>
-							<Drawer.Content>
-								<Drawer.Header>
-									<Drawer.Title>Edit airport</Drawer.Title>
-								</Drawer.Header>
-								<Drawer.ScrollArea>
-									<AirlineForm
-										action={route('/admin/airlines/[airlineSpec]', {
-											params: { airlineSpec: page.params.airlineSpec },
-											query: '/update',
-										})}
-										submitLabel="Save"
-										data={data.form}
-										schema={schema['/airlines/{airlineSpec}']['PATCH']['args']['properties'][
-											'body'
-										]}
-									/>
-								</Drawer.ScrollArea>
-							</Drawer.Content>
-						</Drawer.DrawerByNavigationState>
-					{/snippet}
-				</DropdownMenu.Item>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Item>
-					{#snippet child({ props })}
-						<form
-							method="POST"
-							action={route('/admin/airlines/[airlineSpec]', {
-								params: { airlineSpec: page.params.airlineSpec },
-								query: '/delete',
-							})}
-							use:enhance={({ cancel }) => {
-								if (!confirm('Really delete?')) {
-									cancel()
-								}
-							}}
-							class="w-full [&>button]:w-full"
-						>
-							<button type="submit" {...props}>
-								<Trash /> Delete...
-							</button>
-						</form>
-					{/snippet}</DropdownMenu.Item
-				>
-			</DropdownMenu.Group>
-		</PageNavbarBreadcrumbActionsDropdownMenu>
+						{/snippet}
+					</DropdownMenu.Item>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Item>
+						{#snippet child({ props })}
+							<form
+								method="POST"
+								action={route('/admin/airlines/[airlineSpec]', {
+									params: { airlineSpec: page.params.airlineSpec },
+									query: '/delete',
+								})}
+								use:enhance={({ cancel }) => {
+									if (!confirm('Really delete?')) {
+										cancel()
+									}
+								}}
+								class="w-full [&>button]:w-full"
+							>
+								<button type="submit" {...props}>
+									<Trash /> Delete...
+								</button>
+							</form>
+						{/snippet}</DropdownMenu.Item
+					>
+				</DropdownMenu.Group>
+			</PageNavbarBreadcrumbActionsDropdownMenu>
+			<Drawer.Content>
+				<Drawer.Header>
+					<Drawer.Title>Edit airline</Drawer.Title>
+				</Drawer.Header>
+				<Drawer.ScrollArea>
+					<AirlineForm
+						action={route('/admin/airlines/[airlineSpec]', {
+							params: { airlineSpec: page.params.airlineSpec },
+							query: '/update',
+						})}
+						submitLabel="Save"
+						data={data.form}
+						schema={schema['/airlines/{airlineSpec}']['PATCH']['args']['properties']['body']}
+					/>
+				</Drawer.ScrollArea>
+			</Drawer.Content>
+		</Drawer.DrawerByNavigationState>
 	{/snippet}
 </PageNav>
 
