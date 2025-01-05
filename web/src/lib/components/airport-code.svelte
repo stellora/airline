@@ -25,8 +25,9 @@
 		{#snippet child({ props })}
 			<svelte:element
 				this={as}
-				class={cn(className, 'font-mono hover:underline hover:decoration-dotted', {
-					'cursor-help': !link,
+				class={cn(className, 'font-mono', {
+					'hover:underline hover:decoration-dotted': tooltip,
+					'cursor-help': !link && tooltip,
 				})}
 				{...props}
 			>

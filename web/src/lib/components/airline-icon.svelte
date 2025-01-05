@@ -36,6 +36,7 @@
 	class={cn('w-[1em] h-[1em] rounded-[2px] overflow-hidden inline-block', className)}
 	role="presentation"
 	style="--color-1: {colors[0]}; --color-2: {colors[1]}; --angle: {angle}deg"
+	data-airline-icon
 >
 	<div class="gradient"></div>
 </div>

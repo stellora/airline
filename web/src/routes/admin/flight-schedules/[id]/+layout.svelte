@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
-	import * as Drawer from '$lib/components/ui/drawer/index.js'
+	import FlightTitle from '$lib/components/flight-title.svelte'
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
+	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
@@ -36,6 +37,21 @@
 		},
 	]}
 >
+	{#snippet breadcrumbItems()}
+		<a
+			href={route('/admin/flight-schedules/[id]', {
+				params: { id: data.flightSchedule.id.toString() },
+			})}
+			class="[&_[data-airline-icon]]:-mt-[0px] mt-[2.2px] block"
+			><FlightTitle
+				flight={data.flightSchedule}
+				as="span"
+				showRoute={true}
+				link={true}
+				tooltip={false}
+			/></a
+		>
+	{/snippet}
 	{#snippet breadcrumbActions()}
 		<PageNavbarBreadcrumbActionsDropdownMenu>
 			<DropdownMenu.Group>

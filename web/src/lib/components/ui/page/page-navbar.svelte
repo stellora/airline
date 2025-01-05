@@ -1,10 +1,11 @@
 <script module>
 	export const PAGE_NAVBAR_PORTAL_ID = '#page-navbar-portal'
+	export const PAGE_BREADCRUMBS_PORTAL_ID = '#page-breadcrumbs-portal'
 </script>
 
 <script lang="ts">
-	import Breadcrumbs from '$lib/components/breadcrumbs/breadcrumbs.svelte'
 	import type { BreadcrumbEntry } from '$lib/components/breadcrumbs/helpers'
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import * as Sidebar from '$lib/components/ui/sidebar'
 	import { buttonVariants } from '../button'
 
@@ -22,7 +23,9 @@
 			class: '[&>svg]:!size-4 px-2',
 		})}
 	/>
-	<Breadcrumbs entries={breadcrumbs} />
+	<Breadcrumb.Root class="[&>ol>li:not(:last-child)]:max-md:hidden">
+		<Breadcrumb.List id={PAGE_BREADCRUMBS_PORTAL_ID.slice(1)} />
+	</Breadcrumb.Root>
 	<div id={PAGE_NAVBAR_PORTAL_ID.slice(1)} class="flex-1">
 		<!-- Use <Portal target={PAGE_NAVBAR_BREADCRUMB_ACTIONS_ID}> to supply content. -->
 	</div>

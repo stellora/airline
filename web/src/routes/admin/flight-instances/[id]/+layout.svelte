@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
+	import FlightTitle from '$lib/components/flight-title.svelte'
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
@@ -35,6 +36,21 @@
 		},
 	]}
 >
+	{#snippet lastBreadcrumbItem()}
+		<a
+			href={route('/admin/flight-schedules/[id]', {
+				params: { id: data.flightInstance.id.toString() },
+			})}
+			class="[&_[data-airline-icon]]:-mt-[0px] mt-[2.2px] block"
+			><FlightTitle
+				flight={data.flightInstance}
+				as="span"
+				showRoute={true}
+				link={true}
+				tooltip={false}
+			/></a
+		>
+	{/snippet}
 	{#snippet breadcrumbActions()}
 		<PageNavbarBreadcrumbActionsDropdownMenu>
 			<DropdownMenu.Group>

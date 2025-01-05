@@ -28,13 +28,10 @@
 		{#snippet child({ props })}
 			<svelte:element
 				this={as}
-				class={cn(
-					className,
-					'font-mono hover:underline hover:decoration-dotted inline-flex items-baseline gap-1.5',
-					{
-						'cursor-help': !link,
-					},
-				)}
+				class={cn(className, 'font-mono inline-flex items-baseline gap-1.5', {
+					'hover:underline hover:decoration-dotted': tooltip,
+					'cursor-help': !link && tooltip,
+				})}
 				{...props}
 			>
 				{#if icon}<AirlineIcon {airline} class="self-center -mt-0.5" />{/if}

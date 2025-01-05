@@ -12,6 +12,7 @@
 		showAirlineIcon = true,
 		showRoute = true,
 		link = false,
+		tooltip = true,
 		class: className,
 		subtitleClass,
 		as = 'h2',
@@ -25,6 +26,7 @@
 		showAirlineIcon?: boolean
 		showRoute?: boolean
 		link?: boolean
+		tooltip?: boolean
 		class?: HTMLAttributes<never>['class']
 		subtitleClass?: HTMLAttributes<never>['class']
 		as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'span'
@@ -44,13 +46,13 @@
 				href={route('/admin/flight-schedules/[id]', {
 					params: { id: flight.id.toString() },
 				})}
-				><AirlineCode airline={flight.airline} icon={showAirlineIcon} /><span
+				><AirlineCode airline={flight.airline} icon={showAirlineIcon} {tooltip} /><span
 					class="font-sans text-xs"
 					>&nbsp;
 				</span>{flight.number}</a
 			>
 		{:else}
-			<AirlineCode airline={flight.airline} icon={showAirlineIcon} /><span
+			<AirlineCode airline={flight.airline} icon={showAirlineIcon} {tooltip} /><span
 				class="font-sans text-xs"
 			>
 				&nbsp;
@@ -60,8 +62,9 @@
 
 	{#if showRoute}
 		<span class={cn('text-muted-foreground text-sm whitespace-nowrap leading-none', subtitleClass)}
-			><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
+			><AirportCode airport={flight.originAirport} {tooltip} />&ndash;<AirportCode
 				airport={flight.destinationAirport}
+				{tooltip}
 			/></span
 		>
 	{/if}

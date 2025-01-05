@@ -4,7 +4,10 @@
 	/**
 	 * Usage: `<div use:portal="css selector">` or `<div use:portal={document.body}>`
 	 */
-	export function portal(el: HTMLElement, target: HTMLElement | string = 'body') {
+	export function portal(
+		el: HTMLElement,
+		{ target, replace }: { target: HTMLElement | string; replace: boolean },
+	) {
 		let targetEl
 		async function update(newTarget: HTMLElement | string) {
 			target = newTarget
@@ -26,7 +29,11 @@
 					}. Allowed types: string (CSS selector) or HTMLElement.`,
 				)
 			}
-			targetEl.appendChild(el)
+			if (replace) {
+				targetEl.replaceChildren(el)
+			} else {
+				targetEl.appendChild(el)
+			}
 			el.hidden = false
 		}
 
@@ -45,9 +52,13 @@
 </script>
 
 <script lang="ts">
-	const { target, children }: { target: string | HTMLElement; children?: Snippet<[]> } = $props()
+	const {
+		target,
+		children,
+		replace = false,
+	}: { target: string | HTMLElement; children?: Snippet<[]>; replace?: boolean } = $props()
 </script>
 
-<div use:portal={target} hidden>
+<div use:portal={{ target, replace }} hidden>
 	{@render children?.()}
 </div>
