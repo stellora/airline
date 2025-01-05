@@ -837,6 +837,47 @@ func (q *Queries) ListAircraftByAirline(ctx context.Context, airline int64) ([]A
 	return items, nil
 }
 
+const listAircraftByFleet = `-- name: ListAircraftByFleet :many
+SELECT id, registration, aircraft_type, airline_id, airline_iata_code, airline_name
+FROM aircraft_view
+WHERE id IN (
+    SELECT aircraft_id
+    FROM fleets_aircraft
+    WHERE fleet_id = ?
+)
+ORDER BY id ASC
+`
+
+func (q *Queries) ListAircraftByFleet(ctx context.Context, fleetID int64) ([]AircraftView, error) {
+	rows, err := q.db.QueryContext(ctx, listAircraftByFleet, fleetID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AircraftView
+	for rows.Next() {
+		var i AircraftView
+		if err := rows.Scan(
+			&i.ID,
+			&i.Registration,
+			&i.AircraftType,
+			&i.AirlineID,
+			&i.AirlineIataCode,
+			&i.AirlineName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listAirlines = `-- name: ListAirlines :many
 SELECT id, iata_code, name FROM airlines
 ORDER BY id ASC
@@ -1623,27 +1664,20 @@ func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) (A
 
 const updateFleet = `-- name: UpdateFleet :one
 UPDATE fleets SET
-airline_id = COALESCE(?1, airline_id),
-code = COALESCE(?2, code),
-description = COALESCE(?3, description)
-WHERE id=?4
+code = COALESCE(?1, code),
+description = COALESCE(?2, description)
+WHERE id=?3
 RETURNING id, airline_id, code, description
 `
 
 type UpdateFleetParams struct {
-	AirlineID   sql.NullInt64
 	Code        sql.NullString
 	Description sql.NullString
 	ID          int64
 }
 
 func (q *Queries) UpdateFleet(ctx context.Context, arg UpdateFleetParams) (Fleet, error) {
-	row := q.db.QueryRowContext(ctx, updateFleet,
-		arg.AirlineID,
-		arg.Code,
-		arg.Description,
-		arg.ID,
-	)
+	row := q.db.QueryRowContext(ctx, updateFleet, arg.Code, arg.Description, arg.ID)
 	var i Fleet
 	err := row.Scan(
 		&i.ID,

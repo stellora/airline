@@ -121,6 +121,16 @@ FROM fleets_view
 WHERE airline_id=:airline
 ORDER BY id ASC;
 
+-- name: ListAircraftByFleet :many
+SELECT *
+FROM aircraft_view
+WHERE id IN (
+    SELECT aircraft_id
+    FROM fleets_aircraft
+    WHERE fleet_id = ?
+)
+ORDER BY id ASC;
+
 -- name: AddAircraftToFleet :exec
 INSERT INTO fleets_aircraft (
   fleet_id,

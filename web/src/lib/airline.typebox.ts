@@ -483,6 +483,23 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
+  '/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft': {
+    GET: {
+      args: T.Object({
+        params: T.Object({
+          airlineSpec: CloneType(ComponentsSchemasAirlineSpec, {
+            'x-in': 'path'
+          }),
+          fleetSpec: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' })
+        })
+      }),
+      data: T.Array(CloneType(ComponentsSchemasAircraft), {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
   '/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}': {
     PUT: {
       args: T.Object({

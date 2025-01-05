@@ -827,6 +827,9 @@ type ServerInterface interface {
 	// Update a fleet
 	// (PATCH /airlines/{airlineSpec}/fleets/{fleetSpec})
 	UpdateFleet(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec, fleetSpec FleetSpec)
+	// List aircraft in a fleet
+	// (GET /airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft)
+	ListAircraftByFleet(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec, fleetSpec FleetSpec)
 	// Remove an aircraft from a fleet
 	// (DELETE /airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec})
 	RemoveAircraftFromFleet(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec, fleetSpec FleetSpec, aircraftSpec AircraftSpec)
@@ -1362,6 +1365,40 @@ func (siw *ServerInterfaceWrapper) UpdateFleet(w http.ResponseWriter, r *http.Re
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateFleet(w, r, airlineSpec, fleetSpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListAircraftByFleet operation middleware
+func (siw *ServerInterfaceWrapper) ListAircraftByFleet(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "airlineSpec" -------------
+	var airlineSpec AirlineSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "airlineSpec", r.PathValue("airlineSpec"), &airlineSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "airlineSpec", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "fleetSpec" -------------
+	var fleetSpec FleetSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "fleetSpec", r.PathValue("fleetSpec"), &fleetSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fleetSpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListAircraftByFleet(w, r, airlineSpec, fleetSpec)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2292,6 +2329,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("DELETE "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}", wrapper.DeleteFleet)
 	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}", wrapper.GetFleet)
 	m.HandleFunc("PATCH "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}", wrapper.UpdateFleet)
+	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft", wrapper.ListAircraftByFleet)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}", wrapper.RemoveAircraftFromFleet)
 	m.HandleFunc("PUT "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}", wrapper.AddAircraftToFleet)
 	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flight-schedules", wrapper.ListFlightSchedulesByAirline)
@@ -2760,6 +2798,32 @@ type UpdateFleet404Response struct {
 }
 
 func (response UpdateFleet404Response) VisitUpdateFleetResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type ListAircraftByFleetRequestObject struct {
+	AirlineSpec AirlineSpec `json:"airlineSpec"`
+	FleetSpec   FleetSpec   `json:"fleetSpec"`
+}
+
+type ListAircraftByFleetResponseObject interface {
+	VisitListAircraftByFleetResponse(w http.ResponseWriter) error
+}
+
+type ListAircraftByFleet200JSONResponse []Aircraft
+
+func (response ListAircraftByFleet200JSONResponse) VisitListAircraftByFleetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAircraftByFleet404Response struct {
+}
+
+func (response ListAircraftByFleet404Response) VisitListAircraftByFleetResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -3692,6 +3756,9 @@ type StrictServerInterface interface {
 	// Update a fleet
 	// (PATCH /airlines/{airlineSpec}/fleets/{fleetSpec})
 	UpdateFleet(ctx context.Context, request UpdateFleetRequestObject) (UpdateFleetResponseObject, error)
+	// List aircraft in a fleet
+	// (GET /airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft)
+	ListAircraftByFleet(ctx context.Context, request ListAircraftByFleetRequestObject) (ListAircraftByFleetResponseObject, error)
 	// Remove an aircraft from a fleet
 	// (DELETE /airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec})
 	RemoveAircraftFromFleet(ctx context.Context, request RemoveAircraftFromFleetRequestObject) (RemoveAircraftFromFleetResponseObject, error)
@@ -4349,6 +4416,33 @@ func (sh *strictHandler) UpdateFleet(w http.ResponseWriter, r *http.Request, air
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateFleetResponseObject); ok {
 		if err := validResponse.VisitUpdateFleetResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListAircraftByFleet operation middleware
+func (sh *strictHandler) ListAircraftByFleet(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec, fleetSpec FleetSpec) {
+	var request ListAircraftByFleetRequestObject
+
+	request.AirlineSpec = airlineSpec
+	request.FleetSpec = fleetSpec
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListAircraftByFleet(ctx, request.(ListAircraftByFleetRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListAircraftByFleet")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListAircraftByFleetResponseObject); ok {
+		if err := validResponse.VisitListAircraftByFleetResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

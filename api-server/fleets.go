@@ -226,6 +226,41 @@ func (h *Handler) DeleteFleet(ctx context.Context, request api.DeleteFleetReques
 	return api.DeleteFleet204Response{}, nil
 }
 
+func (h *Handler) ListAircraftByFleet(ctx context.Context, request api.ListAircraftByFleetRequestObject) (api.ListAircraftByFleetResponseObject, error) {
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
+
+	airline, err := getAirlineBySpec(ctx, queriesTx, request.AirlineSpec)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.ListAircraftByFleet404Response{}, nil
+		}
+		return nil, err
+	}
+
+	fleet, err := getFleetBySpec(ctx, queriesTx, airline.ID, request.FleetSpec)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.ListAircraftByFleet404Response{}, nil
+		}
+		return nil, err
+	}
+
+	if fleet.AirlineID != airline.ID {
+		return &api.ListAircraftByFleet404Response{}, nil
+	}
+
+	aircraft, err := queriesTx.ListAircraftByFleet(ctx, fleet.ID)
+	if err != nil {
+		return nil, err
+	}
+	return api.ListAircraftByFleet200JSONResponse(mapSlice(fromDBAircraft, aircraft)), nil
+}
+
 func (h *Handler) AddAircraftToFleet(ctx context.Context, request api.AddAircraftToFleetRequestObject) (api.AddAircraftToFleetResponseObject, error) {
 	tx, err := h.db.BeginTx(ctx, nil)
 	if err != nil {

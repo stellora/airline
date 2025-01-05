@@ -113,6 +113,23 @@ export interface paths {
         patch: operations["updateFleet"];
         trace?: never;
     };
+    "/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List aircraft in a fleet */
+        get: operations["listAircraftByFleet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}": {
         parameters: {
             query?: never;
@@ -994,6 +1011,36 @@ export interface operations {
                 };
             };
             /** @description Fleet not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listAircraftByFleet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["parameters"]["airlineSpec"];
+                fleetSpec: components["parameters"]["fleetSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of aircraft in the fleet */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Aircraft"][];
+                };
+            };
+            /** @description Fleet or airline not found */
             404: {
                 headers: {
                     [name: string]: unknown;

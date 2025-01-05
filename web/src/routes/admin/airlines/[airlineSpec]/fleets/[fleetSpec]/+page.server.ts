@@ -7,16 +7,23 @@ import { typebox } from 'sveltekit-superforms/adapters'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
-	const fleet = await apiClient
-		.GET('/airlines/{airlineSpec}/fleets/{fleetSpec}', {
-			params: {
-				path: { airlineSpec: params.airlineSpec, fleetSpec: params.fleetSpec },
-			},
-			fetch,
-		})
-		.then((resp) => resp.data)
 	return {
-		fleet,
+		fleet: await apiClient
+			.GET('/airlines/{airlineSpec}/fleets/{fleetSpec}', {
+				params: {
+					path: { airlineSpec: params.airlineSpec, fleetSpec: params.fleetSpec },
+				},
+				fetch,
+			})
+			.then((resp) => resp.data!),
+		fleetAircraft: await apiClient
+			.GET('/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft', {
+				params: {
+					path: { airlineSpec: params.airlineSpec, fleetSpec: params.fleetSpec },
+				},
+				fetch,
+			})
+			.then((resp) => resp.data!),
 	}
 }
 
