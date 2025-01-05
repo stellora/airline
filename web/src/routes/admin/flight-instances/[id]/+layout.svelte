@@ -8,7 +8,9 @@
 	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
+	import { formatFlightDate } from '$lib/datetime-helpers'
 	import { route } from '$lib/route-helpers'
+	import { parseZonedDateTime } from '@internationalized/date'
 	import CalendarRange from 'lucide-svelte/icons/calendar-range'
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
@@ -29,7 +31,10 @@
 		><Breadcrumb.Link
 			href={route('/admin/flight-instances/[id]', {
 				params: { id: data.flightInstance.id.toString() },
-			})}>Instance</Breadcrumb.Link
+			})}
+			>Flight on {formatFlightDate(
+				parseZonedDateTime(data.flightInstance.departureDateTime),
+			)}</Breadcrumb.Link
 		></Breadcrumb.Item
 	>
 </BreadcrumbsForLayout>

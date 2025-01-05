@@ -3,6 +3,7 @@
 	import AirlineSelect from '$lib/components/airline-select.svelte'
 	import DateRangeInput from '$lib/components/date-range-input.svelte'
 	import DaysOfWeekControls from '$lib/components/days-of-week-controls.svelte'
+	import FlightDurationInput from '$lib/components/flight-duration-input.svelte'
 	import TimeOfDayInput from '$lib/components/time-of-day-input.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import { Checkbox } from '$lib/components/ui/checkbox'
@@ -162,16 +163,16 @@
 				<Form.Control>
 					{#snippet children({ props })}
 						<Form.Label>Duration</Form.Label>
-						<Input
+						<FlightDurationInput
 							{...props}
 							bind:value={$formData.durationSec}
-							type="number"
 							autocomplete="off"
 							size={10}
 							{...$constraints.durationSec}
 						/>
 					{/snippet}
 				</Form.Control>
+				<Form.Description>HH:MM format</Form.Description>
 				<Form.FieldErrors />
 			</Form.Field>
 		</div>
