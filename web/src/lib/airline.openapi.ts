@@ -393,7 +393,7 @@ export interface components {
             originAirport: components["schemas"]["Airport"];
             destinationAirport: components["schemas"]["Airport"];
             /** Format: double */
-            distanceMiles?: number;
+            distanceMiles: number;
             aircraftType: components["schemas"]["AircraftType"];
             startDate: components["schemas"]["LocalDate"];
             endDate: components["schemas"]["LocalDate"];
@@ -412,6 +412,8 @@ export interface components {
             number: components["schemas"]["FlightNumber"];
             originAirport: components["schemas"]["Airport"];
             destinationAirport: components["schemas"]["Airport"];
+            /** Format: double */
+            distanceMiles: number;
             aircraftType: components["schemas"]["AircraftType"];
             aircraft?: components["schemas"]["Aircraft"];
             departureDateTime: components["schemas"]["ZonedDateTime"];
@@ -424,7 +426,7 @@ export interface components {
             originAirport: components["schemas"]["Airport"];
             destinationAirport: components["schemas"]["Airport"];
             /** Format: double */
-            distanceMiles?: number;
+            distanceMiles: number;
             flightSchedulesCount: number;
         };
     };

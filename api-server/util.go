@@ -100,14 +100,14 @@ func insertFlightInstance(ctx context.Context, handler *Handler, newInstance api
 	return api.FlightInstance(v.(api.CreateFlightInstance201JSONResponse)), nil
 }
 
-func distanceMilesBetweenAirports(a, b api.Airport) *float64 {
+func distanceMilesBetweenAirports(a, b api.Airport) float64 {
 	if (a.Point != api.Point{} && b.Point != api.Point{}) {
 		var distanceMeters float64
 		geodesic.WGS84.Inverse(a.Point.Latitude, a.Point.Longitude, b.Point.Latitude, b.Point.Longitude, &distanceMeters, nil, nil)
 		const metersPerMile = 0.000621371192237334
-		return ptrTo(distanceMeters * metersPerMile)
+		return distanceMeters * metersPerMile
 	}
-	return nil
+	panic("unable to compute distanceMilesBetweenAiports")
 }
 
 // parseDaysOfWeek parses a string like `01356` to a slice with those numbers (representing the days

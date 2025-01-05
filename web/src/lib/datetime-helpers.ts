@@ -37,11 +37,26 @@ export function formatDateFull(value: ZonedDateTime): string {
 	return `${f.format(value.toDate())} (${value.timeZone})`
 }
 
+const flightDateOptions: Intl.DateTimeFormatOptions = {
+	year: 'numeric',
+	month: 'short',
+	day: '2-digit',
+}
+
 export function formatFlightDate(value: ZonedDateTime): string {
 	const f = new DateFormatter('en-US', {
-		year: 'numeric',
-		month: 'short',
-		day: '2-digit',
+		...flightDateOptions,
+		timeZone: value.timeZone,
+	})
+	return f.format(value.toDate())
+}
+
+export function formatFlightDateTime(value: ZonedDateTime): string {
+	const f = new DateFormatter('en-US', {
+		...flightDateOptions,
+		hour: 'numeric',
+		hour12: false,
+		minute: '2-digit',
 		timeZone: value.timeZone,
 	})
 	return f.format(value.toDate())
@@ -52,7 +67,7 @@ export function formatFlightTime(
 	{ plusMinusDaysFrom }: { plusMinusDaysFrom?: ZonedDateTime } = {},
 ): string {
 	const f = new DateFormatter('en-US', {
-		hour: '2-digit',
+		hour: 'numeric',
 		minute: '2-digit',
 		hour12: false,
 		timeZone: value.timeZone,

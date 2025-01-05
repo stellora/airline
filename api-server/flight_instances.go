@@ -38,6 +38,7 @@ func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 		Notes:             a.Notes,
 		Published:         a.Published,
 	}
+	b.DistanceMiles = distanceMilesBetweenAirports(b.OriginAirport, b.DestinationAirport)
 	if a.AircraftID.Valid {
 		b.Aircraft = ptrTo(fromDBAircraft(db.AircraftView{
 			ID:              a.AircraftID.Int64,

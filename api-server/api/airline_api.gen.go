@@ -108,6 +108,7 @@ type FlightInstance struct {
 	// DepartureDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
 	DepartureDateTime  ZonedDateTime `json:"departureDateTime"`
 	DestinationAirport Airport       `json:"destinationAirport"`
+	DistanceMiles      float64       `json:"distanceMiles"`
 	Id                 int           `json:"id"`
 	Notes              string        `json:"notes"`
 	Number             FlightNumber  `json:"number"`
@@ -131,7 +132,7 @@ type FlightSchedule struct {
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
 	DepartureTime      TimeOfDay `json:"departureTime"`
 	DestinationAirport Airport   `json:"destinationAirport"`
-	DistanceMiles      *float64  `json:"distanceMiles,omitempty"`
+	DistanceMiles      float64   `json:"distanceMiles"`
 	DurationSec        int       `json:"durationSec"`
 
 	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
@@ -156,10 +157,10 @@ type Point struct {
 
 // Route defines model for Route.
 type Route struct {
-	DestinationAirport   Airport  `json:"destinationAirport"`
-	DistanceMiles        *float64 `json:"distanceMiles,omitempty"`
-	FlightSchedulesCount int      `json:"flightSchedulesCount"`
-	OriginAirport        Airport  `json:"originAirport"`
+	DestinationAirport   Airport `json:"destinationAirport"`
+	DistanceMiles        float64 `json:"distanceMiles"`
+	FlightSchedulesCount int     `json:"flightSchedulesCount"`
+	OriginAirport        Airport `json:"originAirport"`
 }
 
 // TimeOfDay A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.

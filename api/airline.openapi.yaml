@@ -921,6 +921,7 @@ components:
         - number
         - originAirport
         - destinationAirport
+        - distanceMiles
         - aircraftType
         - startDate
         - endDate
@@ -951,6 +952,9 @@ components:
            $ref: '#/components/schemas/Airport'
         destinationAirport:
            $ref: '#/components/schemas/Airport'
+        distanceMiles:
+          type: number
+          format: double
         aircraftType:
            $ref: '#/components/schemas/AircraftType'
         aircraft:
@@ -970,6 +974,7 @@ components:
         - number
         - originAirport
         - destinationAirport
+        - distanceMiles
         - aircraftType
         - departureDateTime
         - arrivalDateTime
@@ -990,5 +995,6 @@ components:
       required:
         - originAirport
         - destinationAirport
+        - distanceMiles
         - flightSchedulesCount
       
