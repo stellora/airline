@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"strings"
 
 	"github.com/stellora/airline/api-server/api"
@@ -606,13 +607,16 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		return err
 	}
 	seatAssignmentsCreated := 0
-	for i, itin := range itineraries.(api.ListItineraries200JSONResponse) {
+	for _, itin := range itineraries.(api.ListItineraries200JSONResponse) {
+		seatRow := rand.Intn(30) + 1
+		seatLetter := 'A' + rand.Intn(10)
+		randomSeat := fmt.Sprintf("%d%c", seatRow, seatLetter)
 		_, err := handler.CreateSeatAssignment(ctx, api.CreateSeatAssignmentRequestObject{
 			FlightInstanceID: itin.Flights[0].Id,
 			Body: &api.CreateSeatAssignmentJSONRequestBody{
 				ItineraryID: itin.Id,
 				PassengerID: itin.Passengers[0].Id,
-				Seat:        fmt.Sprintf("%d%c", (i%30)+1, 'A'+(i%6)),
+				Seat:        randomSeat,
 			},
 		})
 		if err != nil {

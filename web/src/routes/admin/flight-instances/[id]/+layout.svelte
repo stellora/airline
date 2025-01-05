@@ -13,6 +13,7 @@
 	import { route } from '$lib/route-helpers'
 	import { parseZonedDateTime } from '@internationalized/date'
 	import CalendarRange from 'lucide-svelte/icons/calendar-range'
+	import Grid3x3 from 'lucide-svelte/icons/grid-3x3'
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
@@ -55,6 +56,13 @@
 				params: { id: page.params.id },
 			}),
 			icon: Users,
+		},
+		{
+			title: 'Seat map',
+			url: route('/admin/flight-instances/[id]/seat-map', {
+				params: { id: page.params.id },
+			}),
+			icon: Grid3x3,
 		},
 	]}
 >

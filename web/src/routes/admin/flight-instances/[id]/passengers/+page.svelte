@@ -1,6 +1,5 @@
 <script lang="ts">
 	import ItineraryTitle from '$lib/components/itinerary-title.svelte'
-	import SeatMap from '$lib/components/seat-map/seat-map.svelte'
 	import * as Card from '$lib/components/ui/card/index.js'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table/index.js'
@@ -43,14 +42,5 @@
 				<Table.Caption class="mb-4">No seat assignments found</Table.Caption>
 			{/if}
 		</Table.Root>
-	</Card.Root>
-
-	<Card.Root class="self-start">
-		<Card.Header>
-			<Card.Title>Seat map</Card.Title>
-		</Card.Header>
-		<Card.CardContent>
-			<SeatMap seatAssignments={data.seatAssignments} />
-		</Card.CardContent>
 	</Card.Root>
 </Page>

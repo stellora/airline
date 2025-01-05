@@ -94,6 +94,9 @@ const config: Config = {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'caret-blink': 'caret-blink 1.25s ease-out infinite',
 			},
+			fontSize: {
+				xxs: ['0.625rem', { lineHeight: '.75rem' }],
+			},
 		},
 	},
 	plugins: [tailwindcssAnimate],
