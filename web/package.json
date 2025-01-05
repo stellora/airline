@@ -19,11 +19,12 @@
 		"lint": "eslint . && prettier --check .",
 		"format": "prettier --write .",
 		"gen": "npm run -s gen:openapi",
-		"gen:openapi": "openapi-typescript ../api/airline.openapi.yaml --output src/lib/airline.openapi.ts",
+		"gen:openapi": "openapi-typescript ../api/airline.openapi.yaml --output src/lib/airline.openapi.ts && openapi-box --output src/lib/airline.typebox.ts ../api/airline.openapi.yaml",
 		"gen-online:world-map": "DETAIL_LEVEL=high node --experimental-strip-types src/lib/components/maps/generate.ts > src/lib/components/maps/world-high-detail.geojson.json && DETAIL_LEVEL=low node --experimental-strip-types src/lib/components/maps/generate.ts > src/lib/components/maps/world-low-detail.geojson.json && geo2topo --quantization 1e6 world-low-detail=src/lib/components/maps/world-low-detail.geojson.json world-high-detail=src/lib/components/maps/world-high-detail.geojson.json > src/lib/components/maps/world.topojson.json; rm src/lib/components/maps/*.geojson.json"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",
+		"@geut/openapi-box": "^5.0.8",
 		"@internationalized/date": "^3.6.0",
 		"@playwright/test": "^1.45.3",
 		"@sinclair/typebox": "^0.34.13",

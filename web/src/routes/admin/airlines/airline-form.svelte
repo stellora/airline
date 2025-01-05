@@ -1,16 +1,19 @@
 <script lang="ts">
+	import type { schema } from '$lib/airline.typebox'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import * as Form from '$lib/components/ui/form'
 	import { Input } from '$lib/components/ui/input'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
-	import { superForm } from 'sveltekit-superforms'
+	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
-	import type { PageServerData } from './$types'
-	import { formSchema } from './airline-form'
 
-	const props: { form: PageServerData['form']; action: string } = $props()
-	const form = superForm(props.form, {
-		validators: typebox(formSchema),
+	let props: {
+		schema: (typeof schema)['/airlines']['POST']['args']['properties']['body']
+		data: SuperValidated<Infer<(typeof schema)['/airlines']['POST']['args']['properties']['body']>>
+		action: string
+	} = $props()
+	const form = superForm(props.data, {
+		validators: typebox(props.schema),
 		onError({ result }) {
 			$message = result.error.message || 'Unknown error'
 		},

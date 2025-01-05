@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { schema } from '$lib/airline.typebox'
 	import AirlineCode from '$lib/components/airline-code.svelte'
 	import AirlineIcon from '$lib/components/airline-icon.svelte'
 	import { Button } from '$lib/components/ui/button'
@@ -19,7 +20,11 @@
 		</CardHeader>
 
 		<CardContent>
-			<AirlineForm form={data.form} action="?/create" />
+			<AirlineForm
+				data={data.form}
+				action="?/create"
+				schema={schema['/airlines']['POST']['args']['properties']['body']}
+			/>
 		</CardContent>
 	</Card>
 	<Card>

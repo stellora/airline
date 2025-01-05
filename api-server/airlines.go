@@ -48,7 +48,7 @@ func (h *Handler) ListAirlines(ctx context.Context, request api.ListAirlinesRequ
 	return api.ListAirlines200JSONResponse(mapSlice(fromDBAirline, airlines)), nil
 }
 
-var validAirlineIATACode = regexp.MustCompile(`^[A-Z]{2}$`)
+var validAirlineIATACode = regexp.MustCompile(`^[A-Z0-9]{2}$`)
 
 func (h *Handler) CreateAirline(ctx context.Context, request api.CreateAirlineRequestObject) (api.CreateAirlineResponseObject, error) {
 	if !validAirlineIATACode.MatchString(request.Body.IataCode) {
