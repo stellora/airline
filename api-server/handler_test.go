@@ -13,6 +13,7 @@ import (
 )
 
 func init() {
+	testingNoDistanceCalculations = true
 	extdata.Airports = extdata.AirportsDataset{
 		Airports: []extdata.Airport{
 			{

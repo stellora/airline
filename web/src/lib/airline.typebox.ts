@@ -820,7 +820,7 @@ const schema = {
           flightInstanceID: T.Integer({ 'x-in': 'path' })
         })
       }),
-      data: CloneType(ComponentsSchemasSeatAssignment, {
+      data: T.Array(CloneType(ComponentsSchemasSeatAssignment), {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),

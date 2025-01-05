@@ -703,7 +703,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SeatAssignment'
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeatAssignment'
         '404':
           description: Flight instance not found
     post:

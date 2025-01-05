@@ -16,6 +16,7 @@ func TestGetItinerary(t *testing.T) {
 	itinerary := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passenger)})
 
 	t.Run("exists", func(t *testing.T) {
+		var recordID api.RecordLocator
 		t.Run("by ID", func(t *testing.T) {
 			resp, err := handler.GetItinerary(ctx, api.GetItineraryRequestObject{
 				ItinerarySpec: api.NewItinerarySpec(int(itinerary), ""),
@@ -27,11 +28,15 @@ func TestGetItinerary(t *testing.T) {
 			assertEqual(t, got.Id, int(itinerary))
 			assertEqual(t, len(got.Flights), 1)
 			assertEqual(t, len(got.Passengers), 1)
+			recordID = got.RecordID
 		})
 
 		t.Run("by record locator", func(t *testing.T) {
+			if recordID == "" {
+				t.Fatal("record locator not set, requires the other test to run")
+			}
 			resp, err := handler.GetItinerary(ctx, api.GetItineraryRequestObject{
-				ItinerarySpec: api.NewItinerarySpec(0, "ABC123"),
+				ItinerarySpec: api.NewItinerarySpec(0, recordID),
 			})
 			if err != nil {
 				t.Fatal(err)

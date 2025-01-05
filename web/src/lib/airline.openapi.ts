@@ -1578,7 +1578,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SeatAssignment"];
+                    "application/json": components["schemas"]["SeatAssignment"][];
                 };
             };
             /** @description Flight instance not found */

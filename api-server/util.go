@@ -100,7 +100,12 @@ func insertFlightInstance(ctx context.Context, handler *Handler, newInstance api
 	return api.FlightInstance(v.(api.CreateFlightInstance201JSONResponse)), nil
 }
 
+var testingNoDistanceCalculations = false
+
 func distanceMilesBetweenAirports(a, b api.Airport) float64 {
+	if testingNoDistanceCalculations {
+		return 0
+	}
 	if (a.Point != api.Point{} && b.Point != api.Point{}) {
 		var distanceMeters float64
 		geodesic.WGS84.Inverse(a.Point.Latitude, a.Point.Longitude, b.Point.Latitude, b.Point.Longitude, &distanceMeters, nil, nil)

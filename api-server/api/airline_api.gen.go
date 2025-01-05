@@ -2480,7 +2480,7 @@ type ListSeatAssignmentsForFlightInstanceResponseObject interface {
 	VisitListSeatAssignmentsForFlightInstanceResponse(w http.ResponseWriter) error
 }
 
-type ListSeatAssignmentsForFlightInstance200JSONResponse SeatAssignment
+type ListSeatAssignmentsForFlightInstance200JSONResponse []SeatAssignment
 
 func (response ListSeatAssignmentsForFlightInstance200JSONResponse) VisitListSeatAssignmentsForFlightInstanceResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
