@@ -63,10 +63,8 @@
 						</FormattedDatetime>
 					</DefinitionList.Item>
 					<DefinitionList.Item title="Duration">
-						{formatFlightDuration(
-							parseZonedDateTime(data.flightInstance.departureDateTime),
-							parseZonedDateTime(data.flightInstance.arrivalDateTime),
-						)},
+						{formatFlightDuration(departureDateTime, arrivalDateTime)}
+						<span class="text-muted-foreground">&mdash;</span>
 						<Distance distanceMiles={data.flightInstance.distanceMiles} />
 					</DefinitionList.Item>
 				</DefinitionList.Root>
