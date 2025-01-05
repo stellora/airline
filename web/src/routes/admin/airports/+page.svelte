@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { schema } from '$lib/airline.typebox'
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import { Button, buttonVariants } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
-	import * as Dialog from '$lib/components/ui/dialog/index.js'
+	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
@@ -16,19 +17,26 @@
 
 <PageNav>
 	{#snippet actions()}
-		<Dialog.RootByNavigationState id="new-airport">
-			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+		<Drawer.DrawerByNavigationState id="new-airport" direction="right">
+			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
 				<Plus /> New airport
-			</Dialog.Trigger>
-			<Dialog.Content>
-				<Dialog.Header>
-					<Dialog.Title>New airport</Dialog.Title>
-				</Dialog.Header>
-				<AirportForm action="?/create" submitLabel="Create" form={data.form} />
-			</Dialog.Content>
-		</Dialog.RootByNavigationState>
-	{/snippet}
-</PageNav>
+			</Drawer.Trigger>
+			<Drawer.Content>
+				<Drawer.Header>
+					<Drawer.Title>New airport</Drawer.Title>
+				</Drawer.Header>
+				<Drawer.ScrollArea>
+					<AirportForm
+						action="?/create"
+						submitLabel="Create"
+						data={data.form}
+						schema={schema['/airports']['POST']['args']['properties']['body']}
+					/>
+				</Drawer.ScrollArea>
+			</Drawer.Content>
+		</Drawer.DrawerByNavigationState>
+	{/snippet}</PageNav
+>
 
 <Page title="Airports">
 	<Card>

@@ -4,7 +4,7 @@
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
-	import * as Dialog from '$lib/components/ui/dialog/index.js'
+	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
@@ -15,6 +15,7 @@
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
 	import AirportForm from '../airport-form.svelte'
+	import { schema } from '$lib/airline.typebox'
 
 	const { children, data } = $props()
 </script>
@@ -76,24 +77,27 @@
 		</PageNavbarBreadcrumbActionsDropdownMenu>
 	{/snippet}
 	{#snippet actions()}
-		<Dialog.RootByNavigationState id="edit-airport">
-			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+		<Drawer.DrawerByNavigationState id="edit-airport" direction="right">
+			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
 				<Settings2 /> Edit
-			</Dialog.Trigger>
-			<Dialog.Content>
-				<Dialog.Header>
-					<Dialog.Title>Edit airport</Dialog.Title>
-				</Dialog.Header>
-				<AirportForm
-					action={route('/admin/airports/[airportSpec]', {
-						params: { airportSpec: page.params.airportSpec },
-						query: '/update',
-					})}
-					submitLabel="Save"
-					form={data.form}
-				/>
-			</Dialog.Content>
-		</Dialog.RootByNavigationState>
+			</Drawer.Trigger>
+			<Drawer.Content>
+				<Drawer.Header>
+					<Drawer.Title>Edit airport</Drawer.Title>
+				</Drawer.Header>
+				<Drawer.ScrollArea>
+					<AirportForm
+						action={route('/admin/airports/[airportSpec]', {
+							params: { airportSpec: page.params.airportSpec },
+							query: '/update',
+						})}
+						submitLabel="Save"
+						data={data.form}
+						schema={schema['/airports/{airportSpec}']['PATCH']['args']['properties']['body']}
+					/>
+				</Drawer.ScrollArea>
+			</Drawer.Content>
+		</Drawer.DrawerByNavigationState>
 	{/snippet}
 </PageNav>
 

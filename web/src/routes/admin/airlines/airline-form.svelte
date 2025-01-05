@@ -8,8 +8,15 @@
 	import { typebox } from 'sveltekit-superforms/adapters'
 
 	let props: {
-		schema: (typeof schema)['/airlines']['POST']['args']['properties']['body']
-		data: SuperValidated<Infer<(typeof schema)['/airlines']['POST']['args']['properties']['body']>>
+		schema:
+			| (typeof schema)['/airlines']['POST']['args']['properties']['body']
+			| (typeof schema)['/airlines/{airlineSpec}']['PATCH']['args']['properties']['body']
+		data: SuperValidated<
+			Infer<
+				| (typeof schema)['/airlines']['POST']['args']['properties']['body']
+				| (typeof schema)['/airlines/{airlineSpec}']['PATCH']['args']['properties']['body']
+			>
+		>
 		action: string
 	} = $props()
 	const form = superForm(props.data, {

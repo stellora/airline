@@ -1,27 +1,30 @@
+import { schema } from '$lib/airline.typebox'
 import { apiClient } from '$lib/api'
 import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
 import type { Actions, PageServerLoad } from './$types'
-import { formDataToAirportRequest, formSchema } from './airport-form'
 
 export const load: PageServerLoad = async () => {
 	return {
 		airports: (await apiClient.GET('/airports', { fetch })).data,
-		form: await superValidate(typebox(formSchema)),
+		form: await superValidate(typebox(schema['/airports']['POST']['args']['properties']['body'])),
 	}
 }
 
 export const actions: Actions = {
 	create: async ({ request }) => {
-		const form = await superValidate(request, typebox(formSchema))
+		const form = await superValidate(
+			request,
+			typebox(schema['/airports']['POST']['args']['properties']['body']),
+		)
 		if (!form.valid) {
 			return fail(400, { form })
 		}
 
 		const resp = await apiClient.POST('/airports', {
-			body: formDataToAirportRequest(form.data),
+			body: form.data,
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {
