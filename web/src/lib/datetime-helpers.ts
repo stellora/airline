@@ -30,14 +30,23 @@ export function formatFlightTime(
 	let result = f.format(value.toDate())
 
 	if (plusMinusDaysFrom) {
-		// TODO!(sqs): support wrapping around months/years
-		const daysDelta = value.day - plusMinusDaysFrom.day
+		const daysDelta = deltaCalendarDays(plusMinusDaysFrom, value)
 		if (daysDelta !== 0) {
 			result += `${daysDelta < 0 ? '-' : '+'}${Math.abs(daysDelta)}`
 		}
 	}
 
 	return result
+}
+
+export function deltaCalendarDays(a: ZonedDateTime, b: ZonedDateTime): number {
+	const aDate = a.toDate()
+	const bDate = b.toDate()
+	aDate.setUTCHours(0, 0, 0, 0)
+	bDate.setUTCHours(0, 0, 0, 0)
+
+	const diffTime = bDate.getTime() - aDate.getTime()
+	return Math.round(diffTime / (1000 * 60 * 60 * 24))
 }
 
 export function formatFlightDuration(start: ZonedDateTime, end: ZonedDateTime): string {
