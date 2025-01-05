@@ -3,7 +3,7 @@
 	import { page } from '$app/state'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte'
-	import * as Dialog from '$lib/components/ui/dialog/index.js'
+	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
@@ -94,25 +94,27 @@
 				})}><CalendarRange /> View schedule</Button
 			>
 		{/if}
-		<Dialog.RootByNavigationState id="edit-flight-instance">
-			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+		<Drawer.DrawerByNavigationState id="edit-flight-instance" direction="right">
+			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
 				<Settings2 /> Edit
-			</Dialog.Trigger>
-			<Dialog.Content>
-				<Dialog.Header>
-					<Dialog.Title>Edit flight instance</Dialog.Title>
-				</Dialog.Header>
-				<FlightInstanceForm
-					flightInstance={data.flightInstance}
-					action={route('/admin/flight-instances/[id]', {
-						params: { id: page.params.id },
-						query: '/update',
-					})}
-					submitLabel="Save"
-					form={data.form}
-				/>
-			</Dialog.Content>
-		</Dialog.RootByNavigationState>
+			</Drawer.Trigger>
+			<Drawer.Content>
+				<Drawer.Header>
+					<Drawer.Title>Edit flight instance</Drawer.Title>
+				</Drawer.Header>
+				<Drawer.ScrollArea>
+					<FlightInstanceForm
+						flightInstance={data.flightInstance}
+						action={route('/admin/flight-instances/[id]', {
+							params: { id: page.params.id },
+							query: '/update',
+						})}
+						submitLabel="Save"
+						form={data.form}
+					/>
+				</Drawer.ScrollArea>
+			</Drawer.Content>
+		</Drawer.DrawerByNavigationState>
 	{/snippet}
 </PageNav>
 
