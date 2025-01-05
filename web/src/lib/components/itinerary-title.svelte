@@ -11,7 +11,6 @@
 	}: {
 		itinerary: Pick<Itinerary, 'recordID'>
 		link?: boolean
-		tooltip?: boolean
 		class?: HTMLAttributes<never>['class']
 	} = $props()
 </script>
