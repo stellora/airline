@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/stellora/airline/api-server/api"
 )
@@ -547,14 +548,17 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 	for _, f := range flightSchedules {
 		f.Published = ptrTo(true)
 	}
+	log.Println("Creating flight schedules...")
 	for _, f := range flightSchedules {
 		if _, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{Body: f}); err != nil {
 			return fmt.Errorf("inserting flight schedule: %w", err)
 		}
 	}
 
+	log.Println("Creating passengers...")
 	passengerNames := []string{
-		"John Doe", "Jane Doe", "Bob Smith", "John Smith", "Alice Zhao", "Maria Garcia", "James Johnson", "Sarah Wilson", "Michael Chen", "Emily Brown", "David Kim", "Lisa Patel", "Carlos Rodriguez", "Emma Davis", "Mohammed Ahmed", "Sofia Martinez", "William Lee", "Olivia Taylor", "Daniel Jackson", "Isabella Lopez", "Alexander Wong", "Ava Thompson", "Lucas Nguyen", "Mia Anderson", "Ethan Kumar", "Sophia White", "Ryan O'Connor", "Grace Williams", "Nathan Cohen", "Victoria Singh",
+		"John Doe", "Jane Doe", "Bob Smith", "John Smith", "Alice Zhao", "Maria Garcia", "James Johnson", "Sarah Wilson", "Michael Chen", "Emily Brown", "David Kim", "Lisa Patel", "Carlos Rodriguez", "Emma Davis", "Mohammed Ahmed", "Sofia Martinez", "William Lee",
+		// "Olivia Taylor", "Daniel Jackson", "Isabella Lopez", "Alexander Wong", "Ava Thompson", "Lucas Nguyen", "Mia Anderson", "Ethan Kumar", "Sophia White", "Ryan O'Connor", "Grace Williams", "Nathan Cohen", "Victoria Singh",
 		// "Liam Johnson", "Avery Thompson", "Elijah Martinez", "Scarlett Davis", "William Wang", "Chloe Anderson", "Noah Hernandez", "Camila Rodriguez", "Oliver Garcia", "Evelyn Hernandez", "Lucas Wilson", "Mila King", "James Brown", "Zoe Lee", "Benjamin Lewis", "Aria Young", "Henry Miller",
 		// "Penelope Davis", "Joseph Thompson", "Grace Davis", "Nathan Garcia", "Aria Rodriguez", "Mia Wilson", "Camila Anderson", "Ethan Martinez", "Olivia White",
 		// "Logan Walker", "Abigail Harris", "Samuel Green", "Avery Turner", "Joseph Hill", "Mila Foster", "Henry Campbell", "Sofia Reyes", "Carter Rivera", "Evelyn Cooper",
@@ -571,14 +575,14 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		passengerIDs[i] = resp.(api.CreatePassenger201JSONResponse).Id
 	}
 
-	// Make a bunch of itineraries.
+	log.Println("Creating itineraries...")
 	flightInstances, err := handler.ListFlightInstances(ctx, api.ListFlightInstancesRequestObject{})
 	if err != nil {
 		return err
 	}
 	for i, f := range flightInstances.(api.ListFlightInstances200JSONResponse) {
 		for j, passengerID := range passengerIDs {
-			if i%3+j%3 != 1 {
+			if i%15+j%3 != 1 {
 				continue
 			}
 			_, err := handler.CreateItinerary(ctx, api.CreateItineraryRequestObject{
@@ -593,7 +597,27 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		}
 	}
 
-	// Create seat assignments.
+	log.Println("Creating seat assignments...")
+	itineraries, err := handler.ListItineraries(ctx, api.ListItinerariesRequestObject{})
+	if err != nil {
+		return err
+	}
+	for i, itin := range itineraries.(api.ListItineraries200JSONResponse) {
+		if i%9 != 0 {
+			continue
+		}
+		_, err := handler.CreateSeatAssignment(ctx, api.CreateSeatAssignmentRequestObject{
+			FlightInstanceID: itin.Flights[0].Id,
+			Body: &api.CreateSeatAssignmentJSONRequestBody{
+				ItineraryID: itin.Id,
+				PassengerID: itin.Passengers[0].Id,
+				Seat:        fmt.Sprintf("%d%c", (i%80)+1, 'A'+(i%6)),
+			},
+		})
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
