@@ -687,6 +687,225 @@ paths:
           description: Flight instance created from a flight schedule can't be deleted. Edit the flight schedule instead.
         '404':
           description: Flight instance not found
+  /flight-instances/{flightInstanceID}/seat-assignments:
+    get:
+      operationId: listSeatAssignmentsForFlightInstance
+      summary: Get seat assignments for a flight instance
+      parameters:
+        - name: flightInstanceID
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Seat assignments found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatAssignment'
+        '404':
+          description: Flight instance not found
+    post:
+      operationId: createSeatAssignment
+      summary: Create a seat assignment for a flight instance
+      parameters:
+        - name: flightInstanceID
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passengerID:
+                  type: integer
+                seat:
+                  $ref: '#/components/schemas/SeatNumber'
+              required:
+                - passengerID
+                - seat
+      responses:
+        '201':
+          description: Seat assignment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatAssignment'
+        '400':
+          description: Invalid request
+        '404':
+          description: Flight instance not found
+  /passengers:
+    get:
+      operationId: listPassengers
+      summary: List all passengers
+      responses:
+        '200':
+          description: List of passengers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Passenger'
+    post:
+      operationId: createPassenger
+      summary: Create a new passenger
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+              required:
+                - name
+      responses:
+        '201':
+          description: Passenger created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Passenger'
+        '400':
+          description: Invalid request
+  /passengers/{id}:
+    get:
+      operationId: getPassenger
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Passenger found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Passenger'
+        '404':
+          description: Passenger not found
+    patch:
+      operationId: updatePassenger
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Passenger updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Passenger'
+        '400':
+          description: Invalid request
+        '404':
+          description: Passenger not found
+    delete:
+      operationId: deletePassenger
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Passenger deleted
+        '404':
+          description: Passenger not found
+  /itineraries:
+    get:
+      operationId: listItineraries
+      summary: List all itineraries
+      responses:
+        '200':
+          description: List of itineraries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Itinerary'
+    post:
+      operationId: createItinerary
+      summary: Create a new itinerary from manual input, not from a flight schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                flightInstanceIDs:
+                  type: array
+                  items:
+                    type: integer
+                  minLength: 1
+                passengerIDs:
+                  type: array
+                  items:
+                    type: integer
+                  minLength: 1
+              required:
+                - flightInstanceIDs
+                - passengers
+      responses:
+        '201':
+          description: Itinerary created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Itinerary'
+        '400':
+          description: Invalid request
+  /itineraries/{itinerarySpec}:
+    get:
+      operationId: getItinerary
+      parameters:
+        - $ref: '#/components/parameters/itinerarySpec'
+      responses:
+        '200':
+          description: Itinerary found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Itinerary'
+        '404':
+          description: Itinerary not found
+    delete:
+      operationId: deleteItinerary
+      summary: Delete an itinerary
+      parameters:
+        - $ref: '#/components/parameters/itinerarySpec'
+      responses:
+        '204':
+          description: Itinerary deleted
+        '404':
+          description: Itinerary not found
   /routes:
     get:
       operationId: listRoutes
@@ -740,6 +959,12 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/AirlineSpec'
+    itinerarySpec:
+      name: itinerarySpec
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ItinerarySpec'
   schemas:
     ZonedDateTime:
       type: string
@@ -997,4 +1222,66 @@ components:
         - destinationAirport
         - distanceMiles
         - flightSchedulesCount
+    RecordLocator:
+      type: string
+      pattern: '^[A-Z0-9]{6}$'
+      minLength: 6
+      maxLength: 6
+      description: A record locator code for an itinerary.
+    ItinerarySpec:
+      oneOf:
+        - type: integer
+        - $ref: '#/components/schemas/RecordLocator'
+    Itinerary:
+      type: object
+      properties:
+        id:
+          type: integer
+        recordID:
+          $ref: '#/components/schemas/RecordLocator'
+        flights:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightInstance'
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Passenger'
+          minItems: 1
+      required:
+        - id
+        - recordID
+        - flights
+        - passengers
+    Passenger:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required:
+        - id
+        - name
+    SeatNumber:
+      type: string
+      pattern: '^[0-9]{1,2}[A-Z]$'
+      minLength: 2
+      maxLength: 3
+    SeatAssignment:
+      type: object
+      properties:
+        id:
+          type: integer
+        passengerID:
+          type: integer
+        flightInstanceID:
+          type: integer
+        seat:
+          $ref: '#/components/schemas/SeatNumber'
+      required:
+        - id
+        - passengerID
+        - flightInstanceID
+        - seat
       

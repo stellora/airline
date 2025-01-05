@@ -14,6 +14,44 @@ import (
 	"github.com/stellora/airline/api-server/zonedtime"
 )
 
+const addFlightToItinerary = `-- name: AddFlightToItinerary :exec
+INSERT INTO itinerary_flights (
+  itinerary_id,
+  flight_instance_id
+) VALUES (
+  ?, ?
+)
+`
+
+type AddFlightToItineraryParams struct {
+	ItineraryID      int64
+	FlightInstanceID int64
+}
+
+func (q *Queries) AddFlightToItinerary(ctx context.Context, arg AddFlightToItineraryParams) error {
+	_, err := q.db.ExecContext(ctx, addFlightToItinerary, arg.ItineraryID, arg.FlightInstanceID)
+	return err
+}
+
+const addPassengerToItinerary = `-- name: AddPassengerToItinerary :exec
+INSERT INTO itinerary_passengers (
+  itinerary_id,
+  passenger_id
+) VALUES (
+  ?, ?
+)
+`
+
+type AddPassengerToItineraryParams struct {
+	ItineraryID int64
+	PassengerID int64
+}
+
+func (q *Queries) AddPassengerToItinerary(ctx context.Context, arg AddPassengerToItineraryParams) error {
+	_, err := q.db.ExecContext(ctx, addPassengerToItinerary, arg.ItineraryID, arg.PassengerID)
+	return err
+}
+
 const createAircraft = `-- name: CreateAircraft :one
 INSERT INTO aircraft (
   registration,
@@ -190,6 +228,62 @@ func (q *Queries) CreateFlightSchedule(ctx context.Context, arg CreateFlightSche
 	return id, err
 }
 
+const createItinerary = `-- name: CreateItinerary :one
+INSERT INTO itineraries (
+  record_id
+) VALUES (
+  ?
+)
+RETURNING id, record_id
+`
+
+func (q *Queries) CreateItinerary(ctx context.Context, recordID string) (Itinerary, error) {
+	row := q.db.QueryRowContext(ctx, createItinerary, recordID)
+	var i Itinerary
+	err := row.Scan(&i.ID, &i.RecordID)
+	return i, err
+}
+
+const createPassenger = `-- name: CreatePassenger :one
+INSERT INTO passengers (
+  name
+) VALUES (
+  ?
+)
+RETURNING id
+`
+
+func (q *Queries) CreatePassenger(ctx context.Context, name string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, createPassenger, name)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const createSeatAssignment = `-- name: CreateSeatAssignment :one
+INSERT INTO seat_assignments (
+  passenger_id,
+  flight_instance_id,
+  seat
+) VALUES (
+  ?, ?, ?
+)
+RETURNING id
+`
+
+type CreateSeatAssignmentParams struct {
+	PassengerID      int64
+	FlightInstanceID int64
+	Seat             string
+}
+
+func (q *Queries) CreateSeatAssignment(ctx context.Context, arg CreateSeatAssignmentParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, createSeatAssignment, arg.PassengerID, arg.FlightInstanceID, arg.Seat)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const deleteAircraft = `-- name: DeleteAircraft :exec
 DELETE FROM aircraft
 WHERE id=?
@@ -273,6 +367,36 @@ WHERE id=?
 
 func (q *Queries) DeleteFlightSchedule(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteFlightSchedule, id)
+	return err
+}
+
+const deleteItinerary = `-- name: DeleteItinerary :exec
+DELETE FROM itineraries
+WHERE id = ?
+`
+
+func (q *Queries) DeleteItinerary(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteItinerary, id)
+	return err
+}
+
+const deletePassenger = `-- name: DeletePassenger :exec
+DELETE FROM passengers
+WHERE id = ?
+`
+
+func (q *Queries) DeletePassenger(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deletePassenger, id)
+	return err
+}
+
+const deleteSeatAssignment = `-- name: DeleteSeatAssignment :exec
+DELETE FROM seat_assignments
+WHERE id=?
+`
+
+func (q *Queries) DeleteSeatAssignment(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteSeatAssignment, id)
 	return err
 }
 
@@ -443,6 +567,45 @@ func (q *Queries) GetFlightSchedule(ctx context.Context, id int64) (FlightSchedu
 	return i, err
 }
 
+const getItinerary = `-- name: GetItinerary :one
+SELECT id, record_id FROM itineraries
+WHERE id = ?
+LIMIT 1
+`
+
+func (q *Queries) GetItinerary(ctx context.Context, id int64) (Itinerary, error) {
+	row := q.db.QueryRowContext(ctx, getItinerary, id)
+	var i Itinerary
+	err := row.Scan(&i.ID, &i.RecordID)
+	return i, err
+}
+
+const getItineraryByRecordLocator = `-- name: GetItineraryByRecordLocator :one
+SELECT id, record_id FROM itineraries
+WHERE record_id = ?
+LIMIT 1
+`
+
+func (q *Queries) GetItineraryByRecordLocator(ctx context.Context, recordID string) (Itinerary, error) {
+	row := q.db.QueryRowContext(ctx, getItineraryByRecordLocator, recordID)
+	var i Itinerary
+	err := row.Scan(&i.ID, &i.RecordID)
+	return i, err
+}
+
+const getPassenger = `-- name: GetPassenger :one
+SELECT id, name FROM passengers
+WHERE id = ?
+LIMIT 1
+`
+
+func (q *Queries) GetPassenger(ctx context.Context, id int64) (Passenger, error) {
+	row := q.db.QueryRowContext(ctx, getPassenger, id)
+	var i Passenger
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}
+
 const getRouteByIATACodes = `-- name: GetRouteByIATACodes :one
 
 SELECT origin_airport_id, destination_airport_id, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, flight_schedules_count FROM routes
@@ -467,6 +630,24 @@ func (q *Queries) GetRouteByIATACodes(ctx context.Context, arg GetRouteByIATACod
 		&i.DestinationAirportIataCode,
 		&i.DestinationAirportOadbID,
 		&i.FlightSchedulesCount,
+	)
+	return i, err
+}
+
+const getSeatAssignment = `-- name: GetSeatAssignment :one
+SELECT id, passenger_id, flight_instance_id, seat FROM seat_assignments
+WHERE id = ?
+LIMIT 1
+`
+
+func (q *Queries) GetSeatAssignment(ctx context.Context, id int64) (SeatAssignment, error) {
+	row := q.db.QueryRowContext(ctx, getSeatAssignment, id)
+	var i SeatAssignment
+	err := row.Scan(
+		&i.ID,
+		&i.PassengerID,
+		&i.FlightInstanceID,
+		&i.Seat,
 	)
 	return i, err
 }
@@ -911,6 +1092,155 @@ func (q *Queries) ListFlightSchedulesByRoute(ctx context.Context, arg ListFlight
 	return items, nil
 }
 
+const listItineraries = `-- name: ListItineraries :many
+
+SELECT id, record_id FROM itineraries
+ORDER BY id ASC
+`
+
+// ----------------------------------------------------------------------------- itineraries
+func (q *Queries) ListItineraries(ctx context.Context) ([]Itinerary, error) {
+	rows, err := q.db.QueryContext(ctx, listItineraries)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Itinerary
+	for rows.Next() {
+		var i Itinerary
+		if err := rows.Scan(&i.ID, &i.RecordID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItineraryFlights = `-- name: ListItineraryFlights :many
+SELECT flight_instances_view.id, flight_instances_view.source_flight_schedule_id, flight_instances_view.source_flight_schedule_instance_localdate, flight_instances_view.airline_id, flight_instances_view.number, flight_instances_view.origin_airport_id, flight_instances_view.destination_airport_id, flight_instances_view.aircraft_type, flight_instances_view.aircraft_id, flight_instances_view.departure_datetime, flight_instances_view.arrival_datetime, flight_instances_view.departure_datetime_utc, flight_instances_view.arrival_datetime_utc, flight_instances_view.notes, flight_instances_view.published, flight_instances_view.airline_iata_code, flight_instances_view.airline_name, flight_instances_view.origin_airport_iata_code, flight_instances_view.origin_airport_oadb_id, flight_instances_view.destination_airport_iata_code, flight_instances_view.destination_airport_oadb_id, flight_instances_view.aircraft_registration, flight_instances_view.aircraft_aircraft_type, flight_instances_view.aircraft_airline_id, flight_instances_view.aircraft_airline_iata_code, flight_instances_view.aircraft_airline_name
+FROM flight_instances_view
+JOIN itinerary_flights ON itinerary_flights.flight_instance_id = flight_instances_view.id
+WHERE itinerary_flights.itinerary_id = ?1
+ORDER BY departure_datetime_utc ASC
+`
+
+func (q *Queries) ListItineraryFlights(ctx context.Context, itineraryID int64) ([]FlightInstancesView, error) {
+	rows, err := q.db.QueryContext(ctx, listItineraryFlights, itineraryID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FlightInstancesView
+	for rows.Next() {
+		var i FlightInstancesView
+		if err := rows.Scan(
+			&i.ID,
+			&i.SourceFlightScheduleID,
+			&i.SourceFlightScheduleInstanceLocaldate,
+			&i.AirlineID,
+			&i.Number,
+			&i.OriginAirportID,
+			&i.DestinationAirportID,
+			&i.AircraftType,
+			&i.AircraftID,
+			&i.DepartureDatetime,
+			&i.ArrivalDatetime,
+			&i.DepartureDatetimeUtc,
+			&i.ArrivalDatetimeUtc,
+			&i.Notes,
+			&i.Published,
+			&i.AirlineIataCode,
+			&i.AirlineName,
+			&i.OriginAirportIataCode,
+			&i.OriginAirportOadbID,
+			&i.DestinationAirportIataCode,
+			&i.DestinationAirportOadbID,
+			&i.AircraftRegistration,
+			&i.AircraftAircraftType,
+			&i.AircraftAirlineID,
+			&i.AircraftAirlineIataCode,
+			&i.AircraftAirlineName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItineraryPassengers = `-- name: ListItineraryPassengers :many
+SELECT passengers.id, passengers.name
+FROM passengers
+JOIN itinerary_passengers ON itinerary_passengers.passenger_id = passengers.id
+WHERE itinerary_passengers.itinerary_id = ?1
+ORDER BY passengers.id ASC
+`
+
+func (q *Queries) ListItineraryPassengers(ctx context.Context, itineraryID int64) ([]Passenger, error) {
+	rows, err := q.db.QueryContext(ctx, listItineraryPassengers, itineraryID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Passenger
+	for rows.Next() {
+		var i Passenger
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPassengers = `-- name: ListPassengers :many
+
+SELECT id, name FROM passengers
+ORDER BY id ASC
+`
+
+// ----------------------------------------------------------------------------- passengers
+func (q *Queries) ListPassengers(ctx context.Context) ([]Passenger, error) {
+	rows, err := q.db.QueryContext(ctx, listPassengers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Passenger
+	for rows.Next() {
+		var i Passenger
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listRoutes = `-- name: ListRoutes :many
 SELECT origin_airport_id, destination_airport_id, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, flight_schedules_count FROM routes
 ORDER BY flight_schedules_count DESC, origin_airport_id ASC, destination_airport_id ASC
@@ -945,6 +1275,72 @@ func (q *Queries) ListRoutes(ctx context.Context) ([]Route, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const listSeatAssignmentsForFlightInstance = `-- name: ListSeatAssignmentsForFlightInstance :many
+
+SELECT id, passenger_id, flight_instance_id, seat FROM seat_assignments
+WHERE flight_instance_id = ?
+ORDER BY id ASC
+`
+
+// ----------------------------------------------------------------------------- seat_assignments
+func (q *Queries) ListSeatAssignmentsForFlightInstance(ctx context.Context, flightInstanceID int64) ([]SeatAssignment, error) {
+	rows, err := q.db.QueryContext(ctx, listSeatAssignmentsForFlightInstance, flightInstanceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SeatAssignment
+	for rows.Next() {
+		var i SeatAssignment
+		if err := rows.Scan(
+			&i.ID,
+			&i.PassengerID,
+			&i.FlightInstanceID,
+			&i.Seat,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const removeFlightFromItinerary = `-- name: RemoveFlightFromItinerary :exec
+DELETE FROM itinerary_flights
+WHERE itinerary_id = ? AND flight_instance_id = ?
+`
+
+type RemoveFlightFromItineraryParams struct {
+	ItineraryID      int64
+	FlightInstanceID int64
+}
+
+func (q *Queries) RemoveFlightFromItinerary(ctx context.Context, arg RemoveFlightFromItineraryParams) error {
+	_, err := q.db.ExecContext(ctx, removeFlightFromItinerary, arg.ItineraryID, arg.FlightInstanceID)
+	return err
+}
+
+const removePassengerFromItinerary = `-- name: RemovePassengerFromItinerary :exec
+DELETE FROM itinerary_passengers
+WHERE itinerary_id = ? AND passenger_id = ?
+`
+
+type RemovePassengerFromItineraryParams struct {
+	ItineraryID int64
+	PassengerID int64
+}
+
+func (q *Queries) RemovePassengerFromItinerary(ctx context.Context, arg RemovePassengerFromItineraryParams) error {
+	_, err := q.db.ExecContext(ctx, removePassengerFromItinerary, arg.ItineraryID, arg.PassengerID)
+	return err
 }
 
 const updateAircraft = `-- name: UpdateAircraft :one
@@ -1127,4 +1523,47 @@ func (q *Queries) UpdateFlightSchedule(ctx context.Context, arg UpdateFlightSche
 	var id int64
 	err := row.Scan(&id)
 	return id, err
+}
+
+const updatePassenger = `-- name: UpdatePassenger :one
+UPDATE passengers SET
+name = COALESCE(?1, name)
+WHERE id = ?2
+RETURNING id
+`
+
+type UpdatePassengerParams struct {
+	Name sql.NullString
+	ID   int64
+}
+
+func (q *Queries) UpdatePassenger(ctx context.Context, arg UpdatePassengerParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, updatePassenger, arg.Name, arg.ID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const updateSeatAssignment = `-- name: UpdateSeatAssignment :one
+UPDATE seat_assignments SET
+seat = COALESCE(?1, seat)
+WHERE id=?2
+RETURNING id, passenger_id, flight_instance_id, seat
+`
+
+type UpdateSeatAssignmentParams struct {
+	Seat sql.NullString
+	ID   int64
+}
+
+func (q *Queries) UpdateSeatAssignment(ctx context.Context, arg UpdateSeatAssignmentParams) (SeatAssignment, error) {
+	row := q.db.QueryRowContext(ctx, updateSeatAssignment, arg.Seat, arg.ID)
+	var i SeatAssignment
+	err := row.Scan(
+		&i.ID,
+		&i.PassengerID,
+		&i.FlightInstanceID,
+		&i.Seat,
+	)
+	return i, err
 }

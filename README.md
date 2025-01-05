@@ -27,3 +27,7 @@ See `mise run` for development commands.
 - Always render flight numbers (e.g., `UA123`) and IATA airport codes (e.g., `SFO`) in monospace (`font-mono` class).
 - DateTime means TODO!(sqs), time and date mean 
 - localtime means a tz-less time like "6pm", localdate means a tz-less date like "January 25, 2025"
+
+## Notes
+
+- See https://standards.atlassian.net/wiki/spaces/AIDM/pages/607649825/IATA+Open+Air+JSON+schema+library for a JSON Schema.

@@ -236,6 +236,134 @@ FROM flight_instances_view
 WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_id=sqlc.arg('flight_schedule_id')
 ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
 
+------------------------------------------------------------------------------- passengers
+
+-- name: ListPassengers :many
+SELECT * FROM passengers
+ORDER BY id ASC;
+
+-- name: GetPassenger :one
+SELECT * FROM passengers
+WHERE id = ?
+LIMIT 1;
+
+-- name: CreatePassenger :one
+INSERT INTO passengers (
+  name
+) VALUES (
+  ?
+)
+RETURNING id;
+
+-- name: UpdatePassenger :one
+UPDATE passengers SET
+name = COALESCE(sqlc.narg('name'), name)
+WHERE id = sqlc.arg('id')
+RETURNING id;
+
+-- name: DeletePassenger :exec
+DELETE FROM passengers
+WHERE id = ?;
+
+------------------------------------------------------------------------------- seat_assignments
+
+-- name: ListSeatAssignmentsForFlightInstance :many
+SELECT * FROM seat_assignments
+WHERE flight_instance_id = ?
+ORDER BY id ASC;
+
+-- name: GetSeatAssignment :one
+SELECT * FROM seat_assignments
+WHERE id = ?
+LIMIT 1;
+
+-- name: CreateSeatAssignment :one
+INSERT INTO seat_assignments (
+  passenger_id,
+  flight_instance_id,
+  seat
+) VALUES (
+  ?, ?, ?
+)
+RETURNING id;
+
+-- name: UpdateSeatAssignment :one
+UPDATE seat_assignments SET
+seat = COALESCE(sqlc.narg('seat'), seat)
+WHERE id=sqlc.arg('id')
+RETURNING *;
+
+-- name: DeleteSeatAssignment :exec
+DELETE FROM seat_assignments
+WHERE id=?;
+
+------------------------------------------------------------------------------- itineraries
+
+-- name: ListItineraries :many
+SELECT * FROM itineraries
+ORDER BY id ASC;
+
+-- name: GetItinerary :one
+SELECT * FROM itineraries
+WHERE id = ?
+LIMIT 1;
+
+-- name: GetItineraryByRecordLocator :one
+SELECT * FROM itineraries
+WHERE record_id = ?
+LIMIT 1;
+
+-- name: CreateItinerary :one
+INSERT INTO itineraries (
+  record_id
+) VALUES (
+  ?
+)
+RETURNING *;
+
+-- name: AddFlightToItinerary :exec
+INSERT INTO itinerary_flights (
+  itinerary_id,
+  flight_instance_id
+) VALUES (
+  ?, ?
+);
+
+-- name: RemoveFlightFromItinerary :exec
+DELETE FROM itinerary_flights
+WHERE itinerary_id = ? AND flight_instance_id = ?;
+
+-- name: ListItineraryFlights :many
+SELECT flight_instances_view.*
+FROM flight_instances_view
+JOIN itinerary_flights ON itinerary_flights.flight_instance_id = flight_instances_view.id
+WHERE itinerary_flights.itinerary_id = sqlc.arg('itinerary_id')
+ORDER BY departure_datetime_utc ASC;
+
+-- name: ListItineraryPassengers :many
+SELECT passengers.*
+FROM passengers
+JOIN itinerary_passengers ON itinerary_passengers.passenger_id = passengers.id
+WHERE itinerary_passengers.itinerary_id = sqlc.arg('itinerary_id')
+ORDER BY passengers.id ASC;
+
+-- name: AddPassengerToItinerary :exec
+INSERT INTO itinerary_passengers (
+  itinerary_id,
+  passenger_id
+) VALUES (
+  ?, ?
+);
+
+-- name: RemovePassengerFromItinerary :exec
+DELETE FROM itinerary_passengers
+WHERE itinerary_id = ? AND passenger_id = ?;
+
+-- name: DeleteItinerary :exec
+DELETE FROM itineraries
+WHERE id = ?;
+
+
 ------------------------------------------------------------------------------- routes
 
 -- name: GetRouteByIATACodes :one

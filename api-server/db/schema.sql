@@ -107,3 +107,39 @@ SELECT origin_airport_id, destination_airport_id,
   COUNT(*) AS flight_schedules_count
 FROM flight_schedules_view
 GROUP BY origin_airport_id, destination_airport_id;
+
+CREATE TABLE IF NOT EXISTS passengers (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS itineraries (
+  id INTEGER PRIMARY KEY,
+  record_id TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS itinerary_flights (
+  itinerary_id INTEGER NOT NULL,
+  flight_instance_id INTEGER NOT NULL,
+  PRIMARY KEY (itinerary_id, flight_instance_id),
+  FOREIGN KEY (itinerary_id) REFERENCES itineraries(id),
+  FOREIGN KEY (flight_instance_id) REFERENCES flight_instances(id)
+);
+
+CREATE TABLE IF NOT EXISTS itinerary_passengers (
+  itinerary_id INTEGER NOT NULL,
+  passenger_id INTEGER NOT NULL,
+  PRIMARY KEY (itinerary_id, passenger_id),
+  FOREIGN KEY (itinerary_id) REFERENCES itineraries(id),
+  FOREIGN KEY (passenger_id) REFERENCES passengers(id)
+);
+
+CREATE TABLE IF NOT EXISTS seat_assignments (
+  id INTEGER PRIMARY KEY,
+  passenger_id INTEGER NOT NULL,
+  flight_instance_id INTEGER NOT NULL,
+  seat TEXT NOT NULL,
+  UNIQUE (flight_instance_id, seat),
+  FOREIGN KEY (passenger_id) REFERENCES passengers(id),
+  FOREIGN KEY (flight_instance_id) REFERENCES flight_instances(id)
+);

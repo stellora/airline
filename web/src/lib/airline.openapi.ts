@@ -293,6 +293,93 @@ export interface paths {
         patch: operations["updateFlightInstance"];
         trace?: never;
     };
+    "/flight-instances/{flightInstanceID}/seat-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get seat assignments for a flight instance */
+        get: operations["listSeatAssignmentsForFlightInstance"];
+        put?: never;
+        /** Create a seat assignment for a flight instance */
+        post: operations["createSeatAssignment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/passengers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all passengers */
+        get: operations["listPassengers"];
+        put?: never;
+        /** Create a new passenger */
+        post: operations["createPassenger"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/passengers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPassenger"];
+        put?: never;
+        post?: never;
+        delete: operations["deletePassenger"];
+        options?: never;
+        head?: never;
+        patch: operations["updatePassenger"];
+        trace?: never;
+    };
+    "/itineraries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all itineraries */
+        get: operations["listItineraries"];
+        put?: never;
+        /** Create a new itinerary from manual input, not from a flight schedule */
+        post: operations["createItinerary"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/itineraries/{itinerarySpec}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getItinerary"];
+        put?: never;
+        post?: never;
+        /** Delete an itinerary */
+        delete: operations["deleteItinerary"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/routes": {
         parameters: {
             query?: never;
@@ -429,12 +516,33 @@ export interface components {
             distanceMiles: number;
             flightSchedulesCount: number;
         };
+        /** @description A record locator code for an itinerary. */
+        RecordLocator: string;
+        ItinerarySpec: number | components["schemas"]["RecordLocator"];
+        Itinerary: {
+            id: number;
+            recordID: components["schemas"]["RecordLocator"];
+            flights: components["schemas"]["FlightInstance"][];
+            passengers: components["schemas"]["Passenger"][];
+        };
+        Passenger: {
+            id: number;
+            name: string;
+        };
+        SeatNumber: string;
+        SeatAssignment: {
+            id: number;
+            passengerID: number;
+            flightInstanceID: number;
+            seat: components["schemas"]["SeatNumber"];
+        };
     };
     responses: never;
     parameters: {
         aircraftSpec: components["schemas"]["AircraftSpec"];
         airportSpec: components["schemas"]["AirportSpec"];
         airlineSpec: components["schemas"]["AirlineSpec"];
+        itinerarySpec: components["schemas"]["ItinerarySpec"];
     };
     requestBodies: never;
     headers: never;
@@ -1445,6 +1553,339 @@ export interface operations {
                 content?: never;
             };
             /** @description Flight instance not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listSeatAssignmentsForFlightInstance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                flightInstanceID: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Seat assignments found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeatAssignment"];
+                };
+            };
+            /** @description Flight instance not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createSeatAssignment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                flightInstanceID: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    passengerID: number;
+                    seat: components["schemas"]["SeatNumber"];
+                };
+            };
+        };
+        responses: {
+            /** @description Seat assignment created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeatAssignment"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Flight instance not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listPassengers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of passengers */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Passenger"][];
+                };
+            };
+        };
+    };
+    createPassenger: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Passenger created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Passenger"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getPassenger: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Passenger found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Passenger"];
+                };
+            };
+            /** @description Passenger not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deletePassenger: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Passenger deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Passenger not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updatePassenger: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Passenger updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Passenger"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Passenger not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listItineraries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of itineraries */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Itinerary"][];
+                };
+            };
+        };
+    };
+    createItinerary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    flightInstanceIDs: number[];
+                    passengerIDs?: number[];
+                };
+            };
+        };
+        responses: {
+            /** @description Itinerary created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Itinerary"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getItinerary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itinerarySpec: components["parameters"]["itinerarySpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Itinerary found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Itinerary"];
+                };
+            };
+            /** @description Itinerary not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteItinerary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itinerarySpec: components["parameters"]["itinerarySpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Itinerary deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Itinerary not found */
             404: {
                 headers: {
                     [name: string]: unknown;

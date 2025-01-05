@@ -123,6 +123,26 @@ type FlightSchedulesView struct {
 	DestinationAirportOadbID   sql.NullInt64
 }
 
+type Itinerary struct {
+	ID       int64
+	RecordID string
+}
+
+type ItineraryFlight struct {
+	ItineraryID      int64
+	FlightInstanceID int64
+}
+
+type ItineraryPassenger struct {
+	ItineraryID int64
+	PassengerID int64
+}
+
+type Passenger struct {
+	ID   int64
+	Name string
+}
+
 type Route struct {
 	OriginAirportID            int64
 	DestinationAirportID       int64
@@ -131,4 +151,11 @@ type Route struct {
 	DestinationAirportIataCode string
 	DestinationAirportOadbID   sql.NullInt64
 	FlightSchedulesCount       int64
+}
+
+type SeatAssignment struct {
+	ID               int64
+	PassengerID      int64
+	FlightInstanceID int64
+	Seat             string
 }
