@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
+	import { schema } from '$lib/airline.typebox'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
@@ -110,7 +111,8 @@
 							query: '/update',
 						})}
 						submitLabel="Save"
-						form={data.form}
+						data={data.form}
+						schema={schema['/flight-instances/{id}']['PATCH']['args']['properties']['body']}
 					/>
 				</Drawer.ScrollArea>
 			</Drawer.Content>

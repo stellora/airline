@@ -1,17 +1,13 @@
 <script lang="ts">
+	import type { schema } from '$lib/airline.typebox'
 	import AircraftSelect from '$lib/components/aircraft-select.svelte'
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import * as Form from '$lib/components/ui/form'
 	import { Textarea } from '$lib/components/ui/textarea'
 	import { type FlightInstance } from '$lib/types'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
-	import { superForm } from 'sveltekit-superforms'
+	import { superForm, type FormPath, type Infer, type SuperValidated } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
-	import type { LayoutServerData } from './$types'
-	import {
-		flightInstanceFromManualInputFormSchema,
-		flightInstanceFromScheduleFormSchema,
-	} from './flight-instance-form'
 
 	const {
 		flightInstance,
@@ -20,25 +16,43 @@
 		...props
 	}: {
 		flightInstance: Pick<FlightInstance, 'scheduleID' | 'airline'>
+		schema:
+			| (typeof schema)['/flight-instances']['POST']['args']['properties']['body']
+			| (typeof schema)['/flight-instances/{id}']['PATCH']['args']['properties']['body']
+		data: SuperValidated<
+			Infer<
+				| (typeof schema)['/flight-instances']['POST']['args']['properties']['body']
+				| (typeof schema)['/flight-instances/{id}']['PATCH']['args']['properties']['body']
+			>
+		>
 		action: string
 		submitLabel: string
-		form: LayoutServerData['form']
 	} = $props()
 
+	// TODO!(sqs): add more form fields if from manual input
 	const isFromManualInput = flightInstance.scheduleID === undefined
 
-	const form = superForm(props.form, {
-		validators: typebox(
-			isFromManualInput
-				? flightInstanceFromManualInputFormSchema
-				: flightInstanceFromScheduleFormSchema,
-		),
+	const form = superForm(props.data, {
+		validators: typebox(props.schema),
+		onSubmit({ jsonData, validators }) {
+			if (!$formData.aircraft) {
+				$formData.aircraft = undefined
+			}
+
+			// Only submit tainted fields.
+			const taintedData: Partial<typeof $formData> = Object.fromEntries(
+				Object.entries($formData).filter(([key]) => {
+					return isTainted(key as FormPath<typeof $formData>)
+				}),
+			)
+			jsonData(taintedData)
+		},
 		onError({ result }) {
 			$message = result.error.message || 'Unknown error'
 		},
 		dataType: 'json',
 	})
-	const { form: formData, enhance, message, constraints } = form
+	const { form: formData, enhance, message, constraints, errors, isTainted } = form
 
 	// TODO!(sqs): dedupe with FlightScheduleForm
 </script>
@@ -50,6 +64,7 @@
 	class="flex flex-col gap-6 items-start"
 	data-testid="flight-instance-form"
 >
+	aircraft={JSON.stringify($formData.aircraft)}
 	<Form.Field {form} name="aircraft">
 		<Form.Control>
 			{#snippet children({ props })}
@@ -80,6 +95,8 @@
 		<Form.FieldErrors />
 	</Form.Field>
 	<Form.Button size="lg">{submitLabel}</Form.Button>
+	{JSON.stringify($errors)}
+	{JSON.stringify($message)}
 	{#if $message}
 		<Alert variant="destructive" aria-live="polite">
 			<CircleAlert class="size-5" />

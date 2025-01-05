@@ -78,4 +78,17 @@
 			/>
 		</Card.Root>
 	</div>
+
+	<Card.Root>
+		<Card.Header>
+			<Card.Title>Notes</Card.Title>
+		</Card.Header>
+		<Card.Content>
+			{#if data.flightInstance.notes}
+				<p>{data.flightInstance.notes}</p>
+			{:else}
+				<p class="text-sm text-muted-foreground">No notes yet.</p>
+			{/if}
+		</Card.Content>
+	</Card.Root>
 </Page>

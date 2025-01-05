@@ -1,28 +1,24 @@
+import { schema } from '$lib/airline.typebox'
 import { apiClient } from '$lib/api'
 import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
-import type { Actions, PageServerLoad } from './$types'
-import { flightInstanceFromScheduleFormSchema } from './flight-instance-form'
-
-export const load: PageServerLoad = async ({ params }) => {
-	return {}
-}
+import type { Actions } from './$types'
 
 export const actions: Actions = {
 	update: async ({ params, request }) => {
-		const form = await superValidate(request, typebox(flightInstanceFromScheduleFormSchema))
+		const form = await superValidate(
+			request,
+			typebox(schema['/flight-instances/{id}']['PATCH']['args']['properties']['body']),
+		)
 		if (!form.valid) {
 			return fail(400, { form })
 		}
 
 		const resp = await apiClient.PATCH('/flight-instances/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
-			body: {
-				aircraft: form.data.aircraft,
-				notes: form.data.notes,
-			},
+			body: form.data,
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {
@@ -33,8 +29,7 @@ export const actions: Actions = {
 			route('/admin/flight-instances/[id]', { params: { id: resp.data.id.toString() } }),
 		)
 	},
-	delete: async ({ params, request }) => {
-		const data = await request.formData()
+	delete: async ({ params }) => {
 		const resp = await apiClient.DELETE('/flight-instances/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
 			fetch,
