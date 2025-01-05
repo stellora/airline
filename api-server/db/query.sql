@@ -80,6 +80,59 @@ WHERE id=?;
 -- name: DeleteAllAirlines :exec
 DELETE FROM airlines;
 
+------------------------------------------------------------------------------- fleets
+
+-- name: GetFleet :one
+SELECT * FROM fleets_view
+WHERE id=? LIMIT 1;
+
+-- name: GetFleetByCode :one
+SELECT * FROM fleets_view
+WHERE airline_id=? AND code=? LIMIT 1;
+
+-- name: ListFleets :many
+SELECT * FROM fleets_view
+ORDER BY id ASC;
+
+-- name: CreateFleet :one
+INSERT INTO fleets (
+  airline_id,
+  code,
+  description
+) VALUES (
+  ?, ?, ?
+)
+RETURNING *;
+
+-- name: UpdateFleet :one
+UPDATE fleets SET
+code = COALESCE(sqlc.narg('code'), code),
+description = COALESCE(sqlc.narg('description'), description)
+WHERE id=sqlc.arg('id')
+RETURNING *;
+
+-- name: DeleteFleet :exec
+DELETE FROM fleets
+WHERE id=?;
+
+-- name: ListFleetsByAirline :many
+SELECT *
+FROM fleets_view
+WHERE airline_id=:airline
+ORDER BY id ASC;
+
+-- name: AddAircraftToFleet :exec
+INSERT INTO fleets_aircraft (
+  fleet_id,
+  aircraft_id
+) VALUES (
+  ?, ?
+);
+
+-- name: RemoveAircraftFromFleet :exec
+DELETE FROM fleets_aircraft
+WHERE fleet_id=? AND aircraft_id=?;
+
 ------------------------------------------------------------------------------- airports
 
 -- name: GetAirport :one

@@ -40,6 +40,27 @@ type Airport struct {
 	OadbID   sql.NullInt64
 }
 
+type Fleet struct {
+	ID          int64
+	AirlineID   int64
+	Code        string
+	Description string
+}
+
+type FleetsAircraft struct {
+	FleetID    int64
+	AircraftID int64
+}
+
+type FleetsView struct {
+	ID              int64
+	AirlineID       int64
+	Code            string
+	Description     string
+	AirlineIataCode string
+	AirlineName     string
+}
+
 type FlightInstance struct {
 	ID                                    int64
 	SourceFlightScheduleID                sql.NullInt64

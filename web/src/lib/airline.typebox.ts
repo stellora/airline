@@ -128,6 +128,23 @@ const ComponentsSchemasAircraftSpec = T.Union([
 ])
 const ComponentsParametersAircraftSpec = T.Any()
 const ComponentsParametersAirlineSpec = T.Any()
+const ComponentsSchemasFleetId = T.Integer()
+const ComponentsSchemasFleetCode = T.String({
+  pattern: '^[A-Z][A-Z0-9-]{0,9}$',
+  minLength: 1,
+  maxLength: 10
+})
+const ComponentsSchemasFleet = T.Object({
+  id: CloneType(ComponentsSchemasFleetId),
+  airline: CloneType(ComponentsSchemasAirline),
+  code: CloneType(ComponentsSchemasFleetCode),
+  description: T.String()
+})
+const ComponentsSchemasFleetSpec = T.Union([
+  CloneType(ComponentsSchemasFleetId),
+  CloneType(ComponentsSchemasFleetCode)
+])
+const ComponentsParametersFleetSpec = T.Any()
 const ComponentsSchemasAircraftType = T.Object({
   icaoCode: CloneType(ComponentsSchemasAircraftTypeIcaoCode),
   name: T.String()
@@ -242,7 +259,7 @@ const ComponentsSchemasItinerary = T.Object({
   passengers: T.Array(CloneType(ComponentsSchemasPassenger), { minItems: 1 })
 })
 const ComponentsSchemasItinerarySpec = T.Union([
-  T.Integer(),
+  CloneType(ComponentsSchemasItineraryId),
   CloneType(ComponentsSchemasRecordLocator)
 ])
 const ComponentsParametersItinerarySpec = T.Any()
@@ -372,6 +389,136 @@ const schema = {
         'x-content-type': 'application/json'
       }),
       error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
+  '/airlines/{airlineSpec}/fleets': {
+    GET: {
+      args: T.Object({
+        params: T.Object({
+          airlineSpec: CloneType(ComponentsSchemasAirlineSpec, {
+            'x-in': 'path'
+          })
+        })
+      }),
+      data: T.Array(CloneType(ComponentsSchemasFleet), {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    },
+    POST: {
+      args: T.Object({
+        params: T.Object({
+          airlineSpec: CloneType(ComponentsSchemasAirlineSpec, {
+            'x-in': 'path'
+          })
+        }),
+        body: T.Object(
+          {
+            code: CloneType(ComponentsSchemasFleetCode),
+            description: T.String()
+          },
+          {
+            'x-content-type': 'application/json'
+          }
+        )
+      }),
+      data: CloneType(ComponentsSchemasFleet, {
+        'x-status-code': '201',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
+  '/airlines/{airlineSpec}/fleets/{fleetSpec}': {
+    GET: {
+      args: T.Object({
+        params: T.Object({
+          airlineSpec: CloneType(ComponentsSchemasAirlineSpec, {
+            'x-in': 'path'
+          }),
+          fleetSpec: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' })
+        })
+      }),
+      data: CloneType(ComponentsSchemasFleet, {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    },
+    PATCH: {
+      args: T.Object({
+        params: T.Object({
+          airlineSpec: CloneType(ComponentsSchemasAirlineSpec, {
+            'x-in': 'path'
+          }),
+          fleetSpec: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' })
+        }),
+        body: T.Object(
+          {
+            code: T.Optional(CloneType(ComponentsSchemasFleetCode)),
+            description: T.Optional(T.String())
+          },
+          {
+            'x-content-type': 'application/json'
+          }
+        )
+      }),
+      data: CloneType(ComponentsSchemasFleet, {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    },
+    DELETE: {
+      args: T.Object({
+        params: T.Object({
+          airlineSpec: CloneType(ComponentsSchemasAirlineSpec, {
+            'x-in': 'path'
+          }),
+          fleetSpec: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' })
+        })
+      }),
+      data: T.Any({ 'x-status-code': '204' }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
+  '/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}': {
+    PUT: {
+      args: T.Object({
+        params: T.Object({
+          airlineSpec: CloneType(ComponentsSchemasAirlineSpec, {
+            'x-in': 'path'
+          }),
+          fleetSpec: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' }),
+          aircraftSpec: CloneType(ComponentsSchemasAircraftSpec, {
+            'x-in': 'path'
+          })
+        })
+      }),
+      data: T.Any({ 'x-status-code': '200' }),
+      error: T.Union([
+        T.Any({ 'x-status-code': '400' }),
+        T.Any({ 'x-status-code': '404' })
+      ])
+    },
+    DELETE: {
+      args: T.Object({
+        params: T.Object({
+          airlineSpec: CloneType(ComponentsSchemasAirlineSpec, {
+            'x-in': 'path'
+          }),
+          fleetSpec: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' }),
+          aircraftSpec: CloneType(ComponentsSchemasAircraftSpec, {
+            'x-in': 'path'
+          })
+        })
+      }),
+      data: T.Any({ 'x-status-code': '204' }),
+      error: T.Union([
+        T.Any({ 'x-status-code': '400' }),
+        T.Any({ 'x-status-code': '404' })
+      ])
     }
   },
   '/aircraft-types': {
@@ -1015,8 +1162,9 @@ const schema = {
 const _components = {
   parameters: {
     aircraftSpec: CloneType(ComponentsSchemasAircraftSpec, { 'x-in': 'path' }),
-    airportSpec: CloneType(ComponentsSchemasAirportSpec, { 'x-in': 'path' }),
     airlineSpec: CloneType(ComponentsSchemasAirlineSpec, { 'x-in': 'path' }),
+    fleetSpec: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' }),
+    airportSpec: CloneType(ComponentsSchemasAirportSpec, { 'x-in': 'path' }),
     itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, { 'x-in': 'path' })
   },
   schemas: {
@@ -1031,6 +1179,10 @@ const _components = {
     AirlineIATACode: CloneType(ComponentsSchemasAirlineIataCode),
     AirlineSpec: CloneType(ComponentsSchemasAirlineSpec, { 'x-in': 'path' }),
     Airline: CloneType(ComponentsSchemasAirline),
+    FleetID: CloneType(ComponentsSchemasFleetId),
+    FleetCode: CloneType(ComponentsSchemasFleetCode),
+    FleetSpec: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' }),
+    Fleet: CloneType(ComponentsSchemasFleet),
     AirportID: CloneType(ComponentsSchemasAirportId),
     AirportIATACode: CloneType(ComponentsSchemasAirportIataCode),
     AirportSpec: CloneType(ComponentsSchemasAirportSpec, { 'x-in': 'path' }),
@@ -1043,11 +1195,11 @@ const _components = {
     FlightNumber: CloneType(ComponentsSchemasFlightNumber),
     FlightInstance: CloneType(ComponentsSchemasFlightInstance),
     Route: CloneType(ComponentsSchemasRoute),
+    ItineraryID: CloneType(ComponentsSchemasItineraryId),
     RecordLocator: CloneType(ComponentsSchemasRecordLocator),
     ItinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
       'x-in': 'path'
     }),
-    ItineraryID: CloneType(ComponentsSchemasItineraryId),
     Itinerary: CloneType(ComponentsSchemasItinerary),
     ItinerarySpecs: CloneType(ComponentsSchemasItinerarySpecs),
     Passenger: CloneType(ComponentsSchemasPassenger),

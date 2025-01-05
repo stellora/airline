@@ -13,7 +13,7 @@ import (
 )
 
 func getItineraryBySpec(ctx context.Context, queriesTx *db.Queries, spec api.ItinerarySpec) (db.Itinerary, error) {
-	if id, err := spec.AsItinerarySpec0(); err == nil {
+	if id, err := spec.AsItineraryID(); err == nil {
 		return queriesTx.GetItinerary(ctx, int64(id))
 	}
 	if recordLocator, err := spec.AsRecordLocator(); err == nil {

@@ -17,6 +17,28 @@ SELECT aircraft.*, airlines.iata_code AS airline_iata_code, airlines.name AS air
 FROM aircraft
 JOIN airlines ON airlines.id=aircraft.airline_id;
 
+CREATE TABLE IF NOT EXISTS fleets (
+  id INTEGER PRIMARY KEY,
+  airline_id INTEGER NOT NULL,
+  code TEXT NOT NULL,
+  description TEXT NOT NULL,
+  UNIQUE (code, airline_id),
+  FOREIGN KEY (airline_id) REFERENCES airlines(id)
+);
+
+CREATE VIEW IF NOT EXISTS fleets_view AS
+SELECT fleets.*, airlines.iata_code AS airline_iata_code, airlines.name AS airline_name
+FROM fleets
+JOIN airlines ON airlines.id=fleets.airline_id;
+
+CREATE TABLE IF NOT EXISTS fleets_aircraft (
+  fleet_id INTEGER NOT NULL,
+  aircraft_id INTEGER NOT NULL,
+  PRIMARY KEY (fleet_id, aircraft_id),
+  FOREIGN KEY (fleet_id) REFERENCES fleets(id),
+  FOREIGN KEY (aircraft_id) REFERENCES aircraft(id)
+);
+
 CREATE TABLE IF NOT EXISTS airports (
   id INTEGER PRIMARY KEY,
   iata_code TEXT NOT NULL UNIQUE,

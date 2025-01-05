@@ -76,6 +76,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/airlines/{airlineSpec}/fleets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all fleets for an airline */
+        get: operations["listFleetsByAirline"];
+        put?: never;
+        /** Create a new fleet */
+        post: operations["createFleet"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/airlines/{airlineSpec}/fleets/{fleetSpec}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a fleet by ID or code */
+        get: operations["getFleet"];
+        put?: never;
+        post?: never;
+        /** Delete a fleet */
+        delete: operations["deleteFleet"];
+        options?: never;
+        head?: never;
+        /** Update a fleet */
+        patch: operations["updateFleet"];
+        trace?: never;
+    };
+    "/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Add an aircraft to a fleet */
+        put: operations["addAircraftToFleet"];
+        post?: never;
+        /** Remove an aircraft from a fleet */
+        delete: operations["removeAircraftFromFleet"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/aircraft-types": {
         parameters: {
             query?: never;
@@ -448,6 +503,18 @@ export interface components {
             iataCode: components["schemas"]["AirlineIATACode"];
             name: string;
         };
+        /** @description A numeric identifier for the fleet that is globally unique. */
+        FleetID: number;
+        /** @description A short identifier for the fleet that is unique within the airline. */
+        FleetCode: string;
+        FleetSpec: components["schemas"]["FleetID"] | components["schemas"]["FleetCode"];
+        /** @description A fleet is a set of aircraft (owned by the same airline) with common characteristics. */
+        Fleet: {
+            id: components["schemas"]["FleetID"];
+            airline: components["schemas"]["Airline"];
+            code: components["schemas"]["FleetCode"];
+            description: string;
+        };
         AirportID: number;
         /** @description IATA code for airport */
         AirportIATACode: string;
@@ -516,10 +583,11 @@ export interface components {
             distanceMiles: number;
             flightSchedulesCount: number;
         };
-        /** @description A record locator code for an itinerary. */
-        RecordLocator: string;
-        ItinerarySpec: number | components["schemas"]["RecordLocator"];
+        /** @description A globally unique numeric identifier for an itinerary. */
         ItineraryID: number;
+        /** @description A globally unique record locator code for an itinerary. */
+        RecordLocator: string;
+        ItinerarySpec: components["schemas"]["ItineraryID"] | components["schemas"]["RecordLocator"];
         Itinerary: {
             id: components["schemas"]["ItineraryID"];
             recordID: components["schemas"]["RecordLocator"];
@@ -546,8 +614,9 @@ export interface components {
     responses: never;
     parameters: {
         aircraftSpec: components["schemas"]["AircraftSpec"];
-        airportSpec: components["schemas"]["AirportSpec"];
         airlineSpec: components["schemas"]["AirlineSpec"];
+        fleetSpec: components["schemas"]["FleetSpec"];
+        airportSpec: components["schemas"]["AirportSpec"];
         itinerarySpec: components["schemas"]["ItinerarySpec"];
     };
     requestBodies: never;
@@ -765,6 +834,238 @@ export interface operations {
                 };
             };
             /** @description Airline not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFleetsByAirline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["parameters"]["airlineSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of fleets */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Fleet"][];
+                };
+            };
+            /** @description Airline not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFleet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["parameters"]["airlineSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    code: components["schemas"]["FleetCode"];
+                    description: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Fleet created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Fleet"];
+                };
+            };
+            /** @description Airline not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getFleet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["parameters"]["airlineSpec"];
+                fleetSpec: components["parameters"]["fleetSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Fleet found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Fleet"];
+                };
+            };
+            /** @description Fleet not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteFleet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["parameters"]["airlineSpec"];
+                fleetSpec: components["parameters"]["fleetSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Fleet deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Fleet not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateFleet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["parameters"]["airlineSpec"];
+                fleetSpec: components["parameters"]["fleetSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    code?: components["schemas"]["FleetCode"];
+                    description?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Fleet updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Fleet"];
+                };
+            };
+            /** @description Fleet not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    addAircraftToFleet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["parameters"]["airlineSpec"];
+                fleetSpec: components["parameters"]["fleetSpec"];
+                aircraftSpec: components["parameters"]["aircraftSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Aircraft added to fleet (or aircraft was already in the fleet) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aircraft, fleet, or airline not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    removeAircraftFromFleet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["parameters"]["airlineSpec"];
+                fleetSpec: components["parameters"]["fleetSpec"];
+                aircraftSpec: components["parameters"]["aircraftSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Aircraft removed from fleet (or aircraft was not in fleet) */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aircraft, fleet, or airline not found */
             404: {
                 headers: {
                     [name: string]: unknown;

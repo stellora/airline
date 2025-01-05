@@ -125,15 +125,14 @@ func (h *Handler) UpdateAircraft(ctx context.Context, request api.UpdateAircraft
 		params.AirlineID = sql.NullInt64{Int64: airline.ID, Valid: true}
 	}
 
-	updated, err := queriesTx.UpdateAircraft(ctx, params)
-	if err != nil {
+	if _, err := queriesTx.UpdateAircraft(ctx, params); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateAircraft404Response{}, nil
 		}
 		return nil, err
 	}
 
-	aircraft, err := queriesTx.GetAircraft(ctx, updated.ID)
+	aircraft, err := queriesTx.GetAircraft(ctx, existing.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateAircraft404Response{}, nil

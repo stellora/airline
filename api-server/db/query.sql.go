@@ -14,6 +14,25 @@ import (
 	"github.com/stellora/airline/api-server/zonedtime"
 )
 
+const addAircraftToFleet = `-- name: AddAircraftToFleet :exec
+INSERT INTO fleets_aircraft (
+  fleet_id,
+  aircraft_id
+) VALUES (
+  ?, ?
+)
+`
+
+type AddAircraftToFleetParams struct {
+	FleetID    int64
+	AircraftID int64
+}
+
+func (q *Queries) AddAircraftToFleet(ctx context.Context, arg AddAircraftToFleetParams) error {
+	_, err := q.db.ExecContext(ctx, addAircraftToFleet, arg.FleetID, arg.AircraftID)
+	return err
+}
+
 const addFlightToItinerary = `-- name: AddFlightToItinerary :exec
 INSERT INTO itinerary_flights (
   itinerary_id,
@@ -122,6 +141,35 @@ func (q *Queries) CreateAirport(ctx context.Context, arg CreateAirportParams) (A
 	row := q.db.QueryRowContext(ctx, createAirport, arg.IataCode, arg.OadbID)
 	var i Airport
 	err := row.Scan(&i.ID, &i.IataCode, &i.OadbID)
+	return i, err
+}
+
+const createFleet = `-- name: CreateFleet :one
+INSERT INTO fleets (
+  airline_id,
+  code,
+  description
+) VALUES (
+  ?, ?, ?
+)
+RETURNING id, airline_id, code, description
+`
+
+type CreateFleetParams struct {
+	AirlineID   int64
+	Code        string
+	Description string
+}
+
+func (q *Queries) CreateFleet(ctx context.Context, arg CreateFleetParams) (Fleet, error) {
+	row := q.db.QueryRowContext(ctx, createFleet, arg.AirlineID, arg.Code, arg.Description)
+	var i Fleet
+	err := row.Scan(
+		&i.ID,
+		&i.AirlineID,
+		&i.Code,
+		&i.Description,
+	)
 	return i, err
 }
 
@@ -357,6 +405,16 @@ func (q *Queries) DeleteAllFlightSchedules(ctx context.Context) error {
 	return err
 }
 
+const deleteFleet = `-- name: DeleteFleet :exec
+DELETE FROM fleets
+WHERE id=?
+`
+
+func (q *Queries) DeleteFleet(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFleet, id)
+	return err
+}
+
 const deleteFlightInstance = `-- name: DeleteFlightInstance :exec
 DELETE FROM flight_instances
 WHERE id=?
@@ -496,6 +554,51 @@ func (q *Queries) GetAirportByIATACode(ctx context.Context, iataCode string) (Ai
 	row := q.db.QueryRowContext(ctx, getAirportByIATACode, iataCode)
 	var i Airport
 	err := row.Scan(&i.ID, &i.IataCode, &i.OadbID)
+	return i, err
+}
+
+const getFleet = `-- name: GetFleet :one
+
+SELECT id, airline_id, code, description, airline_iata_code, airline_name FROM fleets_view
+WHERE id=? LIMIT 1
+`
+
+// ----------------------------------------------------------------------------- fleets
+func (q *Queries) GetFleet(ctx context.Context, id int64) (FleetsView, error) {
+	row := q.db.QueryRowContext(ctx, getFleet, id)
+	var i FleetsView
+	err := row.Scan(
+		&i.ID,
+		&i.AirlineID,
+		&i.Code,
+		&i.Description,
+		&i.AirlineIataCode,
+		&i.AirlineName,
+	)
+	return i, err
+}
+
+const getFleetByCode = `-- name: GetFleetByCode :one
+SELECT id, airline_id, code, description, airline_iata_code, airline_name FROM fleets_view
+WHERE airline_id=? AND code=? LIMIT 1
+`
+
+type GetFleetByCodeParams struct {
+	AirlineID int64
+	Code      string
+}
+
+func (q *Queries) GetFleetByCode(ctx context.Context, arg GetFleetByCodeParams) (FleetsView, error) {
+	row := q.db.QueryRowContext(ctx, getFleetByCode, arg.AirlineID, arg.Code)
+	var i FleetsView
+	err := row.Scan(
+		&i.ID,
+		&i.AirlineID,
+		&i.Code,
+		&i.Description,
+		&i.AirlineIataCode,
+		&i.AirlineName,
+	)
 	return i, err
 }
 
@@ -777,6 +880,78 @@ func (q *Queries) ListAirports(ctx context.Context) ([]Airport, error) {
 	for rows.Next() {
 		var i Airport
 		if err := rows.Scan(&i.ID, &i.IataCode, &i.OadbID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFleets = `-- name: ListFleets :many
+SELECT id, airline_id, code, description, airline_iata_code, airline_name FROM fleets_view
+ORDER BY id ASC
+`
+
+func (q *Queries) ListFleets(ctx context.Context) ([]FleetsView, error) {
+	rows, err := q.db.QueryContext(ctx, listFleets)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FleetsView
+	for rows.Next() {
+		var i FleetsView
+		if err := rows.Scan(
+			&i.ID,
+			&i.AirlineID,
+			&i.Code,
+			&i.Description,
+			&i.AirlineIataCode,
+			&i.AirlineName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFleetsByAirline = `-- name: ListFleetsByAirline :many
+SELECT id, airline_id, code, description, airline_iata_code, airline_name
+FROM fleets_view
+WHERE airline_id=?1
+ORDER BY id ASC
+`
+
+func (q *Queries) ListFleetsByAirline(ctx context.Context, airline int64) ([]FleetsView, error) {
+	rows, err := q.db.QueryContext(ctx, listFleetsByAirline, airline)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FleetsView
+	for rows.Next() {
+		var i FleetsView
+		if err := rows.Scan(
+			&i.ID,
+			&i.AirlineID,
+			&i.Code,
+			&i.Description,
+			&i.AirlineIataCode,
+			&i.AirlineName,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1326,6 +1501,21 @@ func (q *Queries) ListSeatAssignmentsForFlightInstance(ctx context.Context, flig
 	return items, nil
 }
 
+const removeAircraftFromFleet = `-- name: RemoveAircraftFromFleet :exec
+DELETE FROM fleets_aircraft
+WHERE fleet_id=? AND aircraft_id=?
+`
+
+type RemoveAircraftFromFleetParams struct {
+	FleetID    int64
+	AircraftID int64
+}
+
+func (q *Queries) RemoveAircraftFromFleet(ctx context.Context, arg RemoveAircraftFromFleetParams) error {
+	_, err := q.db.ExecContext(ctx, removeAircraftFromFleet, arg.FleetID, arg.AircraftID)
+	return err
+}
+
 const removeFlightFromItinerary = `-- name: RemoveFlightFromItinerary :exec
 DELETE FROM itinerary_flights
 WHERE itinerary_id = ? AND flight_instance_id = ?
@@ -1428,6 +1618,39 @@ func (q *Queries) UpdateAirport(ctx context.Context, arg UpdateAirportParams) (A
 	row := q.db.QueryRowContext(ctx, updateAirport, arg.IataCode, arg.OadbID, arg.ID)
 	var i Airport
 	err := row.Scan(&i.ID, &i.IataCode, &i.OadbID)
+	return i, err
+}
+
+const updateFleet = `-- name: UpdateFleet :one
+UPDATE fleets SET
+airline_id = COALESCE(?1, airline_id),
+code = COALESCE(?2, code),
+description = COALESCE(?3, description)
+WHERE id=?4
+RETURNING id, airline_id, code, description
+`
+
+type UpdateFleetParams struct {
+	AirlineID   sql.NullInt64
+	Code        sql.NullString
+	Description sql.NullString
+	ID          int64
+}
+
+func (q *Queries) UpdateFleet(ctx context.Context, arg UpdateFleetParams) (Fleet, error) {
+	row := q.db.QueryRowContext(ctx, updateFleet,
+		arg.AirlineID,
+		arg.Code,
+		arg.Description,
+		arg.ID,
+	)
+	var i Fleet
+	err := row.Scan(
+		&i.ID,
+		&i.AirlineID,
+		&i.Code,
+		&i.Description,
+	)
 	return i, err
 }
 

@@ -135,6 +135,133 @@ paths:
                   $ref: '#/components/schemas/Aircraft'
         '404':
           description: Airline not found
+  /airlines/{airlineSpec}/fleets:
+    get:
+      operationId: listFleetsByAirline
+      summary: List all fleets for an airline
+      parameters:
+        - $ref: '#/components/parameters/airlineSpec'
+      responses:
+        '200':
+          description: List of fleets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Fleet'
+        '404':
+          description: Airline not found
+    post:
+      operationId: createFleet
+      summary: Create a new fleet
+      parameters:
+        - $ref: '#/components/parameters/airlineSpec'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  $ref: '#/components/schemas/FleetCode'
+                description:
+                  type: string
+              required:
+                - code
+                - description
+      responses:
+        '201':
+          description: Fleet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fleet'
+        '404':
+          description: Airline not found
+  /airlines/{airlineSpec}/fleets/{fleetSpec}:
+    get:
+      operationId: getFleet
+      summary: Get a fleet by ID or code
+      parameters:
+        - $ref: '#/components/parameters/airlineSpec'
+        - $ref: '#/components/parameters/fleetSpec'
+      responses:
+        '200':
+          description: Fleet found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fleet'
+        '404':
+          description: Fleet not found
+    patch:
+      operationId: updateFleet
+      summary: Update a fleet
+      parameters:
+        - $ref: '#/components/parameters/airlineSpec'
+        - $ref: '#/components/parameters/fleetSpec'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  $ref: '#/components/schemas/FleetCode'
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Fleet updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fleet'
+        '404':
+          description: Fleet not found
+    delete:
+      operationId: deleteFleet
+      summary: Delete a fleet
+      parameters:
+        - $ref: '#/components/parameters/airlineSpec'
+        - $ref: '#/components/parameters/fleetSpec'
+      responses:
+        '204':
+          description: Fleet deleted
+        '404':
+          description: Fleet not found
+  /airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}:
+    put:
+      operationId: addAircraftToFleet
+      summary: Add an aircraft to a fleet
+      parameters:
+        - $ref: '#/components/parameters/airlineSpec'
+        - $ref: '#/components/parameters/fleetSpec'
+        - $ref: '#/components/parameters/aircraftSpec'
+      responses:
+        '200':
+          description: Aircraft added to fleet (or aircraft was already in the fleet)
+        '400':
+          description: Invalid request
+        '404':
+          description: Aircraft, fleet, or airline not found
+    delete:
+      operationId: removeAircraftFromFleet
+      summary: Remove an aircraft from a fleet
+      parameters:
+        - $ref: '#/components/parameters/airlineSpec'
+        - $ref: '#/components/parameters/fleetSpec'
+        - $ref: '#/components/parameters/aircraftSpec'
+      responses:
+        '204':
+          description: Aircraft removed from fleet (or aircraft was not in fleet)
+        '400':
+          description: Invalid request
+        '404':
+          description: Aircraft, fleet, or airline not found
   /aircraft-types:
     get:
       operationId: listAircraftTypes
@@ -952,18 +1079,24 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/AircraftSpec'
-    airportSpec:
-      name: airportSpec
-      in: path
-      required: true
-      schema:
-        $ref: '#/components/schemas/AirportSpec'
     airlineSpec:
       name: airlineSpec
       in: path
       required: true
       schema:
         $ref: '#/components/schemas/AirlineSpec'
+    fleetSpec:
+      name: fleetSpec
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/FleetSpec'
+    airportSpec:
+      name: airportSpec
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/AirportSpec'
     itinerarySpec:
       name: itinerarySpec
       in: path
@@ -1048,6 +1181,36 @@ components:
         - id
         - iataCode
         - name
+    FleetID:
+      type: integer
+      description: A numeric identifier for the fleet that is globally unique.
+    FleetCode:
+      type: string
+      description: A short identifier for the fleet that is unique within the airline.
+      pattern: '^[A-Z][A-Z0-9-]{0,9}$'
+      minLength: 1
+      maxLength: 10
+    FleetSpec:
+      oneOf:
+        - $ref: '#/components/schemas/FleetID'
+        - $ref: '#/components/schemas/FleetCode'
+    Fleet:
+      type: object
+      description: A fleet is a set of aircraft (owned by the same airline) with common characteristics.
+      properties:
+        id:
+          $ref: '#/components/schemas/FleetID'
+        airline:
+          $ref: '#/components/schemas/Airline'
+        code:
+          $ref: '#/components/schemas/FleetCode'
+        description:
+          type: string
+      required:
+        - id
+        - code
+        - description
+        - airline
     AirportID:
       type: integer
     AirportIATACode:
@@ -1227,18 +1390,19 @@ components:
         - destinationAirport
         - distanceMiles
         - flightSchedulesCount
+    ItineraryID:
+      type: integer
+      description: A globally unique numeric identifier for an itinerary.
     RecordLocator:
       type: string
       pattern: '^[A-Z0-9]{6}$'
       minLength: 6
       maxLength: 6
-      description: A record locator code for an itinerary.
+      description: A globally unique record locator code for an itinerary.
     ItinerarySpec:
       oneOf:
-        - type: integer
+        - $ref: '#/components/schemas/ItineraryID'
         - $ref: '#/components/schemas/RecordLocator'
-    ItineraryID:
-      type: integer
     Itinerary:
       type: object
       properties:
@@ -1304,4 +1468,3 @@ components:
         - passenger
         - flightInstanceID
         - seat
-      

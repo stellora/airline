@@ -107,9 +107,34 @@ func itinerarySpecFromPathArg(arg string) ItinerarySpec {
 func NewItinerarySpec(id int, recordLocator string) ItinerarySpec {
 	var spec ItinerarySpec
 	if id != 0 {
-		spec.FromItinerarySpec0(id)
+		spec.FromItineraryID(id)
 	} else {
 		spec.FromRecordLocator(recordLocator)
+	}
+	return spec
+}
+
+func (a *FleetSpec) UnmarshalText(text []byte) error {
+	*a = fleetSpecFromPathArg(string(text))
+	return nil
+}
+
+var _ encoding.TextUnmarshaler = (*FleetSpec)(nil)
+
+func fleetSpecFromPathArg(arg string) FleetSpec {
+	if isIntString(arg) {
+		id, _ := strconv.Atoi(arg)
+		return NewFleetSpec(id, "")
+	}
+	return NewFleetSpec(0, arg)
+}
+
+func NewFleetSpec(id int, code string) FleetSpec {
+	var spec FleetSpec
+	if id != 0 {
+		spec.FromFleetID(id)
+	} else {
+		spec.FromFleetCode(code)
 	}
 	return spec
 }
