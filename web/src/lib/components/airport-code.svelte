@@ -43,7 +43,7 @@
 		{/snippet}
 	</Tooltip.Trigger><Tooltip.Portal>
 		<Tooltip.Content collisionPadding={50}>
-			<span class="font-normal text-sm">{airport.name}</span>
+			<span class="font-normal">{airport.name}</span>
 		</Tooltip.Content>
 	</Tooltip.Portal>
 </Tooltip.Root>

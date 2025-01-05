@@ -1,7 +1,9 @@
 <script lang="ts">
 	import AircraftRegistration from '$lib/components/aircraft-registration.svelte'
 	import AircraftTypeCode from '$lib/components/aircraft-type-code.svelte'
+	import FlightInstanceStatus from '$lib/components/flight-instance-status.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
+	import FormattedDatetime from '$lib/components/formatted-datetime.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
@@ -25,10 +27,11 @@
 				{#if showFlightInfo}
 					<Table.Head class="w-[180px]">Flight</Table.Head>
 				{/if}
-				<Table.Head>Aircraft</Table.Head>
+				<Table.Head class="w-[95px]">Aircraft</Table.Head>
 				<Table.Head class="w-[105px]">Flight time</Table.Head>
 				<Table.Head class="w-[105px]">Departure</Table.Head>
 				<Table.Head class="w-[105px]">Arrival</Table.Head>
+				<Table.Head class="">Status</Table.Head>
 				<Table.Head class="text-right" />
 			</Table.Row>
 		</Table.Header>
@@ -39,8 +42,10 @@
 					{@const arrivalDateTime = parseZonedDateTime(flight.arrivalDateTime)}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell>
-							{formatFlightDate(departureDateTime)}</Table.Cell
-						>
+							<FormattedDatetime value={departureDateTime} class="cursor-help">
+								{formatFlightDate(departureDateTime)}
+							</FormattedDatetime>
+						</Table.Cell>
 						{#if showFlightInfo}
 							<Table.Cell><FlightTitle {flight} /></Table.Cell>
 						{/if}
@@ -54,12 +59,19 @@
 							</div></Table.Cell
 						>
 						<Table.Cell>{formatFlightDuration(departureDateTime, arrivalDateTime)}</Table.Cell>
-						<Table.Cell>{formatFlightTime(departureDateTime)}</Table.Cell>
 						<Table.Cell
-							>{formatFlightTime(arrivalDateTime, {
-								plusMinusDaysFrom: departureDateTime,
-							})}</Table.Cell
+							><FormattedDatetime value={departureDateTime}>
+								{formatFlightTime(departureDateTime)}
+							</FormattedDatetime></Table.Cell
 						>
+						<Table.Cell>
+							<FormattedDatetime value={arrivalDateTime}>
+								{formatFlightTime(arrivalDateTime, {
+									plusMinusDaysFrom: departureDateTime,
+								})}
+							</FormattedDatetime>
+						</Table.Cell>
+						<Table.Cell><FlightInstanceStatus {flight} /></Table.Cell>
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"

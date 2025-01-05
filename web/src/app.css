@@ -110,4 +110,9 @@
 		z-index: 1;
 		content: '';
 	}
+	.stretched-link-container [data-tooltip-trigger] {
+		/* Still show tooltips inside of .stretched-link-container. */
+		position: relative;
+		z-index: 2;
+	}
 }

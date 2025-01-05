@@ -4,13 +4,27 @@ import { deltaCalendarDays, formatFlightTime } from './datetime-helpers'
 
 describe('formatFlightTime', () => {
 	test('plusMinusDaysFrom', () => {
-		const a = parseZonedDateTime('2025-01-02T03:05:01-10:00[America/Adak]')
-		const b = parseZonedDateTime('2025-01-03T12:05:01-08:00[America/Los_Angeles]')
-		const c = parseZonedDateTime('2024-12-31T12:05:01+00:00[Europe/London]')
-		const d = parseZonedDateTime('2025-02-02T07:05:01+08:00[Asia/Singapore]')
-		expect.soft(formatFlightTime(b, { plusMinusDaysFrom: a })).toBe('12:05+1')
-		expect.soft(formatFlightTime(c, { plusMinusDaysFrom: a })).toBe('12:05-2')
-		expect.soft(formatFlightTime(d, { plusMinusDaysFrom: b })).toBe('07:05+29')
+		expect
+			.soft(
+				formatFlightTime(parseZonedDateTime('2025-01-03T12:05:01-08:00[America/Los_Angeles]'), {
+					plusMinusDaysFrom: parseZonedDateTime('2025-01-02T03:05:01-10:00[America/Adak]'),
+				}),
+			)
+			.toBe('12:05+1')
+		expect
+			.soft(
+				formatFlightTime(parseZonedDateTime('2024-12-31T12:05:01+00:00[Europe/London]'), {
+					plusMinusDaysFrom: parseZonedDateTime('2025-01-02T03:05:01-10:00[America/Adak]'),
+				}),
+			)
+			.toBe('12:05-2')
+		expect
+			.soft(
+				formatFlightTime(parseZonedDateTime('2025-02-02T07:05:01+08:00[Asia/Singapore]'), {
+					plusMinusDaysFrom: parseZonedDateTime('2024-12-31T12:05:01+00:00[Europe/London]'),
+				}),
+			)
+			.toBe('07:05+33')
 	})
 })
 
@@ -22,9 +36,30 @@ describe('deltaCalendarDays', () => {
 	})
 
 	test('different dates', () => {
-		const a = parseZonedDateTime('2025-01-02T03:05:01-10:00[America/Adak]')
-		const b = parseZonedDateTime('2025-01-03T12:05:01-08:00[America/Los_Angeles]')
-		expect(deltaCalendarDays(a, b)).toBe(1)
+		expect
+			.soft(
+				deltaCalendarDays(
+					parseZonedDateTime('2025-02-02T08:10:00+11:00[Australia/Sydney]'),
+					parseZonedDateTime('2025-02-04T22:45:00-08:00[America/Los_Angeles]'),
+				),
+			)
+			.toBe(2)
+		expect
+			.soft(
+				deltaCalendarDays(
+					parseZonedDateTime('2025-01-02T03:05:01-10:00[America/Adak]'),
+					parseZonedDateTime('2025-01-03T12:05:01-08:00[America/Los_Angeles]'),
+				),
+			)
+			.toBe(1)
+		expect
+			.soft(
+				deltaCalendarDays(
+					parseZonedDateTime('2025-01-02T03:05:01-10:00[America/Adak]'),
+					parseZonedDateTime('2025-01-03T12:05:01+08:00[Asia/Singapore]'),
+				),
+			)
+			.toBe(1)
 	})
 
 	test('different months', () => {

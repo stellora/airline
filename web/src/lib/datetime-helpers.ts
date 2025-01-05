@@ -1,11 +1,42 @@
 import { DateFormatter, ZonedDateTime } from '@internationalized/date'
 
-export const dateFormatter = new DateFormatter('en-US', {
-	dateStyle: 'full',
-	timeStyle: 'medium',
-	second: undefined,
+const dateFormatterOptions: Intl.DateTimeFormatOptions = {
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+	weekday: 'short',
+	hour: 'numeric',
 	hour12: false,
-})
+	minute: '2-digit',
+	timeZoneName: 'short',
+}
+
+/**
+ * A {@link DateFormatter} that shows dates in the client's current timezone.
+ */
+export const clientTimezoneDateFormatter = new DateFormatter(
+	navigator.language,
+	dateFormatterOptions,
+)
+
+const cachedDateFormatters: { [timeZoneName: string]: DateFormatter } = {}
+
+function dateFormatterFor(value: ZonedDateTime): DateFormatter {
+	let formatter = cachedDateFormatters[value.timeZone]
+	if (!formatter) {
+		formatter = cachedDateFormatters[value.timeZone] = new DateFormatter(navigator.language, {
+			...dateFormatterOptions,
+			timeZone: value.timeZone,
+		})
+	}
+	return formatter
+}
+
+export function formatDateFull(value: ZonedDateTime): string {
+	const f = dateFormatterFor(value)
+	console.log('X', f.formatToParts(value.toDate()))
+	return `${f.format(value.toDate())} (${value.timeZone})`
+}
 
 export function formatFlightDate(value: ZonedDateTime): string {
 	const f = new DateFormatter('en-US', {
@@ -39,14 +70,21 @@ export function formatFlightTime(
 	return result
 }
 
+/**
+ * The difference in the number of calendar
+ */
 export function deltaCalendarDays(a: ZonedDateTime, b: ZonedDateTime): number {
-	const aDate = a.toDate()
-	const bDate = b.toDate()
-	aDate.setUTCHours(0, 0, 0, 0)
-	bDate.setUTCHours(0, 0, 0, 0)
+	if (a.calendar.identifier !== b.calendar.identifier) {
+		throw new Error('calendars must match')
+	}
+	if (a.era !== b.era) {
+		throw new Error('eras must match')
+	}
 
-	const diffTime = bDate.getTime() - aDate.getTime()
-	return Math.round(diffTime / (1000 * 60 * 60 * 24))
+	if (a.year === b.year && a.month === b.month) {
+		return b.day - a.day // fast path
+	}
+	return a.calendar.toJulianDay(b) - a.calendar.toJulianDay(a)
 }
 
 export function formatFlightDuration(start: ZonedDateTime, end: ZonedDateTime): string {
