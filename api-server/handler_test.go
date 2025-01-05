@@ -129,6 +129,7 @@ func handlerTest(t *testing.T) (context.Context, *Handler) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	testingDummyRecordLocators = []string{}
 	return ctx, NewHandler(db, queries)
 }
 

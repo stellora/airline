@@ -725,7 +725,7 @@ paths:
               type: object
               properties:
                 itineraryID:
-                  type: integer
+                  $ref: '#/components/schemas/ItineraryID'
                 passengerID:
                   type: integer
                 seat:
@@ -1237,11 +1237,13 @@ components:
       oneOf:
         - type: integer
         - $ref: '#/components/schemas/RecordLocator'
+    ItineraryID:
+      type: integer
     Itinerary:
       type: object
       properties:
         id:
-          type: integer
+          $ref: '#/components/schemas/ItineraryID'
         recordID:
           $ref: '#/components/schemas/RecordLocator'
         flights:
@@ -1258,6 +1260,16 @@ components:
         - recordID
         - flights
         - passengers
+    ItinerarySpecs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ItineraryID'
+        recordID:
+          $ref: '#/components/schemas/RecordLocator'
+      required:
+        - id
+        - recordID
     Passenger:
       type: object
       properties:
@@ -1278,18 +1290,18 @@ components:
       properties:
         id:
           type: integer
-        itineraryID:
-          type: integer
-        passengerID:
-          type: integer
+        itinerary:
+          $ref: '#/components/schemas/ItinerarySpecs'
+        passenger:
+          $ref: '#/components/schemas/Passenger'
         flightInstanceID:
           type: integer
         seat:
           $ref: '#/components/schemas/SeatNumber'
       required:
         - id
-        - itineraryID
-        - passengerID
+        - itinerary
+        - passenger
         - flightInstanceID
         - seat
       

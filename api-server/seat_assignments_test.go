@@ -26,16 +26,28 @@ func TestListSeatAssignmentsForFlightInstance(t *testing.T) {
 		got := resp.(api.ListSeatAssignmentsForFlightInstance200JSONResponse)
 		assertEqual(t, got, api.ListSeatAssignmentsForFlightInstance200JSONResponse{
 			{
-				Id:               1,
-				ItineraryID:      1,
-				PassengerID:      int(passengers[0]),
+				Id: 1,
+				Itinerary: api.ItinerarySpecs{
+					Id:       1,
+					RecordID: "TEST00",
+				},
+				Passenger: api.Passenger{
+					Id:   passengers[0],
+					Name: "John Doe",
+				},
 				FlightInstanceID: flight.Id,
 				Seat:             "1A",
 			},
 			{
-				Id:               2,
-				ItineraryID:      2,
-				PassengerID:      int(passengers[1]),
+				Id: 2,
+				Itinerary: api.ItinerarySpecs{
+					Id:       2,
+					RecordID: "TEST01",
+				},
+				Passenger: api.Passenger{
+					Id:   passengers[1],
+					Name: "Jane Doe",
+				},
 				FlightInstanceID: flight.Id,
 				Seat:             "3D",
 			},
@@ -59,10 +71,12 @@ func TestCreateSeatAssignment(t *testing.T) {
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	passenger := insertPassengersWithNamesT(t, handler, "John Doe")[0]
 	flight := insertFlightInstanceT(t, handler, fixtureManualFlightInstance)
+	itineraryID := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passenger)})
 
 	resp, err := handler.CreateSeatAssignment(ctx, api.CreateSeatAssignmentRequestObject{
 		FlightInstanceID: flight.Id,
 		Body: &api.CreateSeatAssignmentJSONRequestBody{
+			ItineraryID: api.ItineraryID(itineraryID),
 			PassengerID: int(passenger),
 			Seat:        "1A",
 		},
@@ -73,8 +87,15 @@ func TestCreateSeatAssignment(t *testing.T) {
 
 	got := resp.(api.CreateSeatAssignment201JSONResponse)
 	assertEqual(t, got, api.CreateSeatAssignment201JSONResponse{
-		Id:               1,
-		PassengerID:      int(passenger),
+		Id: 1,
+		Itinerary: api.ItinerarySpecs{
+			Id:       1,
+			RecordID: "TEST00",
+		},
+		Passenger: api.Passenger{
+			Id:   int(passenger),
+			Name: "John Doe",
+		},
 		FlightInstanceID: flight.Id,
 		Seat:             "1A",
 	})

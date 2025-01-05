@@ -268,12 +268,12 @@ WHERE id = ?;
 ------------------------------------------------------------------------------- seat_assignments
 
 -- name: ListSeatAssignmentsForFlightInstance :many
-SELECT * FROM seat_assignments
+SELECT * FROM seat_assignments_view
 WHERE flight_instance_id = ?
 ORDER BY id ASC;
 
 -- name: GetSeatAssignment :one
-SELECT * FROM seat_assignments
+SELECT * FROM seat_assignments_view
 WHERE id = ?
 LIMIT 1;
 

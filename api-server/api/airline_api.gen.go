@@ -149,12 +149,15 @@ type FlightSchedule struct {
 // Itinerary defines model for Itinerary.
 type Itinerary struct {
 	Flights    []FlightInstance `json:"flights"`
-	Id         int              `json:"id"`
+	Id         ItineraryID      `json:"id"`
 	Passengers []Passenger      `json:"passengers"`
 
 	// RecordID A record locator code for an itinerary.
 	RecordID RecordLocator `json:"recordID"`
 }
+
+// ItineraryID defines model for ItineraryID.
+type ItineraryID = int
 
 // ItinerarySpec defines model for ItinerarySpec.
 type ItinerarySpec struct {
@@ -163,6 +166,14 @@ type ItinerarySpec struct {
 
 // ItinerarySpec0 defines model for .
 type ItinerarySpec0 = int
+
+// ItinerarySpecs defines model for ItinerarySpecs.
+type ItinerarySpecs struct {
+	Id ItineraryID `json:"id"`
+
+	// RecordID A record locator code for an itinerary.
+	RecordID RecordLocator `json:"recordID"`
+}
 
 // LocalDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
 type LocalDate = string
@@ -192,11 +203,11 @@ type Route struct {
 
 // SeatAssignment defines model for SeatAssignment.
 type SeatAssignment struct {
-	FlightInstanceID int        `json:"flightInstanceID"`
-	Id               int        `json:"id"`
-	ItineraryID      int        `json:"itineraryID"`
-	PassengerID      int        `json:"passengerID"`
-	Seat             SeatNumber `json:"seat"`
+	FlightInstanceID int            `json:"flightInstanceID"`
+	Id               int            `json:"id"`
+	Itinerary        ItinerarySpecs `json:"itinerary"`
+	Passenger        Passenger      `json:"passenger"`
+	Seat             SeatNumber     `json:"seat"`
 }
 
 // SeatNumber defines model for SeatNumber.
@@ -276,9 +287,9 @@ type CreateFlightInstanceJSONBody struct {
 
 // CreateSeatAssignmentJSONBody defines parameters for CreateSeatAssignment.
 type CreateSeatAssignmentJSONBody struct {
-	ItineraryID int        `json:"itineraryID"`
-	PassengerID int        `json:"passengerID"`
-	Seat        SeatNumber `json:"seat"`
+	ItineraryID ItineraryID `json:"itineraryID"`
+	PassengerID int         `json:"passengerID"`
+	Seat        SeatNumber  `json:"seat"`
 }
 
 // UpdateFlightInstanceJSONBody defines parameters for UpdateFlightInstance.

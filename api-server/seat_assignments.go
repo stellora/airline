@@ -9,13 +9,19 @@ import (
 	"github.com/stellora/airline/api-server/db"
 )
 
-func fromDBSeatAssignment(s db.SeatAssignment) api.SeatAssignment {
+func fromDBSeatAssignment(a db.SeatAssignmentsView) api.SeatAssignment {
 	return api.SeatAssignment{
-		Id:               int(s.ID),
-		ItineraryID:      int(s.ItineraryID),
-		PassengerID:      int(s.PassengerID),
-		FlightInstanceID: int(s.FlightInstanceID),
-		Seat:             s.Seat,
+		Id: int(a.ID),
+		Itinerary: api.ItinerarySpecs{
+			Id:       int(a.ItineraryID),
+			RecordID: a.ItineraryRecordID,
+		},
+		Passenger: api.Passenger{
+			Id:   int(a.PassengerID),
+			Name: a.PassengerName,
+		},
+		FlightInstanceID: int(a.FlightInstanceID),
+		Seat:             a.Seat,
 	}
 }
 

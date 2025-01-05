@@ -642,20 +642,22 @@ func (q *Queries) GetRouteByIATACodes(ctx context.Context, arg GetRouteByIATACod
 }
 
 const getSeatAssignment = `-- name: GetSeatAssignment :one
-SELECT id, itinerary_id, passenger_id, flight_instance_id, seat FROM seat_assignments
+SELECT id, itinerary_id, passenger_id, flight_instance_id, seat, itinerary_record_id, passenger_name FROM seat_assignments_view
 WHERE id = ?
 LIMIT 1
 `
 
-func (q *Queries) GetSeatAssignment(ctx context.Context, id int64) (SeatAssignment, error) {
+func (q *Queries) GetSeatAssignment(ctx context.Context, id int64) (SeatAssignmentsView, error) {
 	row := q.db.QueryRowContext(ctx, getSeatAssignment, id)
-	var i SeatAssignment
+	var i SeatAssignmentsView
 	err := row.Scan(
 		&i.ID,
 		&i.ItineraryID,
 		&i.PassengerID,
 		&i.FlightInstanceID,
 		&i.Seat,
+		&i.ItineraryRecordID,
+		&i.PassengerName,
 	)
 	return i, err
 }
@@ -1287,27 +1289,29 @@ func (q *Queries) ListRoutes(ctx context.Context) ([]Route, error) {
 
 const listSeatAssignmentsForFlightInstance = `-- name: ListSeatAssignmentsForFlightInstance :many
 
-SELECT id, itinerary_id, passenger_id, flight_instance_id, seat FROM seat_assignments
+SELECT id, itinerary_id, passenger_id, flight_instance_id, seat, itinerary_record_id, passenger_name FROM seat_assignments_view
 WHERE flight_instance_id = ?
 ORDER BY id ASC
 `
 
 // ----------------------------------------------------------------------------- seat_assignments
-func (q *Queries) ListSeatAssignmentsForFlightInstance(ctx context.Context, flightInstanceID int64) ([]SeatAssignment, error) {
+func (q *Queries) ListSeatAssignmentsForFlightInstance(ctx context.Context, flightInstanceID int64) ([]SeatAssignmentsView, error) {
 	rows, err := q.db.QueryContext(ctx, listSeatAssignmentsForFlightInstance, flightInstanceID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []SeatAssignment
+	var items []SeatAssignmentsView
 	for rows.Next() {
-		var i SeatAssignment
+		var i SeatAssignmentsView
 		if err := rows.Scan(
 			&i.ID,
 			&i.ItineraryID,
 			&i.PassengerID,
 			&i.FlightInstanceID,
 			&i.Seat,
+			&i.ItineraryRecordID,
+			&i.PassengerName,
 		); err != nil {
 			return nil, err
 		}

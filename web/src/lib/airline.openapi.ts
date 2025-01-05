@@ -519,11 +519,16 @@ export interface components {
         /** @description A record locator code for an itinerary. */
         RecordLocator: string;
         ItinerarySpec: number | components["schemas"]["RecordLocator"];
+        ItineraryID: number;
         Itinerary: {
-            id: number;
+            id: components["schemas"]["ItineraryID"];
             recordID: components["schemas"]["RecordLocator"];
             flights: components["schemas"]["FlightInstance"][];
             passengers: components["schemas"]["Passenger"][];
+        };
+        ItinerarySpecs: {
+            id: components["schemas"]["ItineraryID"];
+            recordID: components["schemas"]["RecordLocator"];
         };
         Passenger: {
             id: number;
@@ -532,8 +537,8 @@ export interface components {
         SeatNumber: string;
         SeatAssignment: {
             id: number;
-            itineraryID: number;
-            passengerID: number;
+            itinerary: components["schemas"]["ItinerarySpecs"];
+            passenger: components["schemas"]["Passenger"];
             flightInstanceID: number;
             seat: components["schemas"]["SeatNumber"];
         };
@@ -1603,7 +1608,7 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    itineraryID: number;
+                    itineraryID: components["schemas"]["ItineraryID"];
                     passengerID: number;
                     seat: components["schemas"]["SeatNumber"];
                 };

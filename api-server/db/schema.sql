@@ -146,3 +146,11 @@ CREATE TABLE IF NOT EXISTS seat_assignments (
   FOREIGN KEY (passenger_id) REFERENCES passengers(id),
   FOREIGN KEY (flight_instance_id) REFERENCES flight_instances(id)
 );
+
+CREATE VIEW IF NOT EXISTS seat_assignments_view AS
+SELECT seat_assignments.*,
+  itineraries.record_id AS itinerary_record_id,
+  passengers.name AS passenger_name
+FROM seat_assignments
+JOIN itineraries ON itineraries.id=seat_assignments.itinerary_id
+JOIN passengers ON passengers.id=seat_assignments.passenger_id;

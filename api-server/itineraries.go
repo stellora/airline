@@ -176,8 +176,16 @@ func (h *Handler) DeleteItinerary(ctx context.Context, request api.DeleteItinera
 	return api.DeleteItinerary204Response{}, nil
 }
 
+var testingDummyRecordLocators []string
+
 // generateRecordLocator generates a unique 6-character string matching the `[A-Z0-9]{6}“ pattern.
 func generateRecordLocator() string {
+	if testingDummyRecordLocators != nil {
+		v := fmt.Sprintf("TEST%02d", len(testingDummyRecordLocators))
+		testingDummyRecordLocators = append(testingDummyRecordLocators, v)
+		return v
+	}
+
 	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	const length = 6
 

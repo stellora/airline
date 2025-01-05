@@ -160,3 +160,13 @@ type SeatAssignment struct {
 	FlightInstanceID int64
 	Seat             string
 }
+
+type SeatAssignmentsView struct {
+	ID                int64
+	ItineraryID       int64
+	PassengerID       int64
+	FlightInstanceID  int64
+	Seat              string
+	ItineraryRecordID string
+	PassengerName     string
+}

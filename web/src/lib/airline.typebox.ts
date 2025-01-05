@@ -209,6 +209,20 @@ const ComponentsSchemasFlightInstance = T.Object({
   notes: T.String(),
   published: T.Boolean({ default: false })
 })
+const ComponentsSchemasItineraryId = T.Integer()
+const ComponentsSchemasRecordLocator = T.String({
+  pattern: '^[A-Z0-9]{6}$',
+  minLength: 6,
+  maxLength: 6
+})
+const ComponentsSchemasItinerarySpecs = T.Object({
+  id: CloneType(ComponentsSchemasItineraryId),
+  recordID: CloneType(ComponentsSchemasRecordLocator)
+})
+const ComponentsSchemasPassenger = T.Object({
+  id: T.Integer(),
+  name: T.String()
+})
 const ComponentsSchemasSeatNumber = T.String({
   pattern: '^[0-9]{1,2}[A-Z]$',
   minLength: 2,
@@ -216,22 +230,13 @@ const ComponentsSchemasSeatNumber = T.String({
 })
 const ComponentsSchemasSeatAssignment = T.Object({
   id: T.Integer(),
-  itineraryID: T.Integer(),
-  passengerID: T.Integer(),
+  itinerary: CloneType(ComponentsSchemasItinerarySpecs),
+  passenger: CloneType(ComponentsSchemasPassenger),
   flightInstanceID: T.Integer(),
   seat: CloneType(ComponentsSchemasSeatNumber)
 })
-const ComponentsSchemasPassenger = T.Object({
-  id: T.Integer(),
-  name: T.String()
-})
-const ComponentsSchemasRecordLocator = T.String({
-  pattern: '^[A-Z0-9]{6}$',
-  minLength: 6,
-  maxLength: 6
-})
 const ComponentsSchemasItinerary = T.Object({
-  id: T.Integer(),
+  id: CloneType(ComponentsSchemasItineraryId),
   recordID: CloneType(ComponentsSchemasRecordLocator),
   flights: T.Array(CloneType(ComponentsSchemasFlightInstance)),
   passengers: T.Array(CloneType(ComponentsSchemasPassenger), { minItems: 1 })
@@ -834,7 +839,7 @@ const schema = {
         }),
         body: T.Object(
           {
-            itineraryID: T.Integer(),
+            itineraryID: CloneType(ComponentsSchemasItineraryId),
             passengerID: T.Integer(),
             seat: CloneType(ComponentsSchemasSeatNumber)
           },
@@ -1042,7 +1047,9 @@ const _components = {
     ItinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
       'x-in': 'path'
     }),
+    ItineraryID: CloneType(ComponentsSchemasItineraryId),
     Itinerary: CloneType(ComponentsSchemasItinerary),
+    ItinerarySpecs: CloneType(ComponentsSchemasItinerarySpecs),
     Passenger: CloneType(ComponentsSchemasPassenger),
     SeatNumber: CloneType(ComponentsSchemasSeatNumber),
     SeatAssignment: CloneType(ComponentsSchemasSeatAssignment)
