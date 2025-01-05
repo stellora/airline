@@ -35,8 +35,8 @@
 				</Drawer.ScrollArea>
 			</Drawer.Content>
 		</Drawer.DrawerByNavigationState>
-	{/snippet}</PageNav
->
+	{/snippet}
+</PageNav>
 
 <Page title="Airports">
 	<Card>

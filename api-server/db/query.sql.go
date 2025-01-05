@@ -982,9 +982,9 @@ func (q *Queries) UpdateAircraft(ctx context.Context, arg UpdateAircraftParams) 
 
 const updateAirline = `-- name: UpdateAirline :one
 UPDATE airlines SET
-iata_code = COALESCE(?2, iata_code),
-name = COALESCE(?3, name)
-WHERE id=?
+iata_code = COALESCE(?1, iata_code),
+name = COALESCE(?2, name)
+WHERE id=?3
 RETURNING id, iata_code, name
 `
 

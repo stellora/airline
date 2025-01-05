@@ -18,6 +18,7 @@
 			>
 		>
 		action: string
+		submitLabel: string
 	} = $props()
 	const form = superForm(props.data, {
 		validators: typebox(props.schema),
@@ -32,7 +33,7 @@
 	method="POST"
 	action={props.action}
 	use:enhance
-	class="flex gap-4 items-center"
+	class="flex flex-col gap-6 items-start"
 	data-testid="airline-form"
 >
 	<Form.Field {form} name="iataCode">
@@ -70,7 +71,7 @@
 		<Form.Description>&nbsp;</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
-	<Form.Button>Create</Form.Button>
+	<Form.Button>{props.submitLabel}</Form.Button>
 	{#if $message}
 		<Alert variant="destructive" aria-live="polite">
 			<CircleAlert class="size-5" />

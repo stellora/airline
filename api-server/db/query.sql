@@ -70,7 +70,7 @@ RETURNING *;
 UPDATE airlines SET
 iata_code = COALESCE(sqlc.narg('iata_code'), iata_code),
 name = COALESCE(sqlc.narg('name'), name)
-WHERE id=?
+WHERE id=sqlc.arg('id')
 RETURNING *;
 
 -- name: DeleteAirline :exec

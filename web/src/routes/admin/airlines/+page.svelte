@@ -2,31 +2,44 @@
 	import { schema } from '$lib/airline.typebox'
 	import AirlineCode from '$lib/components/airline-code.svelte'
 	import AirlineIcon from '$lib/components/airline-icon.svelte'
-	import { Button } from '$lib/components/ui/button'
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
+	import { Button, buttonVariants } from '$lib/components/ui/button'
+	import { Card } from '$lib/components/ui/card'
+	import * as Drawer from '$lib/components/ui/drawer/index.js'
+	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
 	import { route } from '$lib/route-helpers'
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
+	import Plus from 'lucide-svelte/icons/plus'
 	import AirlineForm from './airline-form.svelte'
 
 	let { data } = $props()
 </script>
 
-<Page title="Airlines">
-	<Card class="self-start">
-		<CardHeader>
-			<CardTitle>New airline</CardTitle>
-		</CardHeader>
+<PageNav>
+	{#snippet actions()}
+		<Drawer.DrawerByNavigationState id="new-airline" direction="right">
+			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+				<Plus /> New airline
+			</Drawer.Trigger>
+			<Drawer.Content>
+				<Drawer.Header>
+					<Drawer.Title>New airline</Drawer.Title>
+				</Drawer.Header>
+				<Drawer.ScrollArea>
+					<AirlineForm
+						action="?/create"
+						submitLabel="Create"
+						data={data.form}
+						schema={schema['/airlines']['POST']['args']['properties']['body']}
+					/>
+				</Drawer.ScrollArea>
+			</Drawer.Content>
+		</Drawer.DrawerByNavigationState>
+	{/snippet}
+</PageNav>
 
-		<CardContent>
-			<AirlineForm
-				data={data.form}
-				action="?/create"
-				schema={schema['/airlines']['POST']['args']['properties']['body']}
-			/>
-		</CardContent>
-	</Card>
+<Page title="Airlines">
 	<Card>
 		<Table.Root>
 			<Table.Header>
