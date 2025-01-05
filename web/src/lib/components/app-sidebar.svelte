@@ -39,6 +39,11 @@
 			url: '/flight-status',
 			icon: Info,
 		},
+		{
+			title: 'Routes',
+			url: route('/admin/routes'),
+			icon: Waypoints,
+		},
 	]
 
 	const adminItems: Item[] = [
@@ -53,19 +58,17 @@
 			icon: PlaneTakeoff,
 		},
 		{
-			title: 'Routes',
-			url: route('/admin/routes'),
-			icon: Waypoints,
+			title: 'Aircraft',
+			url: '/admin/aircraft',
+			icon: Plane,
 		},
+	]
+
+	const globalAdminItems: Item[] = [
 		{
 			title: 'Airports',
 			url: route('/admin/airports'),
 			icon: MapPin,
-		},
-		{
-			title: 'Aircraft',
-			url: '/admin/aircraft',
-			icon: Plane,
 		},
 		{
 			title: 'Itineraries',
@@ -131,10 +134,30 @@
 		</Sidebar.Group>
 		<Sidebar.Separator />
 		<Sidebar.Group>
-			<Sidebar.GroupLabel>Administration</Sidebar.GroupLabel>
+			<Sidebar.GroupLabel>Airline</Sidebar.GroupLabel>
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
 					{#each adminItems as item (item.title)}
+						<Sidebar.MenuItem>
+							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+								{#snippet child({ props })}
+									<a href={item.url} {...props}>
+										<item.icon />
+										<span>{item.title}</span>
+									</a>
+								{/snippet}
+							</Sidebar.MenuButton>
+						</Sidebar.MenuItem>
+					{/each}
+				</Sidebar.Menu>
+			</Sidebar.GroupContent>
+		</Sidebar.Group>
+		<Sidebar.Separator />
+		<Sidebar.Group>
+			<Sidebar.GroupLabel>Global admin</Sidebar.GroupLabel>
+			<Sidebar.GroupContent>
+				<Sidebar.Menu>
+					{#each globalAdminItems as item (item.title)}
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
 								{#snippet child({ props })}

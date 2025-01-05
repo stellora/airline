@@ -27,9 +27,10 @@
 		EK: ['#D71A21', '#FFFFFF'],
 	}
 
-	const colors = airlineColors[airline.iataCode] ?? ['#777', '#ccc']
-	const angle =
-		180 + (airline.iataCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 4) * 45
+	const colors = $derived(airlineColors[airline.iataCode] ?? ['#777', '#ccc'])
+	const angle = $derived(
+		180 + (airline.iataCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 4) * 45,
+	)
 </script>
 
 <div
