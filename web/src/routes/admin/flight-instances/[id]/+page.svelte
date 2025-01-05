@@ -27,7 +27,7 @@
 	{@const departureDateTime = parseZonedDateTime(data.flightInstance.departureDateTime)}
 	{@const arrivalDateTime = parseZonedDateTime(data.flightInstance.arrivalDateTime)}
 
-	<div class="flex flex-wrap-reverse gap-4">
+	<div class="flex flex-wrap-reverse gap-4 items-end">
 		<Card.Root class="flex-grow-[1]">
 			<Card.Header>
 				<div class="flex gap-2 items-center">
