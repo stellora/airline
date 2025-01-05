@@ -16,15 +16,15 @@
 				name: 'Business Class',
 				rows: 12,
 				seatsPerRow: 4,
-				seatSize: 'w-20 h-20',
+				seatSize: 'w-20 h-20 mx-1',
 				aisles: [1, 3],
 				rowSpacing: 'gap-2',
 			},
 			{
-				name: 'Premium Economy Plus',
+				name: 'Premium Economy',
 				rows: 4,
 				seatsPerRow: 6,
-				seatSize: 'w-16 h-18',
+				seatSize: 'w-16 h-16 mx-1',
 				aisles: [2, 4],
 				rowSpacing: 'gap-2',
 			},
@@ -66,9 +66,23 @@
 	)
 </script>
 
-<div class="flex flex-col gap-6 p-4">
+<div class="flex flex-col gap-6 p-4 -mt-14">
+	<svg
+		class="self-center w-1/2 h-24 text-muted-foreground/20 scale-x-150 scale-y-[200%] ml-8"
+		viewBox="0 0 240 100"
+	>
+		<path d="M0 80 A120 80 0 0 1 240 80" fill="currentColor" />
+	</svg>
 	{#each seatConfig as section, sectionIndex}
-		<div class="flex flex-col {section.rowSpacing}">
+		<div class="flex flex-col {section.rowSpacing} relative">
+			{#if sectionIndex === 1}
+				<svg class="absolute -left-32 top-1/2 -translate-y-1/2 h-64 w-32 text-muted-foreground/20">
+					<path d="M0 0 L128 48 L128 160 L0 128 Z" fill="currentColor" />
+				</svg>
+				<svg class="absolute -right-32 top-1/2 -translate-y-1/2 h-64 w-32 text-muted-foreground/20">
+					<path d="M128 0 L0 48 L0 160 L128 128 Z" fill="currentColor" />
+				</svg>
+			{/if}
 			{#each Array(section.rows) as _, rowIndex}
 				<div class="flex items-center gap-1 justify-center">
 					<div class="w-6 text-right text-sm text-muted-foreground">

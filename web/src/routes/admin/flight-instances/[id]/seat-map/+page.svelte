@@ -12,7 +12,7 @@
 <Page
 	title={`Passengers on ${flightTitle(data.flightInstance)} ${formatFlightDate(parseZonedDateTime(data.flightInstance.departureDateTime))}`}
 >
-	<Card.Root class="self-center">
+	<Card.Root class="self-center overflow-hidden">
 		<Card.Header>
 			<Card.Title>Seat map</Card.Title>
 		</Card.Header>
