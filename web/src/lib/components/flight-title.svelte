@@ -61,7 +61,7 @@
 	</span>
 
 	{#if showRoute}
-		<span class={cn('text-muted-foreground text-sm whitespace-nowrap leading-none', subtitleClass)}
+		<span class={cn('text-sm whitespace-nowrap leading-none', subtitleClass)}
 			><AirportCode airport={flight.originAirport} {tooltip} />&ndash;<AirportCode
 				airport={flight.destinationAirport}
 				{tooltip}

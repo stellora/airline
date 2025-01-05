@@ -4,12 +4,9 @@
 </script>
 
 <script lang="ts">
-	import type { BreadcrumbEntry } from '$lib/components/breadcrumbs/helpers'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import * as Sidebar from '$lib/components/ui/sidebar'
 	import { buttonVariants } from '../button'
-
-	const { breadcrumbs }: { breadcrumbs: BreadcrumbEntry[] } = $props()
 </script>
 
 <div
@@ -23,7 +20,9 @@
 			class: '[&>svg]:!size-4 px-2',
 		})}
 	/>
-	<Breadcrumb.Root class="[&>ol>li:not(:last-child)]:max-md:hidden">
+	<Breadcrumb.Root
+		class="[&>ol>li:not(:last-child)]:max-md:hidden [&>ol>li:last-child[role=presentation]]:hidden"
+	>
 		<Breadcrumb.List id={PAGE_BREADCRUMBS_PORTAL_ID.slice(1)} />
 	</Breadcrumb.Root>
 	<div id={PAGE_NAVBAR_PORTAL_ID.slice(1)} class="flex-1">

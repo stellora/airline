@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
-	import FlightTitle from '$lib/components/flight-title.svelte'
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
+	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
@@ -13,10 +14,38 @@
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
 	import Users from 'lucide-svelte/icons/users'
+	import FlightScheduleBreadcrumbItem from '../../flight-schedules/[id]/flight-schedule-breadcrumb-item.svelte'
 	import FlightInstanceForm from './flight-instance-form.svelte'
 
 	const { children, data } = $props()
 </script>
+
+<BreadcrumbsForLayout restart>
+	<Breadcrumb.Item>
+		<Breadcrumb.Link href={route('/admin')}>Admin</Breadcrumb.Link>
+	</Breadcrumb.Item>
+	<Breadcrumb.Separator />
+	{#if data.flightSchedule}
+		<Breadcrumb.Item>
+			<Breadcrumb.Link href={route('/admin/flight-schedules')}>Schedules</Breadcrumb.Link>
+		</Breadcrumb.Item>
+		<Breadcrumb.Separator />
+		<FlightScheduleBreadcrumbItem flightSchedule={data.flightSchedule} />
+		<Breadcrumb.Separator />
+	{:else}
+		<Breadcrumb.Item>
+			<Breadcrumb.Link href={route('/admin/flight-instances')}>Flights</Breadcrumb.Link>
+		</Breadcrumb.Item>
+		<Breadcrumb.Separator />
+	{/if}
+	<Breadcrumb.Item
+		><Breadcrumb.Link
+			href={route('/admin/flight-instances/[id]', {
+				params: { id: data.flightInstance.id.toString() },
+			})}>Instance</Breadcrumb.Link
+		></Breadcrumb.Item
+	>
+</BreadcrumbsForLayout>
 
 <PageNav
 	tabs={[
@@ -36,21 +65,6 @@
 		},
 	]}
 >
-	{#snippet lastBreadcrumbItem()}
-		<a
-			href={route('/admin/flight-schedules/[id]', {
-				params: { id: data.flightInstance.id.toString() },
-			})}
-			class="[&_[data-airline-icon]]:-mt-[0px] mt-[2.2px] block"
-			><FlightTitle
-				flight={data.flightInstance}
-				as="span"
-				showRoute={true}
-				link={true}
-				tooltip={false}
-			/></a
-		>
-	{/snippet}
 	{#snippet breadcrumbActions()}
 		<PageNavbarBreadcrumbActionsDropdownMenu>
 			<DropdownMenu.Group>

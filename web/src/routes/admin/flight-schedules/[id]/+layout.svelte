@@ -2,9 +2,11 @@
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
 	import FlightTitle from '$lib/components/flight-title.svelte'
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
+	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
@@ -15,9 +17,14 @@
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
 	import FlightScheduleForm from '../flight-schedule-form.svelte'
+	import FlightScheduleBreadcrumbItem from './flight-schedule-breadcrumb-item.svelte'
 
 	const { children, data } = $props()
 </script>
+
+<BreadcrumbsForLayout>
+	<FlightScheduleBreadcrumbItem flightSchedule={data.flightSchedule} />
+</BreadcrumbsForLayout>
 
 <PageNav
 	tabs={[
@@ -37,21 +44,6 @@
 		},
 	]}
 >
-	{#snippet breadcrumbItems()}
-		<a
-			href={route('/admin/flight-schedules/[id]', {
-				params: { id: data.flightSchedule.id.toString() },
-			})}
-			class="[&_[data-airline-icon]]:-mt-[0px] mt-[2.2px] block"
-			><FlightTitle
-				flight={data.flightSchedule}
-				as="span"
-				showRoute={true}
-				link={true}
-				tooltip={false}
-			/></a
-		>
-	{/snippet}
 	{#snippet breadcrumbActions()}
 		<PageNavbarBreadcrumbActionsDropdownMenu>
 			<DropdownMenu.Group>

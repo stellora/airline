@@ -34,7 +34,6 @@ function dateFormatterFor(value: ZonedDateTime): DateFormatter {
 
 export function formatDateFull(value: ZonedDateTime): string {
 	const f = dateFormatterFor(value)
-	console.log('X', f.formatToParts(value.toDate()))
 	return `${f.format(value.toDate())} (${value.timeZone})`
 }
 

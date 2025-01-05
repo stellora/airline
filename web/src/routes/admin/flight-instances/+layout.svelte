@@ -9,7 +9,7 @@
 
 <BreadcrumbsForLayout>
 	<Breadcrumb.Item>
-		<Breadcrumb.Link href={route('/admin/flight-schedules')}>Schedules</Breadcrumb.Link>
+		<Breadcrumb.Link href={route('/admin/flight-instances')}>Flights</Breadcrumb.Link>
 	</Breadcrumb.Item></BreadcrumbsForLayout
 >
 

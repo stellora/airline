@@ -1,7 +1,5 @@
 import { apiClient } from '$lib/api'
-import { breadcrumbEntry } from '$lib/components/breadcrumbs'
-import { flightInstanceTitle } from '$lib/flight-helpers'
-import { route } from '$lib/route-helpers'
+import type { FlightSchedule } from '$lib/types'
 import { error } from '@sveltejs/kit'
 import { superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
@@ -11,7 +9,7 @@ import {
 	flightInstanceFromScheduleFormSchema,
 } from './flight-instance-form'
 
-export const load: LayoutServerLoad = async ({ params, parent }) => {
+export const load: LayoutServerLoad = async ({ params }) => {
 	const id = Number.parseInt(params.id)
 	const resp = await apiClient.GET('/flight-instances/{id}', {
 		params: { path: { id } },
@@ -22,12 +20,22 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 		throw error(404, 'Flight instance not found')
 	}
 	const flightInstance = resp.data
+
+	let flightSchedule: FlightSchedule | undefined
+	if (flightInstance.scheduleID) {
+		const resp = await apiClient.GET('/flight-schedules/{id}', {
+			params: { path: { id: flightInstance.scheduleID } },
+			fetch,
+		})
+		if (!resp.response.ok || !resp.data) {
+			throw error(resp.response.status, resp.error)
+		}
+		flightSchedule = resp.data
+	}
+
 	return {
-		...(await breadcrumbEntry(parent, {
-			url: route('/admin/flight-instances/[id]', { params: { id: flightInstance.id.toString() } }),
-			title: flightInstanceTitle(flightInstance),
-		})),
 		flightInstance,
+		flightSchedule,
 		form: await superValidate(
 			existingFlightInstanceToFormData(flightInstance),
 			typebox(flightInstanceFromScheduleFormSchema),

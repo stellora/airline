@@ -2,13 +2,16 @@
 	import { tick, type Snippet } from 'svelte'
 
 	/**
-	 * Usage: `<div use:portal="css selector">` or `<div use:portal={document.body}>`
+	 * Usage: `<div use:portal={{target: "css selector", replace}}>` or `<div use:portal={{ target:
+	 * document.body, replace }}>`.
 	 */
 	export function portal(
 		el: HTMLElement,
 		{ target, replace }: { target: HTMLElement | string; replace: boolean },
 	) {
-		let targetEl
+		let targetEl: Element | null | undefined
+		let contentNodes: ChildNode[] | undefined
+		let replaced: ChildNode[] | undefined
 		async function update(newTarget: HTMLElement | string) {
 			target = newTarget
 			if (typeof target === 'string') {
@@ -17,7 +20,7 @@
 					await tick()
 					targetEl = document.querySelector(target)
 				}
-				if (targetEl === null) {
+				if (!targetEl) {
 					throw new Error(`No element found matching css selector: "${target}"`)
 				}
 			} else if (target instanceof HTMLElement) {
@@ -29,17 +32,32 @@
 					}. Allowed types: string (CSS selector) or HTMLElement.`,
 				)
 			}
+
+			contentNodes = Array.from(el.childNodes)
 			if (replace) {
-				targetEl.replaceChildren(el)
-			} else {
-				targetEl.appendChild(el)
+				replaced = Array.from(targetEl.childNodes)
+				for (const el of replaced) {
+					if (el instanceof HTMLElement) {
+						el.dataset.prevDisplay = el.style.display
+						el.style.display = 'none'
+					}
+				}
 			}
-			el.hidden = false
+			targetEl.append(...contentNodes)
 		}
 
 		function destroy() {
-			if (el.parentNode) {
-				el.parentNode.removeChild(el)
+			if (contentNodes) {
+				for (const contentNode of contentNodes) {
+					contentNode.remove()
+				}
+			}
+			if (replaced) {
+				for (const el of replaced) {
+					if (el instanceof HTMLElement) {
+						el.style.display = el.dataset.prevDisplay ?? 'block'
+					}
+				}
 			}
 		}
 
@@ -54,9 +72,9 @@
 <script lang="ts">
 	const {
 		target,
-		children,
 		replace = false,
-	}: { target: string | HTMLElement; children?: Snippet<[]>; replace?: boolean } = $props()
+		children,
+	}: { target: string | HTMLElement; replace?: boolean; children?: Snippet<[]> } = $props()
 </script>
 
 <div use:portal={{ target, replace }} hidden>

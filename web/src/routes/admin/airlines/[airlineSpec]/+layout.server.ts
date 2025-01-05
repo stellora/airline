@@ -1,10 +1,8 @@
 import { apiClient } from '$lib/api'
-import { breadcrumbEntry } from '$lib/components/breadcrumbs'
-import { route } from '$lib/route-helpers'
 import { error } from '@sveltejs/kit'
 import type { LayoutServerLoad } from './$types'
 
-export const load: LayoutServerLoad = async ({ params, parent }) => {
+export const load: LayoutServerLoad = async ({ params }) => {
 	const resp = await apiClient.GET('/airlines/{airlineSpec}', {
 		params: { path: { airlineSpec: params.airlineSpec } },
 		fetch,
@@ -15,11 +13,5 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 	}
 	return {
 		airline,
-		...(await breadcrumbEntry(parent, {
-			url: route('/admin/airlines/[airlineSpec]', {
-				params: { airlineSpec: airline.iataCode },
-			}),
-			title: airline.iataCode,
-		})),
 	}
 }

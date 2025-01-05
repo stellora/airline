@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state'
 	import { cn } from '$lib/utils.js'
 	import type { WithElementRef } from 'bits-ui'
 	import type { Snippet } from 'svelte'
@@ -8,7 +9,7 @@
 		ref = $bindable(null),
 		class: className,
 		href = undefined,
-		isActive,
+		isActive = page.url.pathname === href,
 		child,
 		children,
 		...restProps
