@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
+	import { schema } from '$lib/airline.typebox'
 	import AircraftRegistration from '$lib/components/aircraft-registration.svelte'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import { buttonVariants } from '$lib/components/ui/button'
-	import * as Dialog from '$lib/components/ui/dialog/index.js'
+	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
@@ -57,24 +58,27 @@
 		</PageNavbarBreadcrumbActionsDropdownMenu>
 	{/snippet}
 	{#snippet actions()}
-		<Dialog.RootByNavigationState id="edit-aircraft">
-			<Dialog.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+		<Drawer.DrawerByNavigationState id="edit-aircraft" direction="right">
+			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
 				<Settings2 /> Edit
-			</Dialog.Trigger>
-			<Dialog.Content>
-				<Dialog.Header>
-					<Dialog.Title>Edit aircraft</Dialog.Title>
-				</Dialog.Header>
-				<AircraftForm
-					action={route('/admin/aircraft/[aircraftSpec]', {
-						params: { aircraftSpec: page.params.aircraftSpec },
-						query: '/update',
-					})}
-					submitLabel="Save"
-					form={data.form}
-				/>
-			</Dialog.Content>
-		</Dialog.RootByNavigationState>
+			</Drawer.Trigger>
+			<Drawer.Content>
+				<Drawer.Header>
+					<Drawer.Title>Edit aircraft</Drawer.Title>
+				</Drawer.Header>
+				<Drawer.ScrollArea>
+					<AircraftForm
+						action={route('/admin/aircraft/[aircraftSpec]', {
+							params: { aircraftSpec: page.params.aircraftSpec },
+							query: '/update',
+						})}
+						submitLabel="Save"
+						data={data.form}
+						schema={schema['/aircraft/{aircraftSpec}']['PATCH']['args']['properties']['body']}
+					/>
+				</Drawer.ScrollArea>
+			</Drawer.Content>
+		</Drawer.DrawerByNavigationState>
 	{/snippet}
 </PageNav>
 
