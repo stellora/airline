@@ -14,6 +14,7 @@
 		link = false,
 		tooltip = true,
 		class: className,
+		linkClass,
 		subtitleClass,
 		as = 'h2',
 	}: {
@@ -28,6 +29,7 @@
 		link?: boolean
 		tooltip?: boolean
 		class?: HTMLAttributes<never>['class']
+		linkClass?: HTMLAttributes<never>['class']
 		subtitleClass?: HTMLAttributes<never>['class']
 		as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'span'
 	} = $props()
@@ -46,6 +48,7 @@
 				href={route('/admin/flight-schedules/[id]', {
 					params: { id: flight.id.toString() },
 				})}
+				class={linkClass}
 				><AirlineCode airline={flight.airline} icon={showAirlineIcon} {tooltip} /><span
 					class="font-sans text-xs"
 					>&nbsp;

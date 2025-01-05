@@ -2,16 +2,11 @@
 	import { tick, type Snippet } from 'svelte'
 
 	/**
-	 * Usage: `<div use:portal={{target: "css selector", replace}}>` or `<div use:portal={{ target:
-	 * document.body, replace }}>`.
+	 * Usage: `<div use:portal="css selector">` or `<div use:portal={document.body}>`.
 	 */
-	export function portal(
-		el: HTMLElement,
-		{ target, replace }: { target: HTMLElement | string; replace: boolean },
-	) {
+	export function portal(el: HTMLElement, target: HTMLElement | string) {
 		let targetEl: Element | null | undefined
 		let contentNodes: ChildNode[] | undefined
-		let replaced: ChildNode[] | undefined
 		async function update(newTarget: HTMLElement | string) {
 			target = newTarget
 			if (typeof target === 'string') {
@@ -34,15 +29,6 @@
 			}
 
 			contentNodes = Array.from(el.childNodes)
-			if (replace) {
-				replaced = Array.from(targetEl.childNodes)
-				for (const el of replaced) {
-					if (el instanceof HTMLElement) {
-						el.dataset.prevDisplay = el.style.display
-						el.style.display = 'none'
-					}
-				}
-			}
 			targetEl.append(...contentNodes)
 		}
 
@@ -50,13 +36,6 @@
 			if (contentNodes) {
 				for (const contentNode of contentNodes) {
 					contentNode.remove()
-				}
-			}
-			if (replaced) {
-				for (const el of replaced) {
-					if (el instanceof HTMLElement) {
-						el.style.display = el.dataset.prevDisplay ?? 'block'
-					}
 				}
 			}
 		}
@@ -72,11 +51,13 @@
 <script lang="ts">
 	const {
 		target,
-		replace = false,
 		children,
-	}: { target: string | HTMLElement; replace?: boolean; children?: Snippet<[]> } = $props()
+	}: {
+		target: string | HTMLElement
+		children?: Snippet<[]>
+	} = $props()
 </script>
 
-<div use:portal={{ target, replace }} hidden>
+<div use:portal={target} hidden>
 	{@render children?.()}
 </div>

@@ -21,21 +21,8 @@
 </script>
 
 <BreadcrumbsForLayout restart>
-	<Breadcrumb.Item>
-		<Breadcrumb.Link href={route('/admin')}>Admin</Breadcrumb.Link>
-	</Breadcrumb.Item>
-	<Breadcrumb.Separator />
 	{#if data.flightSchedule}
-		<Breadcrumb.Item>
-			<Breadcrumb.Link href={route('/admin/flight-schedules')}>Schedules</Breadcrumb.Link>
-		</Breadcrumb.Item>
-		<Breadcrumb.Separator />
 		<FlightScheduleBreadcrumbItem flightSchedule={data.flightSchedule} />
-		<Breadcrumb.Separator />
-	{:else}
-		<Breadcrumb.Item>
-			<Breadcrumb.Link href={route('/admin/flight-instances')}>Flights</Breadcrumb.Link>
-		</Breadcrumb.Item>
 		<Breadcrumb.Separator />
 	{/if}
 	<Breadcrumb.Item

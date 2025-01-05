@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
+	import AirportCode from '$lib/components/airport-code.svelte'
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Dialog from '$lib/components/ui/dialog/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
+	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
@@ -15,6 +18,17 @@
 
 	const { children, data } = $props()
 </script>
+
+<BreadcrumbsForLayout>
+	<Breadcrumb.Item>
+		<Breadcrumb.Link
+			href={route('/admin/airports/[airportSpec]', {
+				params: { airportSpec: data.airport.iataCode },
+			})}
+			><AirportCode airport={data.airport} />
+		</Breadcrumb.Link>
+	</Breadcrumb.Item></BreadcrumbsForLayout
+>
 
 <PageNav
 	tabs={[

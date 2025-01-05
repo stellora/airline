@@ -1,8 +1,11 @@
 <script lang="ts">
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import { buttonVariants } from '$lib/components/ui/button'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
+	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
+	import { route } from '$lib/route-helpers'
 	import Plus from 'lucide-svelte/icons/plus'
 	import FlightScheduleForm from './flight-schedule-form.svelte'
 	import FlightScheduleList from './flight-schedule-list.svelte'
@@ -27,6 +30,12 @@
 		</Drawer.DrawerByNavigationState>
 	{/snippet}
 </PageNav>
+
+<BreadcrumbsForLayout>
+	<Breadcrumb.Item>
+		<Breadcrumb.Link href={route('/admin/flight-schedules')}>Schedules</Breadcrumb.Link>
+	</Breadcrumb.Item></BreadcrumbsForLayout
+>
 
 <Page title="Flight schedules">
 	<FlightScheduleList flightSchedules={data.flightSchedules} />

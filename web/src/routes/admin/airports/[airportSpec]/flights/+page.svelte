@@ -28,8 +28,10 @@
 					data-testid="flights-to-from-airport"
 				>
 					{#each flightSchedules as flight (flight.id)}
-						<li class="p-3 border rounded-md flex items-center justify-between gap-2">
-							<FlightTitle class="w-full" link {flight} />
+						<li
+							class="p-3 border rounded-md flex items-center justify-between gap-2 stretched-link-container"
+						>
+							<FlightTitle class="w-full" linkClass="stretched-link" link {flight} />
 							<span class="text-muted-foreground whitespace-nowrap text-sm">
 								<Distance distanceMiles={flight.distanceMiles} />
 							</span>
