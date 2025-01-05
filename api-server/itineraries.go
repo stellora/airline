@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"regexp"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/db"
@@ -40,8 +39,6 @@ func fromDBItinerary(ctx context.Context, queriesTx *db.Queries, i db.Itinerary)
 		Passengers: mapSlice(fromDBPassenger, passengers),
 	}, nil
 }
-
-var validRecordLocator = regexp.MustCompile(`^[A-Z0-9]{6}$`)
 
 func (h *Handler) GetItinerary(ctx context.Context, request api.GetItineraryRequestObject) (api.GetItineraryResponseObject, error) {
 	tx, err := h.db.BeginTx(ctx, nil)
