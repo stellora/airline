@@ -4,13 +4,13 @@
 	import { schema } from '$lib/airline.typebox'
 	import AirlineCode from '$lib/components/airline-code.svelte'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
-	import { buttonVariants } from '$lib/components/ui/button'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
 	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
+	import { cn } from '$lib/utils'
 	import CalendarRange from 'lucide-svelte/icons/calendar-range'
 	import Group from 'lucide-svelte/icons/group'
 	import Plane from 'lucide-svelte/icons/plane'
@@ -18,6 +18,7 @@
 	import Settings_2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
+	import type { ClassNameValue } from 'tailwind-merge'
 	import AirlineForm from '../airline-form.svelte'
 
 	const { data, children } = $props()
@@ -77,6 +78,34 @@
 			<DropdownMenu.Group>
 				<DropdownMenu.Item>
 					{#snippet child({ props })}
+						<Drawer.DrawerByNavigationState id="edit-airport" direction="right">
+							<Drawer.Trigger {...props} class={cn(props.class as ClassNameValue, 'w-full')}>
+								<Settings_2 /> Edit
+							</Drawer.Trigger>
+							<Drawer.Content>
+								<Drawer.Header>
+									<Drawer.Title>Edit airport</Drawer.Title>
+								</Drawer.Header>
+								<Drawer.ScrollArea>
+									<AirlineForm
+										action={route('/admin/airlines/[airlineSpec]', {
+											params: { airlineSpec: page.params.airlineSpec },
+											query: '/update',
+										})}
+										submitLabel="Save"
+										data={data.form}
+										schema={schema['/airlines/{airlineSpec}']['PATCH']['args']['properties'][
+											'body'
+										]}
+									/>
+								</Drawer.ScrollArea>
+							</Drawer.Content>
+						</Drawer.DrawerByNavigationState>
+					{/snippet}
+				</DropdownMenu.Item>
+				<DropdownMenu.Separator />
+				<DropdownMenu.Item>
+					{#snippet child({ props })}
 						<form
 							method="POST"
 							action={route('/admin/airlines/[airlineSpec]', {
@@ -98,29 +127,6 @@
 				>
 			</DropdownMenu.Group>
 		</PageNavbarBreadcrumbActionsDropdownMenu>
-	{/snippet}
-	{#snippet actions()}
-		<Drawer.DrawerByNavigationState id="edit-airport" direction="right">
-			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
-				<Settings_2 /> Edit
-			</Drawer.Trigger>
-			<Drawer.Content>
-				<Drawer.Header>
-					<Drawer.Title>Edit airport</Drawer.Title>
-				</Drawer.Header>
-				<Drawer.ScrollArea>
-					<AirlineForm
-						action={route('/admin/airlines/[airlineSpec]', {
-							params: { airlineSpec: page.params.airlineSpec },
-							query: '/update',
-						})}
-						submitLabel="Save"
-						data={data.form}
-						schema={schema['/airlines/{airlineSpec}']['PATCH']['args']['properties']['body']}
-					/>
-				</Drawer.ScrollArea>
-			</Drawer.Content>
-		</Drawer.DrawerByNavigationState>
 	{/snippet}
 </PageNav>
 
