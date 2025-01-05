@@ -25,7 +25,7 @@
 	>
 		<Breadcrumb.List id={PAGE_BREADCRUMBS_PORTAL_ID.slice(1)} />
 	</Breadcrumb.Root>
-	<div id={PAGE_NAVBAR_PORTAL_ID.slice(1)} class="flex-1">
+	<div id={PAGE_NAVBAR_PORTAL_ID.slice(1)} class="flex-1 flex gap-3">
 		<!-- Use <Portal target={PAGE_NAVBAR_BREADCRUMB_ACTIONS_ID}> to supply content. -->
 	</div>
 </div>

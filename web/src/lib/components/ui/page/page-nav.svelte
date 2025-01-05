@@ -17,14 +17,15 @@
 </script>
 
 <Portal target={PAGE_NAVBAR_PORTAL_ID}>
-	<div class="flex gap-3">
-		{@render breadcrumbActions?.()}
+	{@render breadcrumbActions?.()}
 
-		{#if tabs}
-			<PageNavbarTabs {tabs} />
-		{/if}
+	{#if tabs}
+		<PageNavbarTabs {tabs} />
+	{/if}
 
-		<div class="flex-1"></div>
-		{@render actions?.()}
-	</div>
+	{#if actions}
+		<div class="ml-auto flex">
+			{@render actions?.()}
+		</div>
+	{/if}
 </Portal>
