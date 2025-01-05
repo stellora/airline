@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { schema } from '$lib/airline.typebox'
 	import AircraftTypeSelect from '$lib/components/aircraft-type-select.svelte'
 	import AirlineSelect from '$lib/components/airline-select.svelte'
 	import DateRangeInput from '$lib/components/date-range-input.svelte'
@@ -11,20 +12,30 @@
 	import FormFieldGroup from '$lib/components/ui/form/form-field-group.svelte'
 	import { Input } from '$lib/components/ui/input'
 	import { type DaysOfWeek } from '$lib/types'
-	import { type DateValue, parseDateTime } from '@internationalized/date'
+	import { parseDateTime, type DateValue } from '@internationalized/date'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
-	import { superForm } from 'sveltekit-superforms'
+	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
-	import type { PageServerData } from './$types'
-	import { formSchema } from './flight-schedule-form'
 
 	const {
 		action,
 		submitLabel,
 		...props
-	}: { action: string; submitLabel: string; form: PageServerData['form'] } = $props()
-	const form = superForm(props.form, {
-		validators: typebox(formSchema),
+	}: {
+		schema:
+			| (typeof schema)['/flight-schedules']['POST']['args']['properties']['body']
+			| (typeof schema)['/flight-schedules/{id}']['PATCH']['args']['properties']['body']
+		data: SuperValidated<
+			Infer<
+				| (typeof schema)['/flight-schedules']['POST']['args']['properties']['body']
+				| (typeof schema)['/flight-schedules/{id}']['PATCH']['args']['properties']['body']
+			>
+		>
+		action: string
+		submitLabel: string
+	} = $props()
+	const form = superForm(props.data, {
+		validators: typebox(props.schema),
 		onError({ result }) {
 			$message = result.error.message || 'Unknown error'
 		},
@@ -107,26 +118,20 @@
 		</Form.Field>
 	</FormFieldGroup>
 	<FormFieldGroup legend="Schedule">
-		<Form.Field {form} name="startEndDate">
+		<Form.Field {form} name="startDate">
 			<Form.Control>
 				{#snippet children({ props })}
 					<Form.Label>Date range</Form.Label>
 					<DateRangeInput
 						{...props}
 						bind:value={() => ({
-							start: $formData.startEndDate.start
-								? parseDateTime($formData.startEndDate.start)
-								: undefined,
-							end: $formData.startEndDate.end
-								? parseDateTime($formData.startEndDate.end)
-								: undefined,
+							start: $formData.startDate ? parseDateTime($formData.startDate) : undefined,
+							end: $formData.endDate ? parseDateTime($formData.endDate) : undefined,
 						}),
 						(v: { start: DateValue | undefined; end: DateValue | undefined }) => {
 							if (v.start && v.end) {
-								$formData.startEndDate = {
-									start: v.start.toString(),
-									end: v.end.toString(),
-								}
+								$formData.startDate = v.start.toString()
+								$formData.endDate = v.end.toString()
 							}
 						}}
 					/>

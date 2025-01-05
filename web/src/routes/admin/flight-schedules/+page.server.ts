@@ -1,10 +1,10 @@
+import { schema } from '$lib/airline.typebox'
 import { apiClient } from '$lib/api'
 import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
 import type { Actions, PageServerLoad } from './$types'
-import { formDataToFlightScheduleRequest, formSchema } from './flight-schedule-form'
 
 export const load: PageServerLoad = async () => {
 	const flightSchedules = await apiClient
@@ -12,19 +12,24 @@ export const load: PageServerLoad = async () => {
 		.then((resp) => resp.data!)
 	return {
 		flightSchedules,
-		form: await superValidate(typebox(formSchema)),
+		form: await superValidate(
+			typebox(schema['/flight-schedules']['POST']['args']['properties']['body']),
+		),
 	}
 }
 
 export const actions: Actions = {
 	create: async ({ request }) => {
-		const form = await superValidate(request, typebox(formSchema))
+		const form = await superValidate(
+			request,
+			typebox(schema['/flight-schedules']['POST']['args']['properties']['body']),
+		)
 		if (!form.valid) {
 			return fail(400, { form })
 		}
 
 		const resp = await apiClient.POST('/flight-schedules', {
-			body: formDataToFlightScheduleRequest(form.data),
+			body: form.data,
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {

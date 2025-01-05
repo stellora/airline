@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { schema } from '$lib/airline.typebox'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import { buttonVariants } from '$lib/components/ui/button'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
@@ -24,7 +25,12 @@
 					<Drawer.Title>New flight schedule</Drawer.Title>
 				</Drawer.Header>
 				<Drawer.ScrollArea>
-					<FlightScheduleForm action="?/create" submitLabel="Create" form={data.form} />
+					<FlightScheduleForm
+						action="?/create"
+						submitLabel="Create"
+						data={data.form}
+						schema={schema['/flight-schedules']['POST']['args']['properties']['body']}
+					/>
 				</Drawer.ScrollArea>
 			</Drawer.Content>
 		</Drawer.DrawerByNavigationState>

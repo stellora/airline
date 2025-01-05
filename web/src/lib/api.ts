@@ -25,6 +25,17 @@ export function workaroundForMultiTypeUnions(): void {
 	schema['/aircraft'].POST.args.properties.body.properties.airline.default = undefined
 	schema['/aircraft/{aircraftSpec}'].PATCH.args.properties.body.properties.airline.default =
 		undefined
+	schema['/flight-instances'].POST.args.properties.body.properties.aircraft.default = undefined
 	schema['/flight-instances/{id}'].PATCH.args.properties.body.properties.aircraft.default =
 		undefined
+	schema['/flight-schedules'].POST.args.properties.body.properties.airline.default = undefined
+	schema['/flight-schedules'].POST.args.properties.body.properties.originAirport.default = undefined
+	schema['/flight-schedules'].POST.args.properties.body.properties.destinationAirport.default =
+		undefined
+	schema['/flight-schedules/{id}'].PATCH.args.properties.body.properties.airline.default = undefined
+	schema['/flight-schedules/{id}'].PATCH.args.properties.body.properties.originAirport.default =
+		undefined
+	schema[
+		'/flight-schedules/{id}'
+	].PATCH.args.properties.body.properties.destinationAirport.default = undefined
 }

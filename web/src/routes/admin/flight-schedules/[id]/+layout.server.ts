@@ -1,8 +1,10 @@
+import { schema } from '$lib/airline.typebox'
 import { apiClient } from '$lib/api'
+import type { FlightSchedule } from '$lib/types'
+import type { Static } from '@sinclair/typebox'
 import { error } from '@sveltejs/kit'
 import { superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
-import { existingFlightScheduleToFormData, formSchema } from '../flight-schedule-form'
 import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ params }) => {
@@ -20,7 +22,25 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		flightSchedule,
 		form: await superValidate(
 			existingFlightScheduleToFormData(flightSchedule),
-			typebox(formSchema),
+			typebox(schema['/flight-schedules/{id}']['PATCH']['args']['properties']['body']),
 		),
+	}
+}
+
+function existingFlightScheduleToFormData(
+	a: FlightSchedule,
+): Static<(typeof schema)['/flight-schedules/{id}']['PATCH']['args']['properties']['body']> {
+	return {
+		airline: a.airline.iataCode,
+		number: a.number,
+		originAirport: a.originAirport.iataCode,
+		destinationAirport: a.destinationAirport.iataCode,
+		aircraftType: a.aircraftType.icaoCode,
+		startDate: a.startDate,
+		endDate: a.endDate,
+		daysOfWeek: a.daysOfWeek,
+		departureTime: a.departureTime,
+		durationSec: a.durationSec,
+		published: a.published,
 	}
 }

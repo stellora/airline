@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
-	import FlightTitle from '$lib/components/flight-title.svelte'
-	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
@@ -18,6 +16,7 @@
 	import Trash from 'lucide-svelte/icons/trash'
 	import FlightScheduleForm from '../flight-schedule-form.svelte'
 	import FlightScheduleBreadcrumbItem from './flight-schedule-breadcrumb-item.svelte'
+	import { schema } from '$lib/airline.typebox'
 
 	const { children, data } = $props()
 </script>
@@ -114,7 +113,8 @@
 							query: '/update',
 						})}
 						submitLabel="Save"
-						form={data.form}
+						data={data.form}
+						schema={schema['/flight-schedules/{id}']['PATCH']['args']['properties']['body']}
 					/>
 				</Drawer.ScrollArea>
 			</Drawer.Content>
