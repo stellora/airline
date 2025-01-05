@@ -86,8 +86,10 @@ export function deltaCalendarDays(a: ZonedDateTime, b: ZonedDateTime): number {
 	return a.calendar.toJulianDay(b) - a.calendar.toJulianDay(a)
 }
 
-export function formatFlightDuration(start: ZonedDateTime, end: ZonedDateTime): string {
-	const ms = end.toDate().getTime() - start.toDate().getTime()
+export function formatFlightDuration(sec: number): string
+export function formatFlightDuration(start: ZonedDateTime, end: ZonedDateTime): string
+export function formatFlightDuration(arg: ZonedDateTime | number, end?: ZonedDateTime): string {
+	const ms = typeof arg === 'number' ? arg * 1000 : end!.toDate().getTime() - arg.toDate().getTime()
 	const hours = Math.floor(ms / 3600000)
 	const minutes = Math.floor((ms % 3600000) / 60000)
 	return `${hours}h ${minutes}m`

@@ -10,6 +10,7 @@
 		airline,
 		link = false,
 		tooltip = true,
+		showName = false,
 		icon = false,
 		class: className,
 		as = 'abbr',
@@ -17,6 +18,7 @@
 		airline: Pick<Airline, 'name' | 'iataCode'>
 		link?: boolean
 		tooltip?: boolean
+		showName?: boolean
 		icon?: boolean
 		class?: HTMLAttributes<never>['class']
 		as?: 'abbr'
@@ -43,6 +45,9 @@
 					>
 				{:else}
 					{airline.iataCode}
+				{/if}
+				{#if showName}
+					<span class="text-sm font-sans text-muted-foreground">{airline.name}</span>
 				{/if}
 			</svelte:element>
 		{/snippet}

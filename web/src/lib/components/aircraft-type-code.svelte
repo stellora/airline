@@ -47,10 +47,10 @@
 		</Tooltip.Portal>
 	</Tooltip.Root>
 {:else}
-	<svelte:element this={as} class={cn(className, 'font-mono')}>
-		{aircraftType.icaoCode}
+	<svelte:element this={as} class={className}>
+		<span class="font-mono">{aircraftType.icaoCode}</span>
 		{#if showName}
-			<span class="font-sans text-muted-foreground text-xs">
+			<span class="font-sans text-muted-foreground text-sm">
 				{aircraftType.name}
 			</span>
 		{/if}

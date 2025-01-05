@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 import type { Feature } from 'geojson'
-import type { Airport, FlightInstance, FlightSchedule } from './types'
+import type { Airport, DaysOfWeek, FlightInstance, FlightSchedule } from './types'
 
 export function flightTitle(
 	flight: Pick<FlightSchedule, 'airline' | 'number' | 'originAirport' | 'destinationAirport'>,
@@ -22,4 +22,9 @@ export function flightRoute(
 export function geoDistanceMiles(line: Feature): number {
 	const RADIUS_MILES_PER_RADIAN = 3958.8
 	return d3.geoLength(line) * RADIUS_MILES_PER_RADIAN
+}
+
+const DAYS_OF_WEEK_NARROW = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa']
+export function formatDaysOfWeek(daysOfWeek: DaysOfWeek): string {
+	return daysOfWeek.map((d) => DAYS_OF_WEEK_NARROW[d]).join('-')
 }
