@@ -532,6 +532,7 @@ export interface components {
         SeatNumber: string;
         SeatAssignment: {
             id: number;
+            itineraryID: number;
             passengerID: number;
             flightInstanceID: number;
             seat: components["schemas"]["SeatNumber"];
@@ -1602,6 +1603,7 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
+                    itineraryID: number;
                     passengerID: number;
                     seat: components["schemas"]["SeatNumber"];
                 };

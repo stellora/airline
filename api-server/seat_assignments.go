@@ -12,6 +12,7 @@ import (
 func fromDBSeatAssignment(s db.SeatAssignment) api.SeatAssignment {
 	return api.SeatAssignment{
 		Id:               int(s.ID),
+		ItineraryID:      int(s.ItineraryID),
 		PassengerID:      int(s.PassengerID),
 		FlightInstanceID: int(s.FlightInstanceID),
 		Seat:             s.Seat,
@@ -54,6 +55,7 @@ func (h *Handler) CreateSeatAssignment(ctx context.Context, request api.CreateSe
 	queriesTx := h.queries.WithTx(tx)
 
 	params := db.CreateSeatAssignmentParams{
+		ItineraryID:      int64(request.Body.ItineraryID),
 		PassengerID:      int64(request.Body.PassengerID),
 		FlightInstanceID: int64(request.FlightInstanceID),
 		Seat:             request.Body.Seat,

@@ -216,6 +216,7 @@ const ComponentsSchemasSeatNumber = T.String({
 })
 const ComponentsSchemasSeatAssignment = T.Object({
   id: T.Integer(),
+  itineraryID: T.Integer(),
   passengerID: T.Integer(),
   flightInstanceID: T.Integer(),
   seat: CloneType(ComponentsSchemasSeatNumber)
@@ -833,6 +834,7 @@ const schema = {
         }),
         body: T.Object(
           {
+            itineraryID: T.Integer(),
             passengerID: T.Integer(),
             seat: CloneType(ComponentsSchemasSeatNumber)
           },

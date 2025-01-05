@@ -553,5 +553,47 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		}
 	}
 
+	passengerNames := []string{
+		"John Doe", "Jane Doe", "Bob Smith", "John Smith", "Alice Zhao", "Maria Garcia", "James Johnson", "Sarah Wilson", "Michael Chen", "Emily Brown", "David Kim", "Lisa Patel", "Carlos Rodriguez", "Emma Davis", "Mohammed Ahmed", "Sofia Martinez", "William Lee", "Olivia Taylor", "Daniel Jackson", "Isabella Lopez", "Alexander Wong", "Ava Thompson", "Lucas Nguyen", "Mia Anderson", "Ethan Kumar", "Sophia White", "Ryan O'Connor", "Grace Williams", "Nathan Cohen", "Victoria Singh",
+		// "Liam Johnson", "Avery Thompson", "Elijah Martinez", "Scarlett Davis", "William Wang", "Chloe Anderson", "Noah Hernandez", "Camila Rodriguez", "Oliver Garcia", "Evelyn Hernandez", "Lucas Wilson", "Mila King", "James Brown", "Zoe Lee", "Benjamin Lewis", "Aria Young", "Henry Miller",
+		// "Penelope Davis", "Joseph Thompson", "Grace Davis", "Nathan Garcia", "Aria Rodriguez", "Mia Wilson", "Camila Anderson", "Ethan Martinez", "Olivia White",
+		// "Logan Walker", "Abigail Harris", "Samuel Green", "Avery Turner", "Joseph Hill", "Mila Foster", "Henry Campbell", "Sofia Reyes", "Carter Rivera", "Evelyn Cooper",
+		// "Thomas Mitchell", "Grace Turner", "Elijah Bailey", "Zoe Bailey", "Ella Lee", "Aiden Davis", "Avery Johnson", "Aubrey Wilson", "Cadence Perez", "Hannah Morris",
+	}
+	passengerIDs := make([]int, len(passengerNames))
+	for i, name := range passengerNames {
+		resp, err := handler.CreatePassenger(ctx, api.CreatePassengerRequestObject{Body: &api.CreatePassengerJSONRequestBody{
+			Name: name,
+		}})
+		if err != nil {
+			return fmt.Errorf("inserting passenger: %w", err)
+		}
+		passengerIDs[i] = resp.(api.CreatePassenger201JSONResponse).Id
+	}
+
+	// Make a bunch of itineraries.
+	flightInstances, err := handler.ListFlightInstances(ctx, api.ListFlightInstancesRequestObject{})
+	if err != nil {
+		return err
+	}
+	for i, f := range flightInstances.(api.ListFlightInstances200JSONResponse) {
+		for j, passengerID := range passengerIDs {
+			if i%3+j%3 != 1 {
+				continue
+			}
+			_, err := handler.CreateItinerary(ctx, api.CreateItineraryRequestObject{
+				Body: &api.CreateItineraryJSONRequestBody{
+					FlightInstanceIDs: []int{f.Id},
+					PassengerIDs:      []int{passengerID},
+				},
+			})
+			if err != nil {
+				return fmt.Errorf("inserting itinerary: %w", err)
+			}
+		}
+	}
+
+	// Create seat assignments.
+
 	return nil
 }

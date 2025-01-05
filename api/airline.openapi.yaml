@@ -724,11 +724,14 @@ paths:
             schema:
               type: object
               properties:
+                itineraryID:
+                  type: integer
                 passengerID:
                   type: integer
                 seat:
                   $ref: '#/components/schemas/SeatNumber'
               required:
+                - itineraryID
                 - passengerID
                 - seat
       responses:
@@ -1275,6 +1278,8 @@ components:
       properties:
         id:
           type: integer
+        itineraryID:
+          type: integer
         passengerID:
           type: integer
         flightInstanceID:
@@ -1283,6 +1288,7 @@ components:
           $ref: '#/components/schemas/SeatNumber'
       required:
         - id
+        - itineraryID
         - passengerID
         - flightInstanceID
         - seat

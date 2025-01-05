@@ -194,6 +194,7 @@ type Route struct {
 type SeatAssignment struct {
 	FlightInstanceID int        `json:"flightInstanceID"`
 	Id               int        `json:"id"`
+	ItineraryID      int        `json:"itineraryID"`
 	PassengerID      int        `json:"passengerID"`
 	Seat             SeatNumber `json:"seat"`
 }
@@ -275,6 +276,7 @@ type CreateFlightInstanceJSONBody struct {
 
 // CreateSeatAssignmentJSONBody defines parameters for CreateSeatAssignment.
 type CreateSeatAssignmentJSONBody struct {
+	ItineraryID int        `json:"itineraryID"`
 	PassengerID int        `json:"passengerID"`
 	Seat        SeatNumber `json:"seat"`
 }

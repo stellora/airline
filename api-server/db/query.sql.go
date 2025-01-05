@@ -262,23 +262,30 @@ func (q *Queries) CreatePassenger(ctx context.Context, name string) (int64, erro
 
 const createSeatAssignment = `-- name: CreateSeatAssignment :one
 INSERT INTO seat_assignments (
+  itinerary_id,
   passenger_id,
   flight_instance_id,
   seat
 ) VALUES (
-  ?, ?, ?
+  ?, ?, ?, ?
 )
 RETURNING id
 `
 
 type CreateSeatAssignmentParams struct {
+	ItineraryID      int64
 	PassengerID      int64
 	FlightInstanceID int64
 	Seat             string
 }
 
 func (q *Queries) CreateSeatAssignment(ctx context.Context, arg CreateSeatAssignmentParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, createSeatAssignment, arg.PassengerID, arg.FlightInstanceID, arg.Seat)
+	row := q.db.QueryRowContext(ctx, createSeatAssignment,
+		arg.ItineraryID,
+		arg.PassengerID,
+		arg.FlightInstanceID,
+		arg.Seat,
+	)
 	var id int64
 	err := row.Scan(&id)
 	return id, err
@@ -635,7 +642,7 @@ func (q *Queries) GetRouteByIATACodes(ctx context.Context, arg GetRouteByIATACod
 }
 
 const getSeatAssignment = `-- name: GetSeatAssignment :one
-SELECT id, passenger_id, flight_instance_id, seat FROM seat_assignments
+SELECT id, itinerary_id, passenger_id, flight_instance_id, seat FROM seat_assignments
 WHERE id = ?
 LIMIT 1
 `
@@ -645,6 +652,7 @@ func (q *Queries) GetSeatAssignment(ctx context.Context, id int64) (SeatAssignme
 	var i SeatAssignment
 	err := row.Scan(
 		&i.ID,
+		&i.ItineraryID,
 		&i.PassengerID,
 		&i.FlightInstanceID,
 		&i.Seat,
@@ -1279,7 +1287,7 @@ func (q *Queries) ListRoutes(ctx context.Context) ([]Route, error) {
 
 const listSeatAssignmentsForFlightInstance = `-- name: ListSeatAssignmentsForFlightInstance :many
 
-SELECT id, passenger_id, flight_instance_id, seat FROM seat_assignments
+SELECT id, itinerary_id, passenger_id, flight_instance_id, seat FROM seat_assignments
 WHERE flight_instance_id = ?
 ORDER BY id ASC
 `
@@ -1296,6 +1304,7 @@ func (q *Queries) ListSeatAssignmentsForFlightInstance(ctx context.Context, flig
 		var i SeatAssignment
 		if err := rows.Scan(
 			&i.ID,
+			&i.ItineraryID,
 			&i.PassengerID,
 			&i.FlightInstanceID,
 			&i.Seat,
@@ -1548,7 +1557,7 @@ const updateSeatAssignment = `-- name: UpdateSeatAssignment :one
 UPDATE seat_assignments SET
 seat = COALESCE(?1, seat)
 WHERE id=?2
-RETURNING id, passenger_id, flight_instance_id, seat
+RETURNING id, itinerary_id, passenger_id, flight_instance_id, seat
 `
 
 type UpdateSeatAssignmentParams struct {
@@ -1561,6 +1570,7 @@ func (q *Queries) UpdateSeatAssignment(ctx context.Context, arg UpdateSeatAssign
 	var i SeatAssignment
 	err := row.Scan(
 		&i.ID,
+		&i.ItineraryID,
 		&i.PassengerID,
 		&i.FlightInstanceID,
 		&i.Seat,

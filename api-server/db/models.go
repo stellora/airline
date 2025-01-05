@@ -155,6 +155,7 @@ type Route struct {
 
 type SeatAssignment struct {
 	ID               int64
+	ItineraryID      int64
 	PassengerID      int64
 	FlightInstanceID int64
 	Seat             string

@@ -27,12 +27,14 @@ func TestListSeatAssignmentsForFlightInstance(t *testing.T) {
 		assertEqual(t, got, api.ListSeatAssignmentsForFlightInstance200JSONResponse{
 			{
 				Id:               1,
+				ItineraryID:      1,
 				PassengerID:      int(passengers[0]),
 				FlightInstanceID: flight.Id,
 				Seat:             "1A",
 			},
 			{
 				Id:               2,
+				ItineraryID:      2,
 				PassengerID:      int(passengers[1]),
 				FlightInstanceID: flight.Id,
 				Seat:             "3D",
@@ -79,9 +81,13 @@ func TestCreateSeatAssignment(t *testing.T) {
 }
 
 func insertSeatAssignmentT(t *testing.T, handler *Handler, passengerID int64, flightInstanceID int, seat string) int64 {
+	// Insert an itinerary for convenience.
+	itineraryID := insertItineraryT(t, handler, []int64{int64(flightInstanceID)}, []int64{passengerID})
+
 	resp, err := handler.CreateSeatAssignment(context.Background(), api.CreateSeatAssignmentRequestObject{
 		FlightInstanceID: flightInstanceID,
 		Body: &api.CreateSeatAssignmentJSONRequestBody{
+			ItineraryID: int(itineraryID),
 			PassengerID: int(passengerID),
 			Seat:        seat,
 		},

@@ -279,11 +279,12 @@ LIMIT 1;
 
 -- name: CreateSeatAssignment :one
 INSERT INTO seat_assignments (
+  itinerary_id,
   passenger_id,
   flight_instance_id,
   seat
 ) VALUES (
-  ?, ?, ?
+  ?, ?, ?, ?
 )
 RETURNING id;
 

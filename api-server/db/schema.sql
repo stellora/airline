@@ -136,10 +136,13 @@ CREATE TABLE IF NOT EXISTS itinerary_passengers (
 
 CREATE TABLE IF NOT EXISTS seat_assignments (
   id INTEGER PRIMARY KEY,
+  itinerary_id INTEGER NOT NULL,
   passenger_id INTEGER NOT NULL,
   flight_instance_id INTEGER NOT NULL,
   seat TEXT NOT NULL,
+  UNIQUE (itinerary_id, passenger_id, flight_instance_id),
   UNIQUE (flight_instance_id, seat),
+  FOREIGN KEY (itinerary_id) REFERENCES itineraries(id),
   FOREIGN KEY (passenger_id) REFERENCES passengers(id),
   FOREIGN KEY (flight_instance_id) REFERENCES flight_instances(id)
 );
