@@ -68,6 +68,11 @@
 			icon: Plane,
 		},
 		{
+			title: 'Itineraries',
+			url: '/admin/itineraries',
+			icon: TicketsPlane,
+		},
+		{
 			title: 'Passengers',
 			url: '/admin/passengers',
 			icon: Users,
