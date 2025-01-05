@@ -181,6 +181,74 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		}
 	}
 
+	log.Println("Creating fleets...")
+	fleetsByAirline := map[string][]api.CreateFleetJSONRequestBody{
+		"UA": []api.CreateFleetJSONRequestBody{
+			{Code: "B789", Description: "All 787-9s"},
+			{Code: "B77W", Description: "All 77Ws"},
+			{Code: "B738", Description: "All 737 MAX 8 and 737-800"},
+			{Code: "B739", Description: "All 737 MAX 9 and 737-900"},
+		},
+		"LH": []api.CreateFleetJSONRequestBody{
+			{Code: "B747", Description: "All 747s"},
+			{Code: "A350", Description: "All A350s"},
+		},
+		"SQ": []api.CreateFleetJSONRequestBody{
+			{Code: "B777", Description: "All 777s"},
+			{Code: "B359", Description: "All 359s"},
+		},
+	}
+	for airlineCode, fleets := range fleetsByAirline {
+		for _, fleet := range fleets {
+			if _, err := handler.CreateFleet(ctx, api.CreateFleetRequestObject{
+				AirlineSpec: api.NewAirlineSpec(0, airlineCode),
+				Body:        &fleet,
+			}); err != nil {
+				return fmt.Errorf("creating fleet %s: %w", fleet.Code, err)
+			}
+		}
+	}
+
+	log.Println("Adding aircraft to fleets...")
+	for _, aircraft := range aircraft {
+		airline, _ := aircraft.Airline.AsAirlineIATACode()
+		var fleetCode api.FleetCode
+		switch airline {
+		case "UA":
+			if aircraft.AircraftType == "789" {
+				fleetCode = "B789"
+			} else if aircraft.AircraftType == "B77W" {
+				fleetCode = "B77W"
+			} else if aircraft.AircraftType == "B38M" || aircraft.AircraftType == "B738" {
+				fleetCode = "B738"
+			} else if aircraft.AircraftType == "B39M" || aircraft.AircraftType == "B739" {
+				fleetCode = "B739"
+			}
+		case "LH":
+			if aircraft.AircraftType == "B744" || aircraft.AircraftType == "B748" {
+				fleetCode = "B747"
+			} else if aircraft.AircraftType == "A359" {
+				fleetCode = "A350"
+			}
+		case "SQ":
+			if strings.HasPrefix(aircraft.AircraftType, "B77") {
+				fleetCode = "B777"
+			} else if aircraft.AircraftType == "A359" {
+				fleetCode = "A359"
+			}
+		}
+		if fleetCode == "" {
+			continue
+		}
+		if _, err := handler.AddAircraftToFleet(ctx, api.AddAircraftToFleetRequestObject{
+			AirlineSpec:  aircraft.Airline,
+			AircraftSpec: api.NewAircraftSpec(0, aircraft.Registration),
+			FleetSpec:    api.NewFleetSpec(0, fleetCode),
+		}); err != nil {
+			return fmt.Errorf("adding aircraft to fleet: %w", err)
+		}
+	}
+
 	durationSec := func(hours, minutes int) int {
 		return (hours*60 + minutes) * 60
 	}

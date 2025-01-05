@@ -43,7 +43,7 @@
 			<Table.Header>
 				<Table.Row>
 					<Table.Head class="w-[100px]">Fleet code</Table.Head>
-					<Table.Head class="w-[130px]">Description</Table.Head>
+					<Table.Head>Description</Table.Head>
 					<Table.Head class="text-right"></Table.Head>
 				</Table.Row>
 			</Table.Header>
@@ -51,7 +51,7 @@
 				<Table.Body>
 					{#each data.fleets as fleet (fleet.id)}
 						<Table.Row class="stretched-link-container group">
-							<Table.Cell><FleetTitle {fleet} /></Table.Cell>
+							<Table.Cell class="font-semibold"><FleetTitle {fleet} /></Table.Cell>
 							<Table.Cell class="text-muted-foreground">
 								{fleet.description}
 							</Table.Cell>
@@ -73,7 +73,7 @@
 					{/each}
 				</Table.Body>
 			{:else}
-				<Table.Caption class="mb-4">No aircraft found</Table.Caption>
+				<Table.Caption class="mb-4">No fleets found</Table.Caption>
 			{/if}
 		</Table.Root>
 	</Card>

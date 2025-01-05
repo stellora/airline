@@ -9,13 +9,7 @@ import type { Actions, PageServerLoad } from './$types'
 export const load: PageServerLoad = async () => {
 	return {
 		aircraft: (await apiClient.GET('/aircraft', { fetch })).data,
-		form: await superValidate(typebox(schema['/aircraft']['POST']['args']['properties']['body']), {
-			defaults: {
-				aircraftType: '',
-				airline: '',
-				registration: '',
-			},
-		}),
+		form: await superValidate(typebox(schema['/aircraft']['POST']['args']['properties']['body'])),
 	}
 }
 
