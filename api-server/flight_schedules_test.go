@@ -24,11 +24,11 @@ func TestGetFlightSchedule(t *testing.T) {
 
 		want := api.GetFlightSchedule200JSONResponse{
 			Id:                 1,
-			Airline:            api.Airline{Id: 1, IataCode: "XX"},
+			Airline:            xxAirline,
 			Number:             "1",
 			OriginAirport:      aaaAirport,
 			DestinationAirport: bbbAirport,
-			AircraftType:       fixtureB77W,
+			Fleet:              ffFleet,
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
@@ -64,11 +64,11 @@ func TestListFlightSchedules(t *testing.T) {
 	want := api.ListFlightSchedules200JSONResponse{
 		api.FlightSchedule{
 			Id:                 1,
-			Airline:            api.Airline{Id: 1, IataCode: "XX"},
+			Airline:            xxAirline,
 			Number:             "1",
 			OriginAirport:      aaaAirport,
 			DestinationAirport: bbbAirport,
-			AircraftType:       fixtureB77W,
+			Fleet:              ffFleet,
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
@@ -78,11 +78,11 @@ func TestListFlightSchedules(t *testing.T) {
 		},
 		api.FlightSchedule{
 			Id:                 2,
-			Airline:            api.Airline{Id: 1, IataCode: "XX"},
+			Airline:            xxAirline,
 			Number:             "2",
 			OriginAirport:      bbbAirport,
 			DestinationAirport: aaaAirport,
-			AircraftType:       fixtureB77W,
+			Fleet:              ffFleet,
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
@@ -99,6 +99,7 @@ func TestCreateFlightSchedule(t *testing.T) {
 		ctx, handler := handlerTest(t)
 		insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 		insertAirlinesWithIATACodesT(t, handler, "XX")
+		insertTestFleet(t, handler)
 
 		resp, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{
 			Body: &api.CreateFlightScheduleJSONRequestBody{
@@ -106,7 +107,7 @@ func TestCreateFlightSchedule(t *testing.T) {
 				Number:             "1",
 				OriginAirport:      api.NewAirportSpec(1, ""),
 				DestinationAirport: api.NewAirportSpec(2, ""),
-				AircraftType:       "B77W",
+				Fleet:              ffFleetSpec,
 				StartDate:          fixtureLocalDate1.String(),
 				EndDate:            fixtureLocalDate2.String(),
 				DepartureTime:      "07:00",
@@ -126,6 +127,7 @@ func TestCreateFlightSchedule(t *testing.T) {
 		ctx, handler := handlerTest(t)
 		insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 		insertAirlinesWithIATACodesT(t, handler, "XX")
+		insertTestFleet(t, handler)
 
 		resp, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{
 			Body: &api.CreateFlightScheduleJSONRequestBody{
@@ -133,7 +135,7 @@ func TestCreateFlightSchedule(t *testing.T) {
 				Number:             "1",
 				OriginAirport:      api.NewAirportSpec(0, "AAA"),
 				DestinationAirport: api.NewAirportSpec(0, "BBB"),
-				AircraftType:       "B77W",
+				Fleet:              ffFleetSpec,
 				StartDate:          fixtureLocalDate1.String(),
 				EndDate:            fixtureLocalDate2.String(),
 				DepartureTime:      "07:00",
@@ -155,17 +157,17 @@ func TestUpdateFlightSchedule(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
 	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB")
+	insertFleetT(t, handler, "XX", "FF2", "")
 
 	{
 		// Update the flight
 		resp, err := handler.UpdateFlightSchedule(ctx, api.UpdateFlightScheduleRequestObject{
 			Id: 1,
 			Body: &api.UpdateFlightScheduleJSONRequestBody{
-				Airline:            ptrTo(api.NewAirlineSpec(0, "YY")),
 				Number:             ptrTo("100"),
 				OriginAirport:      ptrTo(api.NewAirportSpec(2, "")),
 				DestinationAirport: ptrTo(api.NewAirportSpec(0, "AAA")),
-				AircraftType:       ptrTo("B789"),
+				Fleet:              ptrTo(api.NewFleetSpec(0, "FF2")),
 				StartDate:          ptrTo(fixtureLocalDate3.String()),
 				EndDate:            ptrTo(fixtureLocalDate4.String()),
 				DaysOfWeek:         ptrTo([]int{1, 5}),
@@ -180,7 +182,7 @@ func TestUpdateFlightSchedule(t *testing.T) {
 		if _, ok := resp.(api.UpdateFlightSchedule200JSONResponse); !ok {
 			t.Errorf("got %T, want non-error response", resp)
 		}
-		checkFlightTitles(t, handler, []string{"YY100 BBB-AAA"})
+		checkFlightTitles(t, handler, []string{"XX100 BBB-AAA"})
 	}
 
 	{
@@ -192,11 +194,11 @@ func TestUpdateFlightSchedule(t *testing.T) {
 
 		want := api.GetFlightSchedule200JSONResponse{
 			Id:                 1,
-			Airline:            api.Airline{Id: 2, IataCode: "YY"},
+			Airline:            xxAirline,
 			Number:             "100",
 			OriginAirport:      bbbAirport,
 			DestinationAirport: aaaAirport,
-			AircraftType:       api.AircraftType{IcaoCode: "B789", Name: "Boeing 787-9"},
+			Fleet:              api.Fleet{Id: 2, Airline: xxAirline, Code: "FF2"},
 			StartDate:          fixtureLocalDate3.String(),
 			EndDate:            fixtureLocalDate4.String(),
 			DaysOfWeek:         []int{1, 5},

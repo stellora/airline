@@ -582,7 +582,7 @@ export interface components {
             destinationAirport: components["schemas"]["Airport"];
             /** Format: double */
             distanceMiles: number;
-            aircraftType: components["schemas"]["AircraftType"];
+            fleet: components["schemas"]["Fleet"];
             startDate: components["schemas"]["LocalDate"];
             endDate: components["schemas"]["LocalDate"];
             daysOfWeek: components["schemas"]["DaysOfWeek"];
@@ -602,7 +602,7 @@ export interface components {
             destinationAirport: components["schemas"]["Airport"];
             /** Format: double */
             distanceMiles: number;
-            aircraftType: components["schemas"]["AircraftType"];
+            fleet: components["schemas"]["Fleet"];
             aircraft?: components["schemas"]["Aircraft"];
             departureDateTime: components["schemas"]["ZonedDateTime"];
             arrivalDateTime: components["schemas"]["ZonedDateTime"];
@@ -1605,7 +1605,7 @@ export interface operations {
                     number: components["schemas"]["FlightNumber"];
                     originAirport: components["schemas"]["AirportSpec"];
                     destinationAirport: components["schemas"]["AirportSpec"];
-                    aircraftType: components["schemas"]["AircraftTypeICAOCode"];
+                    fleet: components["schemas"]["FleetSpec"];
                     startDate: components["schemas"]["LocalDate"];
                     endDate: components["schemas"]["LocalDate"];
                     daysOfWeek: components["schemas"]["DaysOfWeek"];
@@ -1721,11 +1721,10 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    airline?: components["schemas"]["AirlineSpec"];
                     number?: components["schemas"]["FlightNumber"];
                     originAirport?: components["schemas"]["AirportSpec"];
                     destinationAirport?: components["schemas"]["AirportSpec"];
-                    aircraftType?: components["schemas"]["AircraftTypeICAOCode"];
+                    fleet?: components["schemas"]["FleetSpec"];
                     startDate?: components["schemas"]["LocalDate"];
                     endDate?: components["schemas"]["LocalDate"];
                     daysOfWeek?: components["schemas"]["DaysOfWeek"];
@@ -1817,7 +1816,7 @@ export interface operations {
                     number: components["schemas"]["FlightNumber"];
                     originAirport: components["schemas"]["AirportSpec"];
                     destinationAirport: components["schemas"]["AirportSpec"];
-                    aircraftType: components["schemas"]["AircraftTypeICAOCode"];
+                    fleet: components["schemas"]["FleetSpec"];
                     aircraft?: components["schemas"]["AircraftSpec"];
                     departureDateTime: components["schemas"]["ZonedDateTime"];
                     arrivalDateTime: components["schemas"]["ZonedDateTime"];
@@ -1921,11 +1920,10 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    airline?: components["schemas"]["AirlineSpec"];
                     number?: components["schemas"]["FlightNumber"];
                     originAirport?: components["schemas"]["AirportSpec"];
                     destinationAirport?: components["schemas"]["AirportSpec"];
-                    aircraftType?: components["schemas"]["AircraftTypeICAOCode"];
+                    fleet?: components["schemas"]["FleetSpec"];
                     aircraft?: components["schemas"]["AircraftSpec"];
                     departureDateTime?: components["schemas"]["ZonedDateTime"];
                     arrivalDateTime?: components["schemas"]["ZonedDateTime"];

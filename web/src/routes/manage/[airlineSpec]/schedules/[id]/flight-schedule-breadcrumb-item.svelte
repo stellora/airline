@@ -9,8 +9,8 @@
 
 <Breadcrumb.Item
 	><Breadcrumb.Link
-		href={route('/admin/flight-schedules/[id]', {
-			params: { id: flightSchedule.id.toString() },
+		href={route('/manage/[airlineSpec]/schedules/[id]', {
+			params: { airlineSpec: flightSchedule.airline.iataCode, id: flightSchedule.id.toString() },
 		})}
 		class="[&_[data-airline-icon]]:-mt-[1.7px] mt-[2.2px] block"
 		><FlightTitle

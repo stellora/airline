@@ -24,7 +24,7 @@ func TestGetAircraft(t *testing.T) {
 				Id:           1,
 				Registration: "N1",
 				AircraftType: "B77W",
-				Airline:      api.Airline{Id: 1, IataCode: "XX"},
+				Airline:      xxAirline,
 			})
 		})
 		t.Run("by registration", func(t *testing.T) {
@@ -38,7 +38,7 @@ func TestGetAircraft(t *testing.T) {
 				Id:           1,
 				Registration: "N1",
 				AircraftType: "B77W",
-				Airline:      api.Airline{Id: 1, IataCode: "XX"},
+				Airline:      xxAirline,
 			})
 		})
 	})
@@ -75,8 +75,8 @@ func TestListAircraft(t *testing.T) {
 	}
 
 	want := api.ListAircraft200JSONResponse{
-		api.Aircraft{Id: int(ids[0]), Registration: "N1", AircraftType: "B77W", Airline: api.Airline{Id: 1, IataCode: "XX"}},
-		api.Aircraft{Id: int(ids[1]), Registration: "N2", AircraftType: "B77W", Airline: api.Airline{Id: 1, IataCode: "XX"}},
+		api.Aircraft{Id: int(ids[0]), Registration: "N1", AircraftType: "B77W", Airline: xxAirline},
+		api.Aircraft{Id: int(ids[1]), Registration: "N2", AircraftType: "B77W", Airline: xxAirline},
 	}
 	assertEqual(t, resp, want)
 }
@@ -100,7 +100,7 @@ func TestCreateAircraft(t *testing.T) {
 		Id:           1,
 		Registration: "N1",
 		AircraftType: "B77W",
-		Airline:      api.Airline{Id: 1, IataCode: "XX"},
+		Airline:      xxAirline,
 	}
 	assertEqual(t, resp, want)
 

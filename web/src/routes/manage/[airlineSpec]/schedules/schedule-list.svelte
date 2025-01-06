@@ -47,8 +47,8 @@
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"
-								href={route('/admin/flight-schedules/[id]', {
-									params: { id: flight.id.toString() },
+								href={route('/manage/[airlineSpec]/schedules/[id]', {
+									params: { airlineSpec: flight.airline.iataCode, id: flight.id.toString() },
 								})}
 								class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 							>

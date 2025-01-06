@@ -98,8 +98,11 @@
 			<Button
 				variant="outline"
 				size="pageNavbar"
-				href={route('/admin/flight-schedules/[id]', {
-					params: { id: data.flightInstance.scheduleID.toString() },
+				href={route('/manage/[airlineSpec]/schedules/[id]', {
+					params: {
+						airlineSpec: data.flightInstance.airline.iataCode,
+						id: data.flightInstance.scheduleID.toString(),
+					},
 				})}><CalendarRange /> View schedule</Button
 			>
 		{/if}

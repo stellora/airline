@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
 
 test('flight list has expected title and initial flights', async ({ page }) => {
-	await page.goto('/admin/flight-schedules')
+	await page.goto('/manage/[airlineSpec]/schedules')
 	await expect(page.locator('h1')).toContainText('Flights')
 	await expect(page.getByText('UA1 SFO–SIN')).toBeVisible()
 })
@@ -44,7 +44,7 @@ async function addFlight(
 	originIataCode: string,
 	destinationIataCode: string,
 ): Promise<void> {
-	await page.goto('/admin/flight-schedules')
+	await page.goto('/manage/[airlineSpec]/schedules')
 
 	// Add flight
 	await page.getByLabel('Flight number').fill(number)
@@ -57,6 +57,6 @@ async function addFlight(
 }
 
 async function gotoAdminFlightPage(page: Page, number: string): Promise<void> {
-	await page.goto('/admin/flight-schedules')
+	await page.goto('/manage/[airlineSpec]/schedules')
 	await page.getByRole('link', { name: number }).click()
 }

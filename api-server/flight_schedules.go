@@ -13,14 +13,22 @@ import (
 
 func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 	daysOfWeek, _ := parseDaysOfWeek(a.DaysOfWeek)
+	airline := fromDBAirline(db.Airline{
+		ID:       a.AirlineID,
+		IataCode: a.AirlineIataCode,
+		Name:     a.AirlineName,
+	})
+	fleet := fromDBFleet(db.FleetsView{
+		ID:          a.FleetID,
+		AirlineID:   a.FleetAirlineID,
+		Code:        a.FleetCode,
+		Description: a.FleetDescription,
+	})
+	fleet.Airline = airline
 	b := api.FlightSchedule{
-		Id: int(a.ID),
-		Airline: fromDBAirline(db.Airline{
-			ID:       a.AirlineID,
-			IataCode: a.AirlineIataCode,
-			Name:     a.AirlineName,
-		}),
-		Number: a.Number,
+		Id:      int(a.ID),
+		Airline: airline,
+		Number:  a.Number,
 		OriginAirport: fromDBAirport(db.Airport{
 			ID:       a.OriginAirportID,
 			IataCode: a.OriginAirportIataCode,
@@ -31,7 +39,7 @@ func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 			IataCode: a.DestinationAirportIataCode,
 			OadbID:   a.DestinationAirportOadbID,
 		}),
-		AircraftType:  fromAircraftTypeCode(a.AircraftType),
+		Fleet:         fleet,
 		StartDate:     a.StartLocaldate.String(),
 		EndDate:       a.EndLocaldate.String(),
 		DaysOfWeek:    daysOfWeek,
@@ -97,8 +105,12 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		return nil, fmt.Errorf("looking up destinationAirport: %w", err)
 	}
 
-	if request.Body.AircraftType == "" {
-		return nil, errors.New("aircraftType must not be empty")
+	fleet, err := getFleetBySpec(ctx, queriesTx, airline.ID, request.Body.Fleet)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("fleet %q not found", request.Body.Fleet)
+		}
+		return nil, fmt.Errorf("looking up fleet: %w", err)
 	}
 
 	startDate, err := localtime.ParseLocalDate(request.Body.StartDate)
@@ -120,7 +132,7 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
 		DestinationAirportID: destinationAirport.ID,
-		AircraftType:         request.Body.AircraftType,
+		FleetID:              fleet.ID,
 		StartLocaldate:       &startDate,
 		EndLocaldate:         &endDate,
 		DaysOfWeek:           toDBDaysOfWeek(request.Body.DaysOfWeek),
@@ -156,15 +168,16 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 	defer tx.Rollback()
 	queriesTx := h.queries.WithTx(tx)
 
+	existing, err := queriesTx.GetFlightSchedule(ctx, int64(request.Id))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.UpdateFlightSchedule404Response{}, nil
+		}
+		return nil, err
+	}
+
 	params := db.UpdateFlightScheduleParams{
 		ID: int64(request.Id),
-	}
-	if request.Body.Airline != nil {
-		airline, err := getAirlineBySpec(ctx, queriesTx, *request.Body.Airline)
-		if err != nil {
-			return nil, err
-		}
-		params.AirlineID = sql.NullInt64{Int64: airline.ID, Valid: true}
 	}
 	if request.Body.Number != nil {
 		params.Number = sql.NullString{String: *request.Body.Number, Valid: true}
@@ -183,8 +196,15 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 		}
 		params.DestinationAirportID = sql.NullInt64{Int64: destinationAirport.ID, Valid: true}
 	}
-	if request.Body.AircraftType != nil {
-		params.AircraftType = sql.NullString{String: *request.Body.AircraftType, Valid: true}
+	if request.Body.Fleet != nil {
+		fleet, err := getFleetBySpec(ctx, queriesTx, existing.AirlineID, *request.Body.Fleet)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, fmt.Errorf("fleet %q not found", request.Body.Fleet)
+			}
+			return nil, fmt.Errorf("looking up fleet: %w", err)
+		}
+		params.FleetID = sql.NullInt64{Int64: fleet.ID, Valid: true}
 	}
 	if request.Body.StartDate != nil {
 		startDate, err := localtime.ParseLocalDate(*request.Body.StartDate)

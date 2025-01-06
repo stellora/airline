@@ -198,7 +198,7 @@ ORDER BY id ASC;
 
 -- name: CreateFlightSchedule :one
 INSERT INTO flight_schedules (
-  airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, start_localdate, end_localdate, days_of_week, departure_localtime, duration_sec, published
+  airline_id, number, origin_airport_id, destination_airport_id, fleet_id, start_localdate, end_localdate, days_of_week, departure_localtime, duration_sec, published
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
@@ -206,11 +206,10 @@ RETURNING id;
 
 -- name: UpdateFlightSchedule :one
 UPDATE flight_schedules SET
-airline_id = COALESCE(sqlc.narg('airline_id'), airline_id),
 number = COALESCE(sqlc.narg('number'), number),
 origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
 destination_airport_id = COALESCE(sqlc.narg('destination_airport_id'), destination_airport_id),
-aircraft_type = COALESCE(sqlc.narg('aircraft_type'), aircraft_type),
+fleet_id = COALESCE(sqlc.narg('fleet_id'), fleet_id),
 start_localdate = COALESCE(sqlc.narg('start_localdate'), start_localdate),
 end_localdate = COALESCE(sqlc.narg('end_localdate'), end_localdate),
 days_of_week = COALESCE(sqlc.narg('days_of_week'), days_of_week),
@@ -259,7 +258,7 @@ INSERT INTO flight_instances (
   number,
   origin_airport_id,
   destination_airport_id,
-  aircraft_type,
+  fleet_id,
   aircraft_id,
   departure_datetime,
   arrival_datetime,
@@ -274,11 +273,10 @@ RETURNING id;
 
 -- name: UpdateFlightInstance :one
 UPDATE flight_instances SET
-airline_id = COALESCE(sqlc.narg('airline_id'), airline_id),
 number = COALESCE(sqlc.narg('number'), number),
 origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
 destination_airport_id = COALESCE(sqlc.narg('destination_airport_id'), destination_airport_id),
-aircraft_type = COALESCE(sqlc.narg('aircraft_type'), aircraft_type),
+fleet_id = COALESCE(sqlc.narg('fleet_id'), fleet_id),
 aircraft_id = COALESCE(sqlc.narg('aircraft_id'), aircraft_id),
 departure_datetime = COALESCE(sqlc.narg('departure_datetime'), departure_datetime),
 arrival_datetime = COALESCE(sqlc.narg('arrival_datetime'), arrival_datetime),

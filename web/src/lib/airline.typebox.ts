@@ -201,7 +201,7 @@ const ComponentsSchemasFlightSchedule = T.Object({
   originAirport: CloneType(ComponentsSchemasAirport),
   destinationAirport: CloneType(ComponentsSchemasAirport),
   distanceMiles: T.Number({ format: 'double' }),
-  aircraftType: CloneType(ComponentsSchemasAircraftType),
+  fleet: CloneType(ComponentsSchemasFleet),
   startDate: CloneType(ComponentsSchemasLocalDate),
   endDate: CloneType(ComponentsSchemasLocalDate),
   daysOfWeek: CloneType(ComponentsSchemasDaysOfWeek),
@@ -219,7 +219,7 @@ const ComponentsSchemasFlightInstance = T.Object({
   originAirport: CloneType(ComponentsSchemasAirport),
   destinationAirport: CloneType(ComponentsSchemasAirport),
   distanceMiles: T.Number({ format: 'double' }),
-  aircraftType: CloneType(ComponentsSchemasAircraftType),
+  fleet: CloneType(ComponentsSchemasFleet),
   aircraft: T.Optional(CloneType(ComponentsSchemasAircraft)),
   departureDateTime: CloneType(ComponentsSchemasZonedDateTime),
   arrivalDateTime: CloneType(ComponentsSchemasZonedDateTime),
@@ -783,7 +783,7 @@ const schema = {
             destinationAirport: CloneType(ComponentsSchemasAirportSpec, {
               'x-in': 'path'
             }),
-            aircraftType: CloneType(ComponentsSchemasAircraftTypeIcaoCode),
+            fleet: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' }),
             startDate: CloneType(ComponentsSchemasLocalDate),
             endDate: CloneType(ComponentsSchemasLocalDate),
             daysOfWeek: CloneType(ComponentsSchemasDaysOfWeek),
@@ -828,9 +828,6 @@ const schema = {
         }),
         body: T.Object(
           {
-            airline: T.Optional(
-              CloneType(ComponentsSchemasAirlineSpec, { 'x-in': 'path' })
-            ),
             number: T.Optional(CloneType(ComponentsSchemasFlightNumber)),
             originAirport: T.Optional(
               CloneType(ComponentsSchemasAirportSpec, { 'x-in': 'path' })
@@ -838,8 +835,8 @@ const schema = {
             destinationAirport: T.Optional(
               CloneType(ComponentsSchemasAirportSpec, { 'x-in': 'path' })
             ),
-            aircraftType: T.Optional(
-              CloneType(ComponentsSchemasAircraftTypeIcaoCode)
+            fleet: T.Optional(
+              CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' })
             ),
             startDate: T.Optional(CloneType(ComponentsSchemasLocalDate)),
             endDate: T.Optional(CloneType(ComponentsSchemasLocalDate)),
@@ -906,7 +903,7 @@ const schema = {
             destinationAirport: CloneType(ComponentsSchemasAirportSpec, {
               'x-in': 'path'
             }),
-            aircraftType: CloneType(ComponentsSchemasAircraftTypeIcaoCode),
+            fleet: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' }),
             aircraft: T.Optional(
               CloneType(ComponentsSchemasAircraftSpec, { 'x-in': 'path' })
             ),
@@ -947,9 +944,6 @@ const schema = {
         }),
         body: T.Object(
           {
-            airline: T.Optional(
-              CloneType(ComponentsSchemasAirlineSpec, { 'x-in': 'path' })
-            ),
             number: T.Optional(CloneType(ComponentsSchemasFlightNumber)),
             originAirport: T.Optional(
               CloneType(ComponentsSchemasAirportSpec, { 'x-in': 'path' })
@@ -957,8 +951,8 @@ const schema = {
             destinationAirport: T.Optional(
               CloneType(ComponentsSchemasAirportSpec, { 'x-in': 'path' })
             ),
-            aircraftType: T.Optional(
-              CloneType(ComponentsSchemasAircraftTypeIcaoCode)
+            fleet: T.Optional(
+              CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' })
             ),
             aircraft: T.Optional(
               CloneType(ComponentsSchemasAircraftSpec, { 'x-in': 'path' })

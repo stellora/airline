@@ -62,6 +62,11 @@ export const actions: Actions = {
 				error: await resp.response.text(),
 			})
 		}
-		return redirect(303, route('/admin/flight-schedules'))
+		return redirect(
+			303,
+			route('/manage/[airlineSpec]/schedules', {
+				params: { airlineSpec: params.airlineSpec },
+			}),
+		)
 	},
 }

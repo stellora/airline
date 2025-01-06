@@ -6,8 +6,8 @@
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import Plus from 'lucide-svelte/icons/plus'
-	import AircraftForm from '../../../aircraft/aircraft-form.svelte'
-	import AircraftList from '../../../aircraft/aircraft-list.svelte'
+	import AircraftForm from '../../../admin/aircraft/aircraft-form.svelte'
+	import AircraftList from '../../../admin/aircraft/aircraft-list.svelte'
 
 	let { data } = $props()
 </script>

@@ -564,8 +564,8 @@ paths:
                   $ref: '#/components/schemas/AirportSpec'
                 destinationAirport:
                   $ref: '#/components/schemas/AirportSpec'
-                aircraftType:
-                  $ref: '#/components/schemas/AircraftTypeICAOCode'
+                fleet:
+                  $ref: '#/components/schemas/FleetSpec'
                 startDate:
                   $ref: '#/components/schemas/LocalDate'
                 endDate:
@@ -584,7 +584,7 @@ paths:
                 - number
                 - originAirport
                 - destinationAirport
-                - aircraftType
+                - fleet
                 - startDate
                 - endDate
                 - daysOfWeek
@@ -640,16 +640,14 @@ paths:
             schema:
               type: object
               properties:
-                airline:
-                  $ref: '#/components/schemas/AirlineSpec'
                 number:
                   $ref: '#/components/schemas/FlightNumber'
                 originAirport:
                   $ref: '#/components/schemas/AirportSpec'
                 destinationAirport:
                   $ref: '#/components/schemas/AirportSpec'
-                aircraftType:
-                  $ref: '#/components/schemas/AircraftTypeICAOCode'
+                fleet:
+                  $ref: '#/components/schemas/FleetSpec'
                 startDate:
                   $ref: '#/components/schemas/LocalDate'
                 endDate:
@@ -737,8 +735,8 @@ paths:
                   $ref: '#/components/schemas/AirportSpec'
                 destinationAirport:
                   $ref: '#/components/schemas/AirportSpec'
-                aircraftType:
-                  $ref: '#/components/schemas/AircraftTypeICAOCode'
+                fleet:
+                  $ref: '#/components/schemas/FleetSpec'
                 aircraft:
                   $ref: '#/components/schemas/AircraftSpec'
                 departureDateTime:
@@ -755,7 +753,7 @@ paths:
                 - number
                 - originAirport
                 - destinationAirport
-                - aircraftType
+                - fleet
                 - departureDateTime
                 - arrivalDateTime
                 - notes
@@ -801,16 +799,14 @@ paths:
             schema:
               type: object
               properties:
-                airline:
-                  $ref: '#/components/schemas/AirlineSpec'
                 number:
                   $ref: '#/components/schemas/FlightNumber'
                 originAirport:
                   $ref: '#/components/schemas/AirportSpec'
                 destinationAirport:
                   $ref: '#/components/schemas/AirportSpec'
-                aircraftType:
-                  $ref: '#/components/schemas/AircraftTypeICAOCode'
+                fleet:
+                  $ref: '#/components/schemas/FleetSpec'
                 aircraft:
                   $ref: '#/components/schemas/AircraftSpec'
                 departureDateTime:
@@ -1329,8 +1325,8 @@ components:
         distanceMiles:
           type: number
           format: double
-        aircraftType:
-          $ref: '#/components/schemas/AircraftType'
+        fleet:
+          $ref: '#/components/schemas/Fleet'
         startDate:
           $ref: '#/components/schemas/LocalDate'
         endDate:
@@ -1350,7 +1346,7 @@ components:
         - originAirport
         - destinationAirport
         - distanceMiles
-        - aircraftType
+        - fleet
         - startDate
         - endDate
         - daysOfWeek
@@ -1383,8 +1379,8 @@ components:
         distanceMiles:
           type: number
           format: double
-        aircraftType:
-           $ref: '#/components/schemas/AircraftType'
+        fleet:
+           $ref: '#/components/schemas/Fleet'
         aircraft:
            $ref: '#/components/schemas/Aircraft'
         departureDateTime:
@@ -1403,7 +1399,7 @@ components:
         - originAirport
         - destinationAirport
         - distanceMiles
-        - aircraftType
+        - fleet
         - departureDateTime
         - arrivalDateTime
         - notes

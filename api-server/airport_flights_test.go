@@ -15,11 +15,11 @@ func TestListFlightSchedulesByAirport(t *testing.T) {
 	want := api.ListFlightSchedulesByAirport200JSONResponse{
 		{
 			Id:                 1,
-			Airline:            api.Airline{Id: 1, IataCode: "XX"},
+			Airline:            xxAirline,
 			Number:             "1",
 			OriginAirport:      aaaAirport,
 			DestinationAirport: bbbAirport,
-			AircraftType:       fixtureB77W,
+			Fleet:              ffFleet,
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
@@ -28,11 +28,11 @@ func TestListFlightSchedulesByAirport(t *testing.T) {
 			Published:          true},
 		{
 			Id:                 2,
-			Airline:            api.Airline{Id: 1, IataCode: "XX"},
+			Airline:            xxAirline,
 			Number:             "2",
 			OriginAirport:      bbbAirport,
 			DestinationAirport: aaaAirport,
-			AircraftType:       fixtureB77W,
+			Fleet:              ffFleet,
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,

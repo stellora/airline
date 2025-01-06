@@ -10,6 +10,6 @@
 	}: { children: Snippet } & HTMLAttributes<HTMLDListElement> = $props()
 </script>
 
-<dl {...restProps} class={cn('[&>dd:not(:last-child)]:mb-3', className)}>
+<dl {...restProps} class={cn('[&>dd:not(:last-child)]:mb-4', className)}>
 	{@render children()}
 </dl>

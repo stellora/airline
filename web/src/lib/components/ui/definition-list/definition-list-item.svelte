@@ -11,5 +11,5 @@
 	}: { title: string; children: Snippet } & HTMLAttributes<HTMLElement> = $props()
 </script>
 
-<dt class="font-medium text-sm text-muted-foreground">{title}</dt>
+<dt class="font-medium text-sm text-foreground/75">{title}</dt>
 <dd {...restProps} class={cn('', className)}>{@render children()}</dd>

@@ -14,14 +14,22 @@ import (
 )
 
 func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
+	airline := fromDBAirline(db.Airline{
+		ID:       a.AirlineID,
+		IataCode: a.AirlineIataCode,
+		Name:     a.AirlineName,
+	})
+	fleet := fromDBFleet(db.FleetsView{
+		ID:          a.FleetID,
+		AirlineID:   a.FleetAirlineID,
+		Code:        a.FleetCode,
+		Description: a.FleetDescription,
+	})
+	fleet.Airline = airline
 	b := api.FlightInstance{
-		Id: int(a.ID),
-		Airline: fromDBAirline(db.Airline{
-			ID:       a.AirlineID,
-			IataCode: a.AirlineIataCode,
-			Name:     a.AirlineName,
-		}),
-		Number: a.Number,
+		Id:      int(a.ID),
+		Airline: airline,
+		Number:  a.Number,
 		OriginAirport: fromDBAirport(db.Airport{
 			ID:       a.OriginAirportID,
 			IataCode: a.OriginAirportIataCode,
@@ -32,7 +40,7 @@ func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 			IataCode: a.DestinationAirportIataCode,
 			OadbID:   a.DestinationAirportOadbID,
 		}),
-		AircraftType:      fromAircraftTypeCode(a.AircraftType),
+		Fleet:             fleet,
 		DepartureDateTime: a.DepartureDatetime,
 		ArrivalDateTime:   a.ArrivalDatetime,
 		Notes:             a.Notes,
@@ -136,8 +144,12 @@ func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFl
 		return nil, fmt.Errorf("looking up destinationAirport: %w", err)
 	}
 
-	if request.Body.AircraftType == "" {
-		return nil, errors.New("aircraftType must not be empty")
+	fleet, err := getFleetBySpec(ctx, queriesTx, airline.ID, request.Body.Fleet)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("fleet %q not found", request.Body.Fleet)
+		}
+		return nil, fmt.Errorf("looking up fleet: %w", err)
 	}
 
 	var aircraftID sql.NullInt64
@@ -158,7 +170,7 @@ func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFl
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
 		DestinationAirportID: destinationAirport.ID,
-		AircraftType:         request.Body.AircraftType,
+		FleetID:              fleet.ID,
 		AircraftID:           aircraftID,
 		DepartureDatetime:    &request.Body.DepartureDateTime,
 		ArrivalDatetime:      &request.Body.ArrivalDateTime,
@@ -191,8 +203,26 @@ func (h *Handler) UpdateFlightInstance(ctx context.Context, request api.UpdateFl
 	defer tx.Rollback()
 	queriesTx := h.queries.WithTx(tx)
 
+	existing, err := queriesTx.GetFlightInstance(ctx, int64(request.Id))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.UpdateFlightInstance404Response{}, nil
+		}
+		return nil, err
+	}
+
 	params := db.UpdateFlightInstanceParams{
 		ID: int64(request.Id),
+	}
+	if request.Body.Fleet != nil {
+		fleet, err := getFleetBySpec(ctx, queriesTx, existing.AirlineID, *request.Body.Fleet)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, fmt.Errorf("fleet %q not found", request.Body.Fleet)
+			}
+			return nil, fmt.Errorf("looking up fleet: %w", err)
+		}
+		params.FleetID = sql.NullInt64{Int64: fleet.ID, Valid: true}
 	}
 	if request.Body.Aircraft != nil {
 		aircraft, err := getAircraftBySpec(ctx, queriesTx, *request.Body.Aircraft)

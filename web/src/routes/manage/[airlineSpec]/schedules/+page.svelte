@@ -1,36 +1,52 @@
 <script lang="ts">
-	import Distance from '$lib/components/distance.svelte'
-	import FlightTitle from '$lib/components/flight-title.svelte'
-	import * as Card from '$lib/components/ui/card'
+	import { page } from '$app/state'
+	import { schema } from '$lib/airline.typebox'
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
+	import { buttonVariants } from '$lib/components/ui/button'
+	import * as Drawer from '$lib/components/ui/drawer/index.js'
+	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
+	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
+	import { route } from '$lib/route-helpers'
+	import Plus from 'lucide-svelte/icons/plus'
+	import FlightScheduleForm from './schedule-form.svelte'
+	import FlightScheduleList from './schedule-list.svelte'
 
 	let { data } = $props()
 </script>
 
-<Page title={`Scheduled flights - ${data.airline.iataCode}`}>
-	<Card.Root>
-		<Card.Content>
-			{#await data.flightSchedules}
-				<div class="text-muted-foreground">Loading...</div>
-			{:then flightSchedules}
-				{#if flightSchedules && flightSchedules.length > 0}
-					<ul
-						class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4"
-						data-testid="flights-to-from-airline"
-					>
-						{#each flightSchedules as flight (flight.id)}
-							<li class="p-3 border rounded-md flex items-center justify-between gap-2">
-								<FlightTitle class="w-full" link {flight} />
-								<span class="text-muted-foreground whitespace-nowrap text-sm">
-									<Distance distanceMiles={flight.distanceMiles} />
-								</span>
-							</li>
-						{/each}
-					</ul>
-				{:else}
-					<p class="text-muted-foreground">No flights.</p>
-				{/if}
-			{/await}
-		</Card.Content>
-	</Card.Root>
+<PageNav>
+	{#snippet actions()}
+		<Drawer.DrawerByNavigationState id="new-flight-schedule" direction="right">
+			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
+				<Plus /> New flight schedule
+			</Drawer.Trigger>
+			<Drawer.Content>
+				<Drawer.Header>
+					<Drawer.Title>New flight schedule</Drawer.Title>
+				</Drawer.Header>
+				<Drawer.ScrollArea>
+					<FlightScheduleForm
+						action="?/create"
+						submitLabel="Create"
+						data={data.form}
+						schema={schema['/flight-schedules']['POST']['args']['properties']['body']}
+					/>
+				</Drawer.ScrollArea>
+			</Drawer.Content>
+		</Drawer.DrawerByNavigationState>
+	{/snippet}
+</PageNav>
+
+<BreadcrumbsForLayout>
+	<Breadcrumb.Item>
+		<Breadcrumb.Link
+			href={route('/manage/[airlineSpec]/schedules', {
+				params: { airlineSpec: page.params.airlineSpec },
+			})}>Schedules</Breadcrumb.Link
+		>
+	</Breadcrumb.Item></BreadcrumbsForLayout
+>
+<Page title={`Flight schedules - ${data.airline.iataCode}`}>
+	<FlightScheduleList flightSchedules={data.flightSchedules} />
 </Page>

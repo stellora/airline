@@ -69,7 +69,7 @@ type FlightInstance struct {
 	Number                                string
 	OriginAirportID                       int64
 	DestinationAirportID                  int64
-	AircraftType                          string
+	FleetID                               int64
 	AircraftID                            sql.NullInt64
 	DepartureDatetime                     *zonedtime.ZonedTime
 	ArrivalDatetime                       *zonedtime.ZonedTime
@@ -87,7 +87,7 @@ type FlightInstancesView struct {
 	Number                                string
 	OriginAirportID                       int64
 	DestinationAirportID                  int64
-	AircraftType                          string
+	FleetID                               int64
 	AircraftID                            sql.NullInt64
 	DepartureDatetime                     zonedtime.ZonedTime
 	ArrivalDatetime                       zonedtime.ZonedTime
@@ -97,6 +97,9 @@ type FlightInstancesView struct {
 	Published                             bool
 	AirlineIataCode                       string
 	AirlineName                           string
+	FleetAirlineID                        int64
+	FleetCode                             string
+	FleetDescription                      string
 	OriginAirportIataCode                 string
 	OriginAirportOadbID                   sql.NullInt64
 	DestinationAirportIataCode            string
@@ -114,7 +117,7 @@ type FlightSchedule struct {
 	Number               string
 	OriginAirportID      int64
 	DestinationAirportID int64
-	AircraftType         string
+	FleetID              int64
 	StartLocaldate       *localtime.LocalDate
 	EndLocaldate         *localtime.LocalDate
 	DaysOfWeek           string
@@ -129,7 +132,7 @@ type FlightSchedulesView struct {
 	Number                     string
 	OriginAirportID            int64
 	DestinationAirportID       int64
-	AircraftType               string
+	FleetID                    int64
 	StartLocaldate             localtime.LocalDate
 	EndLocaldate               localtime.LocalDate
 	DaysOfWeek                 string
@@ -138,6 +141,9 @@ type FlightSchedulesView struct {
 	Published                  bool
 	AirlineIataCode            string
 	AirlineName                string
+	FleetAirlineID             int64
+	FleetCode                  string
+	FleetDescription           string
 	OriginAirportIataCode      string
 	OriginAirportOadbID        sql.NullInt64
 	DestinationAirportIataCode string

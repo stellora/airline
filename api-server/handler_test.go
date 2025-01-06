@@ -121,6 +121,10 @@ var (
 		Country:    "US",
 		TimezoneID: "America/Chicago",
 	}
+
+	xxAirline   = api.Airline{Id: 1, IataCode: "XX"}
+	ffFleet     = api.Fleet{Id: 1, Airline: xxAirline, Code: "FF"}
+	ffFleetSpec = api.NewFleetSpec(0, "FF")
 )
 
 func handlerTest(t *testing.T) (context.Context, *Handler) {
@@ -171,7 +175,7 @@ func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...stri
 					Number:             flightNumber,
 					OriginAirport:      api.NewAirportSpec(0, originIATACode),
 					DestinationAirport: api.NewAirportSpec(0, destinationIATACode),
-					AircraftType:       fixtureB77W.IcaoCode,
+					Fleet:              ffFleetSpec,
 					StartDate:          fixtureLocalDate1.String(),
 					EndDate:            fixtureLocalDate2.String(),
 					DaysOfWeek:         fixtureDaysOfWeek,
@@ -189,6 +193,7 @@ func insertFlightSchedulesT(t *testing.T, handler *Handler, flightTitles ...stri
 	}
 
 	t.Helper()
+	insertTestFleet(t, handler)
 	ids, err := insertFlightSchedules(context.Background(), handler, flightTitles...)
 	if err != nil {
 		t.Fatal(err)
@@ -204,7 +209,7 @@ func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate lo
 				Number:             "1",
 				OriginAirport:      api.NewAirportSpec(0, "AAA"),
 				DestinationAirport: api.NewAirportSpec(0, "BBB"),
-				AircraftType:       fixtureB77W.IcaoCode,
+				Fleet:              ffFleetSpec,
 				StartDate:          startDate.String(),
 				EndDate:            endDate.String(),
 				DaysOfWeek:         daysOfWeek,
@@ -220,6 +225,7 @@ func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate lo
 	}
 
 	t.Helper()
+	insertTestFleet(t, handler)
 	flightSchedule, err := insertFlightSchedule(context.Background(), handler, startDate, endDate, daysOfWeek)
 	if err != nil {
 		t.Fatal(err)
@@ -229,6 +235,7 @@ func insertFlightScheduleT(t *testing.T, handler *Handler, startDate, endDate lo
 
 func insertFlightInstanceT(t *testing.T, handler *Handler, newInstance api.CreateFlightInstanceJSONRequestBody) api.FlightInstance {
 	t.Helper()
+	insertTestFleet(t, handler)
 	instance, err := insertFlightInstance(context.Background(), handler, newInstance)
 	if err != nil {
 		t.Fatal(err)

@@ -11,16 +11,18 @@ func TestListFlightSchedulesByAirline(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
+	insertTestFleet(t, handler)
+	insertFleetT(t, handler, "YY", "FF", "")
 	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 AAA-BBB", "YY3 AAA-BBB")
 
 	want := api.ListFlightSchedulesByAirline200JSONResponse{
 		api.FlightSchedule{
 			Id:                 1,
-			Airline:            api.Airline{Id: 1, IataCode: "XX"},
+			Airline:            xxAirline,
 			Number:             "1",
 			OriginAirport:      aaaAirport,
 			DestinationAirport: bbbAirport,
-			AircraftType:       fixtureB77W,
+			Fleet:              ffFleet,
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
@@ -30,11 +32,11 @@ func TestListFlightSchedulesByAirline(t *testing.T) {
 		},
 		api.FlightSchedule{
 			Id:                 2,
-			Airline:            api.Airline{Id: 1, IataCode: "XX"},
+			Airline:            xxAirline,
 			Number:             "2",
 			OriginAirport:      aaaAirport,
 			DestinationAirport: bbbAirport,
-			AircraftType:       fixtureB77W,
+			Fleet:              ffFleet,
 			StartDate:          fixtureLocalDate1.String(),
 			EndDate:            fixtureLocalDate2.String(),
 			DaysOfWeek:         fixtureDaysOfWeek,
@@ -64,6 +66,7 @@ func TestListFlightSchedulesByAirline(t *testing.T) {
 		assertEqual(t, resp, want)
 	})
 }
+
 func TestListFlightInstancesByAirline(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
@@ -78,7 +81,7 @@ func TestListFlightInstancesByAirline(t *testing.T) {
 		Number:             "222",
 		OriginAirport:      api.NewAirportSpec(0, "BBB"),
 		DestinationAirport: api.NewAirportSpec(0, "AAA"),
-		AircraftType:       fixtureB77W.IcaoCode,
+		Fleet:              ffFleetSpec,
 		DepartureDateTime:  fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
 		ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(10, 0)),
 		Published:          ptrTo(true),

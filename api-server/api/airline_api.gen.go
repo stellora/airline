@@ -121,9 +121,8 @@ type FleetSpec struct {
 
 // FlightInstance A single flight, either created and synced automatically from a flight schedule or created manually.
 type FlightInstance struct {
-	Aircraft     *Aircraft    `json:"aircraft,omitempty"`
-	AircraftType AircraftType `json:"aircraftType"`
-	Airline      Airline      `json:"airline"`
+	Aircraft *Aircraft `json:"aircraft,omitempty"`
+	Airline  Airline   `json:"airline"`
 
 	// ArrivalDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
 	ArrivalDateTime ZonedDateTime `json:"arrivalDateTime"`
@@ -132,12 +131,15 @@ type FlightInstance struct {
 	DepartureDateTime  ZonedDateTime `json:"departureDateTime"`
 	DestinationAirport Airport       `json:"destinationAirport"`
 	DistanceMiles      float64       `json:"distanceMiles"`
-	Id                 int           `json:"id"`
-	Notes              string        `json:"notes"`
-	Number             FlightNumber  `json:"number"`
-	OriginAirport      Airport       `json:"originAirport"`
-	Published          bool          `json:"published"`
-	ScheduleID         *int          `json:"scheduleID,omitempty"`
+
+	// Fleet A fleet is a set of aircraft (owned by the same airline) with common characteristics.
+	Fleet         Fleet        `json:"fleet"`
+	Id            int          `json:"id"`
+	Notes         string       `json:"notes"`
+	Number        FlightNumber `json:"number"`
+	OriginAirport Airport      `json:"originAirport"`
+	Published     bool         `json:"published"`
+	ScheduleID    *int         `json:"scheduleID,omitempty"`
 
 	// ScheduleInstanceDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
 	ScheduleInstanceDate *LocalDate `json:"scheduleInstanceDate,omitempty"`
@@ -148,9 +150,8 @@ type FlightNumber = string
 
 // FlightSchedule defines model for FlightSchedule.
 type FlightSchedule struct {
-	AircraftType AircraftType `json:"aircraftType"`
-	Airline      Airline      `json:"airline"`
-	DaysOfWeek   DaysOfWeek   `json:"daysOfWeek"`
+	Airline    Airline    `json:"airline"`
+	DaysOfWeek DaysOfWeek `json:"daysOfWeek"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
 	DepartureTime      TimeOfDay `json:"departureTime"`
@@ -159,7 +160,10 @@ type FlightSchedule struct {
 	DurationSec        int       `json:"durationSec"`
 
 	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
-	EndDate       LocalDate    `json:"endDate"`
+	EndDate LocalDate `json:"endDate"`
+
+	// Fleet A fleet is a set of aircraft (owned by the same airline) with common characteristics.
+	Fleet         Fleet        `json:"fleet"`
 	Id            int          `json:"id"`
 	Number        FlightNumber `json:"number"`
 	OriginAirport Airport      `json:"originAirport"`
@@ -305,10 +309,7 @@ type UpdateAirportJSONBody struct {
 // CreateFlightInstanceJSONBody defines parameters for CreateFlightInstance.
 type CreateFlightInstanceJSONBody struct {
 	Aircraft *AircraftSpec `json:"aircraft,omitempty"`
-
-	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType AircraftTypeICAOCode `json:"aircraftType"`
-	Airline      AirlineSpec          `json:"airline"`
+	Airline  AirlineSpec   `json:"airline"`
 
 	// ArrivalDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
 	ArrivalDateTime ZonedDateTime `json:"arrivalDateTime"`
@@ -316,6 +317,7 @@ type CreateFlightInstanceJSONBody struct {
 	// DepartureDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
 	DepartureDateTime  ZonedDateTime `json:"departureDateTime"`
 	DestinationAirport AirportSpec   `json:"destinationAirport"`
+	Fleet              FleetSpec     `json:"fleet"`
 	Notes              string        `json:"notes"`
 	Number             FlightNumber  `json:"number"`
 	OriginAirport      AirportSpec   `json:"originAirport"`
@@ -334,16 +336,13 @@ type CreateSeatAssignmentJSONBody struct {
 type UpdateFlightInstanceJSONBody struct {
 	Aircraft *AircraftSpec `json:"aircraft,omitempty"`
 
-	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
-	Airline      *AirlineSpec          `json:"airline,omitempty"`
-
 	// ArrivalDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
 	ArrivalDateTime *ZonedDateTime `json:"arrivalDateTime,omitempty"`
 
 	// DepartureDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
 	DepartureDateTime  *ZonedDateTime `json:"departureDateTime,omitempty"`
 	DestinationAirport *AirportSpec   `json:"destinationAirport,omitempty"`
+	Fleet              *FleetSpec     `json:"fleet,omitempty"`
 	Notes              *string        `json:"notes,omitempty"`
 	Number             *FlightNumber  `json:"number,omitempty"`
 	OriginAirport      *AirportSpec   `json:"originAirport,omitempty"`
@@ -352,10 +351,8 @@ type UpdateFlightInstanceJSONBody struct {
 
 // CreateFlightScheduleJSONBody defines parameters for CreateFlightSchedule.
 type CreateFlightScheduleJSONBody struct {
-	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType AircraftTypeICAOCode `json:"aircraftType"`
-	Airline      AirlineSpec          `json:"airline"`
-	DaysOfWeek   DaysOfWeek           `json:"daysOfWeek"`
+	Airline    AirlineSpec `json:"airline"`
+	DaysOfWeek DaysOfWeek  `json:"daysOfWeek"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
 	DepartureTime      TimeOfDay   `json:"departureTime"`
@@ -364,6 +361,7 @@ type CreateFlightScheduleJSONBody struct {
 
 	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
 	EndDate       LocalDate    `json:"endDate"`
+	Fleet         FleetSpec    `json:"fleet"`
 	Number        FlightNumber `json:"number"`
 	OriginAirport AirportSpec  `json:"originAirport"`
 	Published     *bool        `json:"published,omitempty"`
@@ -374,10 +372,7 @@ type CreateFlightScheduleJSONBody struct {
 
 // UpdateFlightScheduleJSONBody defines parameters for UpdateFlightSchedule.
 type UpdateFlightScheduleJSONBody struct {
-	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
-	AircraftType *AircraftTypeICAOCode `json:"aircraftType,omitempty"`
-	Airline      *AirlineSpec          `json:"airline,omitempty"`
-	DaysOfWeek   *DaysOfWeek           `json:"daysOfWeek,omitempty"`
+	DaysOfWeek *DaysOfWeek `json:"daysOfWeek,omitempty"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
 	DepartureTime      *TimeOfDay   `json:"departureTime,omitempty"`
@@ -386,6 +381,7 @@ type UpdateFlightScheduleJSONBody struct {
 
 	// EndDate A date in YYYY-MM-DD format, with no timezone (timezone-naive).
 	EndDate       *LocalDate    `json:"endDate,omitempty"`
+	Fleet         *FleetSpec    `json:"fleet,omitempty"`
 	Number        *FlightNumber `json:"number,omitempty"`
 	OriginAirport *AirportSpec  `json:"originAirport,omitempty"`
 	Published     *bool         `json:"published,omitempty"`

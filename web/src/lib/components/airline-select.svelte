@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import * as Select from '$lib/components/ui/select/index.js'
-	import type { Airline } from '$lib/types'
 	import { cn } from '$lib/utils'
 	import type { ComponentProps } from 'svelte'
 	import type { LayoutData } from '../../routes/$types'
@@ -14,29 +13,26 @@
 		class: className,
 		...restProps
 	}: Pick<Extract<ComponentProps<typeof Select.Root>, { type: 'single' }>, 'name'> & {
-		value: Airline | undefined
+		value: string | undefined
 		showName?: boolean
 	} & Omit<ComponentProps<typeof Select.Trigger>, 'value'> = $props()
 
 	const layoutData = page.data as unknown as LayoutData
+	let airline = $derived(layoutData.allAirlines.find((airline) => airline.iataCode === value))
 </script>
 
-<Select.Root
-	type="single"
-	{name}
-	bind:value={() => value?.iataCode ?? '',
-	(iataCode) => {
-		value = layoutData.allAirlines.find((airline) => airline.iataCode === iataCode)
-	}}
-	allowDeselect={false}
->
+<Select.Root type="single" {name} bind:value allowDeselect={false}>
 	<Select.Trigger
 		class={cn('w-auto', showName ? 'min-w-[250px]' : 'min-w-[90px]', className)}
 		{...restProps}
 	>
 		<span class="pr-1.5"
 			>{#if value}
-				<AirlineCode airline={value} tooltip={false} icon {showName} />
+				{#if airline}
+					<AirlineCode {airline} tooltip={false} icon {showName} />
+				{:else}
+					<span class="font-mono">{value}</span>
+				{/if}
 			{/if}</span
 		>
 	</Select.Trigger>

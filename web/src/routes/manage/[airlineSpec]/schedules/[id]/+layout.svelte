@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
-	import { page } from '$app/state'
 	import { schema } from '$lib/airline.typebox'
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
@@ -15,7 +14,7 @@
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
-	import FlightScheduleForm from '../flight-schedule-form.svelte'
+	import FlightScheduleForm from '../schedule-form.svelte'
 	import FlightScheduleBreadcrumbItem from './flight-schedule-breadcrumb-item.svelte'
 
 	const { children, data } = $props()
@@ -29,15 +28,21 @@
 	tabs={[
 		{
 			title: 'Overview',
-			url: route('/admin/flight-schedules/[id]', {
-				params: { id: page.params.id },
+			url: route('/manage/[airlineSpec]/schedules/[id]', {
+				params: {
+					airlineSpec: data.flightSchedule.airline.iataCode,
+					id: data.flightSchedule.id.toString(),
+				},
 			}),
 			icon: SquareMenu,
 		},
 		{
 			title: 'Instances',
-			url: route('/admin/flight-schedules/[id]/instances', {
-				params: { id: page.params.id },
+			url: route('/manage/[airlineSpec]/schedules/[id]/instances', {
+				params: {
+					airlineSpec: data.flightSchedule.airline.iataCode,
+					id: data.flightSchedule.id.toString(),
+				},
 			}),
 			icon: PlaneTakeoff,
 		},
@@ -50,8 +55,11 @@
 					{#snippet child({ props })}
 						<form
 							method="POST"
-							action={route('/admin/flight-schedules/[id]', {
-								params: { id: page.params.id },
+							action={route('/manage/[airlineSpec]/schedules/[id]', {
+								params: {
+									airlineSpec: data.flightSchedule.airline.iataCode,
+									id: data.flightSchedule.id.toString(),
+								},
 								query: '/setFlightSchedulePublished',
 							})}
 							use:enhance
@@ -77,8 +85,11 @@
 					{#snippet child({ props })}
 						<form
 							method="POST"
-							action={route('/admin/flight-schedules/[id]', {
-								params: { id: page.params.id },
+							action={route('/manage/[airlineSpec]/schedules/[id]', {
+								params: {
+									airlineSpec: data.flightSchedule.airline.iataCode,
+									id: data.flightSchedule.id.toString(),
+								},
 								query: '/delete',
 							})}
 							use:enhance={({ cancel }) => {
@@ -108,8 +119,11 @@
 				</Drawer.Header>
 				<Drawer.ScrollArea>
 					<FlightScheduleForm
-						action={route('/admin/flight-schedules/[id]', {
-							params: { id: page.params.id },
+						action={route('/manage/[airlineSpec]/schedules/[id]', {
+							params: {
+								airlineSpec: data.flightSchedule.airline.iataCode,
+								id: data.flightSchedule.id.toString(),
+							},
 							query: '/update',
 						})}
 						submitLabel="Save"

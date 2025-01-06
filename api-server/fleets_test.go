@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stellora/airline/api-server/api"
@@ -151,4 +152,16 @@ func insertFleetT(t *testing.T, handler *Handler, airlineIATACode, code string, 
 	}
 	created := resp.(api.CreateFleet201JSONResponse)
 	return int64(created.Id)
+}
+
+func insertTestFleet(t *testing.T, handler *Handler) {
+	if _, err := handler.CreateFleet(context.Background(), api.CreateFleetRequestObject{
+		AirlineSpec: api.NewAirlineSpec(0, "XX"),
+		Body: &api.CreateFleetJSONRequestBody{
+			Code:        ffFleet.Code,
+			Description: "",
+		},
+	}); err != nil && !strings.Contains(err.Error(), "UNIQUE constraint") {
+		t.Fatal(err)
+	}
 }
