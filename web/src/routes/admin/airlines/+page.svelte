@@ -9,8 +9,8 @@
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
 	import { route } from '$lib/route-helpers'
-	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 	import Plus from 'lucide-svelte/icons/plus'
+	import Settings_2 from 'lucide-svelte/icons/settings-2'
 	import AirlineForm from './airline-form.svelte'
 
 	let { data } = $props()
@@ -46,7 +46,7 @@
 				<Table.Row>
 					<Table.Head class="w-[100px]">IATA code</Table.Head>
 					<Table.Head>Name</Table.Head>
-					<Table.Head class="text-right"></Table.Head>
+					<Table.Head></Table.Head>
 				</Table.Row>
 			</Table.Header>
 			{#if data.airlines && data.airlines.length > 0}
@@ -62,16 +62,25 @@
 									{airline.name}
 								</div>
 							</Table.Cell>
-							<Table.Cell class="text-right">
-								<Button
-									variant="link"
-									href={route('/admin/airlines/[airlineSpec]', {
-										params: { airlineSpec: airline.iataCode },
-									})}
-									class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
-								>
-									<ChevronRight />
-								</Button>
+							<Table.Cell>
+								<div class="flex items-center justify-end gap-2">
+									<Button
+										variant="outline"
+										href={route('/admin/airlines/[airlineSpec]', {
+											params: { airlineSpec: airline.iataCode },
+										})}
+									>
+										<Settings_2 /> Edit public info
+									</Button>
+									<Button
+										variant="secondary"
+										href={route('/admin/airlines/[airlineSpec]', {
+											params: { airlineSpec: airline.iataCode },
+										})}
+									>
+										Manage...
+									</Button>
+								</div>
 							</Table.Cell>
 						</Table.Row>
 					{/each}
