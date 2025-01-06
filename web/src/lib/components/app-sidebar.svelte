@@ -6,6 +6,7 @@
 	import Building from 'lucide-svelte/icons/building'
 	import CalendarRange from 'lucide-svelte/icons/calendar-range'
 	import CircleUser from 'lucide-svelte/icons/circle-user'
+	import Group from 'lucide-svelte/icons/group'
 	import Info from 'lucide-svelte/icons/info'
 	import List from 'lucide-svelte/icons/list'
 	import MapPin from 'lucide-svelte/icons/map-pin'
@@ -54,6 +55,13 @@
 				params: { airlineSpec: airlineIataCode },
 			}),
 			icon: CalendarRange,
+		},
+		{
+			title: 'Fleets',
+			url: route('/admin/airlines/[airlineSpec]/fleets', {
+				params: { airlineSpec: airlineIataCode },
+			}),
+			icon: Group,
 		},
 		{
 			title: 'Flights',

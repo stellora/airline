@@ -17,9 +17,10 @@
 		class={buttonVariants({
 			variant: 'pageNavbarIcon',
 			size: 'pageNavbar',
-			class: '[&>svg]:!size-4 px-2',
+			class: '[&>svg]:!size-4 px-2 -ml-2',
 		})}
 	/>
+	<div class="border-r h-[calc(100%+1rem)] w-[1px]"></div>
 	<Breadcrumb.Root
 		class="[&>ol>li:not(:last-child)]:max-md:hidden [&>ol>li:last-child[role=presentation]]:hidden"
 	>
