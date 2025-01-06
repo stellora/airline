@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card/index.js'
 	import * as DefinitionList from '$lib/components/ui/definition-list'
 	import Page from '$lib/components/ui/page/page.svelte'
-	import ItinerarySegment from './itinerary-segment.svelte'
+	import ItinerarySegments from './itinerary-segments.svelte'
 
 	let { data } = $props()
 </script>
@@ -27,7 +27,5 @@
 		</Card.Content>
 	</Card.Root>
 
-	{#each data.itinerary.flights as flight (flight.id)}
-		<ItinerarySegment {flight} />
-	{/each}
+	<ItinerarySegments flights={data.itinerary.flights} />
 </Page>
