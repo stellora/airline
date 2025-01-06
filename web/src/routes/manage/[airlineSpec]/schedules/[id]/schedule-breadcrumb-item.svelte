@@ -14,7 +14,7 @@
 		})}
 		class="[&_[data-airline-icon]]:-mt-[1.7px] mt-[2.2px] block"
 		><ScheduleTitle
-			flight={schedule}
+			{schedule}
 			as="span"
 			showRoute={true}
 			link={true}

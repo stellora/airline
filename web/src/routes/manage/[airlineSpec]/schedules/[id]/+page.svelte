@@ -3,23 +3,23 @@
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import Distance from '$lib/components/distance.svelte'
 	import FleetTitle from '$lib/components/fleet-title.svelte'
-	import ScheduleTitle from '$lib/components/schedule-title.svelte'
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
+	import ScheduleTitle from '$lib/components/schedule-title.svelte'
 	import * as Card from '$lib/components/ui/card'
 	import * as DefinitionList from '$lib/components/ui/definition-list/index.js'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { formatFlightDuration } from '$lib/datetime-helpers.js'
-	import { flightTitle, formatDaysOfWeek } from '$lib/flight-helpers'
+	import { formatDaysOfWeek, scheduleTitle } from '$lib/flight-helpers'
 
 	let { data } = $props()
 </script>
 
-<Page title={`${flightTitle(data.schedule)} schedule`}>
+<Page title={`${scheduleTitle(data.schedule)} schedule`}>
 	<div class="flex flex-wrap-reverse gap-4 items-end">
 		<Card.Root class="flex-grow-[1]">
 			<Card.Header>
 				<ScheduleTitle
-					flight={data.schedule}
+					schedule={data.schedule}
 					class="text-4xl font-bold"
 					subtitleClass="text-base"
 					as="h1"
@@ -29,11 +29,11 @@
 			<Card.Content>
 				<DefinitionList.Root>
 					<DefinitionList.Item title="Route">
-						<AirportCode
-							airport={data.schedule.originAirport}
+						<AirportCode airport={data.schedule.originAirport} tooltip link />&ndash;<AirportCode
+							airport={data.schedule.destinationAirport}
 							tooltip
 							link
-						/>&ndash;<AirportCode airport={data.schedule.destinationAirport} tooltip link />
+						/>
 						<span class="text-muted-foreground text-sm"
 							><Distance distanceMiles={data.schedule.distanceMiles} /></span
 						>

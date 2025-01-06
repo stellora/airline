@@ -21,9 +21,7 @@
 	let { data } = $props()
 </script>
 
-<Page
-	title={`${flightTitle(data.flight)} flight on ${data.flight.scheduleInstanceDate}`}
->
+<Page title={flightTitle(data.flight)}>
 	{@const departureDateTime = parseZonedDateTime(data.flight.departureDateTime)}
 	{@const arrivalDateTime = parseZonedDateTime(data.flight.arrivalDateTime)}
 

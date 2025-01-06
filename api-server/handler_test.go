@@ -168,7 +168,7 @@ func insertSchedulesT(t *testing.T, handler *Handler, flightTitles ...string) (i
 	insertSchedules := func(ctx context.Context, handler *Handler, flightTitles ...string) (ids []int, err error) {
 		ids = make([]int, len(flightTitles))
 		for i, flight := range flightTitles {
-			airlineIATACode, flightNumber, originIATACode, destinationIATACode := parseFlightTitle(flight)
+			airlineIATACode, flightNumber, originIATACode, destinationIATACode := parseScheduleTitle(flight)
 			v, err := handler.CreateSchedule(ctx, api.CreateScheduleRequestObject{
 				Body: &api.CreateScheduleJSONRequestBody{
 					Airline:            api.NewAirlineSpec(0, airlineIATACode),
