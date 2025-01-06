@@ -20,7 +20,7 @@
 			) {
 				document.body.style.pointerEvents = 'auto'
 			}
-		}, 0)
+		}, 500)
 	}
 </script>
 
