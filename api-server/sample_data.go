@@ -718,16 +718,16 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 	}
 
 	log.Println("Creating itineraries...")
-	flightInstances, err := handler.ListFlightInstances(ctx, api.ListFlightInstancesRequestObject{})
+	flights, err := handler.ListFlights(ctx, api.ListFlightsRequestObject{})
 	if err != nil {
 		return err
 	}
 	itinsCreated := 0
-	for _, f := range flightInstances.(api.ListFlightInstances200JSONResponse)[:10] {
+	for _, f := range flights.(api.ListFlights200JSONResponse)[:10] {
 		for _, passengerID := range passengerIDs {
 			_, err := handler.CreateItinerary(ctx, api.CreateItineraryRequestObject{
 				Body: &api.CreateItineraryJSONRequestBody{
-					FlightInstanceIDs: []int{f.Id},
+					FlightIDs: []int{f.Id},
 					PassengerIDs:      []int{passengerID},
 				},
 			})
@@ -752,7 +752,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		seatLetter := 'A' + rand.Intn(10)
 		randomSeat := fmt.Sprintf("%d%c", seatRow, seatLetter)
 		_, err := handler.CreateSeatAssignment(ctx, api.CreateSeatAssignmentRequestObject{
-			FlightInstanceID: itin.Flights[0].Id,
+			FlightID: itin.Flights[0].Id,
 			Body: &api.CreateSeatAssignmentJSONRequestBody{
 				ItineraryID: itin.Id,
 				PassengerID: itin.Passengers[0].Id,

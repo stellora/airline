@@ -11,7 +11,7 @@
 </script>
 
 <Page
-	title={`Passengers on ${flightTitle(data.flightInstance)} ${formatFlightDate(parseZonedDateTime(data.flightInstance.departureDateTime))}`}
+	title={`Passengers on ${flightTitle(data.flight)} ${formatFlightDate(parseZonedDateTime(data.flight.departureDateTime))}`}
 >
 	<Card.Root>
 		<Table.Root>

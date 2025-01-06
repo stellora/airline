@@ -43,7 +43,7 @@
 	})
 	const { form: formData, enhance, message, constraints, errors } = form
 
-	// TODO!(sqs): dedupe with FlightInstanceForm
+	// TODO!(sqs): dedupe with FlightForm
 </script>
 
 <form

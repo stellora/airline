@@ -4,7 +4,7 @@
 	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { route } from '$lib/route-helpers'
-	import FlightInstanceList from '../../../admin/flight-instances/flight-instance-list.svelte'
+	import FlightList from '../../../admin/flights/flight-list.svelte'
 
 	let { data } = $props()
 </script>
@@ -20,5 +20,5 @@
 >
 
 <Page title={`Flights - ${data.airline.iataCode}`}>
-	<FlightInstanceList flightInstances={data.flightInstances!} showFlightInfo />
+	<FlightList flights={data.flights!} showFlightInfo />
 </Page>

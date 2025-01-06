@@ -10,7 +10,7 @@
 </script>
 
 <Page
-	title={`Passengers on ${flightTitle(data.flightInstance)} ${formatFlightDate(parseZonedDateTime(data.flightInstance.departureDateTime))}`}
+	title={`Passengers on ${flightTitle(data.flight)} ${formatFlightDate(parseZonedDateTime(data.flight.departureDateTime))}`}
 >
 	<Card.Root class="self-center overflow-hidden">
 		<Card.Header>

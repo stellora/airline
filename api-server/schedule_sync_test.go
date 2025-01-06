@@ -8,7 +8,7 @@ import (
 	"github.com/stellora/airline/api-server/zonedtime"
 )
 
-func TestSyncFlightInstancesForSchedule(t *testing.T) {
+func TestSyncFlightsForSchedule(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
@@ -19,11 +19,11 @@ func TestSyncFlightInstancesForSchedule(t *testing.T) {
 		allDaysOfWeek,
 	)
 
-	// Ensure that the flight instances are preserved when updating the schedule.
-	setNotesForFlightInstance(t, handler, 1, "a")
-	setNotesForFlightInstance(t, handler, 2, "b")
-	setNotesForFlightInstance(t, handler, 3, "c")
-	checkFlightInstances(t, handler, schedule1.Id, []string{
+	// Ensure that the flights are preserved when updating the schedule.
+	setNotesForFlight(t, handler, 1, "a")
+	setNotesForFlight(t, handler, 2, "b")
+	setNotesForFlight(t, handler, 3, "c")
+	checkFlights(t, handler, schedule1.Id, []string{
 		"XX1 AAA-BBB on 2025-01-01 notes=a",
 		"XX1 AAA-BBB on 2025-01-02 notes=b",
 		"XX1 AAA-BBB on 2025-01-03 notes=c",
@@ -39,7 +39,7 @@ func TestSyncFlightInstancesForSchedule(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkFlightInstances(t, handler, schedule1.Id, []string{
+	checkFlights(t, handler, schedule1.Id, []string{
 		"XX1 AAA-BBB on 2025-01-01 notes=a",
 		"XX1 AAA-BBB on 2025-01-03 notes=c",
 		"XX1 AAA-BBB on 2025-01-04",
@@ -47,7 +47,7 @@ func TestSyncFlightInstancesForSchedule(t *testing.T) {
 	})
 }
 
-func TestListFlightInstancesForSchedule(t *testing.T) {
+func TestListFlightsForSchedule(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
@@ -62,14 +62,14 @@ func TestListFlightInstancesForSchedule(t *testing.T) {
 		allDaysOfWeek,
 	)
 
-	resp, err := handler.ListFlightInstancesForSchedule(ctx, api.ListFlightInstancesForScheduleRequestObject{
+	resp, err := handler.ListFlightsForSchedule(ctx, api.ListFlightsForScheduleRequestObject{
 		Id: schedule2.Id,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assertEqual(t, resp, api.ListFlightInstancesForSchedule200JSONResponse{
+	assertEqual(t, resp, api.ListFlightsForSchedule200JSONResponse{
 		{
 			Id:                   4,
 			ScheduleID:           &schedule2.Id,

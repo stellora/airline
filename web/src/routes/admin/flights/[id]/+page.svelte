@@ -22,17 +22,17 @@
 </script>
 
 <Page
-	title={`${flightTitle(data.flightInstance)} flight on ${data.flightInstance.scheduleInstanceDate}`}
+	title={`${flightTitle(data.flight)} flight on ${data.flight.scheduleInstanceDate}`}
 >
-	{@const departureDateTime = parseZonedDateTime(data.flightInstance.departureDateTime)}
-	{@const arrivalDateTime = parseZonedDateTime(data.flightInstance.arrivalDateTime)}
+	{@const departureDateTime = parseZonedDateTime(data.flight.departureDateTime)}
+	{@const arrivalDateTime = parseZonedDateTime(data.flight.arrivalDateTime)}
 
 	<div class="flex flex-wrap-reverse gap-4 items-end">
 		<Card.Root class="flex-grow-[1]">
 			<Card.Header>
 				<div class="flex gap-2 items-center">
 					<ScheduleTitle
-						schedule={data.flightInstance}
+						schedule={data.flight}
 						class="text-4xl font-bold"
 						subtitleClass="text-base"
 						as="h1"
@@ -47,14 +47,14 @@
 			<Card.Content>
 				<DefinitionList.Root>
 					<DefinitionList.Item title="Departure">
-						<AirportCode airport={data.flightInstance.originAirport} link />
+						<AirportCode airport={data.flight.originAirport} link />
 						<span class="text-muted-foreground">&mdash;</span>
 						<FormattedDatetime value={departureDateTime}>
 							{formatFlightDateTime(departureDateTime)}
 						</FormattedDatetime>
 					</DefinitionList.Item>
 					<DefinitionList.Item title="Arrival">
-						<AirportCode airport={data.flightInstance.destinationAirport} link />
+						<AirportCode airport={data.flight.destinationAirport} link />
 						<span class="text-muted-foreground">&mdash;</span>
 						<FormattedDatetime value={arrivalDateTime}>
 							{formatFlightTime(arrivalDateTime, {
@@ -65,7 +65,7 @@
 					<DefinitionList.Item title="Duration">
 						{formatFlightDuration(departureDateTime, arrivalDateTime)}
 						<span class="text-muted-foreground">&mdash;</span>
-						<Distance distanceMiles={data.flightInstance.distanceMiles} />
+						<Distance distanceMiles={data.flight.distanceMiles} />
 					</DefinitionList.Item>
 				</DefinitionList.Root>
 			</Card.Content>
@@ -73,7 +73,7 @@
 
 		<Card.Root class="overflow-hidden flex-grow-[2] basis-[350px] min-w-[350px]">
 			<GreatCircleRoute
-				routes={[[data.flightInstance.originAirport, data.flightInstance.destinationAirport]]}
+				routes={[[data.flight.originAirport, data.flight.destinationAirport]]}
 				detailLevel="high"
 			/>
 		</Card.Root>
@@ -84,8 +84,8 @@
 			<Card.Title>Notes</Card.Title>
 		</Card.Header>
 		<Card.Content>
-			{#if data.flightInstance.notes}
-				<p>{data.flightInstance.notes}</p>
+			{#if data.flight.notes}
+				<p>{data.flight.notes}</p>
 			{:else}
 				<p class="text-sm text-muted-foreground">No notes yet.</p>
 			{/if}

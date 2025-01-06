@@ -149,7 +149,7 @@ func (h *Handler) CreateSchedule(ctx context.Context, request api.CreateSchedule
 		return nil, err
 	}
 
-	if err := syncScheduleInstances(ctx, queriesTx, schedule); err != nil {
+	if err := syncScheduleFlightInstances(ctx, queriesTx, schedule); err != nil {
 		return nil, err
 	}
 
@@ -252,7 +252,7 @@ func (h *Handler) UpdateSchedule(ctx context.Context, request api.UpdateSchedule
 		return nil, err
 	}
 
-	if err := syncScheduleInstances(ctx, queriesTx, schedule); err != nil {
+	if err := syncScheduleFlightInstances(ctx, queriesTx, schedule); err != nil {
 		return nil, err
 	}
 

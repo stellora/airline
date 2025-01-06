@@ -238,20 +238,20 @@ FROM schedules_view
 WHERE origin_airport_id=:origin_airport OR destination_airport_id=:destination_airport
 ORDER BY id ASC;
 
-------------------------------------------------------------------------------- flight_instances
+------------------------------------------------------------------------------- flights
 
--- name: GetFlightInstance :one
+-- name: GetFlight :one
 SELECT *
-FROM flight_instances_view
+FROM flights_view
 WHERE id=sqlc.arg('id') LIMIT 1;
 
--- name: ListFlightInstances :many
+-- name: ListFlights :many
 SELECT *
-FROM flight_instances_view
+FROM flights_view
 ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
 
--- name: CreateFlightInstance :one
-INSERT INTO flight_instances (
+-- name: CreateFlight :one
+INSERT INTO flights (
   source_schedule_id,
   source_schedule_instance_localdate,
   airline_id,
@@ -271,8 +271,8 @@ INSERT INTO flight_instances (
 )
 RETURNING id;
 
--- name: UpdateFlightInstance :one
-UPDATE flight_instances SET
+-- name: UpdateFlight :one
+UPDATE flights SET
 number = COALESCE(sqlc.narg('number'), number),
 origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
 destination_airport_id = COALESCE(sqlc.narg('destination_airport_id'), destination_airport_id),
@@ -287,19 +287,19 @@ published = COALESCE(sqlc.narg('published'), published)
 WHERE id=sqlc.arg('id')
 RETURNING id;
 
--- name: DeleteFlightInstance :exec
-DELETE FROM flight_instances
+-- name: DeleteFlight :exec
+DELETE FROM flights
 WHERE id=?;
 
--- name: ListFlightInstancesForSchedule :many
+-- name: ListFlightsForSchedule :many
 SELECT *
-FROM flight_instances_view
+FROM flights_view
 WHERE source_schedule_id IS NOT NULL AND source_schedule_id=sqlc.arg('schedule_id')
 ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
 
--- name: ListFlightInstancesByAirline :many
-SELECT flight_instances_view.*
-FROM flight_instances_view
+-- name: ListFlightsByAirline :many
+SELECT flights_view.*
+FROM flights_view
 WHERE airline_id=sqlc.arg('airline_id')
 ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
 
@@ -334,9 +334,9 @@ WHERE id = ?;
 
 ------------------------------------------------------------------------------- seat_assignments
 
--- name: ListSeatAssignmentsForFlightInstance :many
+-- name: ListSeatAssignmentsForFlight :many
 SELECT * FROM seat_assignments_view
-WHERE flight_instance_id = ?
+WHERE flight_id = ?
 ORDER BY id ASC;
 
 -- name: GetSeatAssignment :one
@@ -348,7 +348,7 @@ LIMIT 1;
 INSERT INTO seat_assignments (
   itinerary_id,
   passenger_id,
-  flight_instance_id,
+  flight_id,
   seat
 ) VALUES (
   ?, ?, ?, ?
@@ -392,19 +392,19 @@ RETURNING *;
 -- name: AddFlightToItinerary :exec
 INSERT INTO itinerary_flights (
   itinerary_id,
-  flight_instance_id
+  flight_id
 ) VALUES (
   ?, ?
 );
 
 -- name: RemoveFlightFromItinerary :exec
 DELETE FROM itinerary_flights
-WHERE itinerary_id = ? AND flight_instance_id = ?;
+WHERE itinerary_id = ? AND flight_id = ?;
 
 -- name: ListItineraryFlights :many
-SELECT flight_instances_view.*
-FROM flight_instances_view
-JOIN itinerary_flights ON itinerary_flights.flight_instance_id = flight_instances_view.id
+SELECT flights_view.*
+FROM flights_view
+JOIN itinerary_flights ON itinerary_flights.flight_id = flights_view.id
 WHERE itinerary_flights.itinerary_id = sqlc.arg('itinerary_id')
 ORDER BY departure_datetime_utc ASC;
 

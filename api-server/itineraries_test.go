@@ -12,7 +12,7 @@ func TestGetItinerary(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	passenger := insertPassengersWithNamesT(t, handler, "John Doe")[0]
-	flight := insertFlightInstanceT(t, handler, fixtureManualFlightInstance)
+	flight := insertFlightT(t, handler, fixtureManualFlight)
 	itinerary := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passenger)})
 
 	t.Run("exists", func(t *testing.T) {
@@ -74,7 +74,7 @@ func TestListItineraries(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	passengers := insertPassengersWithNamesT(t, handler, "John Doe", "Jane Doe")
-	flight := insertFlightInstanceT(t, handler, fixtureManualFlightInstance)
+	flight := insertFlightT(t, handler, fixtureManualFlight)
 	itinerary1 := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passengers[0])})
 	itinerary2 := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passengers[1])})
 
@@ -94,11 +94,11 @@ func TestCreateItinerary(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	passengers := insertPassengersWithNamesT(t, handler, "John Doe")
-	flight := insertFlightInstanceT(t, handler, fixtureManualFlightInstance)
+	flight := insertFlightT(t, handler, fixtureManualFlight)
 
 	resp, err := handler.CreateItinerary(ctx, api.CreateItineraryRequestObject{
 		Body: &api.CreateItineraryJSONRequestBody{
-			FlightInstanceIDs: []int{int(flight.Id)},
+			FlightIDs: []int{int(flight.Id)},
 			PassengerIDs:      []int{int(passengers[0])},
 		},
 	})
@@ -118,7 +118,7 @@ func TestDeleteItinerary(t *testing.T) {
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	passengers := insertPassengersWithNamesT(t, handler, "John Doe")
-	flight := insertFlightInstanceT(t, handler, fixtureManualFlightInstance)
+	flight := insertFlightT(t, handler, fixtureManualFlight)
 	itinerary := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passengers[0])})
 
 	resp, err := handler.DeleteItinerary(ctx, api.DeleteItineraryRequestObject{
@@ -144,10 +144,10 @@ func checkItineraryCount(t *testing.T, handler *Handler, want int) {
 }
 
 func insertItineraryT(t *testing.T, handler *Handler, flightIDs []int64, passengerIDs []int64) int64 {
-	var flightInstanceIds []int
+	var flightIds []int
 	var passengerIds []int
 	for _, id := range flightIDs {
-		flightInstanceIds = append(flightInstanceIds, int(id))
+		flightIds = append(flightIds, int(id))
 	}
 	for _, id := range passengerIDs {
 		passengerIds = append(passengerIds, int(id))
@@ -155,7 +155,7 @@ func insertItineraryT(t *testing.T, handler *Handler, flightIDs []int64, passeng
 
 	resp, err := handler.CreateItinerary(context.Background(), api.CreateItineraryRequestObject{
 		Body: &api.CreateItineraryJSONRequestBody{
-			FlightInstanceIDs: flightInstanceIds,
+			FlightIDs: flightIds,
 			PassengerIDs:      passengerIds,
 		},
 	})

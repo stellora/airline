@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card/index.js'
 	import * as DefinitionList from '$lib/components/ui/definition-list'
 	import Page from '$lib/components/ui/page/page.svelte'
-	import { flightInstanceTitle } from '$lib/flight-helpers.js'
+	import { flightTitle } from '$lib/flight-helpers.js'
 	import { route } from '$lib/route-helpers.js'
 
 	let { data } = $props()
@@ -29,11 +29,11 @@
 						{#each data.itinerary.flights as flight (flight.id)}
 							<li>
 								<a
-									href={route('/admin/flight-instances/[id]', {
+									href={route('/admin/flights/[id]', {
 										params: { id: flight.id.toString() },
 									})}
 								>
-									{flightInstanceTitle(flight)}
+									{flightTitle(flight)}
 								</a>
 							</li>
 						{/each}

@@ -67,7 +67,7 @@ func TestListSchedulesByAirline(t *testing.T) {
 	})
 }
 
-func TestListFlightInstancesByAirline(t *testing.T) {
+func TestListFlightsByAirline(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
@@ -76,7 +76,7 @@ func TestListFlightInstancesByAirline(t *testing.T) {
 		fixtureLocalDate1.AddDays(4),
 		allDaysOfWeek,
 	)
-	insertFlightInstanceT(t, handler, api.CreateFlightInstanceJSONRequestBody{
+	insertFlightT(t, handler, api.CreateFlightJSONRequestBody{
 		Airline:            api.NewAirlineSpec(0, "XX"),
 		Number:             "222",
 		OriginAirport:      api.NewAirportSpec(0, "BBB"),
@@ -93,22 +93,22 @@ func TestListFlightInstancesByAirline(t *testing.T) {
 		"XX1 AAA-BBB on 2025-01-05",
 	}
 	t.Run("by id", func(t *testing.T) {
-		resp, err := handler.ListFlightInstancesByAirline(ctx, api.ListFlightInstancesByAirlineRequestObject{
+		resp, err := handler.ListFlightsByAirline(ctx, api.ListFlightsByAirlineRequestObject{
 			AirlineSpec: api.NewAirlineSpec(1, ""),
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(t, flightInstanceDescriptions(resp.(api.ListFlightInstancesByAirline200JSONResponse)), want)
+		assertEqual(t, flightDescriptions(resp.(api.ListFlightsByAirline200JSONResponse)), want)
 	})
 
 	t.Run("by IATA code", func(t *testing.T) {
-		resp, err := handler.ListFlightInstancesByAirline(ctx, api.ListFlightInstancesByAirlineRequestObject{
+		resp, err := handler.ListFlightsByAirline(ctx, api.ListFlightsByAirlineRequestObject{
 			AirlineSpec: api.NewAirlineSpec(0, "XX"),
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(t, flightInstanceDescriptions(resp.(api.ListFlightInstancesByAirline200JSONResponse)), want)
+		assertEqual(t, flightDescriptions(resp.(api.ListFlightsByAirline200JSONResponse)), want)
 	})
 }

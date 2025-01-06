@@ -4,25 +4,25 @@
 	import { Alert, AlertDescription, AlertTitle } from '$lib/components/ui/alert'
 	import * as Form from '$lib/components/ui/form'
 	import { Textarea } from '$lib/components/ui/textarea'
-	import { type FlightInstance } from '$lib/types'
+	import { type Flight } from '$lib/types'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
 	import { superForm, type FormPath, type Infer, type SuperValidated } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
 
 	const {
-		flightInstance,
+		flight,
 		action,
 		submitLabel,
 		...props
 	}: {
-		flightInstance: Pick<FlightInstance, 'scheduleID' | 'airline'>
+		flight: Pick<Flight, 'scheduleID' | 'airline'>
 		schema:
-			| (typeof schema)['/flight-instances']['POST']['args']['properties']['body']
-			| (typeof schema)['/flight-instances/{id}']['PATCH']['args']['properties']['body']
+			| (typeof schema)['/flights']['POST']['args']['properties']['body']
+			| (typeof schema)['/flights/{id}']['PATCH']['args']['properties']['body']
 		data: SuperValidated<
 			Infer<
-				| (typeof schema)['/flight-instances']['POST']['args']['properties']['body']
-				| (typeof schema)['/flight-instances/{id}']['PATCH']['args']['properties']['body']
+				| (typeof schema)['/flights']['POST']['args']['properties']['body']
+				| (typeof schema)['/flights/{id}']['PATCH']['args']['properties']['body']
 			>
 		>
 		action: string
@@ -30,7 +30,7 @@
 	} = $props()
 
 	// TODO!(sqs): add more form fields if from manual input
-	const isFromManualInput = flightInstance.scheduleID === undefined
+	const isFromManualInput = flight.scheduleID === undefined
 
 	const form = superForm(props.data, {
 		validators: typebox(props.schema),
@@ -62,7 +62,7 @@
 	{action}
 	use:enhance
 	class="flex flex-col gap-6 items-start"
-	data-testid="flight-instance-form"
+	data-testid="flight-form"
 >
 	aircraft={JSON.stringify($formData.aircraft)}
 	<Form.Field {form} name="aircraft">
@@ -71,7 +71,7 @@
 				<Form.Label>Aircraft</Form.Label>
 				<AircraftSelect
 					{...props}
-					byAirline={flightInstance.airline.id}
+					byAirline={flight.airline.id}
 					bind:value={$formData.aircraft}
 					{...$constraints.aircraft}
 				/>

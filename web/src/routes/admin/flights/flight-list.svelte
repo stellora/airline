@@ -1,7 +1,7 @@
 <script lang="ts">
 	import AircraftRegistration from '$lib/components/aircraft-registration.svelte'
 	import FleetTitle from '$lib/components/fleet-title.svelte'
-	import FlightInstanceStatus from '$lib/components/flight-instance-status.svelte'
+	import FlightStatus from '$lib/components/flight-status.svelte'
 	import FormattedDatetime from '$lib/components/formatted-datetime.svelte'
 	import ScheduleTitle from '$lib/components/schedule-title.svelte'
 	import { Button } from '$lib/components/ui/button'
@@ -9,14 +9,14 @@
 	import * as Table from '$lib/components/ui/table'
 	import { formatFlightDate, formatFlightDuration, formatFlightTime } from '$lib/datetime-helpers'
 	import { route } from '$lib/route-helpers'
-	import type { FlightInstance } from '$lib/types'
+	import type { Flight } from '$lib/types'
 	import { parseZonedDateTime } from '@internationalized/date'
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
 	let {
-		flightInstances,
+		flights,
 		showFlightInfo,
-	}: { flightInstances: FlightInstance[]; showFlightInfo?: boolean } = $props()
+	}: { flights: Flight[]; showFlightInfo?: boolean } = $props()
 </script>
 
 <Card>
@@ -35,9 +35,9 @@
 				<Table.Head class="text-right" />
 			</Table.Row>
 		</Table.Header>
-		{#if flightInstances && flightInstances.length > 0}
+		{#if flights && flights.length > 0}
 			<Table.Body>
-				{#each flightInstances as flight (flight.id)}
+				{#each flights as flight (flight.id)}
 					{@const departureDateTime = parseZonedDateTime(flight.departureDateTime)}
 					{@const arrivalDateTime = parseZonedDateTime(flight.arrivalDateTime)}
 					<Table.Row class="stretched-link-container group">
@@ -71,11 +71,11 @@
 								})}
 							</FormattedDatetime>
 						</Table.Cell>
-						<Table.Cell><FlightInstanceStatus {flight} /></Table.Cell>
+						<Table.Cell><FlightStatus {flight} /></Table.Cell>
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"
-								href={route('/admin/flight-instances/[id]', {
+								href={route('/admin/flights/[id]', {
 									params: { id: flight.id.toString() },
 								})}
 								class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
@@ -87,7 +87,7 @@
 				{/each}
 			</Table.Body>
 		{:else}
-			<Table.Caption class="mb-4">No flight instances found</Table.Caption>
+			<Table.Caption class="mb-4">No flights found</Table.Caption>
 		{/if}
 	</Table.Root>
 </Card>

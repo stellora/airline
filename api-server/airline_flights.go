@@ -31,7 +31,7 @@ func (h *Handler) ListSchedulesByAirline(ctx context.Context, request api.ListSc
 	return api.ListSchedulesByAirline200JSONResponse(mapSlice(fromDBSchedule, schedules)), nil
 }
 
-func (h *Handler) ListFlightInstancesByAirline(ctx context.Context, request api.ListFlightInstancesByAirlineRequestObject) (api.ListFlightInstancesByAirlineResponseObject, error) {
+func (h *Handler) ListFlightsByAirline(ctx context.Context, request api.ListFlightsByAirlineRequestObject) (api.ListFlightsByAirlineResponseObject, error) {
 	tx, err := h.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -42,14 +42,14 @@ func (h *Handler) ListFlightInstancesByAirline(ctx context.Context, request api.
 	airline, err := getAirlineBySpec(ctx, queriesTx, request.AirlineSpec)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.ListFlightInstancesByAirline404Response{}, nil
+			return &api.ListFlightsByAirline404Response{}, nil
 		}
 		return nil, err
 	}
 
-	flights, err := queriesTx.ListFlightInstancesByAirline(ctx, airline.ID)
+	flights, err := queriesTx.ListFlightsByAirline(ctx, airline.ID)
 	if err != nil {
 		return nil, err
 	}
-	return api.ListFlightInstancesByAirline200JSONResponse(mapSlice(fromDBFlightInstance, flights)), nil
+	return api.ListFlightsByAirline200JSONResponse(mapSlice(fromDBFlight, flights)), nil
 }

@@ -11,8 +11,8 @@ import (
 	"github.com/stellora/airline/api-server/extdata"
 )
 
-func syncScheduleInstances(ctx context.Context, queriesTx *db.Queries, schedule db.SchedulesView) error {
-	plan, err := planScheduleInstancesSync(ctx, queriesTx, schedule)
+func syncScheduleFlightInstances(ctx context.Context, queriesTx *db.Queries, schedule db.SchedulesView) error {
+	plan, err := planScheduleFlightInstancesSync(ctx, queriesTx, schedule)
 	if err != nil {
 		return err
 	}
@@ -20,17 +20,17 @@ func syncScheduleInstances(ctx context.Context, queriesTx *db.Queries, schedule 
 	for _, action := range plan {
 		switch {
 		case action.create != nil:
-			if _, err := queriesTx.CreateFlightInstance(ctx, *action.create); err != nil {
+			if _, err := queriesTx.CreateFlight(ctx, *action.create); err != nil {
 				return err
 			}
 
 		case action.update != nil:
-			if _, err := queriesTx.UpdateFlightInstance(ctx, *action.update); err != nil {
+			if _, err := queriesTx.UpdateFlight(ctx, *action.update); err != nil {
 				return err
 			}
 
-		case action.deleteInstanceID != 0:
-			if err := queriesTx.DeleteFlightInstance(ctx, action.deleteInstanceID); err != nil {
+		case action.deleteFlightID != 0:
+			if err := queriesTx.DeleteFlight(ctx, action.deleteFlightID); err != nil {
 				return err
 			}
 		}
@@ -40,14 +40,14 @@ func syncScheduleInstances(ctx context.Context, queriesTx *db.Queries, schedule 
 }
 
 type syncScheduleAction struct {
-	create           *db.CreateFlightInstanceParams
-	update           *db.UpdateFlightInstanceParams
-	deleteInstanceID int64
+	create         *db.CreateFlightParams
+	update         *db.UpdateFlightParams
+	deleteFlightID int64
 }
 
-func planScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries, schedule db.SchedulesView) (plan []syncScheduleAction, err error) {
+func planScheduleFlightInstancesSync(ctx context.Context, queriesTx *db.Queries, schedule db.SchedulesView) (plan []syncScheduleAction, err error) {
 	scheduleID := sql.NullInt64{Valid: true, Int64: schedule.ID}
-	existingInstances, err := queriesTx.ListFlightInstancesForSchedule(ctx, scheduleID)
+	existingFlights, err := queriesTx.ListFlightsForSchedule(ctx, scheduleID)
 	if err != nil {
 		return nil, err
 	}
@@ -66,20 +66,20 @@ func planScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries, sched
 		return nil, err
 	}
 
-	sort.Slice(existingInstances, func(i, j int) bool {
-		return existingInstances[i].SourceScheduleInstanceLocaldate.Before(*existingInstances[j].SourceScheduleInstanceLocaldate)
+	sort.Slice(existingFlights, func(i, j int) bool {
+		return existingFlights[i].SourceScheduleInstanceLocaldate.Before(*existingFlights[j].SourceScheduleInstanceLocaldate)
 	})
 
-	// Delete any flight instances outside of the schedule start/end dates.
-	for _, instance := range existingInstances {
+	// Delete any flights outside of the schedule start/end dates.
+	for _, instance := range existingFlights {
 		if instance.SourceScheduleInstanceLocaldate.Before(schedule.StartLocaldate) || instance.SourceScheduleInstanceLocaldate.After(schedule.EndLocaldate) {
-			plan = append(plan, syncScheduleAction{deleteInstanceID: instance.ID})
+			plan = append(plan, syncScheduleAction{deleteFlightID: instance.ID})
 		}
 	}
 
 	for curDate := schedule.StartLocaldate; !curDate.After(schedule.EndLocaldate); curDate = curDate.AddDays(1) {
-		var curInstance *db.FlightInstancesView
-		for _, instance := range existingInstances {
+		var curInstance *db.FlightsView
+		for _, instance := range existingFlights {
 			if curDate.Equal(*instance.SourceScheduleInstanceLocaldate) {
 				curInstance = &instance
 				break
@@ -91,30 +91,30 @@ func planScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries, sched
 
 		if hasInstance && !shouldHaveInstance {
 			// Delete the instance.
-			plan = append(plan, syncScheduleAction{deleteInstanceID: curInstance.ID})
+			plan = append(plan, syncScheduleAction{deleteFlightID: curInstance.ID})
 		} else if !hasInstance && shouldHaveInstance {
 			// Create an instance.
 			departureDateTime := curDate.TimeOfDay(originAirportLoc, schedule.DepartureLocaltime)
 			arrivalDateTime := api.ZonedDateTime{Time: departureDateTime.Add(time.Second * time.Duration(schedule.DurationSec)).In(destinationAirportLoc)}
-			plan = append(plan, syncScheduleAction{create: &db.CreateFlightInstanceParams{
+			plan = append(plan, syncScheduleAction{create: &db.CreateFlightParams{
 				SourceScheduleID:                scheduleID,
 				SourceScheduleInstanceLocaldate: &curDate,
-				AirlineID:                             schedule.AirlineID,
-				Number:                                schedule.Number,
-				OriginAirportID:                       schedule.OriginAirportID,
-				DestinationAirportID:                  schedule.DestinationAirportID,
-				FleetID:                               schedule.FleetID,
-				DepartureDatetime:                     &departureDateTime,
-				ArrivalDatetime:                       &arrivalDateTime,
-				DepartureDatetimeUtc:                  departureDateTime.Time.In(time.UTC),
-				ArrivalDatetimeUtc:                    arrivalDateTime.Time.In(time.UTC),
-				Published:                             schedule.Published,
+				AirlineID:                       schedule.AirlineID,
+				Number:                          schedule.Number,
+				OriginAirportID:                 schedule.OriginAirportID,
+				DestinationAirportID:            schedule.DestinationAirportID,
+				FleetID:                         schedule.FleetID,
+				DepartureDatetime:               &departureDateTime,
+				ArrivalDatetime:                 &arrivalDateTime,
+				DepartureDatetimeUtc:            departureDateTime.Time.In(time.UTC),
+				ArrivalDatetimeUtc:              arrivalDateTime.Time.In(time.UTC),
+				Published:                       schedule.Published,
 			}})
 		} else if hasInstance && shouldHaveInstance {
 			// Update the existing instance.
 			departureDateTime := curDate.TimeOfDay(originAirportLoc, schedule.DepartureLocaltime)
 			arrivalDateTime := api.ZonedDateTime{Time: departureDateTime.Add(time.Second * time.Duration(schedule.DurationSec)).In(destinationAirportLoc)}
-			plan = append(plan, syncScheduleAction{update: &db.UpdateFlightInstanceParams{
+			plan = append(plan, syncScheduleAction{update: &db.UpdateFlightParams{
 				ID:                   curInstance.ID,
 				Number:               sql.NullString{Valid: true, String: schedule.Number},
 				OriginAirportID:      sql.NullInt64{Valid: true, Int64: schedule.OriginAirportID},
@@ -132,10 +132,10 @@ func planScheduleInstancesSync(ctx context.Context, queriesTx *db.Queries, sched
 	return plan, nil
 }
 
-func (h *Handler) ListFlightInstancesForSchedule(ctx context.Context, request api.ListFlightInstancesForScheduleRequestObject) (api.ListFlightInstancesForScheduleResponseObject, error) {
-	rows, err := h.queries.ListFlightInstancesForSchedule(ctx, sql.NullInt64{Valid: true, Int64: int64(request.Id)})
+func (h *Handler) ListFlightsForSchedule(ctx context.Context, request api.ListFlightsForScheduleRequestObject) (api.ListFlightsForScheduleResponseObject, error) {
+	rows, err := h.queries.ListFlightsForSchedule(ctx, sql.NullInt64{Valid: true, Int64: int64(request.Id)})
 	if err != nil {
 		return nil, err
 	}
-	return api.ListFlightInstancesForSchedule200JSONResponse(mapSlice(fromDBFlightInstance, rows)), nil
+	return api.ListFlightsForSchedule200JSONResponse(mapSlice(fromDBFlight, rows)), nil
 }

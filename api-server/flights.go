@@ -13,7 +13,7 @@ import (
 	"github.com/stellora/airline/api-server/zonedtime"
 )
 
-func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
+func fromDBFlight(a db.FlightsView) api.Flight {
 	airline := fromDBAirline(db.Airline{
 		ID:       a.AirlineID,
 		IataCode: a.AirlineIataCode,
@@ -26,7 +26,7 @@ func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 		Description: a.FleetDescription,
 	})
 	fleet.Airline = airline
-	b := api.FlightInstance{
+	b := api.Flight{
 		Id:      int(a.ID),
 		Airline: airline,
 		Number:  a.Number,
@@ -66,22 +66,22 @@ func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 	return b
 }
 
-func (h *Handler) GetFlightInstance(ctx context.Context, request api.GetFlightInstanceRequestObject) (api.GetFlightInstanceResponseObject, error) {
-	row, err := h.queries.GetFlightInstance(ctx, int64(request.Id))
+func (h *Handler) GetFlight(ctx context.Context, request api.GetFlightRequestObject) (api.GetFlightResponseObject, error) {
+	row, err := h.queries.GetFlight(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return api.GetFlightInstance404Response{}, nil
+			return api.GetFlight404Response{}, nil
 		}
 	}
-	return api.GetFlightInstance200JSONResponse(fromDBFlightInstance(row)), nil
+	return api.GetFlight200JSONResponse(fromDBFlight(row)), nil
 }
 
-func (h *Handler) ListFlightInstances(ctx context.Context, request api.ListFlightInstancesRequestObject) (api.ListFlightInstancesResponseObject, error) {
-	rows, err := h.queries.ListFlightInstances(ctx)
+func (h *Handler) ListFlights(ctx context.Context, request api.ListFlightsRequestObject) (api.ListFlightsResponseObject, error) {
+	rows, err := h.queries.ListFlights(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return api.ListFlightInstances200JSONResponse(mapSlice(fromDBFlightInstance, rows)), nil
+	return api.ListFlights200JSONResponse(mapSlice(fromDBFlight, rows)), nil
 }
 
 // Ensure departure/arrival datetimes use the locations of the departure/arrival airports,
@@ -108,7 +108,7 @@ func checkDepartureArrivalDateTimesMatchAirportTimezones(departure, arrival *zon
 	return nil
 }
 
-func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFlightInstanceRequestObject) (api.CreateFlightInstanceResponseObject, error) {
+func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequestObject) (api.CreateFlightResponseObject, error) {
 	if request.Body.Number == "" {
 		return nil, fmt.Errorf("number must not be empty")
 	}
@@ -165,7 +165,7 @@ func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFl
 		return nil, err
 	}
 
-	created, err := queriesTx.CreateFlightInstance(ctx, db.CreateFlightInstanceParams{
+	created, err := queriesTx.CreateFlight(ctx, db.CreateFlightParams{
 		AirlineID:            airline.ID,
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
@@ -183,7 +183,7 @@ func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFl
 		return nil, err
 	}
 
-	row, err := queriesTx.GetFlightInstance(ctx, created)
+	row, err := queriesTx.GetFlight(ctx, created)
 	if err != nil {
 		return nil, err
 	}
@@ -192,10 +192,10 @@ func (h *Handler) CreateFlightInstance(ctx context.Context, request api.CreateFl
 		return nil, err
 	}
 
-	return api.CreateFlightInstance201JSONResponse(fromDBFlightInstance(row)), nil
+	return api.CreateFlight201JSONResponse(fromDBFlight(row)), nil
 }
 
-func (h *Handler) UpdateFlightInstance(ctx context.Context, request api.UpdateFlightInstanceRequestObject) (api.UpdateFlightInstanceResponseObject, error) {
+func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequestObject) (api.UpdateFlightResponseObject, error) {
 	tx, err := h.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -203,15 +203,15 @@ func (h *Handler) UpdateFlightInstance(ctx context.Context, request api.UpdateFl
 	defer tx.Rollback()
 	queriesTx := h.queries.WithTx(tx)
 
-	existing, err := queriesTx.GetFlightInstance(ctx, int64(request.Id))
+	existing, err := queriesTx.GetFlight(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.UpdateFlightInstance404Response{}, nil
+			return &api.UpdateFlight404Response{}, nil
 		}
 		return nil, err
 	}
 
-	params := db.UpdateFlightInstanceParams{
+	params := db.UpdateFlightParams{
 		ID: int64(request.Id),
 	}
 	if request.Body.Fleet != nil {
@@ -242,17 +242,17 @@ func (h *Handler) UpdateFlightInstance(ctx context.Context, request api.UpdateFl
 	// 	return nil, err
 	// }
 
-	if _, err := queriesTx.UpdateFlightInstance(ctx, params); err != nil {
+	if _, err := queriesTx.UpdateFlight(ctx, params); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.UpdateFlightInstance404Response{}, nil
+			return &api.UpdateFlight404Response{}, nil
 		}
 		return nil, err
 	}
 
-	row, err := queriesTx.GetFlightInstance(ctx, int64(request.Id))
+	row, err := queriesTx.GetFlight(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.UpdateFlightInstance404Response{}, nil
+			return &api.UpdateFlight404Response{}, nil
 		}
 		return nil, err
 	}
@@ -261,10 +261,10 @@ func (h *Handler) UpdateFlightInstance(ctx context.Context, request api.UpdateFl
 		return nil, err
 	}
 
-	return api.UpdateFlightInstance200JSONResponse(fromDBFlightInstance(row)), nil
+	return api.UpdateFlight200JSONResponse(fromDBFlight(row)), nil
 }
 
-func (h *Handler) DeleteFlightInstance(ctx context.Context, request api.DeleteFlightInstanceRequestObject) (api.DeleteFlightInstanceResponseObject, error) {
+func (h *Handler) DeleteFlight(ctx context.Context, request api.DeleteFlightRequestObject) (api.DeleteFlightResponseObject, error) {
 	tx, err := h.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -272,22 +272,22 @@ func (h *Handler) DeleteFlightInstance(ctx context.Context, request api.DeleteFl
 	defer tx.Rollback()
 	queriesTx := h.queries.WithTx(tx)
 
-	row, err := queriesTx.GetFlightInstance(ctx, int64(request.Id))
+	row, err := queriesTx.GetFlight(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return api.DeleteFlightInstance404Response{}, nil
+			return api.DeleteFlight404Response{}, nil
 		}
 		return nil, err
 	}
 
-	// Only flight instances created from manual input can be deleted. To delete a flight instances
+	// Only flights created from manual input can be deleted. To delete a flights
 	// created from a schedule, you need to edit the schedule so that it deletes the
 	// instance when it syncs the new schedule definition.
 	if row.SourceScheduleID.Valid {
-		return api.DeleteFlightInstance400Response{}, nil
+		return api.DeleteFlight400Response{}, nil
 	}
 
-	if err := queriesTx.DeleteFlightInstance(ctx, int64(request.Id)); err != nil {
+	if err := queriesTx.DeleteFlight(ctx, int64(request.Id)); err != nil {
 		// TODO(sqs): check if it was actually deleted
 		return nil, err
 	}
@@ -296,5 +296,5 @@ func (h *Handler) DeleteFlightInstance(ctx context.Context, request api.DeleteFl
 		return nil, err
 	}
 
-	return api.DeleteFlightInstance204Response{}, nil
+	return api.DeleteFlight204Response{}, nil
 }

@@ -210,7 +210,7 @@ const ComponentsSchemasSchedule = T.Object({
   published: T.Boolean()
 })
 const ComponentsSchemasZonedDateTime = T.String({ format: 'date-time' })
-const ComponentsSchemasFlightInstance = T.Object({
+const ComponentsSchemasFlight = T.Object({
   id: T.Integer(),
   scheduleID: T.Optional(T.Integer()),
   scheduleInstanceDate: T.Optional(CloneType(ComponentsSchemasLocalDate)),
@@ -249,13 +249,13 @@ const ComponentsSchemasSeatAssignment = T.Object({
   id: T.Integer(),
   itinerary: CloneType(ComponentsSchemasItinerarySpecs),
   passenger: CloneType(ComponentsSchemasPassenger),
-  flightInstanceID: T.Integer(),
+  flightID: T.Integer(),
   seat: CloneType(ComponentsSchemasSeatNumber)
 })
 const ComponentsSchemasItinerary = T.Object({
   id: CloneType(ComponentsSchemasItineraryId),
   recordID: CloneType(ComponentsSchemasRecordLocator),
-  flights: T.Array(CloneType(ComponentsSchemasFlightInstance)),
+  flights: T.Array(CloneType(ComponentsSchemasFlight)),
   passengers: T.Array(CloneType(ComponentsSchemasPassenger), { minItems: 1 })
 })
 const ComponentsSchemasItinerarySpec = T.Union([
@@ -744,7 +744,7 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
-  '/airlines/{airlineSpec}/flight-instances': {
+  '/airlines/{airlineSpec}/flights': {
     GET: {
       args: T.Object({
         params: T.Object({
@@ -753,7 +753,7 @@ const schema = {
           })
         })
       }),
-      data: T.Array(CloneType(ComponentsSchemasFlightInstance), {
+      data: T.Array(CloneType(ComponentsSchemasFlight), {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
@@ -866,24 +866,24 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
-  '/schedules/{id}/instances': {
+  '/schedules/{id}/flights': {
     GET: {
       args: T.Object({
         params: T.Object({
           id: T.Integer({ 'x-in': 'path' })
         })
       }),
-      data: T.Array(CloneType(ComponentsSchemasFlightInstance), {
+      data: T.Array(CloneType(ComponentsSchemasFlight), {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
-  '/flight-instances': {
+  '/flights': {
     GET: {
       args: T.Void(),
-      data: T.Array(CloneType(ComponentsSchemasFlightInstance), {
+      data: T.Array(CloneType(ComponentsSchemasFlight), {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
@@ -917,21 +917,21 @@ const schema = {
           }
         )
       }),
-      data: CloneType(ComponentsSchemasFlightInstance, {
+      data: CloneType(ComponentsSchemasFlight, {
         'x-status-code': '201',
         'x-content-type': 'application/json'
       }),
       error: T.Union([T.Any({ 'x-status-code': '400' })])
     }
   },
-  '/flight-instances/{id}': {
+  '/flights/{id}': {
     GET: {
       args: T.Object({
         params: T.Object({
           id: T.Integer({ 'x-in': 'path' })
         })
       }),
-      data: CloneType(ComponentsSchemasFlightInstance, {
+      data: CloneType(ComponentsSchemasFlight, {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
@@ -971,7 +971,7 @@ const schema = {
           }
         )
       }),
-      data: CloneType(ComponentsSchemasFlightInstance, {
+      data: CloneType(ComponentsSchemasFlight, {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
@@ -993,11 +993,11 @@ const schema = {
       ])
     }
   },
-  '/flight-instances/{flightInstanceID}/seat-assignments': {
+  '/flights/{flightID}/seat-assignments': {
     GET: {
       args: T.Object({
         params: T.Object({
-          flightInstanceID: T.Integer({ 'x-in': 'path' })
+          flightID: T.Integer({ 'x-in': 'path' })
         })
       }),
       data: T.Array(CloneType(ComponentsSchemasSeatAssignment), {
@@ -1009,7 +1009,7 @@ const schema = {
     POST: {
       args: T.Object({
         params: T.Object({
-          flightInstanceID: T.Integer({ 'x-in': 'path' })
+          flightID: T.Integer({ 'x-in': 'path' })
         }),
         body: T.Object(
           {
@@ -1118,7 +1118,7 @@ const schema = {
       args: T.Object({
         body: T.Object(
           {
-            flightInstanceIDs: T.Array(T.Integer(), { minLength: 1 }),
+            flightIDs: T.Array(T.Integer(), { minLength: 1 }),
             passengerIDs: T.Array(T.Integer(), { minLength: 1 })
           },
           {
@@ -1220,7 +1220,7 @@ const _components = {
     TimeOfDay: CloneType(ComponentsSchemasTimeOfDay),
     Schedule: CloneType(ComponentsSchemasSchedule),
     FlightNumber: CloneType(ComponentsSchemasFlightNumber),
-    FlightInstance: CloneType(ComponentsSchemasFlightInstance),
+    Flight: CloneType(ComponentsSchemasFlight),
     Route: CloneType(ComponentsSchemasRoute),
     ItineraryID: CloneType(ComponentsSchemasItineraryId),
     RecordLocator: CloneType(ComponentsSchemasRecordLocator),

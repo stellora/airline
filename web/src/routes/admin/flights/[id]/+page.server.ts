@@ -10,13 +10,13 @@ export const actions: Actions = {
 	update: async ({ params, request }) => {
 		const form = await superValidate(
 			request,
-			typebox(schema['/flight-instances/{id}']['PATCH']['args']['properties']['body']),
+			typebox(schema['/flights/{id}']['PATCH']['args']['properties']['body']),
 		)
 		if (!form.valid) {
 			return fail(400, { form })
 		}
 
-		const resp = await apiClient.PATCH('/flight-instances/{id}', {
+		const resp = await apiClient.PATCH('/flights/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
 			body: form.data,
 			fetch,
@@ -26,11 +26,11 @@ export const actions: Actions = {
 		}
 		redirect(
 			303,
-			route('/admin/flight-instances/[id]', { params: { id: resp.data.id.toString() } }),
+			route('/admin/flights/[id]', { params: { id: resp.data.id.toString() } }),
 		)
 	},
 	delete: async ({ params }) => {
-		const resp = await apiClient.DELETE('/flight-instances/{id}', {
+		const resp = await apiClient.DELETE('/flights/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
 			fetch,
 		})
@@ -40,6 +40,6 @@ export const actions: Actions = {
 				error: await resp.response.text(),
 			})
 		}
-		return redirect(303, route('/admin/flight-instances'))
+		return redirect(303, route('/admin/flights'))
 	},
 }

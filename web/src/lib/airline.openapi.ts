@@ -275,15 +275,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/airlines/{airlineSpec}/flight-instances": {
+    "/airlines/{airlineSpec}/flights": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List flight instances for an airline */
-        get: operations["listFlightInstancesByAirline"];
+        /** List flights for an airline */
+        get: operations["listFlightsByAirline"];
         put?: never;
         post?: never;
         delete?: never;
@@ -330,15 +330,15 @@ export interface paths {
         patch: operations["updateSchedule"];
         trace?: never;
     };
-    "/schedules/{id}/instances": {
+    "/schedules/{id}/flights": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get flight instances defined by a schedule */
-        get: operations["listFlightInstancesForSchedule"];
+        /** Get flights defined by a schedule */
+        get: operations["listFlightsForSchedule"];
         put?: never;
         post?: never;
         delete?: never;
@@ -347,52 +347,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/flight-instances": {
+    "/flights": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List all flight instances */
-        get: operations["listFlightInstances"];
+        /** List all flights */
+        get: operations["listFlights"];
         put?: never;
-        /** Create a new single flight instance from manual input, not from a schedule */
-        post: operations["createFlightInstance"];
+        /** Create a new single flight from manual input, not from a schedule */
+        post: operations["createFlight"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/flight-instances/{id}": {
+    "/flights/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["getFlightInstance"];
+        get: operations["getFlight"];
         put?: never;
         post?: never;
-        /** Delete a flight instance created from manual input */
-        delete: operations["deleteFlightInstance"];
+        /** Delete a flight created from manual input */
+        delete: operations["deleteFlight"];
         options?: never;
         head?: never;
-        patch: operations["updateFlightInstance"];
+        patch: operations["updateFlight"];
         trace?: never;
     };
-    "/flight-instances/{flightInstanceID}/seat-assignments": {
+    "/flights/{flightID}/seat-assignments": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get seat assignments for a flight instance */
-        get: operations["listSeatAssignmentsForFlightInstance"];
+        /** Get seat assignments for a flight */
+        get: operations["listSeatAssignmentsForFlight"];
         put?: never;
-        /** Create a seat assignment for a flight instance */
+        /** Create a seat assignment for a flight */
         post: operations["createSeatAssignment"];
         delete?: never;
         options?: never;
@@ -592,7 +592,7 @@ export interface components {
         };
         FlightNumber: string;
         /** @description A single flight, either created and synced automatically from a schedule or created manually. */
-        FlightInstance: {
+        Flight: {
             id: number;
             scheduleID?: number;
             scheduleInstanceDate?: components["schemas"]["LocalDate"];
@@ -625,7 +625,7 @@ export interface components {
         Itinerary: {
             id: components["schemas"]["ItineraryID"];
             recordID: components["schemas"]["RecordLocator"];
-            flights: components["schemas"]["FlightInstance"][];
+            flights: components["schemas"]["Flight"][];
             passengers: components["schemas"]["Passenger"][];
         };
         ItinerarySpecs: {
@@ -641,7 +641,7 @@ export interface components {
             id: number;
             itinerary: components["schemas"]["ItinerarySpecs"];
             passenger: components["schemas"]["Passenger"];
-            flightInstanceID: number;
+            flightID: number;
             seat: components["schemas"]["SeatNumber"];
         };
     };
@@ -1542,7 +1542,7 @@ export interface operations {
             };
         };
     };
-    listFlightInstancesByAirline: {
+    listFlightsByAirline: {
         parameters: {
             query?: never;
             header?: never;
@@ -1553,13 +1553,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of flight instances by airline */
+            /** @description List of flights by airline */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightInstance"][];
+                    "application/json": components["schemas"]["Flight"][];
                 };
             };
             /** @description Airline not found */
@@ -1753,7 +1753,7 @@ export interface operations {
             };
         };
     };
-    listFlightInstancesForSchedule: {
+    listFlightsForSchedule: {
         parameters: {
             query?: never;
             header?: never;
@@ -1764,13 +1764,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of flight instances */
+            /** @description List of flights */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightInstance"][];
+                    "application/json": components["schemas"]["Flight"][];
                 };
             };
             /** @description Schedule not found */
@@ -1782,7 +1782,7 @@ export interface operations {
             };
         };
     };
-    listFlightInstances: {
+    listFlights: {
         parameters: {
             query?: never;
             header?: never;
@@ -1791,18 +1791,18 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of flight instances */
+            /** @description List of flights */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightInstance"][];
+                    "application/json": components["schemas"]["Flight"][];
                 };
             };
         };
     };
-    createFlightInstance: {
+    createFlight: {
         parameters: {
             query?: never;
             header?: never;
@@ -1827,13 +1827,13 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Flight instance created */
+            /** @description Flight created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightInstance"];
+                    "application/json": components["schemas"]["Flight"];
                 };
             };
             /** @description Invalid request */
@@ -1845,7 +1845,7 @@ export interface operations {
             };
         };
     };
-    getFlightInstance: {
+    getFlight: {
         parameters: {
             query?: never;
             header?: never;
@@ -1856,16 +1856,16 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Flight instance found */
+            /** @description Flight found */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightInstance"];
+                    "application/json": components["schemas"]["Flight"];
                 };
             };
-            /** @description Flight instance not found */
+            /** @description Flight not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1874,7 +1874,7 @@ export interface operations {
             };
         };
     };
-    deleteFlightInstance: {
+    deleteFlight: {
         parameters: {
             query?: never;
             header?: never;
@@ -1885,21 +1885,21 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Flight instance deleted */
+            /** @description Flight deleted */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Flight instance created from a schedule can't be deleted. Edit the schedule instead. */
+            /** @description Flight created from a schedule can't be deleted. Edit the schedule instead. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Flight instance not found */
+            /** @description Flight not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1908,7 +1908,7 @@ export interface operations {
             };
         };
     };
-    updateFlightInstance: {
+    updateFlight: {
         parameters: {
             query?: never;
             header?: never;
@@ -1934,23 +1934,23 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Flight instance updated */
+            /** @description Flight updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightInstance"];
+                    "application/json": components["schemas"]["Flight"];
                 };
             };
-            /** @description Flight instance created from schedule can't update fields set by the schedule. Edit the schedule instead. */
+            /** @description Flight created from schedule can't update fields set by the schedule. Edit the schedule instead. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Flight instance not found */
+            /** @description Flight not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1959,12 +1959,12 @@ export interface operations {
             };
         };
     };
-    listSeatAssignmentsForFlightInstance: {
+    listSeatAssignmentsForFlight: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                flightInstanceID: number;
+                flightID: number;
             };
             cookie?: never;
         };
@@ -1979,7 +1979,7 @@ export interface operations {
                     "application/json": components["schemas"]["SeatAssignment"][];
                 };
             };
-            /** @description Flight instance not found */
+            /** @description Flight not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1993,7 +1993,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                flightInstanceID: number;
+                flightID: number;
             };
             cookie?: never;
         };
@@ -2023,7 +2023,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Flight instance not found */
+            /** @description Flight not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -2213,7 +2213,7 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    flightInstanceIDs: number[];
+                    flightIDs: number[];
                     passengerIDs: number[];
                 };
             };

@@ -516,21 +516,21 @@ paths:
                   $ref: '#/components/schemas/Schedule'
         '404':
           description: Airline not found
-  /airlines/{airlineSpec}/flight-instances:
+  /airlines/{airlineSpec}/flights:
     get:
-      operationId: listFlightInstancesByAirline
-      summary: List flight instances for an airline
+      operationId: listFlightsByAirline
+      summary: List flights for an airline
       parameters:
         - $ref: '#/components/parameters/airlineSpec'
       responses:
         '200':
-          description: List of flight instances by airline
+          description: List of flights by airline
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FlightInstance'
+                  $ref: '#/components/schemas/Flight'
         '404':
           description: Airline not found
   /schedules:
@@ -683,10 +683,10 @@ paths:
           description: Schedule deleted
         '404':
           description: Schedule not found
-  /schedules/{id}/instances:
+  /schedules/{id}/flights:
     get:
-      operationId: listFlightInstancesForSchedule
-      summary: Get flight instances defined by a schedule
+      operationId: listFlightsForSchedule
+      summary: Get flights defined by a schedule
       parameters:
         - name: id
           in: path
@@ -695,31 +695,31 @@ paths:
             type: integer
       responses:
         '200':
-          description: List of flight instances
+          description: List of flights
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FlightInstance'
+                  $ref: '#/components/schemas/Flight'
         '404':
           description: Schedule not found
-  /flight-instances:
+  /flights:
     get:
-      operationId: listFlightInstances
-      summary: List all flight instances
+      operationId: listFlights
+      summary: List all flights
       responses:
         '200':
-          description: List of flight instances
+          description: List of flights
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FlightInstance'
+                  $ref: '#/components/schemas/Flight'
     post:
-      operationId: createFlightInstance
-      summary: Create a new single flight instance from manual input, not from a schedule
+      operationId: createFlight
+      summary: Create a new single flight from manual input, not from a schedule
       requestBody:
         required: true
         content:
@@ -759,16 +759,16 @@ paths:
                 - notes
       responses:
         '201':
-          description: Flight instance created
+          description: Flight created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FlightInstance'
+                $ref: '#/components/schemas/Flight'
         '400':
           description: Invalid request
-  /flight-instances/{id}:
+  /flights/{id}:
     get:
-      operationId: getFlightInstance
+      operationId: getFlight
       parameters:
         - name: id
           in: path
@@ -777,15 +777,15 @@ paths:
             type: integer
       responses:
         '200':
-          description: Flight instance found
+          description: Flight found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FlightInstance'
+                $ref: '#/components/schemas/Flight'
         '404':
-          description: Flight instance not found
+          description: Flight not found
     patch:
-      operationId: updateFlightInstance
+      operationId: updateFlight
       parameters:
         - name: id
           in: path
@@ -820,18 +820,18 @@ paths:
                   default: false
       responses:
         '200':
-          description: Flight instance updated
+          description: Flight updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FlightInstance'
+                $ref: '#/components/schemas/Flight'
         '400':
-          description: Flight instance created from schedule can't update fields set by the schedule. Edit the schedule instead.
+          description: Flight created from schedule can't update fields set by the schedule. Edit the schedule instead.
         '404':
-          description: Flight instance not found
+          description: Flight not found
     delete:
-      operationId: deleteFlightInstance
-      summary: Delete a flight instance created from manual input
+      operationId: deleteFlight
+      summary: Delete a flight created from manual input
       parameters:
         - name: id
           in: path
@@ -840,17 +840,17 @@ paths:
             type: integer
       responses:
         '204':
-          description: Flight instance deleted
+          description: Flight deleted
         '400':
-          description: Flight instance created from a schedule can't be deleted. Edit the schedule instead.
+          description: Flight created from a schedule can't be deleted. Edit the schedule instead.
         '404':
-          description: Flight instance not found
-  /flight-instances/{flightInstanceID}/seat-assignments:
+          description: Flight not found
+  /flights/{flightID}/seat-assignments:
     get:
-      operationId: listSeatAssignmentsForFlightInstance
-      summary: Get seat assignments for a flight instance
+      operationId: listSeatAssignmentsForFlight
+      summary: Get seat assignments for a flight
       parameters:
-        - name: flightInstanceID
+        - name: flightID
           in: path
           required: true
           schema:
@@ -865,12 +865,12 @@ paths:
                 items:
                   $ref: '#/components/schemas/SeatAssignment'
         '404':
-          description: Flight instance not found
+          description: Flight not found
     post:
       operationId: createSeatAssignment
-      summary: Create a seat assignment for a flight instance
+      summary: Create a seat assignment for a flight
       parameters:
-        - name: flightInstanceID
+        - name: flightID
           in: path
           required: true
           schema:
@@ -902,7 +902,7 @@ paths:
         '400':
           description: Invalid request
         '404':
-          description: Flight instance not found
+          description: Flight not found
   /passengers:
     get:
       operationId: listPassengers
@@ -1023,7 +1023,7 @@ paths:
             schema:
               type: object
               properties:
-                flightInstanceIDs:
+                flightIDs:
                   type: array
                   items:
                     type: integer
@@ -1034,7 +1034,7 @@ paths:
                     type: integer
                   minLength: 1
               required:
-                - flightInstanceIDs
+                - flightIDs
                 - passengerIDs
       responses:
         '201':
@@ -1358,7 +1358,7 @@ components:
       pattern: '^[0-9]{1,4}$'
       minLength: 1
       maxLength: 4
-    FlightInstance:
+    Flight:
       type: object
       description: A single flight, either created and synced automatically from a schedule or created manually.
       properties:
@@ -1444,7 +1444,7 @@ components:
         flights:
           type: array
           items:
-            $ref: '#/components/schemas/FlightInstance'
+            $ref: '#/components/schemas/Flight'
         passengers:
           type: array
           items:
@@ -1489,7 +1489,7 @@ components:
           $ref: '#/components/schemas/ItinerarySpecs'
         passenger:
           $ref: '#/components/schemas/Passenger'
-        flightInstanceID:
+        flightID:
           type: integer
         seat:
           $ref: '#/components/schemas/SeatNumber'
@@ -1497,5 +1497,5 @@ components:
         - id
         - itinerary
         - passenger
-        - flightInstanceID
+        - flightID
         - seat

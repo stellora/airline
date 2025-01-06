@@ -19,7 +19,7 @@
 	import Trash from 'lucide-svelte/icons/trash'
 	import Users from 'lucide-svelte/icons/users'
 	import ScheduleBreadcrumbItem from '../../../manage/[airlineSpec]/schedules/[id]/schedule-breadcrumb-item.svelte'
-	import FlightInstanceForm from './flight-instance-form.svelte'
+	import FlightForm from './flight-form.svelte'
 
 	const { children, data } = $props()
 </script>
@@ -31,11 +31,11 @@
 	{/if}
 	<Breadcrumb.Item
 		><Breadcrumb.Link
-			href={route('/admin/flight-instances/[id]', {
-				params: { id: data.flightInstance.id.toString() },
+			href={route('/admin/flights/[id]', {
+				params: { id: data.flight.id.toString() },
 			})}
 			>Flight on {formatFlightDate(
-				parseZonedDateTime(data.flightInstance.departureDateTime),
+				parseZonedDateTime(data.flight.departureDateTime),
 			)}</Breadcrumb.Link
 		></Breadcrumb.Item
 	>
@@ -45,21 +45,21 @@
 	tabs={[
 		{
 			title: 'Overview',
-			url: route('/admin/flight-instances/[id]', {
+			url: route('/admin/flights/[id]', {
 				params: { id: page.params.id },
 			}),
 			icon: SquareMenu,
 		},
 		{
 			title: 'Passengers',
-			url: route('/admin/flight-instances/[id]/passengers', {
+			url: route('/admin/flights/[id]/passengers', {
 				params: { id: page.params.id },
 			}),
 			icon: Users,
 		},
 		{
 			title: 'Seat map',
-			url: route('/admin/flight-instances/[id]/seat-map', {
+			url: route('/admin/flights/[id]/seat-map', {
 				params: { id: page.params.id },
 			}),
 			icon: Grid3x3,
@@ -73,7 +73,7 @@
 					{#snippet child({ props })}
 						<form
 							method="POST"
-							action={route('/admin/flight-instances/[id]', {
+							action={route('/admin/flights/[id]', {
 								params: { id: page.params.id },
 								query: '/delete',
 							})}
@@ -94,36 +94,36 @@
 		</PageNavbarBreadcrumbActionsDropdownMenu>
 	{/snippet}
 	{#snippet actions()}
-		{#if data.flightInstance.scheduleID}
+		{#if data.flight.scheduleID}
 			<Button
 				variant="outline"
 				size="pageNavbar"
 				href={route('/manage/[airlineSpec]/schedules/[id]', {
 					params: {
-						airlineSpec: data.flightInstance.airline.iataCode,
-						id: data.flightInstance.scheduleID.toString(),
+						airlineSpec: data.flight.airline.iataCode,
+						id: data.flight.scheduleID.toString(),
 					},
 				})}><CalendarRange /> View schedule</Button
 			>
 		{/if}
-		<Drawer.DrawerByNavigationState id="edit-flight-instance" direction="right">
+		<Drawer.DrawerByNavigationState id="edit-flight" direction="right">
 			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
 				<Settings2 /> Edit
 			</Drawer.Trigger>
 			<Drawer.Content>
 				<Drawer.Header>
-					<Drawer.Title>Edit flight instance</Drawer.Title>
+					<Drawer.Title>Edit flight</Drawer.Title>
 				</Drawer.Header>
 				<Drawer.ScrollArea>
-					<FlightInstanceForm
-						flightInstance={data.flightInstance}
-						action={route('/admin/flight-instances/[id]', {
+					<FlightForm
+						flight={data.flight}
+						action={route('/admin/flights/[id]', {
 							params: { id: page.params.id },
 							query: '/update',
 						})}
 						submitLabel="Save"
 						data={data.form}
-						schema={schema['/flight-instances/{id}']['PATCH']['args']['properties']['body']}
+						schema={schema['/flights/{id}']['PATCH']['args']['properties']['body']}
 					/>
 				</Drawer.ScrollArea>
 			</Drawer.Content>

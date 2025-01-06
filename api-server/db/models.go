@@ -61,7 +61,7 @@ type FleetsView struct {
 	AirlineName     string
 }
 
-type FlightInstance struct {
+type Flight struct {
 	ID                              int64
 	SourceScheduleID                sql.NullInt64
 	SourceScheduleInstanceLocaldate *localtime.LocalDate
@@ -79,7 +79,7 @@ type FlightInstance struct {
 	Published                       bool
 }
 
-type FlightInstancesView struct {
+type FlightsView struct {
 	ID                              int64
 	SourceScheduleID                sql.NullInt64
 	SourceScheduleInstanceLocaldate *localtime.LocalDate
@@ -117,8 +117,8 @@ type Itinerary struct {
 }
 
 type ItineraryFlight struct {
-	ItineraryID      int64
-	FlightInstanceID int64
+	ItineraryID int64
+	FlightID    int64
 }
 
 type ItineraryPassenger struct {
@@ -181,18 +181,18 @@ type SchedulesView struct {
 }
 
 type SeatAssignment struct {
-	ID               int64
-	ItineraryID      int64
-	PassengerID      int64
-	FlightInstanceID int64
-	Seat             string
+	ID          int64
+	ItineraryID int64
+	PassengerID int64
+	FlightID    int64
+	Seat        string
 }
 
 type SeatAssignmentsView struct {
 	ID                int64
 	ItineraryID       int64
 	PassengerID       int64
-	FlightInstanceID  int64
+	FlightID          int64
 	Seat              string
 	ItineraryRecordID string
 	PassengerName     string

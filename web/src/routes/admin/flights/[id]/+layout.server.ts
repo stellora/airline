@@ -1,6 +1,6 @@
 import { schema } from '$lib/airline.typebox'
 import { apiClient } from '$lib/api'
-import type { FlightInstance, Schedule } from '$lib/types'
+import type { Flight, Schedule } from '$lib/types'
 import type { Static } from '@sinclair/typebox'
 import { error } from '@sveltejs/kit'
 import { superValidate } from 'sveltekit-superforms'
@@ -9,20 +9,20 @@ import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ params }) => {
 	const id = Number.parseInt(params.id)
-	const resp = await apiClient.GET('/flight-instances/{id}', {
+	const resp = await apiClient.GET('/flights/{id}', {
 		params: { path: { id } },
 		fetch,
 	})
 	if (!resp.response.ok || !resp.data) {
 		// TODO(sqs)
-		throw error(404, 'Flight instance not found')
+		throw error(404, 'Flight not found')
 	}
-	const flightInstance = resp.data
+	const flight = resp.data
 
 	let schedule: Schedule | undefined
-	if (flightInstance.scheduleID) {
+	if (flight.scheduleID) {
 		const resp = await apiClient.GET('/schedules/{id}', {
-			params: { path: { id: flightInstance.scheduleID } },
+			params: { path: { id: flight.scheduleID } },
 			fetch,
 		})
 		if (!resp.response.ok || !resp.data) {
@@ -32,18 +32,18 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	}
 
 	return {
-		flightInstance,
+		flight,
 		schedule,
 		form: await superValidate(
-			existingFlightInstanceToFormData(flightInstance),
-			typebox(schema['/flight-instances/{id}']['PATCH']['args']['properties']['body']),
+			existingFlightToFormData(flight),
+			typebox(schema['/flights/{id}']['PATCH']['args']['properties']['body']),
 		),
 	}
 }
 
-function existingFlightInstanceToFormData(
-	a: FlightInstance,
-): Static<(typeof schema)['/flight-instances/{id}']['PATCH']['args']['properties']['body']> {
+function existingFlightToFormData(
+	a: Flight,
+): Static<(typeof schema)['/flights/{id}']['PATCH']['args']['properties']['body']> {
 	return a.scheduleID
 		? {
 				aircraft: a.aircraft?.registration,

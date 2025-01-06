@@ -35,7 +35,7 @@ func fromDBItinerary(ctx context.Context, queriesTx *db.Queries, i db.Itinerary)
 	return api.Itinerary{
 		Id:         int(i.ID),
 		RecordID:   i.RecordID,
-		Flights:    mapSlice(fromDBFlightInstance, flights),
+		Flights:    mapSlice(fromDBFlight, flights),
 		Passengers: mapSlice(fromDBPassenger, passengers),
 	}, nil
 }
@@ -113,10 +113,10 @@ func (h *Handler) CreateItinerary(ctx context.Context, request api.CreateItinera
 	}
 
 	// Add flights
-	for _, flightID := range request.Body.FlightInstanceIDs {
+	for _, flightID := range request.Body.FlightIDs {
 		err := queriesTx.AddFlightToItinerary(ctx, db.AddFlightToItineraryParams{
 			ItineraryID:      created.ID,
-			FlightInstanceID: int64(flightID),
+			FlightID: int64(flightID),
 		})
 		if err != nil {
 			return nil, err

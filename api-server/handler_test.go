@@ -233,21 +233,21 @@ func insertScheduleT(t *testing.T, handler *Handler, startDate, endDate localtim
 	return schedule
 }
 
-func insertFlightInstanceT(t *testing.T, handler *Handler, newInstance api.CreateFlightInstanceJSONRequestBody) api.FlightInstance {
+func insertFlightT(t *testing.T, handler *Handler, body api.CreateFlightJSONRequestBody) api.Flight {
 	t.Helper()
 	insertTestFleet(t, handler)
-	instance, err := insertFlightInstance(context.Background(), handler, newInstance)
+	flight, err := insertFlight(context.Background(), handler, body)
 	if err != nil {
 		t.Fatal(err)
 	}
-	return instance
+	return flight
 }
 
-func setNotesForFlightInstance(t *testing.T, handler *Handler, id int, notes string) {
+func setNotesForFlight(t *testing.T, handler *Handler, id int, notes string) {
 	t.Helper()
-	if _, err := handler.UpdateFlightInstance(context.Background(), api.UpdateFlightInstanceRequestObject{
+	if _, err := handler.UpdateFlight(context.Background(), api.UpdateFlightRequestObject{
 		Id: id,
-		Body: &api.UpdateFlightInstanceJSONRequestBody{
+		Body: &api.UpdateFlightJSONRequestBody{
 			Notes: ptrTo(notes),
 		},
 	}); err != nil {

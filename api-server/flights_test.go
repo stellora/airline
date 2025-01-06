@@ -11,7 +11,7 @@ import (
 	"github.com/stellora/airline/api-server/localtime"
 )
 
-var fixtureManualFlightInstance = api.CreateFlightInstanceJSONRequestBody{
+var fixtureManualFlight = api.CreateFlightJSONRequestBody{
 	Airline:            api.NewAirlineSpec(0, "XX"),
 	Number:             "222",
 	OriginAirport:      api.NewAirportSpec(0, "AAA"),
@@ -23,7 +23,7 @@ var fixtureManualFlightInstance = api.CreateFlightInstanceJSONRequestBody{
 	Published:          ptrTo(true),
 }
 
-func TestGetFlightInstance(t *testing.T) {
+func TestGetFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
@@ -34,14 +34,14 @@ func TestGetFlightInstance(t *testing.T) {
 	)
 
 	t.Run("exists", func(t *testing.T) {
-		resp, err := handler.GetFlightInstance(ctx, api.GetFlightInstanceRequestObject{
+		resp, err := handler.GetFlight(ctx, api.GetFlightRequestObject{
 			Id: 2,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
+		assertEqual(t, resp, api.GetFlight200JSONResponse{
 			Id:                   2,
 			ScheduleID:           &schedule.Id,
 			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.AddDays(1).String()),
@@ -58,17 +58,17 @@ func TestGetFlightInstance(t *testing.T) {
 	})
 
 	t.Run("does not exist", func(t *testing.T) {
-		resp, err := handler.GetFlightInstance(ctx, api.GetFlightInstanceRequestObject{
+		resp, err := handler.GetFlight(ctx, api.GetFlightRequestObject{
 			Id: 999,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(t, resp, api.GetFlightInstance404Response{})
+		assertEqual(t, resp, api.GetFlight404Response{})
 	})
 }
 
-func TestListFlightInstances(t *testing.T) {
+func TestListFlights(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
@@ -78,12 +78,12 @@ func TestListFlightInstances(t *testing.T) {
 		allDaysOfWeek,
 	)
 
-	resp, err := handler.ListFlightInstances(ctx, api.ListFlightInstancesRequestObject{})
+	resp, err := handler.ListFlights(ctx, api.ListFlightsRequestObject{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assertEqual(t, resp, api.ListFlightInstances200JSONResponse{
+	assertEqual(t, resp, api.ListFlights200JSONResponse{
 		{
 			Id:                   1,
 			ScheduleID:           &schedule.Id,
@@ -129,14 +129,14 @@ func TestListFlightInstances(t *testing.T) {
 	})
 }
 
-func TestCreateFlightInstance(t *testing.T) {
+func TestCreateFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	insertTestFleet(t, handler)
 
-	resp, err := handler.CreateFlightInstance(ctx, api.CreateFlightInstanceRequestObject{
-		Body: &api.CreateFlightInstanceJSONRequestBody{
+	resp, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
+		Body: &api.CreateFlightJSONRequestBody{
 			Airline:            api.NewAirlineSpec(0, "XX"),
 			Number:             "222",
 			OriginAirport:      api.NewAirportSpec(0, "AAA"),
@@ -150,12 +150,12 @@ func TestCreateFlightInstance(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, ok := resp.(api.CreateFlightInstance201JSONResponse); !ok {
+	if _, ok := resp.(api.CreateFlight201JSONResponse); !ok {
 		t.Fatalf("got %T, want non-error response", resp)
 	}
 }
 
-func TestUpdateFlightInstance(t *testing.T) {
+func TestUpdateFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
@@ -168,31 +168,31 @@ func TestUpdateFlightInstance(t *testing.T) {
 	{
 		// Update the flight
 		notes := "abc"
-		resp, err := handler.UpdateFlightInstance(ctx, api.UpdateFlightInstanceRequestObject{
+		resp, err := handler.UpdateFlight(ctx, api.UpdateFlightRequestObject{
 			Id: 1,
-			Body: &api.UpdateFlightInstanceJSONRequestBody{
+			Body: &api.UpdateFlightJSONRequestBody{
 				Notes: ptrTo(notes),
 			},
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, ok := resp.(api.UpdateFlightInstance200JSONResponse); !ok {
+		if _, ok := resp.(api.UpdateFlight200JSONResponse); !ok {
 			t.Fatalf("got %T, want non-error response", resp)
 		}
-		if got := resp.(api.UpdateFlightInstance200JSONResponse); got.Notes != notes {
+		if got := resp.(api.UpdateFlight200JSONResponse); got.Notes != notes {
 			t.Errorf("got notes %q, want %q", got.Notes, notes)
 		}
 	}
 
 	{
 		// Verify the flight was actually updated
-		resp, err := handler.GetFlightInstance(ctx, api.GetFlightInstanceRequestObject{Id: 1})
+		resp, err := handler.GetFlight(ctx, api.GetFlightRequestObject{Id: 1})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
+		assertEqual(t, resp, api.GetFlight200JSONResponse{
 			Id:                   1,
 			ScheduleID:           &schedule.Id,
 			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.String()),
@@ -210,12 +210,12 @@ func TestUpdateFlightInstance(t *testing.T) {
 	}
 }
 
-func TestDeleteFlightInstance(t *testing.T) {
+func TestDeleteFlight(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 
-	manualFlightInstance := insertFlightInstanceT(t, handler, api.CreateFlightInstanceJSONRequestBody{
+	manualFlight := insertFlightT(t, handler, api.CreateFlightJSONRequestBody{
 		Airline:            api.NewAirlineSpec(0, "XX"),
 		Number:             "222",
 		OriginAirport:      api.NewAirportSpec(0, "AAA"),
@@ -231,67 +231,66 @@ func TestDeleteFlightInstance(t *testing.T) {
 		allDaysOfWeek,
 	)
 
-	checkFlightInstanceExistence := func(t *testing.T, id int, wantExist bool) {
+	checkFlightExistence := func(t *testing.T, id int, wantExist bool) {
 		t.Helper()
-		resp, err := handler.GetFlightInstance(ctx, api.GetFlightInstanceRequestObject{Id: id})
+		resp, err := handler.GetFlight(ctx, api.GetFlightRequestObject{Id: id})
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, isNotExist := resp.(api.GetFlightInstance404Response); !isNotExist != wantExist {
-			t.Fatalf("flight instance %d: got exists %v, want %v", id, !isNotExist, wantExist)
+		if _, isNotExist := resp.(api.GetFlight404Response); !isNotExist != wantExist {
+			t.Fatalf("flight %d: got exists %v, want %v", id, !isNotExist, wantExist)
 		}
 	}
 
 	t.Run("source = Schedule", func(t *testing.T) {
-		instancesResp, err := handler.ListFlightInstancesForSchedule(ctx, api.ListFlightInstancesForScheduleRequestObject{Id: schedule.Id})
+		flightsResp, err := handler.ListFlightsForSchedule(ctx, api.ListFlightsForScheduleRequestObject{Id: schedule.Id})
 		if err != nil {
 			t.Fatal(err)
 		}
-		instances := instancesResp.(api.ListFlightInstancesForSchedule200JSONResponse)
+		flights := flightsResp.(api.ListFlightsForSchedule200JSONResponse)
 
-		checkFlightInstanceExistence(t, instances[0].Id, true)
-		resp, err := handler.DeleteFlightInstance(ctx, api.DeleteFlightInstanceRequestObject{Id: instances[0].Id})
+		checkFlightExistence(t, flights[0].Id, true)
+		resp, err := handler.DeleteFlight(ctx, api.DeleteFlightRequestObject{Id: flights[0].Id})
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(t, resp, api.DeleteFlightInstance400Response{})
-		checkFlightInstanceExistence(t, instances[0].Id, true)
+		assertEqual(t, resp, api.DeleteFlight400Response{})
+		checkFlightExistence(t, flights[0].Id, true)
 	})
 
 	t.Run("source = manual", func(t *testing.T) {
-		checkFlightInstanceExistence(t, manualFlightInstance.Id, true)
-		resp, err := handler.DeleteFlightInstance(ctx, api.DeleteFlightInstanceRequestObject{Id: manualFlightInstance.Id})
+		checkFlightExistence(t, manualFlight.Id, true)
+		resp, err := handler.DeleteFlight(ctx, api.DeleteFlightRequestObject{Id: manualFlight.Id})
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(t, resp, api.DeleteFlightInstance204Response{})
-		checkFlightInstanceExistence(t, manualFlightInstance.Id, false)
+		assertEqual(t, resp, api.DeleteFlight204Response{})
+		checkFlightExistence(t, manualFlight.Id, false)
 	})
 }
 
-func flightInstanceDescription(instance api.FlightInstance) string {
-	parts := []string{fmt.Sprintf("%s%s %s-%s on %s", instance.Airline.IataCode, instance.Number, instance.OriginAirport.IataCode, instance.DestinationAirport.IataCode, instance.DepartureDateTime.Format(time.DateOnly))}
-	if instance.Aircraft != nil {
-		parts = append(parts, fmt.Sprintf("aircraft=%s", instance.Aircraft.AircraftType))
+func flightDescription(f api.Flight) string {
+	parts := []string{fmt.Sprintf("%s%s %s-%s on %s", f.Airline.IataCode, f.Number, f.OriginAirport.IataCode, f.DestinationAirport.IataCode, f.DepartureDateTime.Format(time.DateOnly))}
+	if f.Aircraft != nil {
+		parts = append(parts, fmt.Sprintf("aircraft=%s", f.Aircraft.AircraftType))
 	}
-	if instance.Notes != "" {
-		parts = append(parts, fmt.Sprintf("notes=%s", instance.Notes))
+	if f.Notes != "" {
+		parts = append(parts, fmt.Sprintf("notes=%s", f.Notes))
 	}
 	return strings.Join(parts, " ")
 }
 
-func flightInstanceDescriptions(flights []api.FlightInstance) []string {
-	return mapSlice(flightInstanceDescription, flights)
+func flightDescriptions(flights []api.Flight) []string {
+	return mapSlice(flightDescription, flights)
 }
 
-func checkFlightInstances(t *testing.T, handler *Handler, scheduleID int, want []string) {
+func checkFlights(t *testing.T, handler *Handler, scheduleID int, want []string) {
 	t.Helper()
 
-	resp, err := handler.ListFlightInstancesForSchedule(context.Background(), api.ListFlightInstancesForScheduleRequestObject{Id: scheduleID})
+	resp, err := handler.ListFlightsForSchedule(context.Background(), api.ListFlightsForScheduleRequestObject{Id: scheduleID})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	instances := resp.(api.ListFlightInstancesForSchedule200JSONResponse)
-	assertEqual(t, flightInstanceDescriptions(instances), want)
+	assertEqual(t, flightDescriptions(resp.(api.ListFlightsForSchedule200JSONResponse)), want)
 }

@@ -20,12 +20,12 @@ func fromDBSeatAssignment(a db.SeatAssignmentsView) api.SeatAssignment {
 			Id:   int(a.PassengerID),
 			Name: a.PassengerName,
 		},
-		FlightInstanceID: int(a.FlightInstanceID),
+		FlightID: int(a.FlightID),
 		Seat:             a.Seat,
 	}
 }
 
-func (h *Handler) ListSeatAssignmentsForFlightInstance(ctx context.Context, request api.ListSeatAssignmentsForFlightInstanceRequestObject) (api.ListSeatAssignmentsForFlightInstanceResponseObject, error) {
+func (h *Handler) ListSeatAssignmentsForFlight(ctx context.Context, request api.ListSeatAssignmentsForFlightRequestObject) (api.ListSeatAssignmentsForFlightResponseObject, error) {
 	tx, err := h.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -33,14 +33,14 @@ func (h *Handler) ListSeatAssignmentsForFlightInstance(ctx context.Context, requ
 	defer tx.Rollback()
 	queriesTx := h.queries.WithTx(tx)
 
-	if _, err := queriesTx.GetFlightInstance(ctx, int64(request.FlightInstanceID)); err != nil {
+	if _, err := queriesTx.GetFlight(ctx, int64(request.FlightID)); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.ListSeatAssignmentsForFlightInstance404Response{}, nil
+			return &api.ListSeatAssignmentsForFlight404Response{}, nil
 		}
 		return nil, err
 	}
 
-	assignments, err := queriesTx.ListSeatAssignmentsForFlightInstance(ctx, int64(request.FlightInstanceID))
+	assignments, err := queriesTx.ListSeatAssignmentsForFlight(ctx, int64(request.FlightID))
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (h *Handler) ListSeatAssignmentsForFlightInstance(ctx context.Context, requ
 		return nil, err
 	}
 
-	return api.ListSeatAssignmentsForFlightInstance200JSONResponse(mapSlice(fromDBSeatAssignment, assignments)), nil
+	return api.ListSeatAssignmentsForFlight200JSONResponse(mapSlice(fromDBSeatAssignment, assignments)), nil
 }
 
 func (h *Handler) CreateSeatAssignment(ctx context.Context, request api.CreateSeatAssignmentRequestObject) (api.CreateSeatAssignmentResponseObject, error) {
@@ -63,7 +63,7 @@ func (h *Handler) CreateSeatAssignment(ctx context.Context, request api.CreateSe
 	params := db.CreateSeatAssignmentParams{
 		ItineraryID:      int64(request.Body.ItineraryID),
 		PassengerID:      int64(request.Body.PassengerID),
-		FlightInstanceID: int64(request.FlightInstanceID),
+		FlightID: int64(request.FlightID),
 		Seat:             request.Body.Seat,
 	}
 

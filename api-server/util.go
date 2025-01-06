@@ -90,14 +90,14 @@ func insertAirlines(ctx context.Context, handler *Handler, airlines map[string]s
 	return ids, nil
 }
 
-func insertFlightInstance(ctx context.Context, handler *Handler, newInstance api.CreateFlightInstanceJSONRequestBody) (api.FlightInstance, error) {
-	v, err := handler.CreateFlightInstance(ctx, api.CreateFlightInstanceRequestObject{
-		Body: &newInstance,
+func insertFlight(ctx context.Context, handler *Handler, body api.CreateFlightJSONRequestBody) (api.Flight, error) {
+	v, err := handler.CreateFlight(ctx, api.CreateFlightRequestObject{
+		Body: &body,
 	})
 	if err != nil {
-		return api.FlightInstance{}, err
+		return api.Flight{}, err
 	}
-	return api.FlightInstance(v.(api.CreateFlightInstance201JSONResponse)), nil
+	return api.Flight(v.(api.CreateFlight201JSONResponse)), nil
 }
 
 var testingNoDistanceCalculations = false
