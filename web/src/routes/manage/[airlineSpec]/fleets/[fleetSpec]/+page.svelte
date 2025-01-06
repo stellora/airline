@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
-	import AircraftList from '../../../../aircraft/aircraft-list.svelte'
+	import AircraftList from '../../../../admin/aircraft/aircraft-list.svelte'
 
 	let { data } = $props()
 </script>
