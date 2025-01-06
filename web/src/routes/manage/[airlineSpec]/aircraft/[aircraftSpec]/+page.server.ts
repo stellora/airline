@@ -25,7 +25,9 @@ export const actions: Actions = {
 		}
 		redirect(
 			303,
-			route('/admin/aircraft/[aircraftSpec]', { params: { aircraftSpec: resp.data.registration } }),
+			route('/manage/[airlineSpec]/aircraft/[aircraftSpec]', {
+				params: { airlineSpec: params.airlineSpec, aircraftSpec: resp.data.registration },
+			}),
 		)
 	},
 	delete: async ({ params }) => {
@@ -38,6 +40,9 @@ export const actions: Actions = {
 				error: await resp.response.text(),
 			})
 		}
-		return redirect(303, '/admin/aircraft')
+		return redirect(
+			303,
+			route('/manage/[airlineSpec]/aircraft', { params: { airlineSpec: params.airlineSpec } }),
+		)
 	},
 }

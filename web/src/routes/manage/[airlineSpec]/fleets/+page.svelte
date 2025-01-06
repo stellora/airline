@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/state'
 	import { schema } from '$lib/airline.typebox'
 	import FleetTitle from '$lib/components/fleet-title.svelte'
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import { Button, buttonVariants } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
+	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
@@ -13,6 +16,16 @@
 
 	let { data } = $props()
 </script>
+
+<BreadcrumbsForLayout>
+	<Breadcrumb.Item>
+		<Breadcrumb.Link
+			href={route('/manage/[airlineSpec]/fleets', {
+				params: { airlineSpec: page.params.airlineSpec },
+			})}>Fleets</Breadcrumb.Link
+		>
+	</Breadcrumb.Item></BreadcrumbsForLayout
+>
 
 <PageNav>
 	{#snippet actions()}

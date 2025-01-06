@@ -21,8 +21,11 @@
 <BreadcrumbsForLayout>
 	<Breadcrumb.Item>
 		<Breadcrumb.Link
-			href={route('/admin/aircraft/[aircraftSpec]', {
-				params: { aircraftSpec: data.aircraft.registration },
+			href={route('/manage/[airlineSpec]/aircraft/[aircraftSpec]', {
+				params: {
+					airlineSpec: page.params.airlineSpec,
+					aircraftSpec: page.params.aircraftSpec,
+				},
 			})}
 			><AircraftRegistration aircraft={data.aircraft} showAircraftType={true} />
 		</Breadcrumb.Link>
@@ -37,8 +40,11 @@
 					{#snippet child({ props })}
 						<form
 							method="POST"
-							action={route('/admin/aircraft/[aircraftSpec]', {
-								params: { aircraftSpec: page.params.aircraftSpec },
+							action={route('/manage/[airlineSpec]/aircraft/[aircraftSpec]', {
+								params: {
+									airlineSpec: page.params.airlineSpec,
+									aircraftSpec: page.params.aircraftSpec,
+								},
 								query: '/delete',
 							})}
 							use:enhance={({ cancel }) => {
@@ -68,8 +74,11 @@
 				</Drawer.Header>
 				<Drawer.ScrollArea>
 					<AircraftForm
-						action={route('/admin/aircraft/[aircraftSpec]', {
-							params: { aircraftSpec: page.params.aircraftSpec },
+						action={route('/manage/[airlineSpec]/aircraft/[aircraftSpec]', {
+							params: {
+								airlineSpec: page.params.airlineSpec,
+								aircraftSpec: page.params.aircraftSpec,
+							},
 							query: '/update',
 						})}
 						submitLabel="Save"

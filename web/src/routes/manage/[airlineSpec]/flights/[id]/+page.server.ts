@@ -26,7 +26,9 @@ export const actions: Actions = {
 		}
 		redirect(
 			303,
-			route('/manage/[airlineSpec]/flights/[id]', { params: { id: resp.data.id.toString() } }),
+			route('/manage/[airlineSpec]/flights/[id]', {
+				params: { airlineSpec: params.airlineSpec, id: resp.data.id.toString() },
+			}),
 		)
 	},
 	delete: async ({ params }) => {

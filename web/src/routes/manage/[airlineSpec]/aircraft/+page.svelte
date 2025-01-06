@@ -6,8 +6,8 @@
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import Plus from 'lucide-svelte/icons/plus'
-	import AircraftForm from '../../../admin/aircraft/aircraft-form.svelte'
-	import AircraftList from '../../../admin/aircraft/aircraft-list.svelte'
+	import AircraftForm from './aircraft-form.svelte'
+	import AircraftList from './aircraft-list.svelte'
 
 	let { data } = $props()
 </script>
@@ -36,5 +36,5 @@
 </PageNav>
 
 <Page title="Aircraft">
-	<Card.Root><AircraftList aircraft={data.aircraft!} showAirline={false} /></Card.Root>
+	<Card.Root><AircraftList aircraft={data.aircraft!} /></Card.Root>
 </Page>

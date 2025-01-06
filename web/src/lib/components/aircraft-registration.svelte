@@ -16,7 +16,7 @@
 
 <div class="inline-flex gap-1">
 	{#if link}
-		<a href={route('/admin/aircraft/[aircraftSpec]')} class="font-mono">{aircraft.registration}</a>
+		<a href={route('/manage/[airlineSpec]/aircraft/[aircraftSpec]')} class="font-mono">{aircraft.registration}</a>
 	{:else}
 		<span class="font-mono">{aircraft.registration}</span>
 	{/if}

@@ -37,8 +37,11 @@
 					<Table.Cell class="text-right">
 						<Button
 							variant="link"
-							href={route('/admin/aircraft/[aircraftSpec]', {
-								params: { aircraftSpec: aircraft.registration },
+							href={route('/manage/[airlineSpec]/aircraft/[aircraftSpec]', {
+								params: {
+									airlineSpec: aircraft.airline.iataCode,
+									aircraftSpec: aircraft.registration,
+								},
 							})}
 							class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 						>
