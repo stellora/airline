@@ -26,7 +26,7 @@ export const actions: Actions = {
 		}
 		redirect(
 			303,
-			route('/admin/flights/[id]', { params: { id: resp.data.id.toString() } }),
+			route('/manage/[airlineSpec]/flights/[id]', { params: { id: resp.data.id.toString() } }),
 		)
 	},
 	delete: async ({ params }) => {
@@ -40,6 +40,6 @@ export const actions: Actions = {
 				error: await resp.response.text(),
 			})
 		}
-		return redirect(303, route('/admin/flights'))
+		return redirect(303, route('/manage/[airlineSpec]/flights'))
 	},
 }

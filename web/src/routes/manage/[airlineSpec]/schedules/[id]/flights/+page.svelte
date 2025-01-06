@@ -8,6 +8,6 @@
 </script>
 
 <Page title={`Flights for scheduled ${scheduleTitle(data.schedule)}`}>
-	<ScheduleTitle flight={data.schedule} as="span" showRoute={true} />
+	<ScheduleTitle schedule={data.schedule} as="span" showRoute={true} />
 	<FlightList flights={data.flights} />
 </Page>

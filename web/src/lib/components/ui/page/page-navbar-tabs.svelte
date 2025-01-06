@@ -6,6 +6,10 @@
 		url: string
 		icon: ComponentType
 	}
+
+	export function isActiveURL(url: string, exact = false): boolean {
+		return page.url.pathname === url || (!exact && page.url.pathname.startsWith(`${url}/`))
+	}
 </script>
 
 <script lang="ts">
@@ -25,7 +29,7 @@
 			variant="pageNavbarTab"
 			size="pageNavbar"
 			href={tab.url}
-			data-active={page.url.pathname === tab.url}
+			data-active={isActiveURL(tab.url)}
 		>
 			<tab.icon />
 			{tab.title}</Button

@@ -29,7 +29,7 @@
 						{#each data.itinerary.flights as flight (flight.id)}
 							<li>
 								<a
-									href={route('/admin/flights/[id]', {
+									href={route('/manage/[airlineSpec]/flights/[id]', {
 										params: { id: flight.id.toString() },
 									})}
 								>

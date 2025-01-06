@@ -13,10 +13,7 @@
 	import { parseZonedDateTime } from '@internationalized/date'
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
-	let {
-		flights,
-		showFlightInfo,
-	}: { flights: Flight[]; showFlightInfo?: boolean } = $props()
+	let { flights, showFlightInfo }: { flights: Flight[]; showFlightInfo?: boolean } = $props()
 </script>
 
 <Card>
@@ -75,8 +72,11 @@
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"
-								href={route('/admin/flights/[id]', {
-									params: { id: flight.id.toString() },
+								href={route('/manage/[airlineSpec]/flights/[id]', {
+									params: {
+										airlineSpec: flight.airline.iataCode,
+										id: flight.id.toString(),
+									},
 								})}
 								class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 							>

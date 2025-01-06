@@ -24,31 +24,31 @@
 		</Table.Header>
 		{#if schedules && schedules.length > 0}
 			<Table.Body>
-				{#each schedules as flight (flight.id)}
+				{#each schedules as schedule (schedule.id)}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell class="font-bold text-lg">
-							<ScheduleTitle {flight} as="span" showAirlineIcon={true} showRoute={false} />
+							<ScheduleTitle {schedule} as="span" showAirlineIcon={true} showRoute={false} />
 						</Table.Cell>
 						<Table.Cell class="flex items-center gap-2"
 							><div class="inline-flex flex-col gap-1">
 								<span
-									><AirportCode airport={flight.originAirport} />&ndash;<AirportCode
-										airport={flight.destinationAirport}
+									><AirportCode airport={schedule.originAirport} />&ndash;<AirportCode
+										airport={schedule.destinationAirport}
 									/></span
 								>
 								<span class="text-muted-foreground text-xs">
-									<Distance distanceMiles={flight.distanceMiles} /></span
+									<Distance distanceMiles={schedule.distanceMiles} /></span
 								>
 							</div>
 							<div class="border rounded">
-								<FlightSparkRoute {flight} width={100} height={36} />
+								<FlightSparkRoute flight={schedule} width={100} height={36} />
 							</div>
 						</Table.Cell>
 						<Table.Cell class="text-right">
 							<Button
 								variant="link"
 								href={route('/manage/[airlineSpec]/schedules/[id]', {
-									params: { airlineSpec: flight.airline.iataCode, id: flight.id.toString() },
+									params: { airlineSpec: schedule.airline.iataCode, id: schedule.id.toString() },
 								})}
 								class="stretched-link h-auto p-1 opacity-35 group-hover:opacity-100"
 							>

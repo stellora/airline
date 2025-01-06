@@ -2,6 +2,7 @@
 	type Item = {
 		title: string
 		url: string
+		exact?: boolean
 		icon: typeof TicketsPlane
 	}
 
@@ -55,6 +56,7 @@
 	import Waypoints from 'lucide-svelte/icons/waypoints'
 	import type { LayoutData } from '../../routes/$types'
 	import AppSidebarAirlineSwitcher from './app-sidebar-airline-switcher.svelte'
+	import { isActiveURL } from './ui/page/page-navbar-tabs.svelte'
 
 	const items: Item[] = [
 		{
@@ -85,6 +87,7 @@
 			url: route('/manage/[airlineSpec]', {
 				params: { airlineSpec: airlineIataCode },
 			}),
+			exact: true,
 			icon: SquareMenu,
 		},
 		{
@@ -141,7 +144,7 @@
 					<Sidebar.Menu>
 						{#each airlineAdminItems(activeAirlineIataCode) as item (item.title)}
 							<Sidebar.MenuItem>
-								<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+								<Sidebar.MenuButton isActive={isActiveURL(item.url, item.exact)}>
 									{#snippet child({ props })}
 										<a href={item.url} {...props}>
 											<item.icon />
@@ -162,7 +165,7 @@
 				<Sidebar.Menu>
 					{#each globalAdminItems as item (item.title)}
 						<Sidebar.MenuItem>
-							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+							<Sidebar.MenuButton isActive={isActiveURL(item.url, item.exact)}>
 								{#snippet child({ props })}
 									<a href={item.url} {...props}>
 										<item.icon />
@@ -182,7 +185,7 @@
 				<Sidebar.Menu>
 					{#each items as item (item.title)}
 						<Sidebar.MenuItem>
-							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+							<Sidebar.MenuButton isActive={isActiveURL(item.url, item.exact)}>
 								{#snippet child({ props })}
 									<a href={item.url} {...props}>
 										<item.icon />
@@ -202,7 +205,7 @@
 				<Sidebar.Menu>
 					{#each devItems as item (item.title)}
 						<Sidebar.MenuItem>
-							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+							<Sidebar.MenuButton isActive={isActiveURL(item.url, item.exact)}>
 								{#snippet child({ props })}
 									<a href={item.url} {...props}>
 										<item.icon />

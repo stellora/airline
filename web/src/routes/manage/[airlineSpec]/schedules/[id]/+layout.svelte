@@ -1,19 +1,20 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { schema } from '$lib/airline.typebox'
-	import { buttonVariants } from '$lib/components/ui/button/button.svelte'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
+	import { cn } from '$lib/utils'
 	import Eye from 'lucide-svelte/icons/eye'
 	import EyeOff from 'lucide-svelte/icons/eye-off'
 	import PlaneTakeoff from 'lucide-svelte/icons/plane-takeoff'
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
+	import type { ClassNameValue } from 'tailwind-merge'
 	import ScheduleForm from '../schedule-form.svelte'
 	import ScheduleBreadcrumbItem from './schedule-breadcrumb-item.svelte'
 
@@ -37,8 +38,8 @@
 			icon: SquareMenu,
 		},
 		{
-			title: 'Instances',
-			url: route('/manage/[airlineSpec]/schedules/[id]/instances', {
+			title: 'Flights',
+			url: route('/manage/[airlineSpec]/schedules/[id]/flights', {
 				params: {
 					airlineSpec: data.schedule.airline.iataCode,
 					id: data.schedule.id.toString(),
@@ -49,70 +50,72 @@
 	]}
 >
 	{#snippet breadcrumbActions()}
-		<PageNavbarBreadcrumbActionsDropdownMenu>
-			<DropdownMenu.Group>
-				<DropdownMenu.Item>
-					{#snippet child({ props })}
-						<form
-							method="POST"
-							action={route('/manage/[airlineSpec]/schedules/[id]', {
-								params: {
-									airlineSpec: data.schedule.airline.iataCode,
-									id: data.schedule.id.toString(),
-								},
-								query: '/setSchedulePublished',
-							})}
-							use:enhance
-							class="w-full [&>button]:w-full"
-						>
-							<input
-								type="hidden"
-								name="published"
-								value={data.schedule.published ? 'false' : 'true'}
-							/>
-							<button type="submit" {...props}>
-								{#if data.schedule.published}
-									<EyeOff /> Unpublish
-								{:else}
-									<Eye /> Publish
-								{/if}
-							</button>
-						</form>
-					{/snippet}
-				</DropdownMenu.Item>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Item>
-					{#snippet child({ props })}
-						<form
-							method="POST"
-							action={route('/manage/[airlineSpec]/schedules/[id]', {
-								params: {
-									airlineSpec: data.schedule.airline.iataCode,
-									id: data.schedule.id.toString(),
-								},
-								query: '/delete',
-							})}
-							use:enhance={({ cancel }) => {
-								if (!confirm('Really delete?')) {
-									cancel()
-								}
-							}}
-							class="w-full [&>button]:w-full"
-						>
-							<button type="submit" {...props}>
-								<Trash /> Delete...
-							</button>
-						</form>
-					{/snippet}</DropdownMenu.Item
-				>
-			</DropdownMenu.Group>
-		</PageNavbarBreadcrumbActionsDropdownMenu>
-	{/snippet}
-	{#snippet actions()}
 		<Drawer.DrawerByNavigationState id="edit-schedule" direction="right">
-			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
-				<Settings2 /> Edit
-			</Drawer.Trigger>
+			<PageNavbarBreadcrumbActionsDropdownMenu>
+				<DropdownMenu.Group>
+					<DropdownMenu.Item>
+						{#snippet child({ props })}
+							<Drawer.Trigger {...props} class={cn(props.class as ClassNameValue, 'w-full')}>
+								<Settings2 /> Edit
+							</Drawer.Trigger>
+						{/snippet}
+					</DropdownMenu.Item>
+					<DropdownMenu.Item>
+						{#snippet child({ props })}
+							<form
+								method="POST"
+								action={route('/manage/[airlineSpec]/schedules/[id]', {
+									params: {
+										airlineSpec: data.schedule.airline.iataCode,
+										id: data.schedule.id.toString(),
+									},
+									query: '/setSchedulePublished',
+								})}
+								use:enhance
+								class="w-full [&>button]:w-full"
+							>
+								<input
+									type="hidden"
+									name="published"
+									value={data.schedule.published ? 'false' : 'true'}
+								/>
+								<button type="submit" {...props}>
+									{#if data.schedule.published}
+										<EyeOff /> Unpublish
+									{:else}
+										<Eye /> Publish
+									{/if}
+								</button>
+							</form>
+						{/snippet}
+					</DropdownMenu.Item>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Item>
+						{#snippet child({ props })}
+							<form
+								method="POST"
+								action={route('/manage/[airlineSpec]/schedules/[id]', {
+									params: {
+										airlineSpec: data.schedule.airline.iataCode,
+										id: data.schedule.id.toString(),
+									},
+									query: '/delete',
+								})}
+								use:enhance={({ cancel }) => {
+									if (!confirm('Really delete?')) {
+										cancel()
+									}
+								}}
+								class="w-full [&>button]:w-full"
+							>
+								<button type="submit" {...props}>
+									<Trash /> Delete...
+								</button>
+							</form>
+						{/snippet}</DropdownMenu.Item
+					>
+				</DropdownMenu.Group>
+			</PageNavbarBreadcrumbActionsDropdownMenu>
 			<Drawer.Content>
 				<Drawer.Header>
 					<Drawer.Title>Edit schedule</Drawer.Title>
