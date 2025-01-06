@@ -62,53 +62,83 @@ type FleetsView struct {
 }
 
 type FlightInstance struct {
-	ID                                    int64
+	ID                              int64
 	SourceScheduleID                sql.NullInt64
 	SourceScheduleInstanceLocaldate *localtime.LocalDate
-	AirlineID                             int64
-	Number                                string
-	OriginAirportID                       int64
-	DestinationAirportID                  int64
-	FleetID                               int64
-	AircraftID                            sql.NullInt64
-	DepartureDatetime                     *zonedtime.ZonedTime
-	ArrivalDatetime                       *zonedtime.ZonedTime
-	DepartureDatetimeUtc                  time.Time
-	ArrivalDatetimeUtc                    time.Time
-	Notes                                 string
-	Published                             bool
+	AirlineID                       int64
+	Number                          string
+	OriginAirportID                 int64
+	DestinationAirportID            int64
+	FleetID                         int64
+	AircraftID                      sql.NullInt64
+	DepartureDatetime               *zonedtime.ZonedTime
+	ArrivalDatetime                 *zonedtime.ZonedTime
+	DepartureDatetimeUtc            time.Time
+	ArrivalDatetimeUtc              time.Time
+	Notes                           string
+	Published                       bool
 }
 
 type FlightInstancesView struct {
-	ID                                    int64
+	ID                              int64
 	SourceScheduleID                sql.NullInt64
 	SourceScheduleInstanceLocaldate *localtime.LocalDate
-	AirlineID                             int64
-	Number                                string
-	OriginAirportID                       int64
-	DestinationAirportID                  int64
-	FleetID                               int64
-	AircraftID                            sql.NullInt64
-	DepartureDatetime                     zonedtime.ZonedTime
-	ArrivalDatetime                       zonedtime.ZonedTime
-	DepartureDatetimeUtc                  time.Time
-	ArrivalDatetimeUtc                    time.Time
-	Notes                                 string
-	Published                             bool
-	AirlineIataCode                       string
-	AirlineName                           string
-	FleetAirlineID                        int64
-	FleetCode                             string
-	FleetDescription                      string
-	OriginAirportIataCode                 string
-	OriginAirportOadbID                   sql.NullInt64
-	DestinationAirportIataCode            string
-	DestinationAirportOadbID              sql.NullInt64
-	AircraftRegistration                  sql.NullString
-	AircraftAircraftType                  sql.NullString
-	AircraftAirlineID                     sql.NullInt64
-	AircraftAirlineIataCode               sql.NullString
-	AircraftAirlineName                   sql.NullString
+	AirlineID                       int64
+	Number                          string
+	OriginAirportID                 int64
+	DestinationAirportID            int64
+	FleetID                         int64
+	AircraftID                      sql.NullInt64
+	DepartureDatetime               zonedtime.ZonedTime
+	ArrivalDatetime                 zonedtime.ZonedTime
+	DepartureDatetimeUtc            time.Time
+	ArrivalDatetimeUtc              time.Time
+	Notes                           string
+	Published                       bool
+	AirlineIataCode                 string
+	AirlineName                     string
+	FleetAirlineID                  int64
+	FleetCode                       string
+	FleetDescription                string
+	OriginAirportIataCode           string
+	OriginAirportOadbID             sql.NullInt64
+	DestinationAirportIataCode      string
+	DestinationAirportOadbID        sql.NullInt64
+	AircraftRegistration            sql.NullString
+	AircraftAircraftType            sql.NullString
+	AircraftAirlineID               sql.NullInt64
+	AircraftAirlineIataCode         sql.NullString
+	AircraftAirlineName             sql.NullString
+}
+
+type Itinerary struct {
+	ID       int64
+	RecordID string
+}
+
+type ItineraryFlight struct {
+	ItineraryID      int64
+	FlightInstanceID int64
+}
+
+type ItineraryPassenger struct {
+	ItineraryID int64
+	PassengerID int64
+}
+
+type Passenger struct {
+	ID   int64
+	Name string
+}
+
+type Route struct {
+	OriginAirportID            int64
+	DestinationAirportID       int64
+	OriginAirportIataCode      string
+	OriginAirportOadbID        sql.NullInt64
+	DestinationAirportIataCode string
+	DestinationAirportOadbID   sql.NullInt64
+	SchedulesCount             int64
 }
 
 type Schedule struct {
@@ -148,36 +178,6 @@ type SchedulesView struct {
 	OriginAirportOadbID        sql.NullInt64
 	DestinationAirportIataCode string
 	DestinationAirportOadbID   sql.NullInt64
-}
-
-type Itinerary struct {
-	ID       int64
-	RecordID string
-}
-
-type ItineraryFlight struct {
-	ItineraryID      int64
-	FlightInstanceID int64
-}
-
-type ItineraryPassenger struct {
-	ItineraryID int64
-	PassengerID int64
-}
-
-type Passenger struct {
-	ID   int64
-	Name string
-}
-
-type Route struct {
-	OriginAirportID            int64
-	DestinationAirportID       int64
-	OriginAirportIataCode      string
-	OriginAirportOadbID        sql.NullInt64
-	DestinationAirportIataCode string
-	DestinationAirportOadbID   sql.NullInt64
-	SchedulesCount       int64
 }
 
 type SeatAssignment struct {
