@@ -2,7 +2,7 @@
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { flightTitle } from '$lib/flight-helpers'
-	import FlightInstanceList from '../../../flight-instances/flight-instance-list.svelte'
+	import FlightInstanceList from '../../../../../admin/flight-instances/flight-instance-list.svelte'
 
 	let { data } = $props()
 </script>

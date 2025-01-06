@@ -1,8 +1,8 @@
 <script lang="ts">
-	import AircraftTypeCode from '$lib/components/aircraft-type-code.svelte'
 	import AirlineCode from '$lib/components/airline-code.svelte'
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import Distance from '$lib/components/distance.svelte'
+	import FleetTitle from '$lib/components/fleet-title.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
 	import * as Card from '$lib/components/ui/card'
@@ -47,8 +47,8 @@
 							showName
 						/>
 					</DefinitionList.Item>
-					<DefinitionList.Item title="Aircraft type">
-						<AircraftTypeCode aircraftType={data.flightSchedule.aircraftType} showName />
+					<DefinitionList.Item title="Fleet">
+						<FleetTitle fleet={data.flightSchedule.fleet} link />
 					</DefinitionList.Item>
 					<DefinitionList.Item title="Scheduled">
 						{data.flightSchedule.startDate} to {data.flightSchedule.endDate}

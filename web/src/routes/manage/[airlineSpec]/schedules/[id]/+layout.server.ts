@@ -31,11 +31,10 @@ function existingFlightScheduleToFormData(
 	a: FlightSchedule,
 ): Static<(typeof schema)['/flight-schedules/{id}']['PATCH']['args']['properties']['body']> {
 	return {
-		airline: a.airline.iataCode,
 		number: a.number,
 		originAirport: a.originAirport.iataCode,
 		destinationAirport: a.destinationAirport.iataCode,
-		aircraftType: a.aircraftType.icaoCode,
+		fleet: a.fleet.code,
 		startDate: a.startDate,
 		endDate: a.endDate,
 		daysOfWeek: a.daysOfWeek,

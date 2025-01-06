@@ -3,8 +3,10 @@
 	import { page } from '$app/state'
 	import AirlineCode from '$lib/components/airline-code.svelte'
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import * as Card from '$lib/components/ui/card'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
+	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import PageNav from '$lib/components/ui/page/page-nav.svelte'
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
@@ -14,6 +16,16 @@
 
 	let { data } = $props()
 </script>
+
+<BreadcrumbsForLayout>
+	<Breadcrumb.Item>
+		<Breadcrumb.Link
+			href={route('/manage/[airlineSpec]', {
+				params: { airlineSpec: data.airline.iataCode },
+			})}><AirlineCode airline={data.airline} icon /></Breadcrumb.Link
+		>
+	</Breadcrumb.Item></BreadcrumbsForLayout
+>
 
 <PageNav>
 	{#snippet breadcrumbActions()}

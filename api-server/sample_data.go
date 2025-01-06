@@ -241,18 +241,21 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 	log.Println("Creating fleets...")
 	fleetsByAirline := map[string][]api.CreateFleetJSONRequestBody{
 		"UA": []api.CreateFleetJSONRequestBody{
-			{Code: "B789", Description: "All 787-9s"},
-			{Code: "B77W", Description: "All 77Ws"},
+			{Code: "A320", Description: "All Airbus 320"},
+			{Code: "B789", Description: "All 787-9"},
+			{Code: "B78X", Description: "All 787-10"},
+			{Code: "B77W", Description: "All 77W"},
 			{Code: "B738", Description: "All 737 MAX 8 and 737-800"},
+			{Code: "B738-ETOPS", Description: "All ETOPS-certified 737 MAX 8 and 737-800"},
 			{Code: "B739", Description: "All 737 MAX 9 and 737-900"},
 		},
 		"LH": []api.CreateFleetJSONRequestBody{
-			{Code: "B747", Description: "All 747s"},
-			{Code: "A350", Description: "All A350s"},
+			{Code: "B747", Description: "All 747"},
+			{Code: "A350", Description: "All A350"},
 		},
 		"SQ": []api.CreateFleetJSONRequestBody{
-			{Code: "B777", Description: "All 777s"},
-			{Code: "B359", Description: "All 359s"},
+			{Code: "B777", Description: "All 777"},
+			{Code: "A359", Description: "All Airbus 350-900"},
 		},
 		"KL": []api.CreateFleetJSONRequestBody{{Code: "E190", Description: "All E190s"}},
 		"BA": []api.CreateFleetJSONRequestBody{{Code: "A20N", Description: "All A320 neos"}},
@@ -269,17 +272,23 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 	}
 
 	log.Println("Adding aircraft to fleets...")
-	for _, aircraft := range aircraft {
+	for i, aircraft := range aircraft {
 		airline, _ := aircraft.Airline.AsAirlineIATACode()
 		var fleetCode api.FleetCode
 		switch airline {
 		case "UA":
-			if aircraft.AircraftType == "789" {
+			if aircraft.AircraftType == "A320" {
+				fleetCode = "A320"
+			} else if aircraft.AircraftType == "B789" {
 				fleetCode = "B789"
 			} else if aircraft.AircraftType == "B77W" {
 				fleetCode = "B77W"
 			} else if aircraft.AircraftType == "B38M" || aircraft.AircraftType == "B738" {
-				fleetCode = "B738"
+				if i%2 == 0 {
+					fleetCode = "B738"
+				} else {
+					fleetCode = "B738-ETOPS"
+				}
 			} else if aircraft.AircraftType == "B39M" || aircraft.AircraftType == "B739" {
 				fleetCode = "B739"
 			}
@@ -295,6 +304,10 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			} else if aircraft.AircraftType == "A359" {
 				fleetCode = "A359"
 			}
+		case "KL":
+			fleetCode = "E190"
+		case "BA":
+			fleetCode = "A20N"
 		}
 		if fleetCode == "" {
 			continue
@@ -618,7 +631,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			Number:             "430",
 			OriginAirport:      api.NewAirportSpec(0, "LHR"),
 			DestinationAirport: api.NewAirportSpec(0, "AMS"),
-			Fleet:              api.NewFleetSpec(0, "A320"),
+			Fleet:              api.NewFleetSpec(0, "A20N"),
 			StartDate:          "2025-01-25",
 			EndDate:            "2025-02-07",
 			DaysOfWeek:         []int{0, 1, 2, 3, 4, 5, 6},

@@ -50,11 +50,10 @@ function existingFlightInstanceToFormData(
 				notes: a.notes,
 			}
 		: {
-				airline: a.airline.iataCode,
 				number: a.number,
 				originAirport: a.originAirport.iataCode,
 				destinationAirport: a.destinationAirport.iataCode,
-				aircraftType: a.aircraftType.icaoCode,
+				fleet: a.fleet.code,
 				aircraft: a.aircraft?.registration,
 				departureDateTime: a.departureDateTime,
 				arrivalDateTime: a.arrivalDateTime,

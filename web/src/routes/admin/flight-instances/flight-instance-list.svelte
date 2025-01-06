@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AircraftRegistration from '$lib/components/aircraft-registration.svelte'
-	import AircraftTypeCode from '$lib/components/aircraft-type-code.svelte'
+	import FleetTitle from '$lib/components/fleet-title.svelte'
 	import FlightInstanceStatus from '$lib/components/flight-instance-status.svelte'
 	import FlightTitle from '$lib/components/flight-title.svelte'
 	import FormattedDatetime from '$lib/components/formatted-datetime.svelte'
@@ -52,9 +52,9 @@
 						<Table.Cell
 							><div class="inline-flex flex-col gap-1">
 								{#if flight.aircraft}
-									<AircraftRegistration aircraft={flight.aircraft} showAircraftType />
+									<AircraftRegistration aircraft={flight.aircraft} showAircraftType link />
 								{:else}
-									<AircraftTypeCode aircraftType={flight.aircraftType} />
+									<FleetTitle fleet={flight.fleet} link />
 								{/if}
 							</div></Table.Cell
 						>
