@@ -15,7 +15,7 @@
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
 	import ScheduleForm from '../schedule-form.svelte'
-	import ScheduleBreadcrumbItem from './flight-schedule-breadcrumb-item.svelte'
+	import ScheduleBreadcrumbItem from './schedule-breadcrumb-item.svelte'
 
 	const { children, data } = $props()
 </script>
@@ -109,7 +109,7 @@
 		</PageNavbarBreadcrumbActionsDropdownMenu>
 	{/snippet}
 	{#snippet actions()}
-		<Drawer.DrawerByNavigationState id="edit-flight-schedule" direction="right">
+		<Drawer.DrawerByNavigationState id="edit-schedule" direction="right">
 			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
 				<Settings2 /> Edit
 			</Drawer.Trigger>
@@ -128,7 +128,7 @@
 						})}
 						submitLabel="Save"
 						data={data.form}
-						schema={schema['/flight-schedules/{id}']['PATCH']['args']['properties']['body']}
+						schema={schema['/schedules/{id}']['PATCH']['args']['properties']['body']}
 					/>
 				</Drawer.ScrollArea>
 			</Drawer.Content>

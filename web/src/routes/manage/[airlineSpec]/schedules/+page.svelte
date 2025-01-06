@@ -17,7 +17,7 @@
 
 <PageNav>
 	{#snippet actions()}
-		<Drawer.DrawerByNavigationState id="new-flight-schedule" direction="right">
+		<Drawer.DrawerByNavigationState id="new-schedule" direction="right">
 			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
 				<Plus /> New schedule
 			</Drawer.Trigger>
@@ -30,7 +30,7 @@
 						action="?/create"
 						submitLabel="Create"
 						data={data.form}
-						schema={schema['/flight-schedules']['POST']['args']['properties']['body']}
+						schema={schema['/schedules']['POST']['args']['properties']['body']}
 					/>
 				</Drawer.ScrollArea>
 			</Drawer.Content>
@@ -47,6 +47,7 @@
 		>
 	</Breadcrumb.Item></BreadcrumbsForLayout
 >
+
 <Page title={`Schedules - ${data.airline.iataCode}`}>
 	<ScheduleList schedules={data.schedules} />
 </Page>

@@ -30,15 +30,15 @@ export function workaroundForMultiTypeUnions(): void {
 	schema['/flight-instances'].POST.args.properties.body.properties.aircraft.default = undefined
 	schema['/flight-instances/{id}'].PATCH.args.properties.body.properties.aircraft.default =
 		undefined
-	schema['/flight-schedules'].POST.args.properties.body.properties.airline.default = undefined
-	schema['/flight-schedules'].POST.args.properties.body.properties.originAirport.default = undefined
-	schema['/flight-schedules'].POST.args.properties.body.properties.destinationAirport.default =
+	schema['/schedules'].POST.args.properties.body.properties.airline.default = undefined
+	schema['/schedules'].POST.args.properties.body.properties.originAirport.default = undefined
+	schema['/schedules'].POST.args.properties.body.properties.destinationAirport.default =
 		undefined
-	schema['/flight-schedules'].POST.args.properties.body.properties.fleet.default = undefined
-	schema['/flight-schedules/{id}'].PATCH.args.properties.body.properties.originAirport.default =
+	schema['/schedules'].POST.args.properties.body.properties.fleet.default = undefined
+	schema['/schedules/{id}'].PATCH.args.properties.body.properties.originAirport.default =
 		undefined
 	schema[
-		'/flight-schedules/{id}'
+		'/schedules/{id}'
 	].PATCH.args.properties.body.properties.destinationAirport.default = undefined
-	schema['/flight-schedules/{id}'].PATCH.args.properties.body.properties.fleet.default = undefined
+	schema['/schedules/{id}'].PATCH.args.properties.body.properties.fleet.default = undefined
 }

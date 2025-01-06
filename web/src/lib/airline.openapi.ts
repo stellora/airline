@@ -203,7 +203,7 @@ export interface paths {
         patch: operations["updateAirport"];
         trace?: never;
     };
-    "/airports/{airportSpec}/flight-schedules": {
+    "/airports/{airportSpec}/schedules": {
         parameters: {
             query?: never;
             header?: never;
@@ -258,7 +258,7 @@ export interface paths {
         patch: operations["updateAirline"];
         trace?: never;
     };
-    "/airlines/{airlineSpec}/flight-schedules": {
+    "/airlines/{airlineSpec}/schedules": {
         parameters: {
             query?: never;
             header?: never;
@@ -292,7 +292,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/flight-schedules": {
+    "/schedules": {
         parameters: {
             query?: never;
             header?: never;
@@ -311,7 +311,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/flight-schedules/{id}": {
+    "/schedules/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -330,7 +330,7 @@ export interface paths {
         patch: operations["updateSchedule"];
         trace?: never;
     };
-    "/flight-schedules/{id}/instances": {
+    "/schedules/{id}/instances": {
         parameters: {
             query?: never;
             header?: never;

@@ -18,7 +18,7 @@
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
 	import Users from 'lucide-svelte/icons/users'
-	import ScheduleBreadcrumbItem from '../../../manage/[airlineSpec]/schedules/[id]/flight-schedule-breadcrumb-item.svelte'
+	import ScheduleBreadcrumbItem from '../../../manage/[airlineSpec]/schedules/[id]/schedule-breadcrumb-item.svelte'
 	import FlightInstanceForm from './flight-instance-form.svelte'
 
 	const { children, data } = $props()

@@ -10,13 +10,13 @@ export const actions: Actions = {
 	update: async ({ params, request }) => {
 		const form = await superValidate(
 			request,
-			typebox(schema['/flight-schedules/{id}']['PATCH']['args']['properties']['body']),
+			typebox(schema['/schedules/{id}']['PATCH']['args']['properties']['body']),
 		)
 		if (!form.valid) {
 			return fail(400, { form })
 		}
 
-		const resp = await apiClient.PATCH('/flight-schedules/{id}', {
+		const resp = await apiClient.PATCH('/schedules/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
 			body: form.data,
 			fetch,
@@ -38,7 +38,7 @@ export const actions: Actions = {
 		}
 		const published = publishedStr === 'true'
 
-		const resp = await apiClient.PATCH('/flight-schedules/{id}', {
+		const resp = await apiClient.PATCH('/schedules/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
 			body: { published },
 			fetch,
@@ -52,7 +52,7 @@ export const actions: Actions = {
 		}
 	},
 	delete: async ({ params }) => {
-		const resp = await apiClient.DELETE('/flight-schedules/{id}', {
+		const resp = await apiClient.DELETE('/schedules/{id}', {
 			params: { path: { id: Number.parseInt(params.id) } },
 			fetch,
 		})

@@ -383,7 +383,7 @@ paths:
           description: Airport deleted
         '404':
           description: Airport not found
-  /airports/{airportSpec}/flight-schedules:
+  /airports/{airportSpec}/schedules:
     get:
       operationId: listSchedulesByAirport
       summary: List schedules that depart from or arrive at an airport
@@ -499,7 +499,7 @@ paths:
           description: Airline deleted
         '404':
           description: Airline not found
-  /airlines/{airlineSpec}/flight-schedules:
+  /airlines/{airlineSpec}/schedules:
     get:
       operationId: listSchedulesByAirline
       summary: List schedules for an airline
@@ -533,7 +533,7 @@ paths:
                   $ref: '#/components/schemas/FlightInstance'
         '404':
           description: Airline not found
-  /flight-schedules:
+  /schedules:
     get:
       operationId: listSchedules
       summary: List all schedules
@@ -605,7 +605,7 @@ paths:
       responses:
         '204':
           description: All schedules deleted
-  /flight-schedules/{id}:
+  /schedules/{id}:
     get:
       operationId: getSchedule
       summary: Get schedule by ID
@@ -683,7 +683,7 @@ paths:
           description: Schedule deleted
         '404':
           description: Schedule not found
-  /flight-schedules/{id}/instances:
+  /schedules/{id}/instances:
     get:
       operationId: listFlightInstancesForSchedule
       summary: Get flight instances defined by a schedule

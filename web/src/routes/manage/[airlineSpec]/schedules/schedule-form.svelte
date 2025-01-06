@@ -23,12 +23,12 @@
 		...props
 	}: {
 		schema:
-			| (typeof schema)['/flight-schedules']['POST']['args']['properties']['body']
-			| (typeof schema)['/flight-schedules/{id}']['PATCH']['args']['properties']['body']
+			| (typeof schema)['/schedules']['POST']['args']['properties']['body']
+			| (typeof schema)['/schedules/{id}']['PATCH']['args']['properties']['body']
 		data: SuperValidated<
 			Infer<
-				| (typeof schema)['/flight-schedules']['POST']['args']['properties']['body']
-				| (typeof schema)['/flight-schedules/{id}']['PATCH']['args']['properties']['body']
+				| (typeof schema)['/schedules']['POST']['args']['properties']['body']
+				| (typeof schema)['/schedules/{id}']['PATCH']['args']['properties']['body']
 			>
 		>
 		action: string
@@ -51,7 +51,7 @@
 	{action}
 	use:enhance
 	class="flex flex-col gap-6 items-start"
-	data-testid="flight-schedule-form"
+	data-testid="schedule-form"
 >
 	<FormFieldGroup legend="Flight number" horizontal>
 		<Form.Field {form} name="airline">

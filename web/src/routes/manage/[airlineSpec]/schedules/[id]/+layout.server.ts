@@ -9,7 +9,7 @@ import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ params }) => {
 	const id = Number.parseInt(params.id)
-	const resp = await apiClient.GET('/flight-schedules/{id}', {
+	const resp = await apiClient.GET('/schedules/{id}', {
 		params: { path: { id } },
 		fetch,
 	})
@@ -22,14 +22,14 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		schedule,
 		form: await superValidate(
 			existingScheduleToFormData(schedule),
-			typebox(schema['/flight-schedules/{id}']['PATCH']['args']['properties']['body']),
+			typebox(schema['/schedules/{id}']['PATCH']['args']['properties']['body']),
 		),
 	}
 }
 
 function existingScheduleToFormData(
 	a: Schedule,
-): Static<(typeof schema)['/flight-schedules/{id}']['PATCH']['args']['properties']['body']> {
+): Static<(typeof schema)['/schedules/{id}']['PATCH']['args']['properties']['body']> {
 	return {
 		number: a.number,
 		originAirport: a.originAirport.iataCode,

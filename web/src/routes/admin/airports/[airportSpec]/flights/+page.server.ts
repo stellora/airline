@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
 	const schedules = apiClient
-		.GET('/airports/{airportSpec}/flight-schedules', {
+		.GET('/airports/{airportSpec}/schedules', {
 			params: { path: { airportSpec: params.airportSpec } },
 			fetch,
 		})

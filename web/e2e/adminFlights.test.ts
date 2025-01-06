@@ -14,7 +14,7 @@ test('add and delete flight', async ({ page }) => {
 	const deleteButton = page.getByRole('button', { name: 'Delete flight' })
 	page.on('dialog', (dialog) => dialog.accept())
 	await deleteButton.click()
-	await expect(page).toHaveURL(/\/admin\/flight-schedules$/)
+	await expect(page).toHaveURL(/\/admin\/schedules$/)
 	await expect(page.getByText('ST123 SFO–LAX')).not.toBeVisible()
 })
 

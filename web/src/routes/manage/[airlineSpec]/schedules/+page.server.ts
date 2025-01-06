@@ -9,14 +9,14 @@ import type { Actions, PageServerLoad } from './$types'
 export const load: PageServerLoad = async ({ params }) => {
 	return {
 		schedules: await apiClient
-			.GET('/airlines/{airlineSpec}/flight-schedules', {
+			.GET('/airlines/{airlineSpec}/schedules', {
 				params: { path: { airlineSpec: params.airlineSpec } },
 				fetch,
 			})
 			.then((resp) => resp.data!),
 		form: await superValidate(
 			{ airline: params.airlineSpec },
-			typebox(schema['/flight-schedules']['POST']['args']['properties']['body']),
+			typebox(schema['/schedules']['POST']['args']['properties']['body']),
 			{ errors: false },
 		),
 	}
@@ -26,13 +26,13 @@ export const actions: Actions = {
 	create: async ({ params, request }) => {
 		const form = await superValidate(
 			request,
-			typebox(schema['/flight-schedules']['POST']['args']['properties']['body']),
+			typebox(schema['/schedules']['POST']['args']['properties']['body']),
 		)
 		if (!form.valid) {
 			return fail(400, { form })
 		}
 
-		const resp = await apiClient.POST('/flight-schedules', {
+		const resp = await apiClient.POST('/schedules', {
 			body: form.data,
 			fetch,
 		})

@@ -836,7 +836,7 @@ type ServerInterface interface {
 	// (GET /airlines/{airlineSpec}/flight-instances)
 	ListFlightInstancesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
 	// List schedules for an airline
-	// (GET /airlines/{airlineSpec}/flight-schedules)
+	// (GET /airlines/{airlineSpec}/schedules)
 	ListSchedulesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
 	// Delete all airports
 	// (DELETE /airports)
@@ -857,7 +857,7 @@ type ServerInterface interface {
 	// (PATCH /airports/{airportSpec})
 	UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
 	// List schedules that depart from or arrive at an airport
-	// (GET /airports/{airportSpec}/flight-schedules)
+	// (GET /airports/{airportSpec}/schedules)
 	ListSchedulesByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
 	// List all flight instances
 	// (GET /flight-instances)
@@ -881,25 +881,25 @@ type ServerInterface interface {
 	// (PATCH /flight-instances/{id})
 	UpdateFlightInstance(w http.ResponseWriter, r *http.Request, id int)
 	// Delete all schedules
-	// (DELETE /flight-schedules)
+	// (DELETE /schedules)
 	DeleteAllSchedules(w http.ResponseWriter, r *http.Request)
 	// List all schedules
-	// (GET /flight-schedules)
+	// (GET /schedules)
 	ListSchedules(w http.ResponseWriter, r *http.Request)
 	// Create a new schedule
-	// (POST /flight-schedules)
+	// (POST /schedules)
 	CreateSchedule(w http.ResponseWriter, r *http.Request)
 	// Delete a schedule
-	// (DELETE /flight-schedules/{id})
+	// (DELETE /schedules/{id})
 	DeleteSchedule(w http.ResponseWriter, r *http.Request, id int)
 	// Get schedule by ID
-	// (GET /flight-schedules/{id})
+	// (GET /schedules/{id})
 	GetSchedule(w http.ResponseWriter, r *http.Request, id int)
 	// Update schedule
-	// (PATCH /flight-schedules/{id})
+	// (PATCH /schedules/{id})
 	UpdateSchedule(w http.ResponseWriter, r *http.Request, id int)
 	// Get flight instances defined by a schedule
-	// (GET /flight-schedules/{id}/instances)
+	// (GET /schedules/{id}/instances)
 	ListFlightInstancesForSchedule(w http.ResponseWriter, r *http.Request, id int)
 	// Health check endpoint
 	// (GET /health)
@@ -2357,14 +2357,14 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("DELETE "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}", wrapper.RemoveAircraftFromFleet)
 	m.HandleFunc("PUT "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}", wrapper.AddAircraftToFleet)
 	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flight-instances", wrapper.ListFlightInstancesByAirline)
-	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flight-schedules", wrapper.ListSchedulesByAirline)
+	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/schedules", wrapper.ListSchedulesByAirline)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airports", wrapper.DeleteAllAirports)
 	m.HandleFunc("GET "+options.BaseURL+"/airports", wrapper.ListAirports)
 	m.HandleFunc("POST "+options.BaseURL+"/airports", wrapper.CreateAirport)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airports/{airportSpec}", wrapper.DeleteAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}", wrapper.GetAirport)
 	m.HandleFunc("PATCH "+options.BaseURL+"/airports/{airportSpec}", wrapper.UpdateAirport)
-	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}/flight-schedules", wrapper.ListSchedulesByAirport)
+	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}/schedules", wrapper.ListSchedulesByAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances", wrapper.ListFlightInstances)
 	m.HandleFunc("POST "+options.BaseURL+"/flight-instances", wrapper.CreateFlightInstance)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances/{flightInstanceID}/seat-assignments", wrapper.ListSeatAssignmentsForFlightInstance)
@@ -2372,13 +2372,13 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("DELETE "+options.BaseURL+"/flight-instances/{id}", wrapper.DeleteFlightInstance)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances/{id}", wrapper.GetFlightInstance)
 	m.HandleFunc("PATCH "+options.BaseURL+"/flight-instances/{id}", wrapper.UpdateFlightInstance)
-	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules", wrapper.DeleteAllSchedules)
-	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules", wrapper.ListSchedules)
-	m.HandleFunc("POST "+options.BaseURL+"/flight-schedules", wrapper.CreateSchedule)
-	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules/{id}", wrapper.DeleteSchedule)
-	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules/{id}", wrapper.GetSchedule)
-	m.HandleFunc("PATCH "+options.BaseURL+"/flight-schedules/{id}", wrapper.UpdateSchedule)
-	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules/{id}/instances", wrapper.ListFlightInstancesForSchedule)
+	m.HandleFunc("DELETE "+options.BaseURL+"/schedules", wrapper.DeleteAllSchedules)
+	m.HandleFunc("GET "+options.BaseURL+"/schedules", wrapper.ListSchedules)
+	m.HandleFunc("POST "+options.BaseURL+"/schedules", wrapper.CreateSchedule)
+	m.HandleFunc("DELETE "+options.BaseURL+"/schedules/{id}", wrapper.DeleteSchedule)
+	m.HandleFunc("GET "+options.BaseURL+"/schedules/{id}", wrapper.GetSchedule)
+	m.HandleFunc("PATCH "+options.BaseURL+"/schedules/{id}", wrapper.UpdateSchedule)
+	m.HandleFunc("GET "+options.BaseURL+"/schedules/{id}/instances", wrapper.ListFlightInstancesForSchedule)
 	m.HandleFunc("GET "+options.BaseURL+"/health", wrapper.HealthCheck)
 	m.HandleFunc("GET "+options.BaseURL+"/itineraries", wrapper.ListItineraries)
 	m.HandleFunc("POST "+options.BaseURL+"/itineraries", wrapper.CreateItinerary)
@@ -3819,7 +3819,7 @@ type StrictServerInterface interface {
 	// (GET /airlines/{airlineSpec}/flight-instances)
 	ListFlightInstancesByAirline(ctx context.Context, request ListFlightInstancesByAirlineRequestObject) (ListFlightInstancesByAirlineResponseObject, error)
 	// List schedules for an airline
-	// (GET /airlines/{airlineSpec}/flight-schedules)
+	// (GET /airlines/{airlineSpec}/schedules)
 	ListSchedulesByAirline(ctx context.Context, request ListSchedulesByAirlineRequestObject) (ListSchedulesByAirlineResponseObject, error)
 	// Delete all airports
 	// (DELETE /airports)
@@ -3840,7 +3840,7 @@ type StrictServerInterface interface {
 	// (PATCH /airports/{airportSpec})
 	UpdateAirport(ctx context.Context, request UpdateAirportRequestObject) (UpdateAirportResponseObject, error)
 	// List schedules that depart from or arrive at an airport
-	// (GET /airports/{airportSpec}/flight-schedules)
+	// (GET /airports/{airportSpec}/schedules)
 	ListSchedulesByAirport(ctx context.Context, request ListSchedulesByAirportRequestObject) (ListSchedulesByAirportResponseObject, error)
 	// List all flight instances
 	// (GET /flight-instances)
@@ -3864,25 +3864,25 @@ type StrictServerInterface interface {
 	// (PATCH /flight-instances/{id})
 	UpdateFlightInstance(ctx context.Context, request UpdateFlightInstanceRequestObject) (UpdateFlightInstanceResponseObject, error)
 	// Delete all schedules
-	// (DELETE /flight-schedules)
+	// (DELETE /schedules)
 	DeleteAllSchedules(ctx context.Context, request DeleteAllSchedulesRequestObject) (DeleteAllSchedulesResponseObject, error)
 	// List all schedules
-	// (GET /flight-schedules)
+	// (GET /schedules)
 	ListSchedules(ctx context.Context, request ListSchedulesRequestObject) (ListSchedulesResponseObject, error)
 	// Create a new schedule
-	// (POST /flight-schedules)
+	// (POST /schedules)
 	CreateSchedule(ctx context.Context, request CreateScheduleRequestObject) (CreateScheduleResponseObject, error)
 	// Delete a schedule
-	// (DELETE /flight-schedules/{id})
+	// (DELETE /schedules/{id})
 	DeleteSchedule(ctx context.Context, request DeleteScheduleRequestObject) (DeleteScheduleResponseObject, error)
 	// Get schedule by ID
-	// (GET /flight-schedules/{id})
+	// (GET /schedules/{id})
 	GetSchedule(ctx context.Context, request GetScheduleRequestObject) (GetScheduleResponseObject, error)
 	// Update schedule
-	// (PATCH /flight-schedules/{id})
+	// (PATCH /schedules/{id})
 	UpdateSchedule(ctx context.Context, request UpdateScheduleRequestObject) (UpdateScheduleResponseObject, error)
 	// Get flight instances defined by a schedule
-	// (GET /flight-schedules/{id}/instances)
+	// (GET /schedules/{id}/instances)
 	ListFlightInstancesForSchedule(ctx context.Context, request ListFlightInstancesForScheduleRequestObject) (ListFlightInstancesForScheduleResponseObject, error)
 	// Health check endpoint
 	// (GET /health)

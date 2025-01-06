@@ -21,7 +21,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 
 	let schedule: Schedule | undefined
 	if (flightInstance.scheduleID) {
-		const resp = await apiClient.GET('/flight-schedules/{id}', {
+		const resp = await apiClient.GET('/schedules/{id}', {
 			params: { path: { id: flightInstance.scheduleID } },
 			fetch,
 		})

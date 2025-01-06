@@ -629,7 +629,7 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
-  '/airports/{airportSpec}/flight-schedules': {
+  '/airports/{airportSpec}/schedules': {
     GET: {
       args: T.Object({
         params: T.Object({
@@ -728,7 +728,7 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
-  '/airlines/{airlineSpec}/flight-schedules': {
+  '/airlines/{airlineSpec}/schedules': {
     GET: {
       args: T.Object({
         params: T.Object({
@@ -760,7 +760,7 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
-  '/flight-schedules': {
+  '/schedules': {
     GET: {
       args: T.Void(),
       data: T.Array(CloneType(ComponentsSchemasSchedule), {
@@ -808,7 +808,7 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': 'default' })])
     }
   },
-  '/flight-schedules/{id}': {
+  '/schedules/{id}': {
     GET: {
       args: T.Object({
         params: T.Object({
@@ -866,7 +866,7 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
-  '/flight-schedules/{id}/instances': {
+  '/schedules/{id}/instances': {
     GET: {
       args: T.Object({
         params: T.Object({
