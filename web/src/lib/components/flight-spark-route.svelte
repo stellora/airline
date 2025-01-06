@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { geoDistanceMiles } from '$lib/flight-helpers'
-	import type { FlightSchedule } from '$lib/types'
+	import type { Schedule } from '$lib/types'
 	import type { Feature, LineString } from 'geojson'
 	import type { ComponentProps } from 'svelte'
 	import WorldMap from './maps/world-map.svelte'
@@ -10,7 +10,7 @@
 		drawBorders: drawBordersArg = 'auto',
 		...restProps
 	}: {
-		flight: Pick<FlightSchedule, 'originAirport' | 'destinationAirport'>
+		flight: Pick<Schedule, 'originAirport' | 'destinationAirport'>
 	} & Omit<
 		ComponentProps<typeof WorldMap>,
 		'features' | 'center' | 'fit' | 'detailLevel' | 'drawBorders'

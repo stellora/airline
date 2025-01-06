@@ -180,32 +180,32 @@ WHERE id=?;
 -- name: DeleteAllAirports :exec
 DELETE FROM airports;
 
--- name: ListFlightSchedulesByAirport :many
+-- name: ListSchedulesByAirport :many
 SELECT *
-FROM flight_schedules_view
+FROM schedules_view
 WHERE origin_airport_id=:airport OR destination_airport_id=:airport
 ORDER BY id ASC;
 
-------------------------------------------------------------------------------- flight_schedules
+------------------------------------------------------------------------------- schedules
 
--- name: GetFlightSchedule :one
-SELECT * FROM flight_schedules_view
+-- name: GetSchedule :one
+SELECT * FROM schedules_view
 WHERE id=? LIMIT 1;
 
--- name: ListFlightSchedules :many
-SELECT * FROM flight_schedules_view
+-- name: ListSchedules :many
+SELECT * FROM schedules_view
 ORDER BY id ASC;
 
--- name: CreateFlightSchedule :one
-INSERT INTO flight_schedules (
+-- name: CreateSchedule :one
+INSERT INTO schedules (
   airline_id, number, origin_airport_id, destination_airport_id, fleet_id, start_localdate, end_localdate, days_of_week, departure_localtime, duration_sec, published
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 RETURNING id;
 
--- name: UpdateFlightSchedule :one
-UPDATE flight_schedules SET
+-- name: UpdateSchedule :one
+UPDATE schedules SET
 number = COALESCE(sqlc.narg('number'), number),
 origin_airport_id = COALESCE(sqlc.narg('origin_airport_id'), origin_airport_id),
 destination_airport_id = COALESCE(sqlc.narg('destination_airport_id'), destination_airport_id),
@@ -219,22 +219,22 @@ published = COALESCE(sqlc.narg('published'), published)
 WHERE id=sqlc.arg('id')
 RETURNING id;
 
--- name: DeleteFlightSchedule :exec
-DELETE FROM flight_schedules
+-- name: DeleteSchedule :exec
+DELETE FROM schedules
 WHERE id=?;
 
--- name: DeleteAllFlightSchedules :exec
-DELETE FROM flight_schedules;
+-- name: DeleteAllSchedules :exec
+DELETE FROM schedules;
 
--- name: ListFlightSchedulesByAirline :many
+-- name: ListSchedulesByAirline :many
 SELECT *
-FROM flight_schedules_view
+FROM schedules_view
 WHERE airline_id=:airline
 ORDER BY id ASC;
 
--- name: ListFlightSchedulesByRoute :many
+-- name: ListSchedulesByRoute :many
 SELECT *
-FROM flight_schedules_view
+FROM schedules_view
 WHERE origin_airport_id=:origin_airport OR destination_airport_id=:destination_airport
 ORDER BY id ASC;
 
@@ -252,8 +252,8 @@ ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
 
 -- name: CreateFlightInstance :one
 INSERT INTO flight_instances (
-  source_flight_schedule_id,
-  source_flight_schedule_instance_localdate,
+  source_schedule_id,
+  source_schedule_instance_localdate,
   airline_id,
   number,
   origin_airport_id,
@@ -291,10 +291,10 @@ RETURNING id;
 DELETE FROM flight_instances
 WHERE id=?;
 
--- name: ListFlightInstancesForFlightSchedule :many
+-- name: ListFlightInstancesForSchedule :many
 SELECT *
 FROM flight_instances_view
-WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_id=sqlc.arg('flight_schedule_id')
+WHERE source_schedule_id IS NOT NULL AND source_schedule_id=sqlc.arg('schedule_id')
 ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
 
 -- name: ListFlightInstancesByAirline :many
@@ -441,4 +441,4 @@ LIMIT 1;
 
 -- name: ListRoutes :many
 SELECT * FROM routes
-ORDER BY flight_schedules_count DESC, origin_airport_id ASC, destination_airport_id ASC;
+ORDER BY schedules_count DESC, origin_airport_id ASC, destination_airport_id ASC;

@@ -18,15 +18,15 @@
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
 	import Users from 'lucide-svelte/icons/users'
-	import FlightScheduleBreadcrumbItem from '../../../manage/[airlineSpec]/schedules/[id]/flight-schedule-breadcrumb-item.svelte'
+	import ScheduleBreadcrumbItem from '../../../manage/[airlineSpec]/schedules/[id]/flight-schedule-breadcrumb-item.svelte'
 	import FlightInstanceForm from './flight-instance-form.svelte'
 
 	const { children, data } = $props()
 </script>
 
 <BreadcrumbsForLayout restart>
-	{#if data.flightSchedule}
-		<FlightScheduleBreadcrumbItem flightSchedule={data.flightSchedule} />
+	{#if data.schedule}
+		<ScheduleBreadcrumbItem schedule={data.schedule} />
 		<Breadcrumb.Separator />
 	{/if}
 	<Breadcrumb.Item

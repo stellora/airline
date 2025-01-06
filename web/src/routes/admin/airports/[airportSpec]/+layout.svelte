@@ -41,7 +41,7 @@
 			icon: SquareMenu,
 		},
 		{
-			title: 'Flight schedule',
+			title: 'Schedule',
 			url: route('/admin/airports/[airportSpec]/flights', {
 				params: { airportSpec: page.params.airportSpec },
 			}),

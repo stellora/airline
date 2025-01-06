@@ -119,7 +119,7 @@ type FleetSpec struct {
 	union json.RawMessage
 }
 
-// FlightInstance A single flight, either created and synced automatically from a flight schedule or created manually.
+// FlightInstance A single flight, either created and synced automatically from a schedule or created manually.
 type FlightInstance struct {
 	Aircraft *Aircraft `json:"aircraft,omitempty"`
 	Airline  Airline   `json:"airline"`
@@ -148,8 +148,8 @@ type FlightInstance struct {
 // FlightNumber defines model for FlightNumber.
 type FlightNumber = string
 
-// FlightSchedule defines model for FlightSchedule.
-type FlightSchedule struct {
+// Schedule defines model for Schedule.
+type Schedule struct {
 	Airline    Airline    `json:"airline"`
 	DaysOfWeek DaysOfWeek `json:"daysOfWeek"`
 
@@ -224,7 +224,7 @@ type RecordLocator = string
 type Route struct {
 	DestinationAirport   Airport `json:"destinationAirport"`
 	DistanceMiles        float64 `json:"distanceMiles"`
-	FlightSchedulesCount int     `json:"flightSchedulesCount"`
+	SchedulesCount int     `json:"schedulesCount"`
 	OriginAirport        Airport `json:"originAirport"`
 }
 
@@ -349,8 +349,8 @@ type UpdateFlightInstanceJSONBody struct {
 	Published          *bool          `json:"published,omitempty"`
 }
 
-// CreateFlightScheduleJSONBody defines parameters for CreateFlightSchedule.
-type CreateFlightScheduleJSONBody struct {
+// CreateScheduleJSONBody defines parameters for CreateSchedule.
+type CreateScheduleJSONBody struct {
 	Airline    AirlineSpec `json:"airline"`
 	DaysOfWeek DaysOfWeek  `json:"daysOfWeek"`
 
@@ -370,8 +370,8 @@ type CreateFlightScheduleJSONBody struct {
 	StartDate LocalDate `json:"startDate"`
 }
 
-// UpdateFlightScheduleJSONBody defines parameters for UpdateFlightSchedule.
-type UpdateFlightScheduleJSONBody struct {
+// UpdateScheduleJSONBody defines parameters for UpdateSchedule.
+type UpdateScheduleJSONBody struct {
 	DaysOfWeek *DaysOfWeek `json:"daysOfWeek,omitempty"`
 
 	// DepartureTime A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
@@ -439,11 +439,11 @@ type CreateSeatAssignmentJSONRequestBody CreateSeatAssignmentJSONBody
 // UpdateFlightInstanceJSONRequestBody defines body for UpdateFlightInstance for application/json ContentType.
 type UpdateFlightInstanceJSONRequestBody UpdateFlightInstanceJSONBody
 
-// CreateFlightScheduleJSONRequestBody defines body for CreateFlightSchedule for application/json ContentType.
-type CreateFlightScheduleJSONRequestBody CreateFlightScheduleJSONBody
+// CreateScheduleJSONRequestBody defines body for CreateSchedule for application/json ContentType.
+type CreateScheduleJSONRequestBody CreateScheduleJSONBody
 
-// UpdateFlightScheduleJSONRequestBody defines body for UpdateFlightSchedule for application/json ContentType.
-type UpdateFlightScheduleJSONRequestBody UpdateFlightScheduleJSONBody
+// UpdateScheduleJSONRequestBody defines body for UpdateSchedule for application/json ContentType.
+type UpdateScheduleJSONRequestBody UpdateScheduleJSONBody
 
 // CreateItineraryJSONRequestBody defines body for CreateItinerary for application/json ContentType.
 type CreateItineraryJSONRequestBody CreateItineraryJSONBody
@@ -835,9 +835,9 @@ type ServerInterface interface {
 	// List flight instances for an airline
 	// (GET /airlines/{airlineSpec}/flight-instances)
 	ListFlightInstancesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
-	// List flight schedules for an airline
+	// List schedules for an airline
 	// (GET /airlines/{airlineSpec}/flight-schedules)
-	ListFlightSchedulesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
+	ListSchedulesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
 	// Delete all airports
 	// (DELETE /airports)
 	DeleteAllAirports(w http.ResponseWriter, r *http.Request)
@@ -856,13 +856,13 @@ type ServerInterface interface {
 	// Update airport
 	// (PATCH /airports/{airportSpec})
 	UpdateAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
-	// List flight schedules that depart from or arrive at an airport
+	// List schedules that depart from or arrive at an airport
 	// (GET /airports/{airportSpec}/flight-schedules)
-	ListFlightSchedulesByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
+	ListSchedulesByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec)
 	// List all flight instances
 	// (GET /flight-instances)
 	ListFlightInstances(w http.ResponseWriter, r *http.Request)
-	// Create a new single flight instance from manual input, not from a flight schedule
+	// Create a new single flight instance from manual input, not from a schedule
 	// (POST /flight-instances)
 	CreateFlightInstance(w http.ResponseWriter, r *http.Request)
 	// Get seat assignments for a flight instance
@@ -880,34 +880,34 @@ type ServerInterface interface {
 
 	// (PATCH /flight-instances/{id})
 	UpdateFlightInstance(w http.ResponseWriter, r *http.Request, id int)
-	// Delete all flight schedules
+	// Delete all schedules
 	// (DELETE /flight-schedules)
-	DeleteAllFlightSchedules(w http.ResponseWriter, r *http.Request)
-	// List all flight schedules
+	DeleteAllSchedules(w http.ResponseWriter, r *http.Request)
+	// List all schedules
 	// (GET /flight-schedules)
-	ListFlightSchedules(w http.ResponseWriter, r *http.Request)
-	// Create a new flight schedule
+	ListSchedules(w http.ResponseWriter, r *http.Request)
+	// Create a new schedule
 	// (POST /flight-schedules)
-	CreateFlightSchedule(w http.ResponseWriter, r *http.Request)
-	// Delete a flight schedule
+	CreateSchedule(w http.ResponseWriter, r *http.Request)
+	// Delete a schedule
 	// (DELETE /flight-schedules/{id})
-	DeleteFlightSchedule(w http.ResponseWriter, r *http.Request, id int)
-	// Get flight schedule by ID
+	DeleteSchedule(w http.ResponseWriter, r *http.Request, id int)
+	// Get schedule by ID
 	// (GET /flight-schedules/{id})
-	GetFlightSchedule(w http.ResponseWriter, r *http.Request, id int)
-	// Update flight schedule
+	GetSchedule(w http.ResponseWriter, r *http.Request, id int)
+	// Update schedule
 	// (PATCH /flight-schedules/{id})
-	UpdateFlightSchedule(w http.ResponseWriter, r *http.Request, id int)
-	// Get flight instances defined by a flight schedule
+	UpdateSchedule(w http.ResponseWriter, r *http.Request, id int)
+	// Get flight instances defined by a schedule
 	// (GET /flight-schedules/{id}/instances)
-	ListFlightInstancesForFlightSchedule(w http.ResponseWriter, r *http.Request, id int)
+	ListFlightInstancesForSchedule(w http.ResponseWriter, r *http.Request, id int)
 	// Health check endpoint
 	// (GET /health)
 	HealthCheck(w http.ResponseWriter, r *http.Request)
 	// List all itineraries
 	// (GET /itineraries)
 	ListItineraries(w http.ResponseWriter, r *http.Request)
-	// Create a new itinerary from manual input, not from a flight schedule
+	// Create a new itinerary from manual input, not from a schedule
 	// (POST /itineraries)
 	CreateItinerary(w http.ResponseWriter, r *http.Request)
 	// Delete an itinerary
@@ -1518,8 +1518,8 @@ func (siw *ServerInterfaceWrapper) ListFlightInstancesByAirline(w http.ResponseW
 	handler.ServeHTTP(w, r)
 }
 
-// ListFlightSchedulesByAirline operation middleware
-func (siw *ServerInterfaceWrapper) ListFlightSchedulesByAirline(w http.ResponseWriter, r *http.Request) {
+// ListSchedulesByAirline operation middleware
+func (siw *ServerInterfaceWrapper) ListSchedulesByAirline(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -1533,7 +1533,7 @@ func (siw *ServerInterfaceWrapper) ListFlightSchedulesByAirline(w http.ResponseW
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListFlightSchedulesByAirline(w, r, airlineSpec)
+		siw.Handler.ListSchedulesByAirline(w, r, airlineSpec)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1660,8 +1660,8 @@ func (siw *ServerInterfaceWrapper) UpdateAirport(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r)
 }
 
-// ListFlightSchedulesByAirport operation middleware
-func (siw *ServerInterfaceWrapper) ListFlightSchedulesByAirport(w http.ResponseWriter, r *http.Request) {
+// ListSchedulesByAirport operation middleware
+func (siw *ServerInterfaceWrapper) ListSchedulesByAirport(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -1675,7 +1675,7 @@ func (siw *ServerInterfaceWrapper) ListFlightSchedulesByAirport(w http.ResponseW
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListFlightSchedulesByAirport(w, r, airportSpec)
+		siw.Handler.ListSchedulesByAirport(w, r, airportSpec)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1838,11 +1838,11 @@ func (siw *ServerInterfaceWrapper) UpdateFlightInstance(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteAllFlightSchedules operation middleware
-func (siw *ServerInterfaceWrapper) DeleteAllFlightSchedules(w http.ResponseWriter, r *http.Request) {
+// DeleteAllSchedules operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAllSchedules(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteAllFlightSchedules(w, r)
+		siw.Handler.DeleteAllSchedules(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1852,11 +1852,11 @@ func (siw *ServerInterfaceWrapper) DeleteAllFlightSchedules(w http.ResponseWrite
 	handler.ServeHTTP(w, r)
 }
 
-// ListFlightSchedules operation middleware
-func (siw *ServerInterfaceWrapper) ListFlightSchedules(w http.ResponseWriter, r *http.Request) {
+// ListSchedules operation middleware
+func (siw *ServerInterfaceWrapper) ListSchedules(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListFlightSchedules(w, r)
+		siw.Handler.ListSchedules(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1866,11 +1866,11 @@ func (siw *ServerInterfaceWrapper) ListFlightSchedules(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
-// CreateFlightSchedule operation middleware
-func (siw *ServerInterfaceWrapper) CreateFlightSchedule(w http.ResponseWriter, r *http.Request) {
+// CreateSchedule operation middleware
+func (siw *ServerInterfaceWrapper) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateFlightSchedule(w, r)
+		siw.Handler.CreateSchedule(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1880,8 +1880,8 @@ func (siw *ServerInterfaceWrapper) CreateFlightSchedule(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteFlightSchedule operation middleware
-func (siw *ServerInterfaceWrapper) DeleteFlightSchedule(w http.ResponseWriter, r *http.Request) {
+// DeleteSchedule operation middleware
+func (siw *ServerInterfaceWrapper) DeleteSchedule(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -1895,7 +1895,7 @@ func (siw *ServerInterfaceWrapper) DeleteFlightSchedule(w http.ResponseWriter, r
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteFlightSchedule(w, r, id)
+		siw.Handler.DeleteSchedule(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1905,8 +1905,8 @@ func (siw *ServerInterfaceWrapper) DeleteFlightSchedule(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
-// GetFlightSchedule operation middleware
-func (siw *ServerInterfaceWrapper) GetFlightSchedule(w http.ResponseWriter, r *http.Request) {
+// GetSchedule operation middleware
+func (siw *ServerInterfaceWrapper) GetSchedule(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -1920,7 +1920,7 @@ func (siw *ServerInterfaceWrapper) GetFlightSchedule(w http.ResponseWriter, r *h
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetFlightSchedule(w, r, id)
+		siw.Handler.GetSchedule(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1930,8 +1930,8 @@ func (siw *ServerInterfaceWrapper) GetFlightSchedule(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
-// UpdateFlightSchedule operation middleware
-func (siw *ServerInterfaceWrapper) UpdateFlightSchedule(w http.ResponseWriter, r *http.Request) {
+// UpdateSchedule operation middleware
+func (siw *ServerInterfaceWrapper) UpdateSchedule(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -1945,7 +1945,7 @@ func (siw *ServerInterfaceWrapper) UpdateFlightSchedule(w http.ResponseWriter, r
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateFlightSchedule(w, r, id)
+		siw.Handler.UpdateSchedule(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1955,8 +1955,8 @@ func (siw *ServerInterfaceWrapper) UpdateFlightSchedule(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
-// ListFlightInstancesForFlightSchedule operation middleware
-func (siw *ServerInterfaceWrapper) ListFlightInstancesForFlightSchedule(w http.ResponseWriter, r *http.Request) {
+// ListFlightInstancesForSchedule operation middleware
+func (siw *ServerInterfaceWrapper) ListFlightInstancesForSchedule(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -1970,7 +1970,7 @@ func (siw *ServerInterfaceWrapper) ListFlightInstancesForFlightSchedule(w http.R
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListFlightInstancesForFlightSchedule(w, r, id)
+		siw.Handler.ListFlightInstancesForSchedule(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2357,14 +2357,14 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("DELETE "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}", wrapper.RemoveAircraftFromFleet)
 	m.HandleFunc("PUT "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}", wrapper.AddAircraftToFleet)
 	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flight-instances", wrapper.ListFlightInstancesByAirline)
-	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flight-schedules", wrapper.ListFlightSchedulesByAirline)
+	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flight-schedules", wrapper.ListSchedulesByAirline)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airports", wrapper.DeleteAllAirports)
 	m.HandleFunc("GET "+options.BaseURL+"/airports", wrapper.ListAirports)
 	m.HandleFunc("POST "+options.BaseURL+"/airports", wrapper.CreateAirport)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airports/{airportSpec}", wrapper.DeleteAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}", wrapper.GetAirport)
 	m.HandleFunc("PATCH "+options.BaseURL+"/airports/{airportSpec}", wrapper.UpdateAirport)
-	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}/flight-schedules", wrapper.ListFlightSchedulesByAirport)
+	m.HandleFunc("GET "+options.BaseURL+"/airports/{airportSpec}/flight-schedules", wrapper.ListSchedulesByAirport)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances", wrapper.ListFlightInstances)
 	m.HandleFunc("POST "+options.BaseURL+"/flight-instances", wrapper.CreateFlightInstance)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances/{flightInstanceID}/seat-assignments", wrapper.ListSeatAssignmentsForFlightInstance)
@@ -2372,13 +2372,13 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("DELETE "+options.BaseURL+"/flight-instances/{id}", wrapper.DeleteFlightInstance)
 	m.HandleFunc("GET "+options.BaseURL+"/flight-instances/{id}", wrapper.GetFlightInstance)
 	m.HandleFunc("PATCH "+options.BaseURL+"/flight-instances/{id}", wrapper.UpdateFlightInstance)
-	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules", wrapper.DeleteAllFlightSchedules)
-	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules", wrapper.ListFlightSchedules)
-	m.HandleFunc("POST "+options.BaseURL+"/flight-schedules", wrapper.CreateFlightSchedule)
-	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules/{id}", wrapper.DeleteFlightSchedule)
-	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules/{id}", wrapper.GetFlightSchedule)
-	m.HandleFunc("PATCH "+options.BaseURL+"/flight-schedules/{id}", wrapper.UpdateFlightSchedule)
-	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules/{id}/instances", wrapper.ListFlightInstancesForFlightSchedule)
+	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules", wrapper.DeleteAllSchedules)
+	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules", wrapper.ListSchedules)
+	m.HandleFunc("POST "+options.BaseURL+"/flight-schedules", wrapper.CreateSchedule)
+	m.HandleFunc("DELETE "+options.BaseURL+"/flight-schedules/{id}", wrapper.DeleteSchedule)
+	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules/{id}", wrapper.GetSchedule)
+	m.HandleFunc("PATCH "+options.BaseURL+"/flight-schedules/{id}", wrapper.UpdateSchedule)
+	m.HandleFunc("GET "+options.BaseURL+"/flight-schedules/{id}/instances", wrapper.ListFlightInstancesForSchedule)
 	m.HandleFunc("GET "+options.BaseURL+"/health", wrapper.HealthCheck)
 	m.HandleFunc("GET "+options.BaseURL+"/itineraries", wrapper.ListItineraries)
 	m.HandleFunc("POST "+options.BaseURL+"/itineraries", wrapper.CreateItinerary)
@@ -2946,27 +2946,27 @@ func (response ListFlightInstancesByAirline404Response) VisitListFlightInstances
 	return nil
 }
 
-type ListFlightSchedulesByAirlineRequestObject struct {
+type ListSchedulesByAirlineRequestObject struct {
 	AirlineSpec AirlineSpec `json:"airlineSpec"`
 }
 
-type ListFlightSchedulesByAirlineResponseObject interface {
-	VisitListFlightSchedulesByAirlineResponse(w http.ResponseWriter) error
+type ListSchedulesByAirlineResponseObject interface {
+	VisitListSchedulesByAirlineResponse(w http.ResponseWriter) error
 }
 
-type ListFlightSchedulesByAirline200JSONResponse []FlightSchedule
+type ListSchedulesByAirline200JSONResponse []Schedule
 
-func (response ListFlightSchedulesByAirline200JSONResponse) VisitListFlightSchedulesByAirlineResponse(w http.ResponseWriter) error {
+func (response ListSchedulesByAirline200JSONResponse) VisitListSchedulesByAirlineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListFlightSchedulesByAirline404Response struct {
+type ListSchedulesByAirline404Response struct {
 }
 
-func (response ListFlightSchedulesByAirline404Response) VisitListFlightSchedulesByAirlineResponse(w http.ResponseWriter) error {
+func (response ListSchedulesByAirline404Response) VisitListSchedulesByAirlineResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -3102,27 +3102,27 @@ func (response UpdateAirport404Response) VisitUpdateAirportResponse(w http.Respo
 	return nil
 }
 
-type ListFlightSchedulesByAirportRequestObject struct {
+type ListSchedulesByAirportRequestObject struct {
 	AirportSpec AirportSpec `json:"airportSpec"`
 }
 
-type ListFlightSchedulesByAirportResponseObject interface {
-	VisitListFlightSchedulesByAirportResponse(w http.ResponseWriter) error
+type ListSchedulesByAirportResponseObject interface {
+	VisitListSchedulesByAirportResponse(w http.ResponseWriter) error
 }
 
-type ListFlightSchedulesByAirport200JSONResponse []FlightSchedule
+type ListSchedulesByAirport200JSONResponse []Schedule
 
-func (response ListFlightSchedulesByAirport200JSONResponse) VisitListFlightSchedulesByAirportResponse(w http.ResponseWriter) error {
+func (response ListSchedulesByAirport200JSONResponse) VisitListSchedulesByAirportResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListFlightSchedulesByAirport404Response struct {
+type ListSchedulesByAirport404Response struct {
 }
 
-func (response ListFlightSchedulesByAirport404Response) VisitListFlightSchedulesByAirportResponse(w http.ResponseWriter) error {
+func (response ListSchedulesByAirport404Response) VisitListSchedulesByAirportResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -3318,158 +3318,158 @@ func (response UpdateFlightInstance404Response) VisitUpdateFlightInstanceRespons
 	return nil
 }
 
-type DeleteAllFlightSchedulesRequestObject struct {
+type DeleteAllSchedulesRequestObject struct {
 }
 
-type DeleteAllFlightSchedulesResponseObject interface {
-	VisitDeleteAllFlightSchedulesResponse(w http.ResponseWriter) error
+type DeleteAllSchedulesResponseObject interface {
+	VisitDeleteAllSchedulesResponse(w http.ResponseWriter) error
 }
 
-type DeleteAllFlightSchedules204Response struct {
+type DeleteAllSchedules204Response struct {
 }
 
-func (response DeleteAllFlightSchedules204Response) VisitDeleteAllFlightSchedulesResponse(w http.ResponseWriter) error {
+func (response DeleteAllSchedules204Response) VisitDeleteAllSchedulesResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type ListFlightSchedulesRequestObject struct {
+type ListSchedulesRequestObject struct {
 }
 
-type ListFlightSchedulesResponseObject interface {
-	VisitListFlightSchedulesResponse(w http.ResponseWriter) error
+type ListSchedulesResponseObject interface {
+	VisitListSchedulesResponse(w http.ResponseWriter) error
 }
 
-type ListFlightSchedules200JSONResponse []FlightSchedule
+type ListSchedules200JSONResponse []Schedule
 
-func (response ListFlightSchedules200JSONResponse) VisitListFlightSchedulesResponse(w http.ResponseWriter) error {
+func (response ListSchedules200JSONResponse) VisitListSchedulesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateFlightScheduleRequestObject struct {
-	Body *CreateFlightScheduleJSONRequestBody
+type CreateScheduleRequestObject struct {
+	Body *CreateScheduleJSONRequestBody
 }
 
-type CreateFlightScheduleResponseObject interface {
-	VisitCreateFlightScheduleResponse(w http.ResponseWriter) error
+type CreateScheduleResponseObject interface {
+	VisitCreateScheduleResponse(w http.ResponseWriter) error
 }
 
-type CreateFlightSchedule201JSONResponse FlightSchedule
+type CreateSchedule201JSONResponse Schedule
 
-func (response CreateFlightSchedule201JSONResponse) VisitCreateFlightScheduleResponse(w http.ResponseWriter) error {
+func (response CreateSchedule201JSONResponse) VisitCreateScheduleResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateFlightSchedule400Response struct {
+type CreateSchedule400Response struct {
 }
 
-func (response CreateFlightSchedule400Response) VisitCreateFlightScheduleResponse(w http.ResponseWriter) error {
+func (response CreateSchedule400Response) VisitCreateScheduleResponse(w http.ResponseWriter) error {
 	w.WriteHeader(400)
 	return nil
 }
 
-type DeleteFlightScheduleRequestObject struct {
+type DeleteScheduleRequestObject struct {
 	Id int `json:"id"`
 }
 
-type DeleteFlightScheduleResponseObject interface {
-	VisitDeleteFlightScheduleResponse(w http.ResponseWriter) error
+type DeleteScheduleResponseObject interface {
+	VisitDeleteScheduleResponse(w http.ResponseWriter) error
 }
 
-type DeleteFlightSchedule204Response struct {
+type DeleteSchedule204Response struct {
 }
 
-func (response DeleteFlightSchedule204Response) VisitDeleteFlightScheduleResponse(w http.ResponseWriter) error {
+func (response DeleteSchedule204Response) VisitDeleteScheduleResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type DeleteFlightSchedule404Response struct {
+type DeleteSchedule404Response struct {
 }
 
-func (response DeleteFlightSchedule404Response) VisitDeleteFlightScheduleResponse(w http.ResponseWriter) error {
+func (response DeleteSchedule404Response) VisitDeleteScheduleResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type GetFlightScheduleRequestObject struct {
+type GetScheduleRequestObject struct {
 	Id int `json:"id"`
 }
 
-type GetFlightScheduleResponseObject interface {
-	VisitGetFlightScheduleResponse(w http.ResponseWriter) error
+type GetScheduleResponseObject interface {
+	VisitGetScheduleResponse(w http.ResponseWriter) error
 }
 
-type GetFlightSchedule200JSONResponse FlightSchedule
+type GetSchedule200JSONResponse Schedule
 
-func (response GetFlightSchedule200JSONResponse) VisitGetFlightScheduleResponse(w http.ResponseWriter) error {
+func (response GetSchedule200JSONResponse) VisitGetScheduleResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetFlightSchedule404Response struct {
+type GetSchedule404Response struct {
 }
 
-func (response GetFlightSchedule404Response) VisitGetFlightScheduleResponse(w http.ResponseWriter) error {
+func (response GetSchedule404Response) VisitGetScheduleResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type UpdateFlightScheduleRequestObject struct {
+type UpdateScheduleRequestObject struct {
 	Id   int `json:"id"`
-	Body *UpdateFlightScheduleJSONRequestBody
+	Body *UpdateScheduleJSONRequestBody
 }
 
-type UpdateFlightScheduleResponseObject interface {
-	VisitUpdateFlightScheduleResponse(w http.ResponseWriter) error
+type UpdateScheduleResponseObject interface {
+	VisitUpdateScheduleResponse(w http.ResponseWriter) error
 }
 
-type UpdateFlightSchedule200JSONResponse FlightSchedule
+type UpdateSchedule200JSONResponse Schedule
 
-func (response UpdateFlightSchedule200JSONResponse) VisitUpdateFlightScheduleResponse(w http.ResponseWriter) error {
+func (response UpdateSchedule200JSONResponse) VisitUpdateScheduleResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateFlightSchedule404Response struct {
+type UpdateSchedule404Response struct {
 }
 
-func (response UpdateFlightSchedule404Response) VisitUpdateFlightScheduleResponse(w http.ResponseWriter) error {
+func (response UpdateSchedule404Response) VisitUpdateScheduleResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type ListFlightInstancesForFlightScheduleRequestObject struct {
+type ListFlightInstancesForScheduleRequestObject struct {
 	Id int `json:"id"`
 }
 
-type ListFlightInstancesForFlightScheduleResponseObject interface {
-	VisitListFlightInstancesForFlightScheduleResponse(w http.ResponseWriter) error
+type ListFlightInstancesForScheduleResponseObject interface {
+	VisitListFlightInstancesForScheduleResponse(w http.ResponseWriter) error
 }
 
-type ListFlightInstancesForFlightSchedule200JSONResponse []FlightInstance
+type ListFlightInstancesForSchedule200JSONResponse []FlightInstance
 
-func (response ListFlightInstancesForFlightSchedule200JSONResponse) VisitListFlightInstancesForFlightScheduleResponse(w http.ResponseWriter) error {
+func (response ListFlightInstancesForSchedule200JSONResponse) VisitListFlightInstancesForScheduleResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListFlightInstancesForFlightSchedule404Response struct {
+type ListFlightInstancesForSchedule404Response struct {
 }
 
-func (response ListFlightInstancesForFlightSchedule404Response) VisitListFlightInstancesForFlightScheduleResponse(w http.ResponseWriter) error {
+func (response ListFlightInstancesForSchedule404Response) VisitListFlightInstancesForScheduleResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -3818,9 +3818,9 @@ type StrictServerInterface interface {
 	// List flight instances for an airline
 	// (GET /airlines/{airlineSpec}/flight-instances)
 	ListFlightInstancesByAirline(ctx context.Context, request ListFlightInstancesByAirlineRequestObject) (ListFlightInstancesByAirlineResponseObject, error)
-	// List flight schedules for an airline
+	// List schedules for an airline
 	// (GET /airlines/{airlineSpec}/flight-schedules)
-	ListFlightSchedulesByAirline(ctx context.Context, request ListFlightSchedulesByAirlineRequestObject) (ListFlightSchedulesByAirlineResponseObject, error)
+	ListSchedulesByAirline(ctx context.Context, request ListSchedulesByAirlineRequestObject) (ListSchedulesByAirlineResponseObject, error)
 	// Delete all airports
 	// (DELETE /airports)
 	DeleteAllAirports(ctx context.Context, request DeleteAllAirportsRequestObject) (DeleteAllAirportsResponseObject, error)
@@ -3839,13 +3839,13 @@ type StrictServerInterface interface {
 	// Update airport
 	// (PATCH /airports/{airportSpec})
 	UpdateAirport(ctx context.Context, request UpdateAirportRequestObject) (UpdateAirportResponseObject, error)
-	// List flight schedules that depart from or arrive at an airport
+	// List schedules that depart from or arrive at an airport
 	// (GET /airports/{airportSpec}/flight-schedules)
-	ListFlightSchedulesByAirport(ctx context.Context, request ListFlightSchedulesByAirportRequestObject) (ListFlightSchedulesByAirportResponseObject, error)
+	ListSchedulesByAirport(ctx context.Context, request ListSchedulesByAirportRequestObject) (ListSchedulesByAirportResponseObject, error)
 	// List all flight instances
 	// (GET /flight-instances)
 	ListFlightInstances(ctx context.Context, request ListFlightInstancesRequestObject) (ListFlightInstancesResponseObject, error)
-	// Create a new single flight instance from manual input, not from a flight schedule
+	// Create a new single flight instance from manual input, not from a schedule
 	// (POST /flight-instances)
 	CreateFlightInstance(ctx context.Context, request CreateFlightInstanceRequestObject) (CreateFlightInstanceResponseObject, error)
 	// Get seat assignments for a flight instance
@@ -3863,34 +3863,34 @@ type StrictServerInterface interface {
 
 	// (PATCH /flight-instances/{id})
 	UpdateFlightInstance(ctx context.Context, request UpdateFlightInstanceRequestObject) (UpdateFlightInstanceResponseObject, error)
-	// Delete all flight schedules
+	// Delete all schedules
 	// (DELETE /flight-schedules)
-	DeleteAllFlightSchedules(ctx context.Context, request DeleteAllFlightSchedulesRequestObject) (DeleteAllFlightSchedulesResponseObject, error)
-	// List all flight schedules
+	DeleteAllSchedules(ctx context.Context, request DeleteAllSchedulesRequestObject) (DeleteAllSchedulesResponseObject, error)
+	// List all schedules
 	// (GET /flight-schedules)
-	ListFlightSchedules(ctx context.Context, request ListFlightSchedulesRequestObject) (ListFlightSchedulesResponseObject, error)
-	// Create a new flight schedule
+	ListSchedules(ctx context.Context, request ListSchedulesRequestObject) (ListSchedulesResponseObject, error)
+	// Create a new schedule
 	// (POST /flight-schedules)
-	CreateFlightSchedule(ctx context.Context, request CreateFlightScheduleRequestObject) (CreateFlightScheduleResponseObject, error)
-	// Delete a flight schedule
+	CreateSchedule(ctx context.Context, request CreateScheduleRequestObject) (CreateScheduleResponseObject, error)
+	// Delete a schedule
 	// (DELETE /flight-schedules/{id})
-	DeleteFlightSchedule(ctx context.Context, request DeleteFlightScheduleRequestObject) (DeleteFlightScheduleResponseObject, error)
-	// Get flight schedule by ID
+	DeleteSchedule(ctx context.Context, request DeleteScheduleRequestObject) (DeleteScheduleResponseObject, error)
+	// Get schedule by ID
 	// (GET /flight-schedules/{id})
-	GetFlightSchedule(ctx context.Context, request GetFlightScheduleRequestObject) (GetFlightScheduleResponseObject, error)
-	// Update flight schedule
+	GetSchedule(ctx context.Context, request GetScheduleRequestObject) (GetScheduleResponseObject, error)
+	// Update schedule
 	// (PATCH /flight-schedules/{id})
-	UpdateFlightSchedule(ctx context.Context, request UpdateFlightScheduleRequestObject) (UpdateFlightScheduleResponseObject, error)
-	// Get flight instances defined by a flight schedule
+	UpdateSchedule(ctx context.Context, request UpdateScheduleRequestObject) (UpdateScheduleResponseObject, error)
+	// Get flight instances defined by a schedule
 	// (GET /flight-schedules/{id}/instances)
-	ListFlightInstancesForFlightSchedule(ctx context.Context, request ListFlightInstancesForFlightScheduleRequestObject) (ListFlightInstancesForFlightScheduleResponseObject, error)
+	ListFlightInstancesForSchedule(ctx context.Context, request ListFlightInstancesForScheduleRequestObject) (ListFlightInstancesForScheduleResponseObject, error)
 	// Health check endpoint
 	// (GET /health)
 	HealthCheck(ctx context.Context, request HealthCheckRequestObject) (HealthCheckResponseObject, error)
 	// List all itineraries
 	// (GET /itineraries)
 	ListItineraries(ctx context.Context, request ListItinerariesRequestObject) (ListItinerariesResponseObject, error)
-	// Create a new itinerary from manual input, not from a flight schedule
+	// Create a new itinerary from manual input, not from a schedule
 	// (POST /itineraries)
 	CreateItinerary(ctx context.Context, request CreateItineraryRequestObject) (CreateItineraryResponseObject, error)
 	// Delete an itinerary
@@ -4585,25 +4585,25 @@ func (sh *strictHandler) ListFlightInstancesByAirline(w http.ResponseWriter, r *
 	}
 }
 
-// ListFlightSchedulesByAirline operation middleware
-func (sh *strictHandler) ListFlightSchedulesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec) {
-	var request ListFlightSchedulesByAirlineRequestObject
+// ListSchedulesByAirline operation middleware
+func (sh *strictHandler) ListSchedulesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec) {
+	var request ListSchedulesByAirlineRequestObject
 
 	request.AirlineSpec = airlineSpec
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListFlightSchedulesByAirline(ctx, request.(ListFlightSchedulesByAirlineRequestObject))
+		return sh.ssi.ListSchedulesByAirline(ctx, request.(ListSchedulesByAirlineRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListFlightSchedulesByAirline")
+		handler = middleware(handler, "ListSchedulesByAirline")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListFlightSchedulesByAirlineResponseObject); ok {
-		if err := validResponse.VisitListFlightSchedulesByAirlineResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListSchedulesByAirlineResponseObject); ok {
+		if err := validResponse.VisitListSchedulesByAirlineResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -4775,25 +4775,25 @@ func (sh *strictHandler) UpdateAirport(w http.ResponseWriter, r *http.Request, a
 	}
 }
 
-// ListFlightSchedulesByAirport operation middleware
-func (sh *strictHandler) ListFlightSchedulesByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
-	var request ListFlightSchedulesByAirportRequestObject
+// ListSchedulesByAirport operation middleware
+func (sh *strictHandler) ListSchedulesByAirport(w http.ResponseWriter, r *http.Request, airportSpec AirportSpec) {
+	var request ListSchedulesByAirportRequestObject
 
 	request.AirportSpec = airportSpec
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListFlightSchedulesByAirport(ctx, request.(ListFlightSchedulesByAirportRequestObject))
+		return sh.ssi.ListSchedulesByAirport(ctx, request.(ListSchedulesByAirportRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListFlightSchedulesByAirport")
+		handler = middleware(handler, "ListSchedulesByAirport")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListFlightSchedulesByAirportResponseObject); ok {
-		if err := validResponse.VisitListFlightSchedulesByAirportResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListSchedulesByAirportResponseObject); ok {
+		if err := validResponse.VisitListSchedulesByAirportResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -5000,23 +5000,23 @@ func (sh *strictHandler) UpdateFlightInstance(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// DeleteAllFlightSchedules operation middleware
-func (sh *strictHandler) DeleteAllFlightSchedules(w http.ResponseWriter, r *http.Request) {
-	var request DeleteAllFlightSchedulesRequestObject
+// DeleteAllSchedules operation middleware
+func (sh *strictHandler) DeleteAllSchedules(w http.ResponseWriter, r *http.Request) {
+	var request DeleteAllSchedulesRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteAllFlightSchedules(ctx, request.(DeleteAllFlightSchedulesRequestObject))
+		return sh.ssi.DeleteAllSchedules(ctx, request.(DeleteAllSchedulesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteAllFlightSchedules")
+		handler = middleware(handler, "DeleteAllSchedules")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteAllFlightSchedulesResponseObject); ok {
-		if err := validResponse.VisitDeleteAllFlightSchedulesResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteAllSchedulesResponseObject); ok {
+		if err := validResponse.VisitDeleteAllSchedulesResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -5024,23 +5024,23 @@ func (sh *strictHandler) DeleteAllFlightSchedules(w http.ResponseWriter, r *http
 	}
 }
 
-// ListFlightSchedules operation middleware
-func (sh *strictHandler) ListFlightSchedules(w http.ResponseWriter, r *http.Request) {
-	var request ListFlightSchedulesRequestObject
+// ListSchedules operation middleware
+func (sh *strictHandler) ListSchedules(w http.ResponseWriter, r *http.Request) {
+	var request ListSchedulesRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListFlightSchedules(ctx, request.(ListFlightSchedulesRequestObject))
+		return sh.ssi.ListSchedules(ctx, request.(ListSchedulesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListFlightSchedules")
+		handler = middleware(handler, "ListSchedules")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListFlightSchedulesResponseObject); ok {
-		if err := validResponse.VisitListFlightSchedulesResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListSchedulesResponseObject); ok {
+		if err := validResponse.VisitListSchedulesResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -5048,11 +5048,11 @@ func (sh *strictHandler) ListFlightSchedules(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// CreateFlightSchedule operation middleware
-func (sh *strictHandler) CreateFlightSchedule(w http.ResponseWriter, r *http.Request) {
-	var request CreateFlightScheduleRequestObject
+// CreateSchedule operation middleware
+func (sh *strictHandler) CreateSchedule(w http.ResponseWriter, r *http.Request) {
+	var request CreateScheduleRequestObject
 
-	var body CreateFlightScheduleJSONRequestBody
+	var body CreateScheduleJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -5060,18 +5060,18 @@ func (sh *strictHandler) CreateFlightSchedule(w http.ResponseWriter, r *http.Req
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.CreateFlightSchedule(ctx, request.(CreateFlightScheduleRequestObject))
+		return sh.ssi.CreateSchedule(ctx, request.(CreateScheduleRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "CreateFlightSchedule")
+		handler = middleware(handler, "CreateSchedule")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(CreateFlightScheduleResponseObject); ok {
-		if err := validResponse.VisitCreateFlightScheduleResponse(w); err != nil {
+	} else if validResponse, ok := response.(CreateScheduleResponseObject); ok {
+		if err := validResponse.VisitCreateScheduleResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -5079,25 +5079,25 @@ func (sh *strictHandler) CreateFlightSchedule(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// DeleteFlightSchedule operation middleware
-func (sh *strictHandler) DeleteFlightSchedule(w http.ResponseWriter, r *http.Request, id int) {
-	var request DeleteFlightScheduleRequestObject
+// DeleteSchedule operation middleware
+func (sh *strictHandler) DeleteSchedule(w http.ResponseWriter, r *http.Request, id int) {
+	var request DeleteScheduleRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteFlightSchedule(ctx, request.(DeleteFlightScheduleRequestObject))
+		return sh.ssi.DeleteSchedule(ctx, request.(DeleteScheduleRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteFlightSchedule")
+		handler = middleware(handler, "DeleteSchedule")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteFlightScheduleResponseObject); ok {
-		if err := validResponse.VisitDeleteFlightScheduleResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteScheduleResponseObject); ok {
+		if err := validResponse.VisitDeleteScheduleResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -5105,25 +5105,25 @@ func (sh *strictHandler) DeleteFlightSchedule(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// GetFlightSchedule operation middleware
-func (sh *strictHandler) GetFlightSchedule(w http.ResponseWriter, r *http.Request, id int) {
-	var request GetFlightScheduleRequestObject
+// GetSchedule operation middleware
+func (sh *strictHandler) GetSchedule(w http.ResponseWriter, r *http.Request, id int) {
+	var request GetScheduleRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetFlightSchedule(ctx, request.(GetFlightScheduleRequestObject))
+		return sh.ssi.GetSchedule(ctx, request.(GetScheduleRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetFlightSchedule")
+		handler = middleware(handler, "GetSchedule")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetFlightScheduleResponseObject); ok {
-		if err := validResponse.VisitGetFlightScheduleResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetScheduleResponseObject); ok {
+		if err := validResponse.VisitGetScheduleResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -5131,13 +5131,13 @@ func (sh *strictHandler) GetFlightSchedule(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-// UpdateFlightSchedule operation middleware
-func (sh *strictHandler) UpdateFlightSchedule(w http.ResponseWriter, r *http.Request, id int) {
-	var request UpdateFlightScheduleRequestObject
+// UpdateSchedule operation middleware
+func (sh *strictHandler) UpdateSchedule(w http.ResponseWriter, r *http.Request, id int) {
+	var request UpdateScheduleRequestObject
 
 	request.Id = id
 
-	var body UpdateFlightScheduleJSONRequestBody
+	var body UpdateScheduleJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -5145,18 +5145,18 @@ func (sh *strictHandler) UpdateFlightSchedule(w http.ResponseWriter, r *http.Req
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.UpdateFlightSchedule(ctx, request.(UpdateFlightScheduleRequestObject))
+		return sh.ssi.UpdateSchedule(ctx, request.(UpdateScheduleRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "UpdateFlightSchedule")
+		handler = middleware(handler, "UpdateSchedule")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(UpdateFlightScheduleResponseObject); ok {
-		if err := validResponse.VisitUpdateFlightScheduleResponse(w); err != nil {
+	} else if validResponse, ok := response.(UpdateScheduleResponseObject); ok {
+		if err := validResponse.VisitUpdateScheduleResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -5164,25 +5164,25 @@ func (sh *strictHandler) UpdateFlightSchedule(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// ListFlightInstancesForFlightSchedule operation middleware
-func (sh *strictHandler) ListFlightInstancesForFlightSchedule(w http.ResponseWriter, r *http.Request, id int) {
-	var request ListFlightInstancesForFlightScheduleRequestObject
+// ListFlightInstancesForSchedule operation middleware
+func (sh *strictHandler) ListFlightInstancesForSchedule(w http.ResponseWriter, r *http.Request, id int) {
+	var request ListFlightInstancesForScheduleRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListFlightInstancesForFlightSchedule(ctx, request.(ListFlightInstancesForFlightScheduleRequestObject))
+		return sh.ssi.ListFlightInstancesForSchedule(ctx, request.(ListFlightInstancesForScheduleRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListFlightInstancesForFlightSchedule")
+		handler = middleware(handler, "ListFlightInstancesForSchedule")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListFlightInstancesForFlightScheduleResponseObject); ok {
-		if err := validResponse.VisitListFlightInstancesForFlightScheduleResponse(w); err != nil {
+	} else if validResponse, ok := response.(ListFlightInstancesForScheduleResponseObject); ok {
+		if err := validResponse.VisitListFlightInstancesForScheduleResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

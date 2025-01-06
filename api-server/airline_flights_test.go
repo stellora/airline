@@ -7,16 +7,16 @@ import (
 	"github.com/stellora/airline/api-server/localtime"
 )
 
-func TestListFlightSchedulesByAirline(t *testing.T) {
+func TestListSchedulesByAirline(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
 	insertTestFleet(t, handler)
 	insertFleetT(t, handler, "YY", "FF", "")
-	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 AAA-BBB", "YY3 AAA-BBB")
+	insertSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 AAA-BBB", "YY3 AAA-BBB")
 
-	want := api.ListFlightSchedulesByAirline200JSONResponse{
-		api.FlightSchedule{
+	want := api.ListSchedulesByAirline200JSONResponse{
+		api.Schedule{
 			Id:                 1,
 			Airline:            xxAirline,
 			Number:             "1",
@@ -30,7 +30,7 @@ func TestListFlightSchedulesByAirline(t *testing.T) {
 			DurationSec:        durationSec(2, 0),
 			Published:          true,
 		},
-		api.FlightSchedule{
+		api.Schedule{
 			Id:                 2,
 			Airline:            xxAirline,
 			Number:             "2",
@@ -47,7 +47,7 @@ func TestListFlightSchedulesByAirline(t *testing.T) {
 	}
 
 	t.Run("by id", func(t *testing.T) {
-		resp, err := handler.ListFlightSchedulesByAirline(ctx, api.ListFlightSchedulesByAirlineRequestObject{
+		resp, err := handler.ListSchedulesByAirline(ctx, api.ListSchedulesByAirlineRequestObject{
 			AirlineSpec: api.NewAirlineSpec(1, ""),
 		})
 		if err != nil {
@@ -57,7 +57,7 @@ func TestListFlightSchedulesByAirline(t *testing.T) {
 	})
 
 	t.Run("by IATA code", func(t *testing.T) {
-		resp, err := handler.ListFlightSchedulesByAirline(ctx, api.ListFlightSchedulesByAirlineRequestObject{
+		resp, err := handler.ListSchedulesByAirline(ctx, api.ListSchedulesByAirlineRequestObject{
 			AirlineSpec: api.NewAirlineSpec(0, "XX"),
 		})
 		if err != nil {
@@ -71,7 +71,7 @@ func TestListFlightInstancesByAirline(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	insertFlightScheduleT(t, handler,
+	insertScheduleT(t, handler,
 		fixtureLocalDate1.AddDays(3),
 		fixtureLocalDate1.AddDays(4),
 		allDaysOfWeek,

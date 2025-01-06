@@ -25,7 +25,7 @@ export const actions: Actions = {
 			return message(form, resp.error, { status: 400 })
 		}
 	},
-	setFlightSchedulePublished: async ({ request, params }) => {
+	setSchedulePublished: async ({ request, params }) => {
 		// TODO!(sqs): make this use the id from the URL not the form data
 		const data = await request.formData()
 

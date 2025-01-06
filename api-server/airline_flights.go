@@ -8,7 +8,7 @@ import (
 	"github.com/stellora/airline/api-server/api"
 )
 
-func (h *Handler) ListFlightSchedulesByAirline(ctx context.Context, request api.ListFlightSchedulesByAirlineRequestObject) (api.ListFlightSchedulesByAirlineResponseObject, error) {
+func (h *Handler) ListSchedulesByAirline(ctx context.Context, request api.ListSchedulesByAirlineRequestObject) (api.ListSchedulesByAirlineResponseObject, error) {
 	tx, err := h.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -19,16 +19,16 @@ func (h *Handler) ListFlightSchedulesByAirline(ctx context.Context, request api.
 	airline, err := getAirlineBySpec(ctx, queriesTx, request.AirlineSpec)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.ListFlightSchedulesByAirline404Response{}, nil
+			return &api.ListSchedulesByAirline404Response{}, nil
 		}
 		return nil, err
 	}
 
-	flights, err := queriesTx.ListFlightSchedulesByAirline(ctx, airline.ID)
+	flights, err := queriesTx.ListSchedulesByAirline(ctx, airline.ID)
 	if err != nil {
 		return nil, err
 	}
-	return api.ListFlightSchedulesByAirline200JSONResponse(mapSlice(fromDBFlightSchedule, flights)), nil
+	return api.ListSchedulesByAirline200JSONResponse(mapSlice(fromDBSchedule, flights)), nil
 }
 
 func (h *Handler) ListFlightInstancesByAirline(ctx context.Context, request api.ListFlightInstancesByAirlineRequestObject) (api.ListFlightInstancesByAirlineResponseObject, error) {

@@ -7,7 +7,7 @@
 	let { data } = $props()
 </script>
 
-<Page title={`${flightTitle(data.flightSchedule)} instances`}>
-	<FlightTitle flight={data.flightSchedule} as="span" showRoute={true} />
+<Page title={`${flightTitle(data.schedule)} instances`}>
+	<FlightTitle flight={data.schedule} as="span" showRoute={true} />
 	<FlightInstanceList flightInstances={data.flightInstances} />
 </Page>

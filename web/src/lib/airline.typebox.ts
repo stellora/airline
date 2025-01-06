@@ -194,7 +194,7 @@ const ComponentsSchemasDaysOfWeek = T.Array(
   { minItems: 0, maxItems: 7, uniqueItems: true }
 )
 const ComponentsSchemasTimeOfDay = T.String({ pattern: '[0-2]?\\d:[0-5]\\d' })
-const ComponentsSchemasFlightSchedule = T.Object({
+const ComponentsSchemasSchedule = T.Object({
   id: T.Integer(),
   airline: CloneType(ComponentsSchemasAirline),
   number: CloneType(ComponentsSchemasFlightNumber),
@@ -267,7 +267,7 @@ const ComponentsSchemasRoute = T.Object({
   originAirport: CloneType(ComponentsSchemasAirport),
   destinationAirport: CloneType(ComponentsSchemasAirport),
   distanceMiles: T.Number({ format: 'double' }),
-  flightSchedulesCount: T.Integer()
+  schedulesCount: T.Integer()
 })
 
 const schema = {
@@ -638,7 +638,7 @@ const schema = {
           })
         })
       }),
-      data: T.Array(CloneType(ComponentsSchemasFlightSchedule), {
+      data: T.Array(CloneType(ComponentsSchemasSchedule), {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
@@ -737,7 +737,7 @@ const schema = {
           })
         })
       }),
-      data: T.Array(CloneType(ComponentsSchemasFlightSchedule), {
+      data: T.Array(CloneType(ComponentsSchemasSchedule), {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
@@ -763,7 +763,7 @@ const schema = {
   '/flight-schedules': {
     GET: {
       args: T.Void(),
-      data: T.Array(CloneType(ComponentsSchemasFlightSchedule), {
+      data: T.Array(CloneType(ComponentsSchemasSchedule), {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
@@ -796,7 +796,7 @@ const schema = {
           }
         )
       }),
-      data: CloneType(ComponentsSchemasFlightSchedule, {
+      data: CloneType(ComponentsSchemasSchedule, {
         'x-status-code': '201',
         'x-content-type': 'application/json'
       }),
@@ -815,7 +815,7 @@ const schema = {
           id: T.Integer({ 'x-in': 'path' })
         })
       }),
-      data: CloneType(ComponentsSchemasFlightSchedule, {
+      data: CloneType(ComponentsSchemasSchedule, {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
@@ -850,7 +850,7 @@ const schema = {
           }
         )
       }),
-      data: CloneType(ComponentsSchemasFlightSchedule, {
+      data: CloneType(ComponentsSchemasSchedule, {
         'x-status-code': '200',
         'x-content-type': 'application/json'
       }),
@@ -1218,7 +1218,7 @@ const _components = {
     LocalDate: CloneType(ComponentsSchemasLocalDate),
     DaysOfWeek: CloneType(ComponentsSchemasDaysOfWeek),
     TimeOfDay: CloneType(ComponentsSchemasTimeOfDay),
-    FlightSchedule: CloneType(ComponentsSchemasFlightSchedule),
+    Schedule: CloneType(ComponentsSchemasSchedule),
     FlightNumber: CloneType(ComponentsSchemasFlightNumber),
     FlightInstance: CloneType(ComponentsSchemasFlightInstance),
     Route: CloneType(ComponentsSchemasRoute),

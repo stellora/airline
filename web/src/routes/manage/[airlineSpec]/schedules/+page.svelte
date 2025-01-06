@@ -9,8 +9,8 @@
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { route } from '$lib/route-helpers'
 	import Plus from 'lucide-svelte/icons/plus'
-	import FlightScheduleForm from './schedule-form.svelte'
-	import FlightScheduleList from './schedule-list.svelte'
+	import ScheduleForm from './schedule-form.svelte'
+	import ScheduleList from './schedule-list.svelte'
 
 	let { data } = $props()
 </script>
@@ -19,14 +19,14 @@
 	{#snippet actions()}
 		<Drawer.DrawerByNavigationState id="new-flight-schedule" direction="right">
 			<Drawer.Trigger class={buttonVariants({ variant: 'secondary', size: 'pageNavbar' })}>
-				<Plus /> New flight schedule
+				<Plus /> New schedule
 			</Drawer.Trigger>
 			<Drawer.Content>
 				<Drawer.Header>
-					<Drawer.Title>New flight schedule</Drawer.Title>
+					<Drawer.Title>New schedule</Drawer.Title>
 				</Drawer.Header>
 				<Drawer.ScrollArea>
-					<FlightScheduleForm
+					<ScheduleForm
 						action="?/create"
 						submitLabel="Create"
 						data={data.form}
@@ -47,6 +47,6 @@
 		>
 	</Breadcrumb.Item></BreadcrumbsForLayout
 >
-<Page title={`Flight schedules - ${data.airline.iataCode}`}>
-	<FlightScheduleList flightSchedules={data.flightSchedules} />
+<Page title={`Schedules - ${data.airline.iataCode}`}>
+	<ScheduleList schedules={data.schedules} />
 </Page>

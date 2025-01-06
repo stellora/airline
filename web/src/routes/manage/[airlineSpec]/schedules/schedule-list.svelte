@@ -7,10 +7,10 @@
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
 	import { route } from '$lib/route-helpers'
-	import type { FlightSchedule } from '$lib/types'
+	import type { Schedule } from '$lib/types'
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
-	let { flightSchedules }: { flightSchedules: FlightSchedule[] } = $props()
+	let { schedules }: { schedules: Schedule[] } = $props()
 </script>
 
 <Card>
@@ -22,9 +22,9 @@
 				<Table.Head class="text-right" />
 			</Table.Row>
 		</Table.Header>
-		{#if flightSchedules && flightSchedules.length > 0}
+		{#if schedules && schedules.length > 0}
 			<Table.Body>
-				{#each flightSchedules as flight (flight.id)}
+				{#each schedules as flight (flight.id)}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell class="font-bold text-lg">
 							<FlightTitle {flight} as="span" showAirlineIcon={true} showRoute={false} />

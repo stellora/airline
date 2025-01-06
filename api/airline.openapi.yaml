@@ -385,19 +385,19 @@ paths:
           description: Airport not found
   /airports/{airportSpec}/flight-schedules:
     get:
-      operationId: listFlightSchedulesByAirport
-      summary: List flight schedules that depart from or arrive at an airport
+      operationId: listSchedulesByAirport
+      summary: List schedules that depart from or arrive at an airport
       parameters:
         - $ref: '#/components/parameters/airportSpec'
       responses:
         '200':
-          description: Flight schedules by airport
+          description: Schedules by airport
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FlightSchedule'
+                  $ref: '#/components/schemas/Schedule'
         '404':
           description: Airport not found
   /airlines:
@@ -501,19 +501,19 @@ paths:
           description: Airline not found
   /airlines/{airlineSpec}/flight-schedules:
     get:
-      operationId: listFlightSchedulesByAirline
-      summary: List flight schedules for an airline
+      operationId: listSchedulesByAirline
+      summary: List schedules for an airline
       parameters:
         - $ref: '#/components/parameters/airlineSpec'
       responses:
         '200':
-          description: List of flight schedules by airline
+          description: List of schedules by airline
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FlightSchedule'
+                  $ref: '#/components/schemas/Schedule'
         '404':
           description: Airline not found
   /airlines/{airlineSpec}/flight-instances:
@@ -535,20 +535,20 @@ paths:
           description: Airline not found
   /flight-schedules:
     get:
-      operationId: listFlightSchedules
-      summary: List all flight schedules
+      operationId: listSchedules
+      summary: List all schedules
       responses:
         '200':
-          description: List of flight schedules
+          description: List of schedules
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FlightSchedule'
+                  $ref: '#/components/schemas/Schedule'
     post:
-      operationId: createFlightSchedule
-      summary: Create a new flight schedule
+      operationId: createSchedule
+      summary: Create a new schedule
       requestBody:
         required: true
         content:
@@ -592,23 +592,23 @@ paths:
                 - durationSec
       responses:
         '201':
-          description: Flight schedule created
+          description: Schedule created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FlightSchedule'
+                $ref: '#/components/schemas/Schedule'
         '400':
           description: Invalid request
     delete:
-      operationId: deleteAllFlightSchedules
-      summary: Delete all flight schedules
+      operationId: deleteAllSchedules
+      summary: Delete all schedules
       responses:
         '204':
-          description: All flight schedules deleted
+          description: All schedules deleted
   /flight-schedules/{id}:
     get:
-      operationId: getFlightSchedule
-      summary: Get flight schedule by ID
+      operationId: getSchedule
+      summary: Get schedule by ID
       parameters:
         - name: id
           in: path
@@ -617,16 +617,16 @@ paths:
             type: integer
       responses:
         '200':
-          description: Flight schedule found
+          description: Schedule found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FlightSchedule'
+                $ref: '#/components/schemas/Schedule'
         '404':
-          description: Flight schedule not found
+          description: Schedule not found
     patch:
-      operationId: updateFlightSchedule
-      summary: Update flight schedule
+      operationId: updateSchedule
+      summary: Update schedule
       parameters:
         - name: id
           in: path
@@ -662,16 +662,16 @@ paths:
                   type: boolean
       responses:
         '200':
-          description: Flight schedule updated
+          description: Schedule updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FlightSchedule'
+                $ref: '#/components/schemas/Schedule'
         '404':
-          description: Flight schedule not found
+          description: Schedule not found
     delete:
-      operationId: deleteFlightSchedule
-      summary: Delete a flight schedule
+      operationId: deleteSchedule
+      summary: Delete a schedule
       parameters:
         - name: id
           in: path
@@ -680,13 +680,13 @@ paths:
             type: integer
       responses:
         '204':
-          description: Flight schedule deleted
+          description: Schedule deleted
         '404':
-          description: Flight schedule not found
+          description: Schedule not found
   /flight-schedules/{id}/instances:
     get:
-      operationId: listFlightInstancesForFlightSchedule
-      summary: Get flight instances defined by a flight schedule
+      operationId: listFlightInstancesForSchedule
+      summary: Get flight instances defined by a schedule
       parameters:
         - name: id
           in: path
@@ -703,7 +703,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/FlightInstance'
         '404':
-          description: Flight schedule not found
+          description: Schedule not found
   /flight-instances:
     get:
       operationId: listFlightInstances
@@ -719,7 +719,7 @@ paths:
                   $ref: '#/components/schemas/FlightInstance'
     post:
       operationId: createFlightInstance
-      summary: Create a new single flight instance from manual input, not from a flight schedule
+      summary: Create a new single flight instance from manual input, not from a schedule
       requestBody:
         required: true
         content:
@@ -826,7 +826,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/FlightInstance'
         '400':
-          description: Flight instance created from flight schedule can't update fields set by the flight schedule. Edit the flight schedule instead.
+          description: Flight instance created from schedule can't update fields set by the schedule. Edit the schedule instead.
         '404':
           description: Flight instance not found
     delete:
@@ -842,7 +842,7 @@ paths:
         '204':
           description: Flight instance deleted
         '400':
-          description: Flight instance created from a flight schedule can't be deleted. Edit the flight schedule instead.
+          description: Flight instance created from a schedule can't be deleted. Edit the schedule instead.
         '404':
           description: Flight instance not found
   /flight-instances/{flightInstanceID}/seat-assignments:
@@ -1015,7 +1015,7 @@ paths:
                   $ref: '#/components/schemas/Itinerary'
     post:
       operationId: createItinerary
-      summary: Create a new itinerary from manual input, not from a flight schedule
+      summary: Create a new itinerary from manual input, not from a schedule
       requestBody:
         required: true
         content:
@@ -1309,7 +1309,7 @@ components:
       type: string
       description: A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
       pattern: '[0-2]?\d:[0-5]\d'
-    FlightSchedule:
+    Schedule:
       type: object
       properties:
         id:
@@ -1360,7 +1360,7 @@ components:
       maxLength: 4
     FlightInstance:
       type: object
-      description: A single flight, either created and synced automatically from a flight schedule or created manually.
+      description: A single flight, either created and synced automatically from a schedule or created manually.
       properties:
         id:
           type: integer
@@ -1414,13 +1414,13 @@ components:
         distanceMiles:
           type: number
           format: double
-        flightSchedulesCount:
+        schedulesCount:
           type: integer
       required:
         - originAirport
         - destinationAirport
         - distanceMiles
-        - flightSchedulesCount
+        - schedulesCount
     ItineraryID:
       type: integer
       description: A globally unique numeric identifier for an itinerary.

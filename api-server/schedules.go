@@ -11,7 +11,7 @@ import (
 	"github.com/stellora/airline/api-server/localtime"
 )
 
-func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
+func fromDBSchedule(a db.SchedulesView) api.Schedule {
 	daysOfWeek, _ := parseDaysOfWeek(a.DaysOfWeek)
 	airline := fromDBAirline(db.Airline{
 		ID:       a.AirlineID,
@@ -25,7 +25,7 @@ func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 		Description: a.FleetDescription,
 	})
 	fleet.Airline = airline
-	b := api.FlightSchedule{
+	b := api.Schedule{
 		Id:      int(a.ID),
 		Airline: airline,
 		Number:  a.Number,
@@ -51,25 +51,25 @@ func fromDBFlightSchedule(a db.FlightSchedulesView) api.FlightSchedule {
 	return b
 }
 
-func (h *Handler) GetFlightSchedule(ctx context.Context, request api.GetFlightScheduleRequestObject) (api.GetFlightScheduleResponseObject, error) {
-	flight, err := h.queries.GetFlightSchedule(ctx, int64(request.Id))
+func (h *Handler) GetSchedule(ctx context.Context, request api.GetScheduleRequestObject) (api.GetScheduleResponseObject, error) {
+	flight, err := h.queries.GetSchedule(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.GetFlightSchedule404Response{}, nil
+			return &api.GetSchedule404Response{}, nil
 		}
 	}
-	return api.GetFlightSchedule200JSONResponse(fromDBFlightSchedule(flight)), nil
+	return api.GetSchedule200JSONResponse(fromDBSchedule(flight)), nil
 }
 
-func (h *Handler) ListFlightSchedules(ctx context.Context, request api.ListFlightSchedulesRequestObject) (api.ListFlightSchedulesResponseObject, error) {
-	flights, err := h.queries.ListFlightSchedules(ctx)
+func (h *Handler) ListSchedules(ctx context.Context, request api.ListSchedulesRequestObject) (api.ListSchedulesResponseObject, error) {
+	flights, err := h.queries.ListSchedules(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return api.ListFlightSchedules200JSONResponse(mapSlice(fromDBFlightSchedule, flights)), nil
+	return api.ListSchedules200JSONResponse(mapSlice(fromDBSchedule, flights)), nil
 }
 
-func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFlightScheduleRequestObject) (api.CreateFlightScheduleResponseObject, error) {
+func (h *Handler) CreateSchedule(ctx context.Context, request api.CreateScheduleRequestObject) (api.CreateScheduleResponseObject, error) {
 	if request.Body.Number == "" {
 		return nil, fmt.Errorf("number must not be empty")
 	}
@@ -127,7 +127,7 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		return nil, fmt.Errorf("parsing departureTime: %w", err)
 	}
 
-	created, err := queriesTx.CreateFlightSchedule(ctx, db.CreateFlightScheduleParams{
+	created, err := queriesTx.CreateSchedule(ctx, db.CreateScheduleParams{
 		AirlineID:            airline.ID,
 		Number:               request.Body.Number,
 		OriginAirportID:      originAirport.ID,
@@ -144,12 +144,12 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		return nil, err
 	}
 
-	flight, err := queriesTx.GetFlightSchedule(ctx, created)
+	flight, err := queriesTx.GetSchedule(ctx, created)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := syncFlightScheduleInstances(ctx, queriesTx, flight); err != nil {
+	if err := syncScheduleInstances(ctx, queriesTx, flight); err != nil {
 		return nil, err
 	}
 
@@ -157,10 +157,10 @@ func (h *Handler) CreateFlightSchedule(ctx context.Context, request api.CreateFl
 		return nil, err
 	}
 
-	return api.CreateFlightSchedule201JSONResponse(fromDBFlightSchedule(flight)), nil
+	return api.CreateSchedule201JSONResponse(fromDBSchedule(flight)), nil
 }
 
-func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFlightScheduleRequestObject) (api.UpdateFlightScheduleResponseObject, error) {
+func (h *Handler) UpdateSchedule(ctx context.Context, request api.UpdateScheduleRequestObject) (api.UpdateScheduleResponseObject, error) {
 	tx, err := h.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -168,15 +168,15 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 	defer tx.Rollback()
 	queriesTx := h.queries.WithTx(tx)
 
-	existing, err := queriesTx.GetFlightSchedule(ctx, int64(request.Id))
+	existing, err := queriesTx.GetSchedule(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.UpdateFlightSchedule404Response{}, nil
+			return &api.UpdateSchedule404Response{}, nil
 		}
 		return nil, err
 	}
 
-	params := db.UpdateFlightScheduleParams{
+	params := db.UpdateScheduleParams{
 		ID: int64(request.Id),
 	}
 	if request.Body.Number != nil {
@@ -237,22 +237,22 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 		params.Published = sql.NullBool{Bool: *request.Body.Published, Valid: true}
 	}
 
-	if _, err := queriesTx.UpdateFlightSchedule(ctx, params); err != nil {
+	if _, err := queriesTx.UpdateSchedule(ctx, params); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.UpdateFlightSchedule404Response{}, nil
+			return &api.UpdateSchedule404Response{}, nil
 		}
 		return nil, err
 	}
 
-	flight, err := queriesTx.GetFlightSchedule(ctx, int64(request.Id))
+	flight, err := queriesTx.GetSchedule(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &api.UpdateFlightSchedule404Response{}, nil
+			return &api.UpdateSchedule404Response{}, nil
 		}
 		return nil, err
 	}
 
-	if err := syncFlightScheduleInstances(ctx, queriesTx, flight); err != nil {
+	if err := syncScheduleInstances(ctx, queriesTx, flight); err != nil {
 		return nil, err
 	}
 
@@ -260,20 +260,20 @@ func (h *Handler) UpdateFlightSchedule(ctx context.Context, request api.UpdateFl
 		return nil, err
 	}
 
-	return api.UpdateFlightSchedule200JSONResponse(fromDBFlightSchedule(flight)), nil
+	return api.UpdateSchedule200JSONResponse(fromDBSchedule(flight)), nil
 }
 
-func (h *Handler) DeleteFlightSchedule(ctx context.Context, request api.DeleteFlightScheduleRequestObject) (api.DeleteFlightScheduleResponseObject, error) {
-	if err := h.queries.DeleteFlightSchedule(ctx, int64(request.Id)); err != nil {
+func (h *Handler) DeleteSchedule(ctx context.Context, request api.DeleteScheduleRequestObject) (api.DeleteScheduleResponseObject, error) {
+	if err := h.queries.DeleteSchedule(ctx, int64(request.Id)); err != nil {
 		// TODO(sqs): check if it was actually deleted
 		return nil, err
 	}
-	return api.DeleteFlightSchedule204Response{}, nil
+	return api.DeleteSchedule204Response{}, nil
 }
 
-func (h *Handler) DeleteAllFlightSchedules(ctx context.Context, request api.DeleteAllFlightSchedulesRequestObject) (api.DeleteAllFlightSchedulesResponseObject, error) {
-	if err := h.queries.DeleteAllFlightSchedules(ctx); err != nil {
+func (h *Handler) DeleteAllSchedules(ctx context.Context, request api.DeleteAllSchedulesRequestObject) (api.DeleteAllSchedulesResponseObject, error) {
+	if err := h.queries.DeleteAllSchedules(ctx); err != nil {
 		return nil, err
 	}
-	return api.DeleteAllFlightSchedules204Response{}, nil
+	return api.DeleteAllSchedules204Response{}, nil
 }

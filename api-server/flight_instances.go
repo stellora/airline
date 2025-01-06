@@ -58,9 +58,9 @@ func fromDBFlightInstance(a db.FlightInstancesView) api.FlightInstance {
 		}))
 	}
 
-	if a.SourceFlightScheduleID.Valid {
-		b.ScheduleID = ptrTo(int(a.SourceFlightScheduleID.Int64))
-		b.ScheduleInstanceDate = ptrTo(a.SourceFlightScheduleInstanceLocaldate.String())
+	if a.SourceScheduleID.Valid {
+		b.ScheduleID = ptrTo(int(a.SourceScheduleID.Int64))
+		b.ScheduleInstanceDate = ptrTo(a.SourceScheduleInstanceLocaldate.String())
 	}
 
 	return b
@@ -281,9 +281,9 @@ func (h *Handler) DeleteFlightInstance(ctx context.Context, request api.DeleteFl
 	}
 
 	// Only flight instances created from manual input can be deleted. To delete a flight instances
-	// created from a flight schedule, you need to edit the flight schedule so that it deletes the
+	// created from a schedule, you need to edit the schedule so that it deletes the
 	// instance when it syncs the new schedule definition.
-	if row.SourceFlightScheduleID.Valid {
+	if row.SourceScheduleID.Valid {
 		return api.DeleteFlightInstance400Response{}, nil
 	}
 

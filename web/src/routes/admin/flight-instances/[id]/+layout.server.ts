@@ -1,6 +1,6 @@
 import { schema } from '$lib/airline.typebox'
 import { apiClient } from '$lib/api'
-import type { FlightInstance, FlightSchedule } from '$lib/types'
+import type { FlightInstance, Schedule } from '$lib/types'
 import type { Static } from '@sinclair/typebox'
 import { error } from '@sveltejs/kit'
 import { superValidate } from 'sveltekit-superforms'
@@ -19,7 +19,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	}
 	const flightInstance = resp.data
 
-	let flightSchedule: FlightSchedule | undefined
+	let schedule: Schedule | undefined
 	if (flightInstance.scheduleID) {
 		const resp = await apiClient.GET('/flight-schedules/{id}', {
 			params: { path: { id: flightInstance.scheduleID } },
@@ -28,12 +28,12 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		if (!resp.response.ok || !resp.data) {
 			throw error(resp.response.status, resp.error)
 		}
-		flightSchedule = resp.data
+		schedule = resp.data
 	}
 
 	return {
 		flightInstance,
-		flightSchedule,
+		schedule,
 		form: await superValidate(
 			existingFlightInstanceToFormData(flightInstance),
 			typebox(schema['/flight-instances/{id}']['PATCH']['args']['properties']['body']),

@@ -8,21 +8,21 @@ import (
 	"github.com/stellora/airline/api-server/api"
 )
 
-func TestGetFlightSchedule(t *testing.T) {
+func TestGetSchedule(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA")
+	insertSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA")
 
 	t.Run("exists", func(t *testing.T) {
-		resp, err := handler.GetFlightSchedule(ctx, api.GetFlightScheduleRequestObject{
+		resp, err := handler.GetSchedule(ctx, api.GetScheduleRequestObject{
 			Id: 1,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		want := api.GetFlightSchedule200JSONResponse{
+		want := api.GetSchedule200JSONResponse{
 			Id:                 1,
 			Airline:            xxAirline,
 			Number:             "1",
@@ -40,29 +40,29 @@ func TestGetFlightSchedule(t *testing.T) {
 	})
 
 	t.Run("does not exist", func(t *testing.T) {
-		resp, err := handler.GetFlightSchedule(ctx, api.GetFlightScheduleRequestObject{
+		resp, err := handler.GetSchedule(ctx, api.GetScheduleRequestObject{
 			Id: 999,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(t, resp, &api.GetFlightSchedule404Response{})
+		assertEqual(t, resp, &api.GetSchedule404Response{})
 	})
 }
 
-func TestListFlightSchedules(t *testing.T) {
+func TestListSchedules(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA")
+	insertSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA")
 
-	resp, err := handler.ListFlightSchedules(ctx, api.ListFlightSchedulesRequestObject{})
+	resp, err := handler.ListSchedules(ctx, api.ListSchedulesRequestObject{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := api.ListFlightSchedules200JSONResponse{
-		api.FlightSchedule{
+	want := api.ListSchedules200JSONResponse{
+		api.Schedule{
 			Id:                 1,
 			Airline:            xxAirline,
 			Number:             "1",
@@ -76,7 +76,7 @@ func TestListFlightSchedules(t *testing.T) {
 			DurationSec:        durationSec(2, 0),
 			Published:          true,
 		},
-		api.FlightSchedule{
+		api.Schedule{
 			Id:                 2,
 			Airline:            xxAirline,
 			Number:             "2",
@@ -94,15 +94,15 @@ func TestListFlightSchedules(t *testing.T) {
 	assertEqual(t, resp, want)
 }
 
-func TestCreateFlightSchedule(t *testing.T) {
+func TestCreateSchedule(t *testing.T) {
 	t.Run("with airport IDs", func(t *testing.T) {
 		ctx, handler := handlerTest(t)
 		insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 		insertAirlinesWithIATACodesT(t, handler, "XX")
 		insertTestFleet(t, handler)
 
-		resp, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{
-			Body: &api.CreateFlightScheduleJSONRequestBody{
+		resp, err := handler.CreateSchedule(ctx, api.CreateScheduleRequestObject{
+			Body: &api.CreateScheduleJSONRequestBody{
 				Airline:            api.NewAirlineSpec(0, "XX"),
 				Number:             "1",
 				OriginAirport:      api.NewAirportSpec(1, ""),
@@ -117,7 +117,7 @@ func TestCreateFlightSchedule(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, ok := resp.(api.CreateFlightSchedule201JSONResponse); !ok {
+		if _, ok := resp.(api.CreateSchedule201JSONResponse); !ok {
 			t.Errorf("got %T, want non-error response", resp)
 		}
 		checkFlightTitles(t, handler, []string{"XX1 AAA-BBB"})
@@ -129,8 +129,8 @@ func TestCreateFlightSchedule(t *testing.T) {
 		insertAirlinesWithIATACodesT(t, handler, "XX")
 		insertTestFleet(t, handler)
 
-		resp, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{
-			Body: &api.CreateFlightScheduleJSONRequestBody{
+		resp, err := handler.CreateSchedule(ctx, api.CreateScheduleRequestObject{
+			Body: &api.CreateScheduleJSONRequestBody{
 				Airline:            api.NewAirlineSpec(0, "XX"),
 				Number:             "1",
 				OriginAirport:      api.NewAirportSpec(0, "AAA"),
@@ -145,25 +145,25 @@ func TestCreateFlightSchedule(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, ok := resp.(api.CreateFlightSchedule201JSONResponse); !ok {
+		if _, ok := resp.(api.CreateSchedule201JSONResponse); !ok {
 			t.Errorf("got %T, want non-error response", resp)
 		}
 		checkFlightTitles(t, handler, []string{"XX1 AAA-BBB"})
 	})
 }
 
-func TestUpdateFlightSchedule(t *testing.T) {
+func TestUpdateSchedule(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
-	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB")
+	insertSchedulesT(t, handler, "XX1 AAA-BBB")
 	insertFleetT(t, handler, "XX", "FF2", "")
 
 	{
 		// Update the flight
-		resp, err := handler.UpdateFlightSchedule(ctx, api.UpdateFlightScheduleRequestObject{
+		resp, err := handler.UpdateSchedule(ctx, api.UpdateScheduleRequestObject{
 			Id: 1,
-			Body: &api.UpdateFlightScheduleJSONRequestBody{
+			Body: &api.UpdateScheduleJSONRequestBody{
 				Number:             ptrTo("100"),
 				OriginAirport:      ptrTo(api.NewAirportSpec(2, "")),
 				DestinationAirport: ptrTo(api.NewAirportSpec(0, "AAA")),
@@ -179,7 +179,7 @@ func TestUpdateFlightSchedule(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, ok := resp.(api.UpdateFlightSchedule200JSONResponse); !ok {
+		if _, ok := resp.(api.UpdateSchedule200JSONResponse); !ok {
 			t.Errorf("got %T, want non-error response", resp)
 		}
 		checkFlightTitles(t, handler, []string{"XX100 BBB-AAA"})
@@ -187,12 +187,12 @@ func TestUpdateFlightSchedule(t *testing.T) {
 
 	{
 		// Verify the flight was actually updated
-		resp, err := handler.GetFlightSchedule(ctx, api.GetFlightScheduleRequestObject{Id: 1})
+		resp, err := handler.GetSchedule(ctx, api.GetScheduleRequestObject{Id: 1})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		want := api.GetFlightSchedule200JSONResponse{
+		want := api.GetSchedule200JSONResponse{
 			Id:                 1,
 			Airline:            xxAirline,
 			Number:             "100",
@@ -210,56 +210,56 @@ func TestUpdateFlightSchedule(t *testing.T) {
 	}
 }
 
-func TestDeleteFlightSchedule(t *testing.T) {
+func TestDeleteSchedule(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB")
+	insertSchedulesT(t, handler, "XX1 AAA-BBB")
 
-	resp, err := handler.DeleteFlightSchedule(ctx, api.DeleteFlightScheduleRequestObject{
+	resp, err := handler.DeleteSchedule(ctx, api.DeleteScheduleRequestObject{
 		Id: 1,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := api.DeleteFlightSchedule204Response{}
+	want := api.DeleteSchedule204Response{}
 	assertEqual(t, resp, want)
 
 	checkFlightTitles(t, handler, []string{})
 }
 
-func TestDeleteAllFlightSchedules(t *testing.T) {
+func TestDeleteAllSchedules(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA")
+	insertSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA")
 
-	resp, err := handler.DeleteAllFlightSchedules(ctx, api.DeleteAllFlightSchedulesRequestObject{})
+	resp, err := handler.DeleteAllSchedules(ctx, api.DeleteAllSchedulesRequestObject{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := api.DeleteAllFlightSchedules204Response{}
+	want := api.DeleteAllSchedules204Response{}
 	assertEqual(t, resp, want)
 
 	checkFlightTitles(t, handler, []string{})
 }
 
-func flightTitle(flight api.FlightSchedule) string {
+func flightTitle(flight api.Schedule) string {
 	return fmt.Sprintf("%s%s %s-%s", flight.Airline.IataCode, flight.Number, flight.OriginAirport.IataCode, flight.DestinationAirport.IataCode)
 }
 
-func flightTitles(t *testing.T, flights []api.FlightSchedule) []string {
+func flightTitles(t *testing.T, flights []api.Schedule) []string {
 	return mapSlice(flightTitle, flights)
 }
 
 func checkFlightTitles(t *testing.T, handler *Handler, want []string) {
-	resp, err := handler.ListFlightSchedules(context.Background(), api.ListFlightSchedulesRequestObject{})
+	resp, err := handler.ListSchedules(context.Background(), api.ListSchedulesRequestObject{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	flights := resp.(api.ListFlightSchedules200JSONResponse)
+	flights := resp.(api.ListSchedules200JSONResponse)
 	if len(flights) != len(want) {
 		t.Errorf("got %d flights, want %d", len(flights), len(want))
 	}

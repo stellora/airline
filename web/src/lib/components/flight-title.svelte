@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { route } from '$lib/route-helpers'
-	import type { FlightSchedule } from '$lib/types'
+	import type { Schedule } from '$lib/types'
 	import { cn } from '$lib/utils'
 	import type { HTMLAttributes } from 'svelte/elements'
 	import AirlineCode from './airline-code.svelte'
@@ -18,10 +18,10 @@
 		subtitleClass,
 		as = 'h2',
 	}: {
-		flight: Pick<FlightSchedule, 'id' | 'number' | 'published'> & {
-			airline: Pick<FlightSchedule['airline'], 'iataCode' | 'name'>
-			originAirport: Pick<FlightSchedule['originAirport'], 'iataCode' | 'name'>
-			destinationAirport: Pick<FlightSchedule['destinationAirport'], 'iataCode' | 'name'>
+		flight: Pick<Schedule, 'id' | 'number' | 'published'> & {
+			airline: Pick<Schedule['airline'], 'iataCode' | 'name'>
+			originAirport: Pick<Schedule['originAirport'], 'iataCode' | 'name'>
+			destinationAirport: Pick<Schedule['destinationAirport'], 'iataCode' | 'name'>
 		}
 		prefix?: string
 		showAirlineIcon?: boolean

@@ -27,7 +27,7 @@ func TestGetFlightInstance(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	flightSchedule := insertFlightScheduleT(t, handler,
+	schedule := insertScheduleT(t, handler,
 		fixtureLocalDate1,
 		fixtureLocalDate1.AddDays(2),
 		allDaysOfWeek,
@@ -43,17 +43,17 @@ func TestGetFlightInstance(t *testing.T) {
 
 		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
 			Id:                   2,
-			ScheduleID:           &flightSchedule.Id,
+			ScheduleID:           &schedule.Id,
 			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.AddDays(1).String()),
-			Airline:              flightSchedule.Airline,
-			Number:               flightSchedule.Number,
-			OriginAirport:        flightSchedule.OriginAirport,
-			DestinationAirport:   flightSchedule.DestinationAirport,
-			Fleet:                flightSchedule.Fleet,
+			Airline:              schedule.Airline,
+			Number:               schedule.Number,
+			OriginAirport:        schedule.OriginAirport,
+			DestinationAirport:   schedule.DestinationAirport,
+			Fleet:                schedule.Fleet,
 			Aircraft:             nil,
 			DepartureDateTime:    fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
 			ArrivalDateTime:      fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
-			Published:            flightSchedule.Published,
+			Published:            schedule.Published,
 		})
 	})
 
@@ -72,7 +72,7 @@ func TestListFlightInstances(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	flightSchedule := insertFlightScheduleT(t, handler,
+	schedule := insertScheduleT(t, handler,
 		fixtureLocalDate1,
 		fixtureLocalDate1.AddDays(2),
 		allDaysOfWeek,
@@ -86,45 +86,45 @@ func TestListFlightInstances(t *testing.T) {
 	assertEqual(t, resp, api.ListFlightInstances200JSONResponse{
 		{
 			Id:                   1,
-			ScheduleID:           &flightSchedule.Id,
+			ScheduleID:           &schedule.Id,
 			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.String()),
-			Airline:              flightSchedule.Airline,
-			Number:               flightSchedule.Number,
-			OriginAirport:        flightSchedule.OriginAirport,
-			DestinationAirport:   flightSchedule.DestinationAirport,
-			Fleet:                flightSchedule.Fleet,
+			Airline:              schedule.Airline,
+			Number:               schedule.Number,
+			OriginAirport:        schedule.OriginAirport,
+			DestinationAirport:   schedule.DestinationAirport,
+			Fleet:                schedule.Fleet,
 			Aircraft:             nil,
 			DepartureDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
 			ArrivalDateTime:      fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
-			Published:            flightSchedule.Published,
+			Published:            schedule.Published,
 		},
 		{
 			Id:                   2,
-			ScheduleID:           &flightSchedule.Id,
+			ScheduleID:           &schedule.Id,
 			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.AddDays(1).String()),
-			Airline:              flightSchedule.Airline,
-			Number:               flightSchedule.Number,
-			OriginAirport:        flightSchedule.OriginAirport,
-			DestinationAirport:   flightSchedule.DestinationAirport,
-			Fleet:                flightSchedule.Fleet,
+			Airline:              schedule.Airline,
+			Number:               schedule.Number,
+			OriginAirport:        schedule.OriginAirport,
+			DestinationAirport:   schedule.DestinationAirport,
+			Fleet:                schedule.Fleet,
 			Aircraft:             nil,
 			DepartureDateTime:    fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
 			ArrivalDateTime:      fixtureLocalDate1.AddDays(1).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
-			Published:            flightSchedule.Published,
+			Published:            schedule.Published,
 		},
 		{
 			Id:                   3,
-			ScheduleID:           &flightSchedule.Id,
+			ScheduleID:           &schedule.Id,
 			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.AddDays(2).String()),
-			Airline:              flightSchedule.Airline,
-			Number:               flightSchedule.Number,
-			OriginAirport:        flightSchedule.OriginAirport,
-			DestinationAirport:   flightSchedule.DestinationAirport,
-			Fleet:                flightSchedule.Fleet,
+			Airline:              schedule.Airline,
+			Number:               schedule.Number,
+			OriginAirport:        schedule.OriginAirport,
+			DestinationAirport:   schedule.DestinationAirport,
+			Fleet:                schedule.Fleet,
 			Aircraft:             nil,
 			DepartureDateTime:    fixtureLocalDate1.AddDays(2).TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
 			ArrivalDateTime:      fixtureLocalDate1.AddDays(2).TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
-			Published:            flightSchedule.Published,
+			Published:            schedule.Published,
 		},
 	})
 }
@@ -159,7 +159,7 @@ func TestUpdateFlightInstance(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX", "YY")
-	flightSchedule := insertFlightScheduleT(t, handler,
+	schedule := insertScheduleT(t, handler,
 		fixtureLocalDate1,
 		fixtureLocalDate1.AddDays(2),
 		allDaysOfWeek,
@@ -194,17 +194,17 @@ func TestUpdateFlightInstance(t *testing.T) {
 
 		assertEqual(t, resp, api.GetFlightInstance200JSONResponse{
 			Id:                   1,
-			ScheduleID:           &flightSchedule.Id,
+			ScheduleID:           &schedule.Id,
 			ScheduleInstanceDate: ptrTo(fixtureLocalDate1.String()),
-			Airline:              flightSchedule.Airline,
-			Number:               flightSchedule.Number,
-			OriginAirport:        flightSchedule.OriginAirport,
-			DestinationAirport:   flightSchedule.DestinationAirport,
-			Fleet:                flightSchedule.Fleet,
+			Airline:              schedule.Airline,
+			Number:               schedule.Number,
+			OriginAirport:        schedule.OriginAirport,
+			DestinationAirport:   schedule.DestinationAirport,
+			Fleet:                schedule.Fleet,
 			Aircraft:             nil,
 			DepartureDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
 			ArrivalDateTime:      fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(12, 0)),
-			Published:            flightSchedule.Published,
+			Published:            schedule.Published,
 			Notes:                "abc",
 		})
 	}
@@ -225,7 +225,7 @@ func TestDeleteFlightInstance(t *testing.T) {
 		ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(10, 0)),
 		Published:          ptrTo(true),
 	})
-	flightSchedule := insertFlightScheduleT(t, handler,
+	schedule := insertScheduleT(t, handler,
 		mustParseLocalDate("2025-01-01"),
 		mustParseLocalDate("2025-01-03"),
 		allDaysOfWeek,
@@ -242,12 +242,12 @@ func TestDeleteFlightInstance(t *testing.T) {
 		}
 	}
 
-	t.Run("source = FlightSchedule", func(t *testing.T) {
-		instancesResp, err := handler.ListFlightInstancesForFlightSchedule(ctx, api.ListFlightInstancesForFlightScheduleRequestObject{Id: flightSchedule.Id})
+	t.Run("source = Schedule", func(t *testing.T) {
+		instancesResp, err := handler.ListFlightInstancesForSchedule(ctx, api.ListFlightInstancesForScheduleRequestObject{Id: schedule.Id})
 		if err != nil {
 			t.Fatal(err)
 		}
-		instances := instancesResp.(api.ListFlightInstancesForFlightSchedule200JSONResponse)
+		instances := instancesResp.(api.ListFlightInstancesForSchedule200JSONResponse)
 
 		checkFlightInstanceExistence(t, instances[0].Id, true)
 		resp, err := handler.DeleteFlightInstance(ctx, api.DeleteFlightInstanceRequestObject{Id: instances[0].Id})
@@ -284,14 +284,14 @@ func flightInstanceDescriptions(flights []api.FlightInstance) []string {
 	return mapSlice(flightInstanceDescription, flights)
 }
 
-func checkFlightInstances(t *testing.T, handler *Handler, flightScheduleID int, want []string) {
+func checkFlightInstances(t *testing.T, handler *Handler, scheduleID int, want []string) {
 	t.Helper()
 
-	resp, err := handler.ListFlightInstancesForFlightSchedule(context.Background(), api.ListFlightInstancesForFlightScheduleRequestObject{Id: flightScheduleID})
+	resp, err := handler.ListFlightInstancesForSchedule(context.Background(), api.ListFlightInstancesForScheduleRequestObject{Id: scheduleID})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	instances := resp.(api.ListFlightInstancesForFlightSchedule200JSONResponse)
+	instances := resp.(api.ListFlightInstancesForSchedule200JSONResponse)
 	assertEqual(t, flightInstanceDescriptions(instances), want)
 }

@@ -1,9 +1,9 @@
 import * as d3 from 'd3'
 import type { Feature } from 'geojson'
-import type { Airport, DaysOfWeek, FlightInstance, FlightSchedule } from './types'
+import type { Airport, DaysOfWeek, FlightInstance, Schedule } from './types'
 
 export function flightTitle(
-	flight: Pick<FlightSchedule, 'airline' | 'number' | 'originAirport' | 'destinationAirport'>,
+	flight: Pick<Schedule, 'airline' | 'number' | 'originAirport' | 'destinationAirport'>,
 ): string {
 	return `${flight.airline.iataCode} ${flight.number} ${flightRoute(flight.originAirport, flight.destinationAirport)}`
 }

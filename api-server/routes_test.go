@@ -50,15 +50,15 @@ func TestGetRoute(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 AAA-BBB")
+	insertSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 AAA-BBB")
 
 	t.Run("has flights", func(t *testing.T) {
 		resp, err := handler.GetRoute(ctx, api.GetRouteRequestObject{Route: "AAA-BBB"})
 		if err != nil {
 			t.Fatal(err)
 		}
-		if got, want := resp.(api.GetRoute200JSONResponse).FlightSchedulesCount, 2; got != want {
-			t.Errorf("got FlightSchedulesCount %d, want %d", got, want)
+		if got, want := resp.(api.GetRoute200JSONResponse).SchedulesCount, 2; got != want {
+			t.Errorf("got SchedulesCount %d, want %d", got, want)
 		}
 	})
 
@@ -87,7 +87,7 @@ func TestListRoutes(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	insertFlightSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 AAA-CCC", "XX4 AAA-CCC")
+	insertSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 AAA-CCC", "XX4 AAA-CCC")
 
 	resp, err := handler.ListRoutes(ctx, api.ListRoutesRequestObject{})
 	if err != nil {
@@ -98,17 +98,17 @@ func TestListRoutes(t *testing.T) {
 		{
 			OriginAirport:        aaaAirport,
 			DestinationAirport:   cccAirport,
-			FlightSchedulesCount: 2,
+			SchedulesCount: 2,
 		},
 		{
 			OriginAirport:        aaaAirport,
 			DestinationAirport:   bbbAirport,
-			FlightSchedulesCount: 1,
+			SchedulesCount: 1,
 		},
 		{
 			OriginAirport:        bbbAirport,
 			DestinationAirport:   aaaAirport,
-			FlightSchedulesCount: 1,
+			SchedulesCount: 1,
 		},
 	}
 	assertEqual(t, resp, want)

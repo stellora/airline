@@ -14,14 +14,14 @@
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
-	import FlightScheduleForm from '../schedule-form.svelte'
-	import FlightScheduleBreadcrumbItem from './flight-schedule-breadcrumb-item.svelte'
+	import ScheduleForm from '../schedule-form.svelte'
+	import ScheduleBreadcrumbItem from './flight-schedule-breadcrumb-item.svelte'
 
 	const { children, data } = $props()
 </script>
 
 <BreadcrumbsForLayout>
-	<FlightScheduleBreadcrumbItem flightSchedule={data.flightSchedule} />
+	<ScheduleBreadcrumbItem schedule={data.schedule} />
 </BreadcrumbsForLayout>
 
 <PageNav
@@ -30,8 +30,8 @@
 			title: 'Overview',
 			url: route('/manage/[airlineSpec]/schedules/[id]', {
 				params: {
-					airlineSpec: data.flightSchedule.airline.iataCode,
-					id: data.flightSchedule.id.toString(),
+					airlineSpec: data.schedule.airline.iataCode,
+					id: data.schedule.id.toString(),
 				},
 			}),
 			icon: SquareMenu,
@@ -40,8 +40,8 @@
 			title: 'Instances',
 			url: route('/manage/[airlineSpec]/schedules/[id]/instances', {
 				params: {
-					airlineSpec: data.flightSchedule.airline.iataCode,
-					id: data.flightSchedule.id.toString(),
+					airlineSpec: data.schedule.airline.iataCode,
+					id: data.schedule.id.toString(),
 				},
 			}),
 			icon: PlaneTakeoff,
@@ -57,10 +57,10 @@
 							method="POST"
 							action={route('/manage/[airlineSpec]/schedules/[id]', {
 								params: {
-									airlineSpec: data.flightSchedule.airline.iataCode,
-									id: data.flightSchedule.id.toString(),
+									airlineSpec: data.schedule.airline.iataCode,
+									id: data.schedule.id.toString(),
 								},
-								query: '/setFlightSchedulePublished',
+								query: '/setSchedulePublished',
 							})}
 							use:enhance
 							class="w-full [&>button]:w-full"
@@ -68,10 +68,10 @@
 							<input
 								type="hidden"
 								name="published"
-								value={data.flightSchedule.published ? 'false' : 'true'}
+								value={data.schedule.published ? 'false' : 'true'}
 							/>
 							<button type="submit" {...props}>
-								{#if data.flightSchedule.published}
+								{#if data.schedule.published}
 									<EyeOff /> Unpublish
 								{:else}
 									<Eye /> Publish
@@ -87,8 +87,8 @@
 							method="POST"
 							action={route('/manage/[airlineSpec]/schedules/[id]', {
 								params: {
-									airlineSpec: data.flightSchedule.airline.iataCode,
-									id: data.flightSchedule.id.toString(),
+									airlineSpec: data.schedule.airline.iataCode,
+									id: data.schedule.id.toString(),
 								},
 								query: '/delete',
 							})}
@@ -115,14 +115,14 @@
 			</Drawer.Trigger>
 			<Drawer.Content>
 				<Drawer.Header>
-					<Drawer.Title>Edit flight schedule</Drawer.Title>
+					<Drawer.Title>Edit schedule</Drawer.Title>
 				</Drawer.Header>
 				<Drawer.ScrollArea>
-					<FlightScheduleForm
+					<ScheduleForm
 						action={route('/manage/[airlineSpec]/schedules/[id]', {
 							params: {
-								airlineSpec: data.flightSchedule.airline.iataCode,
-								id: data.flightSchedule.id.toString(),
+								airlineSpec: data.schedule.airline.iataCode,
+								id: data.schedule.id.toString(),
 							},
 							query: '/update',
 						})}

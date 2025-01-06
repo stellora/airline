@@ -1,6 +1,6 @@
 import { schema } from '$lib/airline.typebox'
 import { apiClient } from '$lib/api'
-import type { FlightSchedule } from '$lib/types'
+import type { Schedule } from '$lib/types'
 import type { Static } from '@sinclair/typebox'
 import { error } from '@sveltejs/kit'
 import { superValidate } from 'sveltekit-superforms'
@@ -15,20 +15,20 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	})
 	if (!resp.response.ok || !resp.data) {
 		// TODO(sqs)
-		throw error(404, 'Flight schedule not found')
+		throw error(404, 'Schedule not found')
 	}
-	const flightSchedule = resp.data
+	const schedule = resp.data
 	return {
-		flightSchedule,
+		schedule,
 		form: await superValidate(
-			existingFlightScheduleToFormData(flightSchedule),
+			existingScheduleToFormData(schedule),
 			typebox(schema['/flight-schedules/{id}']['PATCH']['args']['properties']['body']),
 		),
 	}
 }
 
-function existingFlightScheduleToFormData(
-	a: FlightSchedule,
+function existingScheduleToFormData(
+	a: Schedule,
 ): Static<(typeof schema)['/flight-schedules/{id}']['PATCH']['args']['properties']['body']> {
 	return {
 		number: a.number,

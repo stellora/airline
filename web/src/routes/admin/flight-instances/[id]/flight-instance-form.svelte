@@ -54,7 +54,7 @@
 	})
 	const { form: formData, enhance, message, constraints, errors, isTainted } = form
 
-	// TODO!(sqs): dedupe with FlightScheduleForm
+	// TODO!(sqs): dedupe with ScheduleForm
 </script>
 
 <form

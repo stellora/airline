@@ -8,12 +8,12 @@ import (
 	"github.com/stellora/airline/api-server/zonedtime"
 )
 
-func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
+func TestSyncFlightInstancesForSchedule(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 
-	flightSchedule1 := insertFlightScheduleT(t, handler,
+	schedule1 := insertScheduleT(t, handler,
 		mustParseLocalDate("2025-01-01"),
 		mustParseLocalDate("2025-01-03"),
 		allDaysOfWeek,
@@ -23,15 +23,15 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 	setNotesForFlightInstance(t, handler, 1, "a")
 	setNotesForFlightInstance(t, handler, 2, "b")
 	setNotesForFlightInstance(t, handler, 3, "c")
-	checkFlightInstances(t, handler, flightSchedule1.Id, []string{
+	checkFlightInstances(t, handler, schedule1.Id, []string{
 		"XX1 AAA-BBB on 2025-01-01 notes=a",
 		"XX1 AAA-BBB on 2025-01-02 notes=b",
 		"XX1 AAA-BBB on 2025-01-03 notes=c",
 	})
 
-	_, err := handler.UpdateFlightSchedule(ctx, api.UpdateFlightScheduleRequestObject{
-		Id: flightSchedule1.Id,
-		Body: &api.UpdateFlightScheduleJSONRequestBody{
+	_, err := handler.UpdateSchedule(ctx, api.UpdateScheduleRequestObject{
+		Id: schedule1.Id,
+		Body: &api.UpdateScheduleJSONRequestBody{
 			EndDate:    ptrTo("2025-01-05"),
 			DaysOfWeek: ptrTo([]int{0, 3, 5, 6}),
 		},
@@ -39,7 +39,7 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkFlightInstances(t, handler, flightSchedule1.Id, []string{
+	checkFlightInstances(t, handler, schedule1.Id, []string{
 		"XX1 AAA-BBB on 2025-01-01 notes=a",
 		"XX1 AAA-BBB on 2025-01-03 notes=c",
 		"XX1 AAA-BBB on 2025-01-04",
@@ -47,70 +47,70 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 	})
 }
 
-func TestListFlightInstancesForFlightSchedule(t *testing.T) {
+func TestListFlightInstancesForSchedule(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
-	insertFlightScheduleT(t, handler,
+	insertScheduleT(t, handler,
 		mustParseLocalDate("2025-01-01"),
 		mustParseLocalDate("2025-01-03"),
 		allDaysOfWeek,
 	)
-	flightSchedule2 := insertFlightScheduleT(t, handler,
+	schedule2 := insertScheduleT(t, handler,
 		mustParseLocalDate("2025-01-02"),
 		mustParseLocalDate("2025-01-04"),
 		allDaysOfWeek,
 	)
 
-	resp, err := handler.ListFlightInstancesForFlightSchedule(ctx, api.ListFlightInstancesForFlightScheduleRequestObject{
-		Id: flightSchedule2.Id,
+	resp, err := handler.ListFlightInstancesForSchedule(ctx, api.ListFlightInstancesForScheduleRequestObject{
+		Id: schedule2.Id,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assertEqual(t, resp, api.ListFlightInstancesForFlightSchedule200JSONResponse{
+	assertEqual(t, resp, api.ListFlightInstancesForSchedule200JSONResponse{
 		{
 			Id:                   4,
-			ScheduleID:           &flightSchedule2.Id,
+			ScheduleID:           &schedule2.Id,
 			ScheduleInstanceDate: ptrTo("2025-01-02"),
-			Airline:              flightSchedule2.Airline,
-			Number:               flightSchedule2.Number,
-			OriginAirport:        flightSchedule2.OriginAirport,
-			DestinationAirport:   flightSchedule2.DestinationAirport,
-			Fleet:                flightSchedule2.Fleet,
+			Airline:              schedule2.Airline,
+			Number:               schedule2.Number,
+			OriginAirport:        schedule2.OriginAirport,
+			DestinationAirport:   schedule2.DestinationAirport,
+			Fleet:                schedule2.Fleet,
 			Aircraft:             nil,
 			DepartureDateTime:    zonedtime.ZonedTime{Time: time.Date(2025, 1, 2, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID))},
 			ArrivalDateTime:      zonedtime.ZonedTime{Time: time.Date(2025, 1, 2, 12, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID))},
-			Published:            flightSchedule2.Published,
+			Published:            schedule2.Published,
 		},
 		{
 			Id:                   5,
-			ScheduleID:           &flightSchedule2.Id,
+			ScheduleID:           &schedule2.Id,
 			ScheduleInstanceDate: ptrTo("2025-01-03"),
-			Airline:              flightSchedule2.Airline,
-			Number:               flightSchedule2.Number,
-			OriginAirport:        flightSchedule2.OriginAirport,
-			DestinationAirport:   flightSchedule2.DestinationAirport,
-			Fleet:                flightSchedule2.Fleet,
+			Airline:              schedule2.Airline,
+			Number:               schedule2.Number,
+			OriginAirport:        schedule2.OriginAirport,
+			DestinationAirport:   schedule2.DestinationAirport,
+			Fleet:                schedule2.Fleet,
 			Aircraft:             nil,
 			DepartureDateTime:    zonedtime.ZonedTime{Time: time.Date(2025, 1, 3, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID))},
 			ArrivalDateTime:      zonedtime.ZonedTime{Time: time.Date(2025, 1, 3, 12, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID))},
-			Published:            flightSchedule2.Published,
+			Published:            schedule2.Published,
 		},
 		{
 			Id:                   6,
-			ScheduleID:           &flightSchedule2.Id,
+			ScheduleID:           &schedule2.Id,
 			ScheduleInstanceDate: ptrTo("2025-01-04"),
-			Airline:              flightSchedule2.Airline,
-			Number:               flightSchedule2.Number,
-			OriginAirport:        flightSchedule2.OriginAirport,
-			DestinationAirport:   flightSchedule2.DestinationAirport,
-			Fleet:                flightSchedule2.Fleet,
+			Airline:              schedule2.Airline,
+			Number:               schedule2.Number,
+			OriginAirport:        schedule2.OriginAirport,
+			DestinationAirport:   schedule2.DestinationAirport,
+			Fleet:                schedule2.Fleet,
 			Aircraft:             nil,
 			DepartureDateTime:    zonedtime.ZonedTime{Time: time.Date(2025, 1, 4, 7, 0, 0, 0, mustGetTzLocation(aaaAirport.TimezoneID))},
 			ArrivalDateTime:      zonedtime.ZonedTime{Time: time.Date(2025, 1, 4, 12, 0, 0, 0, mustGetTzLocation(bbbAirport.TimezoneID))},
-			Published:            flightSchedule2.Published,
+			Published:            schedule2.Published,
 		},
 	})
 }

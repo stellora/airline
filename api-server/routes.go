@@ -22,7 +22,7 @@ func fromDBRoute(a db.Route) api.Route {
 			IataCode: a.DestinationAirportIataCode,
 			OadbID:   a.DestinationAirportOadbID,
 		}),
-		FlightSchedulesCount: int(a.FlightSchedulesCount),
+		SchedulesCount: int(a.SchedulesCount),
 	}
 	b.DistanceMiles = distanceMilesBetweenAirports(b.OriginAirport, b.DestinationAirport)
 	return b

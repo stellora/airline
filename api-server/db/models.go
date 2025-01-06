@@ -63,8 +63,8 @@ type FleetsView struct {
 
 type FlightInstance struct {
 	ID                                    int64
-	SourceFlightScheduleID                sql.NullInt64
-	SourceFlightScheduleInstanceLocaldate *localtime.LocalDate
+	SourceScheduleID                sql.NullInt64
+	SourceScheduleInstanceLocaldate *localtime.LocalDate
 	AirlineID                             int64
 	Number                                string
 	OriginAirportID                       int64
@@ -81,8 +81,8 @@ type FlightInstance struct {
 
 type FlightInstancesView struct {
 	ID                                    int64
-	SourceFlightScheduleID                sql.NullInt64
-	SourceFlightScheduleInstanceLocaldate *localtime.LocalDate
+	SourceScheduleID                sql.NullInt64
+	SourceScheduleInstanceLocaldate *localtime.LocalDate
 	AirlineID                             int64
 	Number                                string
 	OriginAirportID                       int64
@@ -111,7 +111,7 @@ type FlightInstancesView struct {
 	AircraftAirlineName                   sql.NullString
 }
 
-type FlightSchedule struct {
+type Schedule struct {
 	ID                   int64
 	AirlineID            int64
 	Number               string
@@ -126,7 +126,7 @@ type FlightSchedule struct {
 	Published            bool
 }
 
-type FlightSchedulesView struct {
+type SchedulesView struct {
 	ID                         int64
 	AirlineID                  int64
 	Number                     string
@@ -177,7 +177,7 @@ type Route struct {
 	OriginAirportOadbID        sql.NullInt64
 	DestinationAirportIataCode string
 	DestinationAirportOadbID   sql.NullInt64
-	FlightSchedulesCount       int64
+	SchedulesCount       int64
 }
 
 type SeatAssignment struct {

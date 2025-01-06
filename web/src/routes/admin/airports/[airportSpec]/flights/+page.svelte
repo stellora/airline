@@ -11,23 +11,23 @@
 	<CardHeader>
 		<CardTitle>Flights to/from {data.airport.iataCode}</CardTitle>
 	</CardHeader>
-	{#await data.flightSchedules then flightSchedules}
-		{#if flightSchedules && flightSchedules.length > 0}
+	{#await data.schedules then schedules}
+		{#if schedules && schedules.length > 0}
 			<GreatCircleRoute
-				routes={flightSchedules.map((flight) => [flight.originAirport, flight.destinationAirport])}
+				routes={schedules.map((flight) => [flight.originAirport, flight.destinationAirport])}
 			/>
 		{/if}
 	{/await}
 	<CardContent>
-		{#await data.flightSchedules}
+		{#await data.schedules}
 			<div class="text-muted-foreground">Loading...</div>
-		{:then flightSchedules}
-			{#if flightSchedules && flightSchedules.length > 0}
+		{:then schedules}
+			{#if schedules && schedules.length > 0}
 				<ul
 					class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4"
 					data-testid="flights-to-from-airport"
 				>
-					{#each flightSchedules as flight (flight.id)}
+					{#each schedules as flight (flight.id)}
 						<li
 							class="p-3 border rounded-md flex items-center justify-between gap-2 stretched-link-container"
 						>

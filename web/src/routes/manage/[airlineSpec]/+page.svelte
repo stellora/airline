@@ -81,7 +81,7 @@
 		<Card.Content />
 	</Card.Root>
 
-	{#await data.flightSchedules then flights}
+	{#await data.schedules then flights}
 		{#if flights && flights.length > 0}
 			<Card.Root class="overflow-hidden">
 				<Card.Header>

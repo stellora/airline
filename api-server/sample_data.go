@@ -324,7 +324,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 	durationSec := func(hours, minutes int) int {
 		return (hours*60 + minutes) * 60
 	}
-	flightSchedules := []*api.CreateFlightScheduleJSONRequestBody{
+	schedules := []*api.CreateScheduleJSONRequestBody{
 		{
 			Airline:            api.NewAirlineSpec(0, "UA"),
 			Number:             "1",
@@ -687,13 +687,13 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			DurationSec:        durationSec(5, 45),
 		},
 	}
-	for _, f := range flightSchedules {
+	for _, f := range schedules {
 		f.Published = ptrTo(true)
 	}
-	log.Println("Creating flight schedules...")
-	for _, f := range flightSchedules {
-		if _, err := handler.CreateFlightSchedule(ctx, api.CreateFlightScheduleRequestObject{Body: f}); err != nil {
-			return fmt.Errorf("inserting flight schedule: %w", err)
+	log.Println("Creating schedules...")
+	for _, f := range schedules {
+		if _, err := handler.CreateSchedule(ctx, api.CreateScheduleRequestObject{Body: f}); err != nil {
+			return fmt.Errorf("inserting schedule: %w", err)
 		}
 	}
 

@@ -210,8 +210,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List flight schedules that depart from or arrive at an airport */
-        get: operations["listFlightSchedulesByAirport"];
+        /** List schedules that depart from or arrive at an airport */
+        get: operations["listSchedulesByAirport"];
         put?: never;
         post?: never;
         delete?: never;
@@ -265,8 +265,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List flight schedules for an airline */
-        get: operations["listFlightSchedulesByAirline"];
+        /** List schedules for an airline */
+        get: operations["listSchedulesByAirline"];
         put?: never;
         post?: never;
         delete?: never;
@@ -299,13 +299,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List all flight schedules */
-        get: operations["listFlightSchedules"];
+        /** List all schedules */
+        get: operations["listSchedules"];
         put?: never;
-        /** Create a new flight schedule */
-        post: operations["createFlightSchedule"];
-        /** Delete all flight schedules */
-        delete: operations["deleteAllFlightSchedules"];
+        /** Create a new schedule */
+        post: operations["createSchedule"];
+        /** Delete all schedules */
+        delete: operations["deleteAllSchedules"];
         options?: never;
         head?: never;
         patch?: never;
@@ -318,16 +318,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get flight schedule by ID */
-        get: operations["getFlightSchedule"];
+        /** Get schedule by ID */
+        get: operations["getSchedule"];
         put?: never;
         post?: never;
-        /** Delete a flight schedule */
-        delete: operations["deleteFlightSchedule"];
+        /** Delete a schedule */
+        delete: operations["deleteSchedule"];
         options?: never;
         head?: never;
-        /** Update flight schedule */
-        patch: operations["updateFlightSchedule"];
+        /** Update schedule */
+        patch: operations["updateSchedule"];
         trace?: never;
     };
     "/flight-schedules/{id}/instances": {
@@ -337,8 +337,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get flight instances defined by a flight schedule */
-        get: operations["listFlightInstancesForFlightSchedule"];
+        /** Get flight instances defined by a schedule */
+        get: operations["listFlightInstancesForSchedule"];
         put?: never;
         post?: never;
         delete?: never;
@@ -357,7 +357,7 @@ export interface paths {
         /** List all flight instances */
         get: operations["listFlightInstances"];
         put?: never;
-        /** Create a new single flight instance from manual input, not from a flight schedule */
+        /** Create a new single flight instance from manual input, not from a schedule */
         post: operations["createFlightInstance"];
         delete?: never;
         options?: never;
@@ -444,7 +444,7 @@ export interface paths {
         /** List all itineraries */
         get: operations["listItineraries"];
         put?: never;
-        /** Create a new itinerary from manual input, not from a flight schedule */
+        /** Create a new itinerary from manual input, not from a schedule */
         post: operations["createItinerary"];
         delete?: never;
         options?: never;
@@ -574,7 +574,7 @@ export interface components {
         DaysOfWeek: (0 | 1 | 2 | 3 | 4 | 5 | 6)[];
         /** @description A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone. */
         TimeOfDay: string;
-        FlightSchedule: {
+        Schedule: {
             id: number;
             airline: components["schemas"]["Airline"];
             number: components["schemas"]["FlightNumber"];
@@ -591,7 +591,7 @@ export interface components {
             published: boolean;
         };
         FlightNumber: string;
-        /** @description A single flight, either created and synced automatically from a flight schedule or created manually. */
+        /** @description A single flight, either created and synced automatically from a schedule or created manually. */
         FlightInstance: {
             id: number;
             scheduleID?: number;
@@ -615,7 +615,7 @@ export interface components {
             destinationAirport: components["schemas"]["Airport"];
             /** Format: double */
             distanceMiles: number;
-            flightSchedulesCount: number;
+            schedulesCount: number;
         };
         /** @description A globally unique numeric identifier for an itinerary. */
         ItineraryID: number;
@@ -1320,7 +1320,7 @@ export interface operations {
             };
         };
     };
-    listFlightSchedulesByAirport: {
+    listSchedulesByAirport: {
         parameters: {
             query?: never;
             header?: never;
@@ -1331,13 +1331,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Flight schedules by airport */
+            /** @description Schedules by airport */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightSchedule"][];
+                    "application/json": components["schemas"]["Schedule"][];
                 };
             };
             /** @description Airport not found */
@@ -1513,7 +1513,7 @@ export interface operations {
             };
         };
     };
-    listFlightSchedulesByAirline: {
+    listSchedulesByAirline: {
         parameters: {
             query?: never;
             header?: never;
@@ -1524,13 +1524,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of flight schedules by airline */
+            /** @description List of schedules by airline */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightSchedule"][];
+                    "application/json": components["schemas"]["Schedule"][];
                 };
             };
             /** @description Airline not found */
@@ -1571,7 +1571,7 @@ export interface operations {
             };
         };
     };
-    listFlightSchedules: {
+    listSchedules: {
         parameters: {
             query?: never;
             header?: never;
@@ -1580,18 +1580,18 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of flight schedules */
+            /** @description List of schedules */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightSchedule"][];
+                    "application/json": components["schemas"]["Schedule"][];
                 };
             };
         };
     };
-    createFlightSchedule: {
+    createSchedule: {
         parameters: {
             query?: never;
             header?: never;
@@ -1617,13 +1617,13 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Flight schedule created */
+            /** @description Schedule created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightSchedule"];
+                    "application/json": components["schemas"]["Schedule"];
                 };
             };
             /** @description Invalid request */
@@ -1635,7 +1635,7 @@ export interface operations {
             };
         };
     };
-    deleteAllFlightSchedules: {
+    deleteAllSchedules: {
         parameters: {
             query?: never;
             header?: never;
@@ -1644,7 +1644,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description All flight schedules deleted */
+            /** @description All schedules deleted */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -1653,7 +1653,7 @@ export interface operations {
             };
         };
     };
-    getFlightSchedule: {
+    getSchedule: {
         parameters: {
             query?: never;
             header?: never;
@@ -1664,16 +1664,16 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Flight schedule found */
+            /** @description Schedule found */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightSchedule"];
+                    "application/json": components["schemas"]["Schedule"];
                 };
             };
-            /** @description Flight schedule not found */
+            /** @description Schedule not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1682,7 +1682,7 @@ export interface operations {
             };
         };
     };
-    deleteFlightSchedule: {
+    deleteSchedule: {
         parameters: {
             query?: never;
             header?: never;
@@ -1693,14 +1693,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Flight schedule deleted */
+            /** @description Schedule deleted */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Flight schedule not found */
+            /** @description Schedule not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1709,7 +1709,7 @@ export interface operations {
             };
         };
     };
-    updateFlightSchedule: {
+    updateSchedule: {
         parameters: {
             query?: never;
             header?: never;
@@ -1735,16 +1735,16 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Flight schedule updated */
+            /** @description Schedule updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FlightSchedule"];
+                    "application/json": components["schemas"]["Schedule"];
                 };
             };
-            /** @description Flight schedule not found */
+            /** @description Schedule not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1753,7 +1753,7 @@ export interface operations {
             };
         };
     };
-    listFlightInstancesForFlightSchedule: {
+    listFlightInstancesForSchedule: {
         parameters: {
             query?: never;
             header?: never;
@@ -1773,7 +1773,7 @@ export interface operations {
                     "application/json": components["schemas"]["FlightInstance"][];
                 };
             };
-            /** @description Flight schedule not found */
+            /** @description Schedule not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1892,7 +1892,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Flight instance created from a flight schedule can't be deleted. Edit the flight schedule instead. */
+            /** @description Flight instance created from a schedule can't be deleted. Edit the schedule instead. */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -1943,7 +1943,7 @@ export interface operations {
                     "application/json": components["schemas"]["FlightInstance"];
                 };
             };
-            /** @description Flight instance created from flight schedule can't update fields set by the flight schedule. Edit the flight schedule instead. */
+            /** @description Flight instance created from schedule can't update fields set by the schedule. Edit the schedule instead. */
             400: {
                 headers: {
                     [name: string]: unknown;

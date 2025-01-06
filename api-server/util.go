@@ -21,7 +21,7 @@ func mapSlice[T any, U any](fn func(T) U, slice []T) []U {
 	return result
 }
 
-// parseFlightTitle parses a flight schedule title of the form "UA123 SFO-JFK".
+// parseFlightTitle parses a schedule title of the form "UA123 SFO-JFK".
 func parseFlightTitle(title string) (airlineIATACode, flightNumber, originIATACode, destinationIATACode string) {
 	var airlineFlightNumber, route string
 	airlineFlightNumber, route, _ = strings.Cut(title, " ")

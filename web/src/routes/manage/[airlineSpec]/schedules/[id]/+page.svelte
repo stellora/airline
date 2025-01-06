@@ -14,12 +14,12 @@
 	let { data } = $props()
 </script>
 
-<Page title={`${flightTitle(data.flightSchedule)} schedule`}>
+<Page title={`${flightTitle(data.schedule)} schedule`}>
 	<div class="flex flex-wrap-reverse gap-4 items-end">
 		<Card.Root class="flex-grow-[1]">
 			<Card.Header>
 				<FlightTitle
-					flight={data.flightSchedule}
+					flight={data.schedule}
 					class="text-4xl font-bold"
 					subtitleClass="text-base"
 					as="h1"
@@ -30,17 +30,17 @@
 				<DefinitionList.Root>
 					<DefinitionList.Item title="Route">
 						<AirportCode
-							airport={data.flightSchedule.originAirport}
+							airport={data.schedule.originAirport}
 							tooltip
 							link
-						/>&ndash;<AirportCode airport={data.flightSchedule.destinationAirport} tooltip link />
+						/>&ndash;<AirportCode airport={data.schedule.destinationAirport} tooltip link />
 						<span class="text-muted-foreground text-sm"
-							><Distance distanceMiles={data.flightSchedule.distanceMiles} /></span
+							><Distance distanceMiles={data.schedule.distanceMiles} /></span
 						>
 					</DefinitionList.Item>
 					<DefinitionList.Item title="Operating airline">
 						<AirlineCode
-							airline={data.flightSchedule.airline}
+							airline={data.schedule.airline}
 							icon={false}
 							tooltip={false}
 							link
@@ -48,15 +48,15 @@
 						/>
 					</DefinitionList.Item>
 					<DefinitionList.Item title="Fleet">
-						<FleetTitle fleet={data.flightSchedule.fleet} link />
+						<FleetTitle fleet={data.schedule.fleet} link />
 					</DefinitionList.Item>
 					<DefinitionList.Item title="Scheduled">
-						{data.flightSchedule.startDate} to {data.flightSchedule.endDate}
+						{data.schedule.startDate} to {data.schedule.endDate}
 					</DefinitionList.Item>
 					<DefinitionList.Item title="Timings">
-						{data.flightSchedule.departureTime}
-						{formatDaysOfWeek(data.flightSchedule.daysOfWeek)} ({formatFlightDuration(
-							data.flightSchedule.durationSec,
+						{data.schedule.departureTime}
+						{formatDaysOfWeek(data.schedule.daysOfWeek)} ({formatFlightDuration(
+							data.schedule.durationSec,
 						)})
 					</DefinitionList.Item>
 				</DefinitionList.Root>
@@ -65,7 +65,7 @@
 
 		<Card.Root class="overflow-hidden flex-grow-[2] basis-[350px] min-w-[350px]">
 			<GreatCircleRoute
-				routes={[[data.flightSchedule.originAirport, data.flightSchedule.destinationAirport]]}
+				routes={[[data.schedule.originAirport, data.schedule.destinationAirport]]}
 				detailLevel="high"
 			/>
 		</Card.Root>
