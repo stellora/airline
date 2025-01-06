@@ -7,6 +7,7 @@
 	import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down'
 	import type { HTMLAttributes } from 'svelte/elements'
 	import AirlineCode from './airline-code.svelte'
+	import AirlineIcon from './airline-icon.svelte'
 
 	let {
 		allAirlines,
@@ -37,13 +38,17 @@
 						{...props}
 					>
 						{#if activeAirline}
-							<AirlineCode
-								airline={activeAirline}
-								tooltip={false}
-								icon
-								showName
-								class="[&_[data-airline-name]]:text-xs"
-							/>
+							<div class="flex items-center gap-1.5 overflow-hidden">
+								<AirlineIcon
+									airline={activeAirline}
+									size="lg"
+									showCode
+									class="flex-shrink-0 mt-0.5 border border-foreground/25"
+								/>
+								<div class="flex flex-col gap-0.5 overflow-hidden">
+									<span class="font-semibold text-sm truncate">{activeAirline.name}</span>
+								</div>
+							</div>
 						{:else}
 							<span class="text-muted-foreground">Airline...</span>
 						{/if}
@@ -57,7 +62,7 @@
 						{#snippet child({ props })}
 							<a
 								{...props}
-								href={route('/admin/airlines/[airlineSpec]', {
+								href={route('/manage/[airlineSpec]', {
 									params: { airlineSpec: airline.iataCode },
 								})}
 							>

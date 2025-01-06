@@ -5,8 +5,15 @@
 
 	const {
 		airline,
+		size = 'default',
+		showCode = false,
 		class: className,
-	}: { airline: Pick<Airline, 'iataCode'>; class?: HTMLAttributes<never>['class'] } = $props()
+	}: {
+		airline: Pick<Airline, 'iataCode'>
+		size?: 'default' | 'lg'
+		showCode?: boolean
+		class?: HTMLAttributes<never>['class']
+	} = $props()
 
 	const airlineColors: Record<Airline['iataCode'], [color1: string, color2: string]> = {
 		AC: ['#D22630', '#000000'],
@@ -34,12 +41,26 @@
 </script>
 
 <div
-	class={cn('w-[1em] h-[1em] rounded-[2px] overflow-hidden inline-block', className)}
+	class={cn(
+		'rounded-[2px] overflow-hidden inline-block relative',
+		{
+			'w-[1em] h-[1em] rounded-[2px]': size === 'default',
+			'w-[2em] h-[2em] rounded-[4px]': size === 'lg',
+		},
+		className,
+	)}
 	role="presentation"
 	style="--color-1: {colors[0]}; --color-2: {colors[1]}; --angle: {angle}deg"
 	data-airline-icon
 >
 	<div class="gradient"></div>
+	{#if showCode}
+		<div
+			class="absolute inset-0 flex items-center justify-center text-white text-[0.9em] font-bold font-mono"
+		>
+			{airline.iataCode}
+		</div>
+	{/if}
 </div>
 
 <style>

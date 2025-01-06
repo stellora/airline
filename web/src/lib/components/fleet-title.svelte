@@ -18,7 +18,7 @@
 
 {#if link}
 	<a
-		href={route('/admin/airlines/[airlineSpec]/fleets/[fleetSpec]', {
+		href={route('/manage/[airlineSpec]/fleets/[fleetSpec]', {
 			params: { airlineSpec: fleet.airline.iataCode, fleetSpec: fleet.code },
 		})}
 		class={cn('font-mono', className)}

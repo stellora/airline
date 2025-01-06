@@ -4,6 +4,7 @@
 	import { schema } from '$lib/airline.typebox'
 	import AirlineCode from '$lib/components/airline-code.svelte'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
+	import Button from '$lib/components/ui/button/button.svelte'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
 	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
@@ -11,12 +12,7 @@
 	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import { route } from '$lib/route-helpers'
 	import { cn } from '$lib/utils'
-	import CalendarRange from 'lucide-svelte/icons/calendar-range'
-	import Group from 'lucide-svelte/icons/group'
-	import Plane from 'lucide-svelte/icons/plane'
-	import PlaneTakeoff from 'lucide-svelte/icons/plane-takeoff'
 	import Settings_2 from 'lucide-svelte/icons/settings-2'
-	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import Trash from 'lucide-svelte/icons/trash'
 	import type { ClassNameValue } from 'tailwind-merge'
 	import AirlineForm from '../airline-form.svelte'
@@ -34,45 +30,7 @@
 	</Breadcrumb.Item></BreadcrumbsForLayout
 >
 
-<PageNav
-	tabs={[
-		{
-			title: 'Overview',
-			url: route('/admin/airlines/[airlineSpec]', {
-				params: { airlineSpec: data.airline.iataCode },
-			}),
-			icon: SquareMenu,
-		},
-		{
-			title: 'Schedules',
-			url: route('/admin/airlines/[airlineSpec]/schedules', {
-				params: { airlineSpec: data.airline.iataCode },
-			}),
-			icon: CalendarRange,
-		},
-		{
-			title: 'Flights',
-			url: route('/admin/airlines/[airlineSpec]/flights', {
-				params: { airlineSpec: data.airline.iataCode },
-			}),
-			icon: PlaneTakeoff,
-		},
-		{
-			title: 'Fleets',
-			url: route('/admin/airlines/[airlineSpec]/fleets', {
-				params: { airlineSpec: data.airline.iataCode },
-			}),
-			icon: Group,
-		},
-		{
-			title: 'Aircraft',
-			url: route('/admin/airlines/[airlineSpec]/aircraft', {
-				params: { airlineSpec: data.airline.iataCode },
-			}),
-			icon: Plane,
-		},
-	]}
->
+<PageNav>
 	{#snippet breadcrumbActions()}
 		<Drawer.DrawerByNavigationState id="edit-airline" direction="right">
 			<PageNavbarBreadcrumbActionsDropdownMenu>
@@ -114,7 +72,7 @@
 				</Drawer.Header>
 				<Drawer.ScrollArea>
 					<AirlineForm
-						action={route('/admin/airlines/[airlineSpec]', {
+						action={route('/manage/[airlineSpec]', {
 							params: { airlineSpec: page.params.airlineSpec },
 							query: '/update',
 						})}
@@ -125,6 +83,15 @@
 				</Drawer.ScrollArea>
 			</Drawer.Content>
 		</Drawer.DrawerByNavigationState>
+	{/snippet}
+	{#snippet actions()}
+		<Button
+			variant="outline"
+			size="pageNavbar"
+			href={route('/manage/[airlineSpec]', {
+				params: { airlineSpec: data.airline.iataCode },
+			})}>Manage...</Button
+		>
 	{/snippet}
 </PageNav>
 

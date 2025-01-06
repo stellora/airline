@@ -12,6 +12,7 @@
 	import MapPin from 'lucide-svelte/icons/map-pin'
 	import Plane from 'lucide-svelte/icons/plane'
 	import PlaneTakeoff from 'lucide-svelte/icons/plane-takeoff'
+	import SquareMenu from 'lucide-svelte/icons/square-menu'
 	import TicketsPlane from 'lucide-svelte/icons/tickets-plane'
 	import User from 'lucide-svelte/icons/user'
 	import Users from 'lucide-svelte/icons/users'
@@ -50,29 +51,36 @@
 
 	const airlineAdminItems: (airlineIataCode: string) => Item[] = (airlineIataCode) => [
 		{
+			title: 'Overview',
+			url: route('/manage/[airlineSpec]', {
+				params: { airlineSpec: airlineIataCode },
+			}),
+			icon: SquareMenu,
+		},
+		{
 			title: 'Schedules',
-			url: route('/admin/airlines/[airlineSpec]/schedules', {
+			url: route('/manage/[airlineSpec]/schedules', {
 				params: { airlineSpec: airlineIataCode },
 			}),
 			icon: CalendarRange,
 		},
 		{
 			title: 'Fleets',
-			url: route('/admin/airlines/[airlineSpec]/fleets', {
+			url: route('/manage/[airlineSpec]/fleets', {
 				params: { airlineSpec: airlineIataCode },
 			}),
 			icon: Group,
 		},
 		{
 			title: 'Flights',
-			url: route('/admin/airlines/[airlineSpec]/flights', {
+			url: route('/manage/[airlineSpec]/flights', {
 				params: { airlineSpec: airlineIataCode },
 			}),
 			icon: PlaneTakeoff,
 		},
 		{
 			title: 'Aircraft',
-			url: route('/admin/airlines/[airlineSpec]/aircraft', {
+			url: route('/manage/[airlineSpec]/aircraft', {
 				params: { airlineSpec: airlineIataCode },
 			}),
 			icon: Plane,
@@ -117,7 +125,9 @@
 
 	const layoutData = page.data as unknown as LayoutData
 
-	const activeAirlineIataCode = $derived(page.params.airlineSpec)
+	const activeAirlineIataCode = $derived(
+		page.url.pathname.startsWith('/manage/') ? page.params.airlineSpec : undefined,
+	)
 </script>
 
 <Sidebar.Root collapsible="offcanvas" variant="sidebar">

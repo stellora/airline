@@ -1,22 +1,10 @@
+import { schema } from '$lib/airline.typebox'
 import { apiClient } from '$lib/api'
+import { route } from '$lib/route-helpers'
 import { fail, redirect } from '@sveltejs/kit'
-import type { Actions, PageServerLoad } from './$types'
 import { message, superValidate } from 'sveltekit-superforms'
 import { typebox } from 'sveltekit-superforms/adapters'
-import { schema } from '$lib/airline.typebox'
-import { route } from '$lib/route-helpers'
-
-export const load: PageServerLoad = async ({ params }) => {
-	const flightSchedules = apiClient
-		.GET('/airlines/{airlineSpec}/flight-schedules', {
-			params: { path: { airlineSpec: params.airlineSpec } },
-			fetch,
-		})
-		.then((resp) => resp.data)
-	return {
-		flightSchedules,
-	}
-}
+import type { Actions } from './$types'
 
 export const actions: Actions = {
 	update: async ({ params, request }) => {
@@ -35,10 +23,7 @@ export const actions: Actions = {
 		if (!resp.response.ok || !resp.data) {
 			return message(form, resp.error, { status: 400 })
 		}
-		redirect(
-			303,
-			route('/admin/airlines/[airlineSpec]', { params: { airlineSpec: resp.data.iataCode } }),
-		)
+		redirect(303, route('/admin/[airlineSpec]', { params: { airlineSpec: resp.data.iataCode } }))
 	},
 	delete: async ({ params }) => {
 		const resp = await apiClient.DELETE('/airlines/{airlineSpec}', {

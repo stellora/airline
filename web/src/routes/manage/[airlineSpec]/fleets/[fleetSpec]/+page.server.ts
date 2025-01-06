@@ -50,7 +50,7 @@ export const actions: Actions = {
 		}
 		redirect(
 			303,
-			route('/admin/airlines/[airlineSpec]/fleets/[fleetSpec]', {
+			route('/manage/[airlineSpec]/fleets/[fleetSpec]', {
 				params: {
 					airlineSpec: resp.data.airline.iataCode,
 					fleetSpec: resp.data.code,
@@ -72,7 +72,7 @@ export const actions: Actions = {
 		}
 		return redirect(
 			303,
-			route('/admin/airlines/[airlineSpec]/fleets', {
+			route('/manage/[airlineSpec]/fleets', {
 				params: { airlineSpec: params.airlineSpec },
 			}),
 		)

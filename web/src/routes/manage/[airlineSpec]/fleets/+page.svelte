@@ -58,7 +58,7 @@
 							<Table.Cell class="text-right">
 								<Button
 									variant="link"
-									href={route('/admin/airlines/[airlineSpec]/fleets/[fleetSpec]', {
+									href={route('/manage/[airlineSpec]/fleets/[fleetSpec]', {
 										params: {
 											airlineSpec: fleet.airline.iataCode,
 											fleetSpec: fleet.code,

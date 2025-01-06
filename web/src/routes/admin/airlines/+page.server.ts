@@ -35,7 +35,7 @@ export const actions: Actions = {
 		}
 		redirect(
 			303,
-			route('/admin/airlines/[airlineSpec]', {
+			route('/manage/[airlineSpec]', {
 				params: { airlineSpec: resp.data.iataCode },
 			}),
 		)
