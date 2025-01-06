@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
 	import { schema } from '$lib/airline.typebox'
-	import AircraftRegistration from '$lib/components/aircraft-registration.svelte'
+	import FleetTitle from '$lib/components/fleet-title.svelte'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import * as Drawer from '$lib/components/ui/drawer/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
@@ -14,28 +14,24 @@
 	import Settings2 from 'lucide-svelte/icons/settings-2'
 	import Trash from 'lucide-svelte/icons/trash'
 	import type { ClassNameValue } from 'tailwind-merge'
-	import AircraftForm from '../aircraft-form.svelte'
+	import FleetForm from '../fleet-form.svelte'
 
-	const { children, data } = $props()
+	let { children, data } = $props()
 </script>
 
 <BreadcrumbsForLayout>
 	<Breadcrumb.Item>
 		<Breadcrumb.Link
-			href={route('/manage/[airlineSpec]/aircraft/[aircraftSpec]', {
-				params: {
-					airlineSpec: page.params.airlineSpec,
-					aircraftSpec: page.params.aircraftSpec,
-				},
-			})}
-			><AircraftRegistration aircraft={data.aircraft} showAircraftType={true} />
-		</Breadcrumb.Link>
+			href={route('/manage/[airlineSpec]/fleets/[fleetSpec]', {
+				params: { airlineSpec: page.params.airlineSpec, fleetSpec: data.fleet.code },
+			})}><FleetTitle fleet={data.fleet} tooltip={false} link={false} /></Breadcrumb.Link
+		>
 	</Breadcrumb.Item></BreadcrumbsForLayout
 >
 
 <PageNav>
 	{#snippet breadcrumbActions()}
-		<Drawer.DrawerByNavigationState id="edit-aircraft" direction="right">
+		<Drawer.DrawerByNavigationState id="edit-fleets" direction="right">
 			<PageNavbarBreadcrumbActionsDropdownMenu>
 				<DropdownMenu.Group>
 					<DropdownMenu.Item>
@@ -49,10 +45,10 @@
 						{#snippet child({ props })}
 							<form
 								method="POST"
-								action={route('/manage/[airlineSpec]/aircraft/[aircraftSpec]', {
+								action={route('/manage/[airlineSpec]/fleets/[fleetSpec]', {
 									params: {
 										airlineSpec: page.params.airlineSpec,
-										aircraftSpec: page.params.aircraftSpec,
+										fleetSpec: page.params.fleetSpec,
 									},
 									query: '/delete',
 								})}
@@ -73,20 +69,22 @@
 			</PageNavbarBreadcrumbActionsDropdownMenu>
 			<Drawer.Content>
 				<Drawer.Header>
-					<Drawer.Title>Edit aircraft</Drawer.Title>
+					<Drawer.Title>Edit fleet</Drawer.Title>
 				</Drawer.Header>
 				<Drawer.ScrollArea>
-					<AircraftForm
-						action={route('/manage/[airlineSpec]/aircraft/[aircraftSpec]', {
+					<FleetForm
+						action={route('/manage/[airlineSpec]/fleets/[fleetSpec]', {
 							params: {
 								airlineSpec: page.params.airlineSpec,
-								aircraftSpec: page.params.aircraftSpec,
+								fleetSpec: page.params.fleetSpec,
 							},
 							query: '/update',
 						})}
 						submitLabel="Save"
 						data={data.form}
-						schema={schema['/aircraft/{aircraftSpec}']['PATCH']['args']['properties']['body']}
+						schema={schema['/airlines/{airlineSpec}/fleets/{fleetSpec}']['PATCH']['args'][
+							'properties'
+						]['body']}
 					/>
 				</Drawer.ScrollArea>
 			</Drawer.Content>

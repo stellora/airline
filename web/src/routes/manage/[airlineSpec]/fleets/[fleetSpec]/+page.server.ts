@@ -8,14 +8,6 @@ import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
 	return {
-		fleet: await apiClient
-			.GET('/airlines/{airlineSpec}/fleets/{fleetSpec}', {
-				params: {
-					path: { airlineSpec: params.airlineSpec, fleetSpec: params.fleetSpec },
-				},
-				fetch,
-			})
-			.then((resp) => resp.data!),
 		fleetAircraft: await apiClient
 			.GET('/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft', {
 				params: {

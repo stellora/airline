@@ -1,7 +1,8 @@
 <script lang="ts">
+	import FleetTitle from '$lib/components/fleet-title.svelte'
 	import * as Card from '$lib/components/ui/card'
 	import Page from '$lib/components/ui/page/page.svelte'
-	import AircraftList from '../../../../manage/[airlineSpec]/aircraft/aircraft-list.svelte'
+	import AircraftList from '../../aircraft/aircraft-list.svelte'
 
 	let { data } = $props()
 </script>
@@ -10,7 +11,7 @@
 	<Card.Root>
 		<Card.Header>
 			<Card.Title>
-				{data.fleet.code}
+				<FleetTitle fleet={data.fleet} link={false} tooltip={false} class="text-4xl" />
 			</Card.Title>
 			<Card.Description>
 				{data.fleet.description}

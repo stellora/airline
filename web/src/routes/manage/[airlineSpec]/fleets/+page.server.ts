@@ -1,14 +1,51 @@
+import { schema } from '$lib/airline.typebox'
 import { apiClient } from '$lib/api'
-import type { PageServerLoad } from './$types'
+import { route } from '$lib/route-helpers'
+import { fail, redirect } from '@sveltejs/kit'
+import { message, superValidate } from 'sveltekit-superforms'
+import { typebox } from 'sveltekit-superforms/adapters'
+import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
-	const fleets = await apiClient
-		.GET('/airlines/{airlineSpec}/fleets', {
+	return {
+		fleets: await await apiClient
+			.GET('/airlines/{airlineSpec}/fleets', {
+				params: { path: { airlineSpec: params.airlineSpec } },
+				fetch,
+			})
+			.then((resp) => resp.data!),
+		form: await superValidate(
+			typebox(schema['/airlines/{airlineSpec}/fleets']['POST']['args']['properties']['body']),
+		),
+	}
+}
+
+export const actions: Actions = {
+	create: async ({ params, request }) => {
+		const form = await superValidate(
+			request,
+			typebox(schema['/airlines/{airlineSpec}/fleets']['POST']['args']['properties']['body']),
+		)
+		if (!form.valid) {
+			return fail(400, { form })
+		}
+
+		const resp = await apiClient.POST('/airlines/{airlineSpec}/fleets', {
 			params: { path: { airlineSpec: params.airlineSpec } },
+			body: form.data,
 			fetch,
 		})
-		.then((resp) => resp.data!)
-	return {
-		fleets,
-	}
+		if (!resp.response.ok || !resp.data) {
+			// TODO!(sqs): if submitting the form has an error, the message is only shown
+			// the first time you submit. if you click submit again, it does not show the
+			// message.
+			return message(form, resp.error, { status: 400 })
+		}
+		redirect(
+			303,
+			route('/manage/[airlineSpec]/fleets/[fleetSpec]', {
+				params: { airlineSpec: params.airlineSpec, fleetSpec: resp.data.code },
+			}),
+		)
+	},
 }
