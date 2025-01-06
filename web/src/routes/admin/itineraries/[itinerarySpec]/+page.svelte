@@ -30,7 +30,10 @@
 							<li>
 								<a
 									href={route('/manage/[airlineSpec]/flights/[id]', {
-										params: { id: flight.id.toString() },
+										params: {
+											airlineSpec: flight.airline.iataCode,
+											id: flight.id.toString(),
+										},
 									})}
 								>
 									{flightTitle(flight)}
