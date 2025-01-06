@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AirportCode from '$lib/components/airport-code.svelte'
+	import Distance from '$lib/components/distance.svelte'
 	import FlightStatus from '$lib/components/flight-status.svelte'
 	import FormattedDatetime from '$lib/components/formatted-datetime.svelte'
 	import ScheduleTitle from '$lib/components/schedule-title.svelte'
@@ -27,7 +28,7 @@
 					schedule={flight}
 					as="span"
 					showRoute={false}
-					tooltip={false}
+					tooltip={true}
 					link={false}
 					class="text-lg"
 				/>
@@ -51,8 +52,11 @@
 						class="size-8 rotate-45 absolute inset-x-1/2 -ml-4 -top-4 fill-foreground"
 						strokeWidth="0"
 					/>
-					<div class="w-full text-center mt-3.5 text-sm text-muted-foreground">
+					<div
+						class="w-full text-center mt-3.5 text-sm text-muted-foreground flex flex-col items-center"
+					>
 						{formatFlightDuration(departureDateTime, arrivalDateTime)}
+						<span class="text-xs"><Distance distanceMiles={flight.distanceMiles} /></span>
 					</div>
 				</div>
 				<div class="flex flex-col">
@@ -68,7 +72,7 @@
 		</div>
 		<div data-info class="flex-0 border-l">
 			<DefinitionList.Root
-				class="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-2 [&>dt]:text-right [&>dt]:tracking-tight [&>dt]:text-xxs [&>dt]:uppercase [&>dd]:!m-0"
+				class="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-3 h-full [&>dt]:text-right [&>dt]:tracking-tight [&>dt]:text-xxs [&>dt]:uppercase [&>dd]:!m-0"
 			>
 				<DefinitionList.Item title="Seat" class="flex items-center gap-2">
 					{#snippet titleChild()}<Armchair class="size-5" />{/snippet}
