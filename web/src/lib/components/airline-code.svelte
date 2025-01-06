@@ -30,13 +30,13 @@
 		{#snippet child({ props })}
 			<svelte:element
 				this={as}
-				class={cn(className, 'font-mono inline-flex items-baseline gap-1.5', {
+				class={cn(className, 'font-mono inline-flex items-baseline gap-1.5 overflow-hidden', {
 					'hover:underline hover:decoration-dotted': tooltip,
 					'cursor-help': !link && tooltip,
 				})}
 				{...props}
 			>
-				{#if icon}<AirlineIcon {airline} class="self-center -mt-0.5" />{/if}
+				{#if icon}<AirlineIcon {airline} class="self-center -mt-0.5 flex-shrink-0" />{/if}
 				{#if link}
 					<a
 						href={route('/admin/airlines/[airlineSpec]', {
@@ -47,7 +47,9 @@
 					{airline.iataCode}
 				{/if}
 				{#if showName}
-					<span class="text-sm font-sans text-muted-foreground">{airline.name}</span>
+					<span data-airline-name class="text-sm font-sans text-muted-foreground truncate"
+						>{airline.name}</span
+					>
 				{/if}
 			</svelte:element>
 		{/snippet}

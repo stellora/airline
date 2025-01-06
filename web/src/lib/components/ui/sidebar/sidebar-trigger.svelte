@@ -15,13 +15,13 @@
 		...restProps
 	}: ComponentProps<typeof Button> & {
 		onclick?: (e: MouseEvent) => void
-		location: 'navbar' | 'sidebar'
+		location: 'navbar'
 	} = $props()
 
 	const sidebar = useSidebar()
 </script>
 
-{#if location === 'sidebar' || !(sidebar.isMobile ? sidebar.openMobile : sidebar.open)}
+{#if !(sidebar.isMobile ? sidebar.openMobile : sidebar.open)}
 	<Tooltip.Root>
 		<Tooltip.Trigger>
 			{#snippet child({ props })}

@@ -15,7 +15,8 @@
 	import User from 'lucide-svelte/icons/user'
 	import Users from 'lucide-svelte/icons/users'
 	import Waypoints from 'lucide-svelte/icons/waypoints'
-	import { buttonVariants } from './ui/button'
+	import type { LayoutData } from '../../routes/$types'
+	import AppSidebarAirlineSwitcher from './app-sidebar-airline-switcher.svelte'
 
 	type Item = {
 		title: string
@@ -46,20 +47,26 @@
 		},
 	]
 
-	const adminItems: Item[] = [
+	const airlineAdminItems: (airlineIataCode: string) => Item[] = (airlineIataCode) => [
 		{
 			title: 'Schedules',
-			url: route('/admin/flight-schedules'),
+			url: route('/admin/airlines/[airlineSpec]/schedules', {
+				params: { airlineSpec: airlineIataCode },
+			}),
 			icon: CalendarRange,
 		},
 		{
 			title: 'Flights',
-			url: route('/admin/flight-instances'),
+			url: route('/admin/airlines/[airlineSpec]/flights', {
+				params: { airlineSpec: airlineIataCode },
+			}),
 			icon: PlaneTakeoff,
 		},
 		{
 			title: 'Aircraft',
-			url: '/admin/aircraft',
+			url: route('/admin/airlines/[airlineSpec]/aircraft', {
+				params: { airlineSpec: airlineIataCode },
+			}),
 			icon: Plane,
 		},
 	]
@@ -99,58 +106,34 @@
 			icon: Book,
 		},
 	]
+
+	const layoutData = page.data as unknown as LayoutData
+
+	const activeAirlineIataCode = $derived(page.params.airlineSpec)
 </script>
 
 <Sidebar.Root collapsible="offcanvas" variant="sidebar">
 	<Sidebar.Content>
 		<Sidebar.Group>
-			<Sidebar.GroupLabel>
-				Stellora Airlines
-				<Sidebar.Trigger
-					location="sidebar"
-					class={buttonVariants({
-						variant: 'ghost',
-						size: 'pageNavbar',
-						class: '[&>svg]:!size-4 px-2 -mr-2 ml-auto',
-					})}
-				/>
-			</Sidebar.GroupLabel>
-			<Sidebar.GroupContent>
-				<Sidebar.Menu>
-					{#each items as item (item.title)}
-						<Sidebar.MenuItem>
-							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
-								{#snippet child({ props })}
-									<a href={item.url} {...props}>
-										<item.icon />
-										<span>{item.title}</span>
-									</a>
-								{/snippet}
-							</Sidebar.MenuButton>
-						</Sidebar.MenuItem>
-					{/each}
-				</Sidebar.Menu>
-			</Sidebar.GroupContent>
-		</Sidebar.Group>
-		<Sidebar.Separator />
-		<Sidebar.Group>
-			<Sidebar.GroupLabel>Airline</Sidebar.GroupLabel>
-			<Sidebar.GroupContent>
-				<Sidebar.Menu>
-					{#each adminItems as item (item.title)}
-						<Sidebar.MenuItem>
-							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
-								{#snippet child({ props })}
-									<a href={item.url} {...props}>
-										<item.icon />
-										<span>{item.title}</span>
-									</a>
-								{/snippet}
-							</Sidebar.MenuButton>
-						</Sidebar.MenuItem>
-					{/each}
-				</Sidebar.Menu>
-			</Sidebar.GroupContent>
+			<AppSidebarAirlineSwitcher allAirlines={layoutData.allAirlines} {activeAirlineIataCode} />
+			{#if activeAirlineIataCode}
+				<Sidebar.GroupContent class="mt-2">
+					<Sidebar.Menu>
+						{#each airlineAdminItems(activeAirlineIataCode) as item (item.title)}
+							<Sidebar.MenuItem>
+								<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+									{#snippet child({ props })}
+										<a href={item.url} {...props}>
+											<item.icon />
+											<span>{item.title}</span>
+										</a>
+									{/snippet}
+								</Sidebar.MenuButton>
+							</Sidebar.MenuItem>
+						{/each}
+					</Sidebar.Menu>
+				</Sidebar.GroupContent>
+			{/if}
 		</Sidebar.Group>
 		<Sidebar.Separator />
 		<Sidebar.Group>
@@ -158,6 +141,26 @@
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
 					{#each globalAdminItems as item (item.title)}
+						<Sidebar.MenuItem>
+							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+								{#snippet child({ props })}
+									<a href={item.url} {...props}>
+										<item.icon />
+										<span>{item.title}</span>
+									</a>
+								{/snippet}
+							</Sidebar.MenuButton>
+						</Sidebar.MenuItem>
+					{/each}
+				</Sidebar.Menu>
+			</Sidebar.GroupContent>
+		</Sidebar.Group>
+		<Sidebar.Separator />
+		<Sidebar.Group>
+			<Sidebar.GroupLabel>Public</Sidebar.GroupLabel>
+			<Sidebar.GroupContent>
+				<Sidebar.Menu>
+					{#each items as item (item.title)}
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
 								{#snippet child({ props })}
