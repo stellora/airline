@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FlightTitle from '$lib/components/flight-title.svelte'
+	import ScheduleTitle from '$lib/components/schedule-title.svelte'
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
 	import { route } from '$lib/route-helpers'
 	import type { Schedule } from '$lib/types'
@@ -13,7 +13,7 @@
 			params: { airlineSpec: schedule.airline.iataCode, id: schedule.id.toString() },
 		})}
 		class="[&_[data-airline-icon]]:-mt-[1.7px] mt-[2.2px] block"
-		><FlightTitle
+		><ScheduleTitle
 			flight={schedule}
 			as="span"
 			showRoute={true}

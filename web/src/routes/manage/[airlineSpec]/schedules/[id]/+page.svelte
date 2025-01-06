@@ -3,7 +3,7 @@
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import Distance from '$lib/components/distance.svelte'
 	import FleetTitle from '$lib/components/fleet-title.svelte'
-	import FlightTitle from '$lib/components/flight-title.svelte'
+	import ScheduleTitle from '$lib/components/schedule-title.svelte'
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
 	import * as Card from '$lib/components/ui/card'
 	import * as DefinitionList from '$lib/components/ui/definition-list/index.js'
@@ -18,7 +18,7 @@
 	<div class="flex flex-wrap-reverse gap-4 items-end">
 		<Card.Root class="flex-grow-[1]">
 			<Card.Header>
-				<FlightTitle
+				<ScheduleTitle
 					flight={data.schedule}
 					class="text-4xl font-bold"
 					subtitleClass="text-base"

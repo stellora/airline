@@ -24,9 +24,9 @@ func (h *Handler) ListSchedulesByAirport(ctx context.Context, request api.ListSc
 		return nil, err
 	}
 
-	flights, err := queriesTx.ListSchedulesByAirport(ctx, airport.ID)
+	schedules, err := queriesTx.ListSchedulesByAirport(ctx, airport.ID)
 	if err != nil {
 		return nil, err
 	}
-	return api.ListSchedulesByAirport200JSONResponse(mapSlice(fromDBSchedule, flights)), nil
+	return api.ListSchedulesByAirport200JSONResponse(mapSlice(fromDBSchedule, schedules)), nil
 }

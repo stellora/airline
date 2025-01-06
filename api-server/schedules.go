@@ -52,21 +52,21 @@ func fromDBSchedule(a db.SchedulesView) api.Schedule {
 }
 
 func (h *Handler) GetSchedule(ctx context.Context, request api.GetScheduleRequestObject) (api.GetScheduleResponseObject, error) {
-	flight, err := h.queries.GetSchedule(ctx, int64(request.Id))
+	schedule, err := h.queries.GetSchedule(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.GetSchedule404Response{}, nil
 		}
 	}
-	return api.GetSchedule200JSONResponse(fromDBSchedule(flight)), nil
+	return api.GetSchedule200JSONResponse(fromDBSchedule(schedule)), nil
 }
 
 func (h *Handler) ListSchedules(ctx context.Context, request api.ListSchedulesRequestObject) (api.ListSchedulesResponseObject, error) {
-	flights, err := h.queries.ListSchedules(ctx)
+	schedules, err := h.queries.ListSchedules(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return api.ListSchedules200JSONResponse(mapSlice(fromDBSchedule, flights)), nil
+	return api.ListSchedules200JSONResponse(mapSlice(fromDBSchedule, schedules)), nil
 }
 
 func (h *Handler) CreateSchedule(ctx context.Context, request api.CreateScheduleRequestObject) (api.CreateScheduleResponseObject, error) {
@@ -144,12 +144,12 @@ func (h *Handler) CreateSchedule(ctx context.Context, request api.CreateSchedule
 		return nil, err
 	}
 
-	flight, err := queriesTx.GetSchedule(ctx, created)
+	schedule, err := queriesTx.GetSchedule(ctx, created)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := syncScheduleInstances(ctx, queriesTx, flight); err != nil {
+	if err := syncScheduleInstances(ctx, queriesTx, schedule); err != nil {
 		return nil, err
 	}
 
@@ -157,7 +157,7 @@ func (h *Handler) CreateSchedule(ctx context.Context, request api.CreateSchedule
 		return nil, err
 	}
 
-	return api.CreateSchedule201JSONResponse(fromDBSchedule(flight)), nil
+	return api.CreateSchedule201JSONResponse(fromDBSchedule(schedule)), nil
 }
 
 func (h *Handler) UpdateSchedule(ctx context.Context, request api.UpdateScheduleRequestObject) (api.UpdateScheduleResponseObject, error) {
@@ -244,7 +244,7 @@ func (h *Handler) UpdateSchedule(ctx context.Context, request api.UpdateSchedule
 		return nil, err
 	}
 
-	flight, err := queriesTx.GetSchedule(ctx, int64(request.Id))
+	schedule, err := queriesTx.GetSchedule(ctx, int64(request.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &api.UpdateSchedule404Response{}, nil
@@ -252,7 +252,7 @@ func (h *Handler) UpdateSchedule(ctx context.Context, request api.UpdateSchedule
 		return nil, err
 	}
 
-	if err := syncScheduleInstances(ctx, queriesTx, flight); err != nil {
+	if err := syncScheduleInstances(ctx, queriesTx, schedule); err != nil {
 		return nil, err
 	}
 
@@ -260,7 +260,7 @@ func (h *Handler) UpdateSchedule(ctx context.Context, request api.UpdateSchedule
 		return nil, err
 	}
 
-	return api.UpdateSchedule200JSONResponse(fromDBSchedule(flight)), nil
+	return api.UpdateSchedule200JSONResponse(fromDBSchedule(schedule)), nil
 }
 
 func (h *Handler) DeleteSchedule(ctx context.Context, request api.DeleteScheduleRequestObject) (api.DeleteScheduleResponseObject, error) {

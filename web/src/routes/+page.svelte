@@ -10,7 +10,7 @@
 		<div class="grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] gap-4">
 			{#if data.flights}
 				{#each data.flights as flight (flight.id)}
-					<FlightCard {flight} />
+					<FlightCard schedule={flight} />
 				{:else}
 					<p class="text-muted-foreground">No flights found.</p>
 				{/each}

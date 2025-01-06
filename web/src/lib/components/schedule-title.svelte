@@ -7,7 +7,7 @@
 	import AirportCode from './airport-code.svelte'
 
 	let {
-		flight,
+		schedule,
 		prefix,
 		showAirlineIcon = true,
 		showRoute = true,
@@ -18,7 +18,7 @@
 		subtitleClass,
 		as = 'h2',
 	}: {
-		flight: Pick<Schedule, 'id' | 'number' | 'published'> & {
+		schedule: Pick<Schedule, 'id' | 'number' | 'published'> & {
 			airline: Pick<Schedule['airline'], 'iataCode' | 'name'>
 			originAirport: Pick<Schedule['originAirport'], 'iataCode' | 'name'>
 			destinationAirport: Pick<Schedule['destinationAirport'], 'iataCode' | 'name'>
@@ -39,34 +39,34 @@
 	{prefix}
 	<span
 		class={{
-			'italic text-muted-foreground': !flight.published,
+			'italic text-muted-foreground': !schedule.published,
 			'font-mono tracking-tight whitespace-nowrap leading-none': true,
 		}}
 	>
 		{#if link}
 			<a
 				href={route('/manage/[airlineSpec]/schedules/[id]', {
-					params: { airlineSpec: flight.airline.iataCode, id: flight.id.toString() },
+					params: { airlineSpec: schedule.airline.iataCode, id: schedule.id.toString() },
 				})}
 				class={linkClass}
-				><AirlineCode airline={flight.airline} icon={showAirlineIcon} {tooltip} /><span
+				><AirlineCode airline={schedule.airline} icon={showAirlineIcon} {tooltip} /><span
 					class="font-sans text-xs"
 					>&nbsp;
-				</span>{flight.number}</a
+				</span>{schedule.number}</a
 			>
 		{:else}
-			<AirlineCode airline={flight.airline} icon={showAirlineIcon} {tooltip} /><span
+			<AirlineCode airline={schedule.airline} icon={showAirlineIcon} {tooltip} /><span
 				class="font-sans text-xs"
 			>
 				&nbsp;
-			</span>{flight.number}
+			</span>{schedule.number}
 		{/if}
 	</span>
 
 	{#if showRoute}
 		<span class={cn('text-sm whitespace-nowrap leading-none', subtitleClass)}
-			><AirportCode airport={flight.originAirport} {tooltip} />&ndash;<AirportCode
-				airport={flight.destinationAirport}
+			><AirportCode airport={schedule.originAirport} {tooltip} />&ndash;<AirportCode
+				airport={schedule.destinationAirport}
 				{tooltip}
 			/></span
 		>

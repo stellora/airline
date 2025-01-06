@@ -24,11 +24,11 @@ func (h *Handler) ListSchedulesByAirline(ctx context.Context, request api.ListSc
 		return nil, err
 	}
 
-	flights, err := queriesTx.ListSchedulesByAirline(ctx, airline.ID)
+	schedules, err := queriesTx.ListSchedulesByAirline(ctx, airline.ID)
 	if err != nil {
 		return nil, err
 	}
-	return api.ListSchedulesByAirline200JSONResponse(mapSlice(fromDBSchedule, flights)), nil
+	return api.ListSchedulesByAirline200JSONResponse(mapSlice(fromDBSchedule, schedules)), nil
 }
 
 func (h *Handler) ListFlightInstancesByAirline(ctx context.Context, request api.ListFlightInstancesByAirlineRequestObject) (api.ListFlightInstancesByAirlineResponseObject, error) {

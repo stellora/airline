@@ -1,9 +1,9 @@
 <script lang="ts">
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import Distance from '$lib/components/distance.svelte'
-	import FlightTitle from '$lib/components/flight-title.svelte'
 	import FormattedDatetime from '$lib/components/formatted-datetime.svelte'
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
+	import ScheduleTitle from '$lib/components/schedule-title.svelte'
 	import { Badge } from '$lib/components/ui/badge'
 	import * as Card from '$lib/components/ui/card'
 	import * as DefinitionList from '$lib/components/ui/definition-list/index.js'
@@ -31,8 +31,8 @@
 		<Card.Root class="flex-grow-[1]">
 			<Card.Header>
 				<div class="flex gap-2 items-center">
-					<FlightTitle
-						flight={data.flightInstance}
+					<ScheduleTitle
+						schedule={data.flightInstance}
 						class="text-4xl font-bold"
 						subtitleClass="text-base"
 						as="h1"

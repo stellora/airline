@@ -2,8 +2,8 @@
 	import AircraftRegistration from '$lib/components/aircraft-registration.svelte'
 	import FleetTitle from '$lib/components/fleet-title.svelte'
 	import FlightInstanceStatus from '$lib/components/flight-instance-status.svelte'
-	import FlightTitle from '$lib/components/flight-title.svelte'
 	import FormattedDatetime from '$lib/components/formatted-datetime.svelte'
+	import ScheduleTitle from '$lib/components/schedule-title.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
@@ -47,7 +47,7 @@
 							</FormattedDatetime>
 						</Table.Cell>
 						{#if showFlightInfo}
-							<Table.Cell><FlightTitle {flight} /></Table.Cell>
+							<Table.Cell><ScheduleTitle schedule={flight} /></Table.Cell>
 						{/if}
 						<Table.Cell
 							><div class="inline-flex flex-col gap-1">

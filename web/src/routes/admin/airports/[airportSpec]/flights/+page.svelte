@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Distance from '$lib/components/distance.svelte'
-	import FlightTitle from '$lib/components/flight-title.svelte'
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
+	import ScheduleTitle from '$lib/components/schedule-title.svelte'
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
 
 	let { data } = $props()
@@ -31,7 +31,7 @@
 						<li
 							class="p-3 border rounded-md flex items-center justify-between gap-2 stretched-link-container"
 						>
-							<FlightTitle class="w-full" linkClass="stretched-link" link {flight} />
+							<ScheduleTitle class="w-full" linkClass="stretched-link" link schedule={flight} />
 							<span class="text-muted-foreground whitespace-nowrap text-sm">
 								<Distance distanceMiles={flight.distanceMiles} />
 							</span>

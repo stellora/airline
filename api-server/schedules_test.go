@@ -120,7 +120,7 @@ func TestCreateSchedule(t *testing.T) {
 		if _, ok := resp.(api.CreateSchedule201JSONResponse); !ok {
 			t.Errorf("got %T, want non-error response", resp)
 		}
-		checkFlightTitles(t, handler, []string{"XX1 AAA-BBB"})
+		checkScheduleTitles(t, handler, []string{"XX1 AAA-BBB"})
 	})
 
 	t.Run("with airport IATA codes", func(t *testing.T) {
@@ -148,7 +148,7 @@ func TestCreateSchedule(t *testing.T) {
 		if _, ok := resp.(api.CreateSchedule201JSONResponse); !ok {
 			t.Errorf("got %T, want non-error response", resp)
 		}
-		checkFlightTitles(t, handler, []string{"XX1 AAA-BBB"})
+		checkScheduleTitles(t, handler, []string{"XX1 AAA-BBB"})
 	})
 }
 
@@ -182,7 +182,7 @@ func TestUpdateSchedule(t *testing.T) {
 		if _, ok := resp.(api.UpdateSchedule200JSONResponse); !ok {
 			t.Errorf("got %T, want non-error response", resp)
 		}
-		checkFlightTitles(t, handler, []string{"XX100 BBB-AAA"})
+		checkScheduleTitles(t, handler, []string{"XX100 BBB-AAA"})
 	}
 
 	{
@@ -226,7 +226,7 @@ func TestDeleteSchedule(t *testing.T) {
 	want := api.DeleteSchedule204Response{}
 	assertEqual(t, resp, want)
 
-	checkFlightTitles(t, handler, []string{})
+	checkScheduleTitles(t, handler, []string{})
 }
 
 func TestDeleteAllSchedules(t *testing.T) {
@@ -243,25 +243,21 @@ func TestDeleteAllSchedules(t *testing.T) {
 	want := api.DeleteAllSchedules204Response{}
 	assertEqual(t, resp, want)
 
-	checkFlightTitles(t, handler, []string{})
+	checkScheduleTitles(t, handler, []string{})
 }
 
-func flightTitle(flight api.Schedule) string {
+func scheduleTitle(flight api.Schedule) string {
 	return fmt.Sprintf("%s%s %s-%s", flight.Airline.IataCode, flight.Number, flight.OriginAirport.IataCode, flight.DestinationAirport.IataCode)
 }
 
-func flightTitles(t *testing.T, flights []api.Schedule) []string {
-	return mapSlice(flightTitle, flights)
-}
-
-func checkFlightTitles(t *testing.T, handler *Handler, want []string) {
+func checkScheduleTitles(t *testing.T, handler *Handler, want []string) {
 	resp, err := handler.ListSchedules(context.Background(), api.ListSchedulesRequestObject{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	flights := resp.(api.ListSchedules200JSONResponse)
-	if len(flights) != len(want) {
-		t.Errorf("got %d flights, want %d", len(flights), len(want))
+	schedules := resp.(api.ListSchedules200JSONResponse)
+	if len(schedules) != len(want) {
+		t.Errorf("got %d schedules, want %d", len(schedules), len(want))
 	}
-	assertEqual(t, mapSlice(flightTitle, flights), want)
+	assertEqual(t, mapSlice(scheduleTitle, schedules), want)
 }

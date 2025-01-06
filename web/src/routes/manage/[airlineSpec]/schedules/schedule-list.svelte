@@ -2,7 +2,7 @@
 	import AirportCode from '$lib/components/airport-code.svelte'
 	import Distance from '$lib/components/distance.svelte'
 	import FlightSparkRoute from '$lib/components/flight-spark-route.svelte'
-	import FlightTitle from '$lib/components/flight-title.svelte'
+	import ScheduleTitle from '$lib/components/schedule-title.svelte'
 	import { Button } from '$lib/components/ui/button'
 	import { Card } from '$lib/components/ui/card'
 	import * as Table from '$lib/components/ui/table'
@@ -27,7 +27,7 @@
 				{#each schedules as flight (flight.id)}
 					<Table.Row class="stretched-link-container group">
 						<Table.Cell class="font-bold text-lg">
-							<FlightTitle {flight} as="span" showAirlineIcon={true} showRoute={false} />
+							<ScheduleTitle {flight} as="span" showAirlineIcon={true} showRoute={false} />
 						</Table.Cell>
 						<Table.Cell class="flex items-center gap-2"
 							><div class="inline-flex flex-col gap-1">
