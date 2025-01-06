@@ -744,6 +744,22 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
+  '/airlines/{airlineSpec}/flight-instances': {
+    GET: {
+      args: T.Object({
+        params: T.Object({
+          airlineSpec: CloneType(ComponentsSchemasAirlineSpec, {
+            'x-in': 'path'
+          })
+        })
+      }),
+      data: T.Array(CloneType(ComponentsSchemasFlightInstance), {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
   '/flight-schedules': {
     GET: {
       args: T.Void(),

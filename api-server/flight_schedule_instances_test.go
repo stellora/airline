@@ -24,9 +24,9 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 	setNotesForFlightInstance(t, handler, 2, "b")
 	setNotesForFlightInstance(t, handler, 3, "c")
 	checkFlightInstances(t, handler, flightSchedule1.Id, []string{
-		"2025-01-01 notes=a",
-		"2025-01-02 notes=b",
-		"2025-01-03 notes=c",
+		"XX1 AAA-BBB on 2025-01-01 notes=a",
+		"XX1 AAA-BBB on 2025-01-02 notes=b",
+		"XX1 AAA-BBB on 2025-01-03 notes=c",
 	})
 
 	_, err := handler.UpdateFlightSchedule(ctx, api.UpdateFlightScheduleRequestObject{
@@ -40,10 +40,10 @@ func TestSyncFlightInstancesForFlightSchedule(t *testing.T) {
 		t.Fatal(err)
 	}
 	checkFlightInstances(t, handler, flightSchedule1.Id, []string{
-		"2025-01-01 notes=a",
-		"2025-01-03 notes=c",
-		"2025-01-04",
-		"2025-01-05",
+		"XX1 AAA-BBB on 2025-01-01 notes=a",
+		"XX1 AAA-BBB on 2025-01-03 notes=c",
+		"XX1 AAA-BBB on 2025-01-04",
+		"XX1 AAA-BBB on 2025-01-05",
 	})
 }
 

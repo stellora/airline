@@ -275,6 +275,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/airlines/{airlineSpec}/flight-instances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List flight instances for an airline */
+        get: operations["listFlightInstancesByAirline"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/flight-schedules": {
         parameters: {
             query?: never;
@@ -1507,13 +1524,42 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Flight schedules by airline */
+            /** @description List of flight schedules by airline */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["FlightSchedule"][];
+                };
+            };
+            /** @description Airline not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFlightInstancesByAirline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                airlineSpec: components["parameters"]["airlineSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of flight instances by airline */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlightInstance"][];
                 };
             };
             /** @description Airline not found */

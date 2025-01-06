@@ -1062,6 +1062,63 @@ func (q *Queries) ListFlightInstances(ctx context.Context) ([]FlightInstancesVie
 	return items, nil
 }
 
+const listFlightInstancesByAirline = `-- name: ListFlightInstancesByAirline :many
+SELECT flight_instances_view.id, flight_instances_view.source_flight_schedule_id, flight_instances_view.source_flight_schedule_instance_localdate, flight_instances_view.airline_id, flight_instances_view.number, flight_instances_view.origin_airport_id, flight_instances_view.destination_airport_id, flight_instances_view.aircraft_type, flight_instances_view.aircraft_id, flight_instances_view.departure_datetime, flight_instances_view.arrival_datetime, flight_instances_view.departure_datetime_utc, flight_instances_view.arrival_datetime_utc, flight_instances_view.notes, flight_instances_view.published, flight_instances_view.airline_iata_code, flight_instances_view.airline_name, flight_instances_view.origin_airport_iata_code, flight_instances_view.origin_airport_oadb_id, flight_instances_view.destination_airport_iata_code, flight_instances_view.destination_airport_oadb_id, flight_instances_view.aircraft_registration, flight_instances_view.aircraft_aircraft_type, flight_instances_view.aircraft_airline_id, flight_instances_view.aircraft_airline_iata_code, flight_instances_view.aircraft_airline_name
+FROM flight_instances_view
+WHERE airline_id=?1
+ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC
+`
+
+func (q *Queries) ListFlightInstancesByAirline(ctx context.Context, airlineID int64) ([]FlightInstancesView, error) {
+	rows, err := q.db.QueryContext(ctx, listFlightInstancesByAirline, airlineID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FlightInstancesView
+	for rows.Next() {
+		var i FlightInstancesView
+		if err := rows.Scan(
+			&i.ID,
+			&i.SourceFlightScheduleID,
+			&i.SourceFlightScheduleInstanceLocaldate,
+			&i.AirlineID,
+			&i.Number,
+			&i.OriginAirportID,
+			&i.DestinationAirportID,
+			&i.AircraftType,
+			&i.AircraftID,
+			&i.DepartureDatetime,
+			&i.ArrivalDatetime,
+			&i.DepartureDatetimeUtc,
+			&i.ArrivalDatetimeUtc,
+			&i.Notes,
+			&i.Published,
+			&i.AirlineIataCode,
+			&i.AirlineName,
+			&i.OriginAirportIataCode,
+			&i.OriginAirportOadbID,
+			&i.DestinationAirportIataCode,
+			&i.DestinationAirportOadbID,
+			&i.AircraftRegistration,
+			&i.AircraftAircraftType,
+			&i.AircraftAirlineID,
+			&i.AircraftAirlineIataCode,
+			&i.AircraftAirlineName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listFlightInstancesForFlightSchedule = `-- name: ListFlightInstancesForFlightSchedule :many
 SELECT id, source_flight_schedule_id, source_flight_schedule_instance_localdate, airline_id, number, origin_airport_id, destination_airport_id, aircraft_type, aircraft_id, departure_datetime, arrival_datetime, departure_datetime_utc, arrival_datetime_utc, notes, published, airline_iata_code, airline_name, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
 FROM flight_instances_view

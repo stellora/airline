@@ -836,6 +836,9 @@ type ServerInterface interface {
 	// Add an aircraft to a fleet
 	// (PUT /airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec})
 	AddAircraftToFleet(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec, fleetSpec FleetSpec, aircraftSpec AircraftSpec)
+	// List flight instances for an airline
+	// (GET /airlines/{airlineSpec}/flight-instances)
+	ListFlightInstancesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
 	// List flight schedules for an airline
 	// (GET /airlines/{airlineSpec}/flight-schedules)
 	ListFlightSchedulesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec)
@@ -1485,6 +1488,31 @@ func (siw *ServerInterfaceWrapper) AddAircraftToFleet(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AddAircraftToFleet(w, r, airlineSpec, fleetSpec, aircraftSpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListFlightInstancesByAirline operation middleware
+func (siw *ServerInterfaceWrapper) ListFlightInstancesByAirline(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "airlineSpec" -------------
+	var airlineSpec AirlineSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "airlineSpec", r.PathValue("airlineSpec"), &airlineSpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "airlineSpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListFlightInstancesByAirline(w, r, airlineSpec)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2332,6 +2360,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft", wrapper.ListAircraftByFleet)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}", wrapper.RemoveAircraftFromFleet)
 	m.HandleFunc("PUT "+options.BaseURL+"/airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec}", wrapper.AddAircraftToFleet)
+	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flight-instances", wrapper.ListFlightInstancesByAirline)
 	m.HandleFunc("GET "+options.BaseURL+"/airlines/{airlineSpec}/flight-schedules", wrapper.ListFlightSchedulesByAirline)
 	m.HandleFunc("DELETE "+options.BaseURL+"/airports", wrapper.DeleteAllAirports)
 	m.HandleFunc("GET "+options.BaseURL+"/airports", wrapper.ListAirports)
@@ -2892,6 +2921,31 @@ type AddAircraftToFleet404Response struct {
 }
 
 func (response AddAircraftToFleet404Response) VisitAddAircraftToFleetResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type ListFlightInstancesByAirlineRequestObject struct {
+	AirlineSpec AirlineSpec `json:"airlineSpec"`
+}
+
+type ListFlightInstancesByAirlineResponseObject interface {
+	VisitListFlightInstancesByAirlineResponse(w http.ResponseWriter) error
+}
+
+type ListFlightInstancesByAirline200JSONResponse []FlightInstance
+
+func (response ListFlightInstancesByAirline200JSONResponse) VisitListFlightInstancesByAirlineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListFlightInstancesByAirline404Response struct {
+}
+
+func (response ListFlightInstancesByAirline404Response) VisitListFlightInstancesByAirlineResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -3765,6 +3819,9 @@ type StrictServerInterface interface {
 	// Add an aircraft to a fleet
 	// (PUT /airlines/{airlineSpec}/fleets/{fleetSpec}/aircraft/{aircraftSpec})
 	AddAircraftToFleet(ctx context.Context, request AddAircraftToFleetRequestObject) (AddAircraftToFleetResponseObject, error)
+	// List flight instances for an airline
+	// (GET /airlines/{airlineSpec}/flight-instances)
+	ListFlightInstancesByAirline(ctx context.Context, request ListFlightInstancesByAirlineRequestObject) (ListFlightInstancesByAirlineResponseObject, error)
 	// List flight schedules for an airline
 	// (GET /airlines/{airlineSpec}/flight-schedules)
 	ListFlightSchedulesByAirline(ctx context.Context, request ListFlightSchedulesByAirlineRequestObject) (ListFlightSchedulesByAirlineResponseObject, error)
@@ -4499,6 +4556,32 @@ func (sh *strictHandler) AddAircraftToFleet(w http.ResponseWriter, r *http.Reque
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(AddAircraftToFleetResponseObject); ok {
 		if err := validResponse.VisitAddAircraftToFleetResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListFlightInstancesByAirline operation middleware
+func (sh *strictHandler) ListFlightInstancesByAirline(w http.ResponseWriter, r *http.Request, airlineSpec AirlineSpec) {
+	var request ListFlightInstancesByAirlineRequestObject
+
+	request.AirlineSpec = airlineSpec
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListFlightInstancesByAirline(ctx, request.(ListFlightInstancesByAirlineRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListFlightInstancesByAirline")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListFlightInstancesByAirlineResponseObject); ok {
+		if err := validResponse.VisitListFlightInstancesByAirlineResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

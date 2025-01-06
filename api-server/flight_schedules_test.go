@@ -244,6 +244,14 @@ func TestDeleteAllFlightSchedules(t *testing.T) {
 	checkFlightTitles(t, handler, []string{})
 }
 
+func flightTitle(flight api.FlightSchedule) string {
+	return fmt.Sprintf("%s%s %s-%s", flight.Airline.IataCode, flight.Number, flight.OriginAirport.IataCode, flight.DestinationAirport.IataCode)
+}
+
+func flightTitles(t *testing.T, flights []api.FlightSchedule) []string {
+	return mapSlice(flightTitle, flights)
+}
+
 func checkFlightTitles(t *testing.T, handler *Handler, want []string) {
 	resp, err := handler.ListFlightSchedules(context.Background(), api.ListFlightSchedulesRequestObject{})
 	if err != nil {
@@ -253,10 +261,5 @@ func checkFlightTitles(t *testing.T, handler *Handler, want []string) {
 	if len(flights) != len(want) {
 		t.Errorf("got %d flights, want %d", len(flights), len(want))
 	}
-	for i, flight := range flights {
-		title := fmt.Sprintf("%s%s %s-%s", flight.Airline.IataCode, flight.Number, flight.OriginAirport.IataCode, flight.DestinationAirport.IataCode)
-		if title != want[i] {
-			t.Errorf("got %q, want %q", title, want[i])
-		}
-	}
+	assertEqual(t, mapSlice(flightTitle, flights), want)
 }

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/localtime"
 )
 
 func TestListFlightSchedulesByAirline(t *testing.T) {
@@ -61,5 +62,50 @@ func TestListFlightSchedulesByAirline(t *testing.T) {
 			t.Fatal(err)
 		}
 		assertEqual(t, resp, want)
+	})
+}
+func TestListFlightInstancesByAirline(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertFlightScheduleT(t, handler,
+		fixtureLocalDate1.AddDays(3),
+		fixtureLocalDate1.AddDays(4),
+		allDaysOfWeek,
+	)
+	insertFlightInstanceT(t, handler, api.CreateFlightInstanceJSONRequestBody{
+		Airline:            api.NewAirlineSpec(0, "XX"),
+		Number:             "222",
+		OriginAirport:      api.NewAirportSpec(0, "BBB"),
+		DestinationAirport: api.NewAirportSpec(0, "AAA"),
+		AircraftType:       fixtureB77W.IcaoCode,
+		DepartureDateTime:  fixtureLocalDate1.TimeOfDay(mustGetTzLocation(bbbAirport.TimezoneID), localtime.NewTimeOfDay(7, 0)),
+		ArrivalDateTime:    fixtureLocalDate1.TimeOfDay(mustGetTzLocation(aaaAirport.TimezoneID), localtime.NewTimeOfDay(10, 0)),
+		Published:          ptrTo(true),
+	})
+
+	want := []string{
+		"XX222 BBB-AAA on 2025-01-01",
+		"XX1 AAA-BBB on 2025-01-04",
+		"XX1 AAA-BBB on 2025-01-05",
+	}
+	t.Run("by id", func(t *testing.T) {
+		resp, err := handler.ListFlightInstancesByAirline(ctx, api.ListFlightInstancesByAirlineRequestObject{
+			AirlineSpec: api.NewAirlineSpec(1, ""),
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		assertEqual(t, flightInstanceDescriptions(resp.(api.ListFlightInstancesByAirline200JSONResponse)), want)
+	})
+
+	t.Run("by IATA code", func(t *testing.T) {
+		resp, err := handler.ListFlightInstancesByAirline(ctx, api.ListFlightInstancesByAirlineRequestObject{
+			AirlineSpec: api.NewAirlineSpec(0, "XX"),
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		assertEqual(t, flightInstanceDescriptions(resp.(api.ListFlightInstancesByAirline200JSONResponse)), want)
 	})
 }

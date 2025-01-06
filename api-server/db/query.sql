@@ -299,6 +299,12 @@ FROM flight_instances_view
 WHERE source_flight_schedule_id IS NOT NULL AND source_flight_schedule_id=sqlc.arg('flight_schedule_id')
 ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
 
+-- name: ListFlightInstancesByAirline :many
+SELECT flight_instances_view.*
+FROM flight_instances_view
+WHERE airline_id=sqlc.arg('airline_id')
+ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
+
 ------------------------------------------------------------------------------- passengers
 
 -- name: ListPassengers :many

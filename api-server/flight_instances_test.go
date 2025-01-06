@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stellora/airline/api-server/api"
 	"github.com/stellora/airline/api-server/localtime"
@@ -260,6 +261,21 @@ func TestDeleteFlightInstance(t *testing.T) {
 	})
 }
 
+func flightInstanceDescription(instance api.FlightInstance) string {
+	parts := []string{fmt.Sprintf("%s%s %s-%s on %s", instance.Airline.IataCode, instance.Number, instance.OriginAirport.IataCode, instance.DestinationAirport.IataCode, instance.DepartureDateTime.Format(time.DateOnly))}
+	if instance.Aircraft != nil {
+		parts = append(parts, fmt.Sprintf("aircraft=%s", instance.Aircraft.AircraftType))
+	}
+	if instance.Notes != "" {
+		parts = append(parts, fmt.Sprintf("notes=%s", instance.Notes))
+	}
+	return strings.Join(parts, " ")
+}
+
+func flightInstanceDescriptions(flights []api.FlightInstance) []string {
+	return mapSlice(flightInstanceDescription, flights)
+}
+
 func checkFlightInstances(t *testing.T, handler *Handler, flightScheduleID int, want []string) {
 	t.Helper()
 
@@ -268,22 +284,6 @@ func checkFlightInstances(t *testing.T, handler *Handler, flightScheduleID int, 
 		t.Fatal(err)
 	}
 
-	toDescription := func(instance api.FlightInstance) string {
-		parts := []string{*instance.ScheduleInstanceDate}
-		if instance.Aircraft != nil {
-			parts = append(parts, fmt.Sprintf("aircraft=%s", instance.Aircraft.AircraftType))
-		}
-		if instance.Notes != "" {
-			parts = append(parts, fmt.Sprintf("notes=%s", instance.Notes))
-		}
-		return strings.Join(parts, " ")
-	}
-
 	instances := resp.(api.ListFlightInstancesForFlightSchedule200JSONResponse)
-	descriptions := make([]string, len(instances))
-	for i, instance := range instances {
-		descriptions[i] = toDescription(instance)
-	}
-
-	assertEqual(t, descriptions, want)
+	assertEqual(t, flightInstanceDescriptions(instances), want)
 }

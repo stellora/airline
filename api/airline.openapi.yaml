@@ -507,13 +507,30 @@ paths:
         - $ref: '#/components/parameters/airlineSpec'
       responses:
         '200':
-          description: Flight schedules by airline
+          description: List of flight schedules by airline
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/FlightSchedule'
+        '404':
+          description: Airline not found
+  /airlines/{airlineSpec}/flight-instances:
+    get:
+      operationId: listFlightInstancesByAirline
+      summary: List flight instances for an airline
+      parameters:
+        - $ref: '#/components/parameters/airlineSpec'
+      responses:
+        '200':
+          description: List of flight instances by airline
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FlightInstance'
         '404':
           description: Airline not found
   /flight-schedules:
