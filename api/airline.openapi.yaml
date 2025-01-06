@@ -1087,12 +1087,7 @@ paths:
       operationId: getRoute
       summary: Get route by IATA codes of origin and destination airports
       parameters:
-        - name: route
-          in: path
-          required: true
-          schema:
-            type: string
-            pattern: '^[A-Z]{3}-[A-Z]{3}$'
+        - $ref: '#/components/parameters/routeSpec'
       responses:
         '200':
           description: Route information
@@ -1100,6 +1095,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Route'
+        '404':
+          description: Route not found
+  /routes/{route}/schedules:
+    get:
+      operationId: listSchedulesByRoute
+      summary: List schedules for a route
+      parameters:
+        - $ref: '#/components/parameters/routeSpec'
+      responses:
+        '200':
+          description: List of schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schedule'
+        '404':
+          description: Route not found
+  /routes/{route}/flights:
+    get:
+      operationId: listFlightsByRoute
+      summary: List flights for a route
+      parameters:
+        - $ref: '#/components/parameters/routeSpec'
+      responses:
+        '200':
+          description: List of flights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
         '404':
           description: Route not found
 components:
@@ -1134,6 +1163,13 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/ItinerarySpec'
+    routeSpec:
+      name: route
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[A-Z]{3}-[A-Z]{3}$'
   schemas:
     ZonedDateTime:
       type: string

@@ -246,6 +246,9 @@ type TimeOfDay = string
 // ZonedDateTime An [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557.html) date-time string, with a time zone name, such as "2021-11-07T00:45[America/Los_Angeles]" or "2021-11-07T00:45-07:00[America/Los_Angeles]".
 type ZonedDateTime = zonedtime.ZonedTime
 
+// RouteSpec defines model for routeSpec.
+type RouteSpec = string
+
 // CreateAircraftJSONBody defines parameters for CreateAircraft.
 type CreateAircraftJSONBody struct {
 	// AircraftType ICAO aircraft type code for an aircraft. See https://en.wikipedia.org/wiki/List_of_aircraft_type_designators.
@@ -915,7 +918,13 @@ type ServerInterface interface {
 	ListRoutes(w http.ResponseWriter, r *http.Request)
 	// Get route by IATA codes of origin and destination airports
 	// (GET /routes/{route})
-	GetRoute(w http.ResponseWriter, r *http.Request, route string)
+	GetRoute(w http.ResponseWriter, r *http.Request, route RouteSpec)
+	// List flights for a route
+	// (GET /routes/{route}/flights)
+	ListFlightsByRoute(w http.ResponseWriter, r *http.Request, route RouteSpec)
+	// List schedules for a route
+	// (GET /routes/{route}/schedules)
+	ListSchedulesByRoute(w http.ResponseWriter, r *http.Request, route RouteSpec)
 	// Delete all schedules
 	// (DELETE /schedules)
 	DeleteAllSchedules(w http.ResponseWriter, r *http.Request)
@@ -2053,7 +2062,7 @@ func (siw *ServerInterfaceWrapper) GetRoute(w http.ResponseWriter, r *http.Reque
 	var err error
 
 	// ------------- Path parameter "route" -------------
-	var route string
+	var route RouteSpec
 
 	err = runtime.BindStyledParameterWithOptions("simple", "route", r.PathValue("route"), &route, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -2063,6 +2072,56 @@ func (siw *ServerInterfaceWrapper) GetRoute(w http.ResponseWriter, r *http.Reque
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetRoute(w, r, route)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListFlightsByRoute operation middleware
+func (siw *ServerInterfaceWrapper) ListFlightsByRoute(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "route" -------------
+	var route RouteSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "route", r.PathValue("route"), &route, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "route", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListFlightsByRoute(w, r, route)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListSchedulesByRoute operation middleware
+func (siw *ServerInterfaceWrapper) ListSchedulesByRoute(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "route" -------------
+	var route RouteSpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "route", r.PathValue("route"), &route, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "route", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListSchedulesByRoute(w, r, route)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2384,6 +2443,8 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("PATCH "+options.BaseURL+"/passengers/{id}", wrapper.UpdatePassenger)
 	m.HandleFunc("GET "+options.BaseURL+"/routes", wrapper.ListRoutes)
 	m.HandleFunc("GET "+options.BaseURL+"/routes/{route}", wrapper.GetRoute)
+	m.HandleFunc("GET "+options.BaseURL+"/routes/{route}/flights", wrapper.ListFlightsByRoute)
+	m.HandleFunc("GET "+options.BaseURL+"/routes/{route}/schedules", wrapper.ListSchedulesByRoute)
 	m.HandleFunc("DELETE "+options.BaseURL+"/schedules", wrapper.DeleteAllSchedules)
 	m.HandleFunc("GET "+options.BaseURL+"/schedules", wrapper.ListSchedules)
 	m.HandleFunc("POST "+options.BaseURL+"/schedules", wrapper.CreateSchedule)
@@ -3567,7 +3628,7 @@ func (response ListRoutes200JSONResponse) VisitListRoutesResponse(w http.Respons
 }
 
 type GetRouteRequestObject struct {
-	Route string `json:"route"`
+	Route RouteSpec `json:"route"`
 }
 
 type GetRouteResponseObject interface {
@@ -3587,6 +3648,56 @@ type GetRoute404Response struct {
 }
 
 func (response GetRoute404Response) VisitGetRouteResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type ListFlightsByRouteRequestObject struct {
+	Route RouteSpec `json:"route"`
+}
+
+type ListFlightsByRouteResponseObject interface {
+	VisitListFlightsByRouteResponse(w http.ResponseWriter) error
+}
+
+type ListFlightsByRoute200JSONResponse []Flight
+
+func (response ListFlightsByRoute200JSONResponse) VisitListFlightsByRouteResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListFlightsByRoute404Response struct {
+}
+
+func (response ListFlightsByRoute404Response) VisitListFlightsByRouteResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type ListSchedulesByRouteRequestObject struct {
+	Route RouteSpec `json:"route"`
+}
+
+type ListSchedulesByRouteResponseObject interface {
+	VisitListSchedulesByRouteResponse(w http.ResponseWriter) error
+}
+
+type ListSchedulesByRoute200JSONResponse []Schedule
+
+func (response ListSchedulesByRoute200JSONResponse) VisitListSchedulesByRouteResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListSchedulesByRoute404Response struct {
+}
+
+func (response ListSchedulesByRoute404Response) VisitListSchedulesByRouteResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -3899,6 +4010,12 @@ type StrictServerInterface interface {
 	// Get route by IATA codes of origin and destination airports
 	// (GET /routes/{route})
 	GetRoute(ctx context.Context, request GetRouteRequestObject) (GetRouteResponseObject, error)
+	// List flights for a route
+	// (GET /routes/{route}/flights)
+	ListFlightsByRoute(ctx context.Context, request ListFlightsByRouteRequestObject) (ListFlightsByRouteResponseObject, error)
+	// List schedules for a route
+	// (GET /routes/{route}/schedules)
+	ListSchedulesByRoute(ctx context.Context, request ListSchedulesByRouteRequestObject) (ListSchedulesByRouteResponseObject, error)
 	// Delete all schedules
 	// (DELETE /schedules)
 	DeleteAllSchedules(ctx context.Context, request DeleteAllSchedulesRequestObject) (DeleteAllSchedulesResponseObject, error)
@@ -5296,7 +5413,7 @@ func (sh *strictHandler) ListRoutes(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetRoute operation middleware
-func (sh *strictHandler) GetRoute(w http.ResponseWriter, r *http.Request, route string) {
+func (sh *strictHandler) GetRoute(w http.ResponseWriter, r *http.Request, route RouteSpec) {
 	var request GetRouteRequestObject
 
 	request.Route = route
@@ -5314,6 +5431,58 @@ func (sh *strictHandler) GetRoute(w http.ResponseWriter, r *http.Request, route 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetRouteResponseObject); ok {
 		if err := validResponse.VisitGetRouteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListFlightsByRoute operation middleware
+func (sh *strictHandler) ListFlightsByRoute(w http.ResponseWriter, r *http.Request, route RouteSpec) {
+	var request ListFlightsByRouteRequestObject
+
+	request.Route = route
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListFlightsByRoute(ctx, request.(ListFlightsByRouteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListFlightsByRoute")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListFlightsByRouteResponseObject); ok {
+		if err := validResponse.VisitListFlightsByRouteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListSchedulesByRoute operation middleware
+func (sh *strictHandler) ListSchedulesByRoute(w http.ResponseWriter, r *http.Request, route RouteSpec) {
+	var request ListSchedulesByRouteRequestObject
+
+	request.Route = route
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListSchedulesByRoute(ctx, request.(ListSchedulesByRouteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListSchedulesByRoute")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListSchedulesByRouteResponseObject); ok {
+		if err := validResponse.VisitListSchedulesByRouteResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

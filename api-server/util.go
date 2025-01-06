@@ -10,6 +10,7 @@ import (
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/localtime"
 	"github.com/tidwall/geodesic"
 )
 
@@ -27,6 +28,23 @@ func parseScheduleTitle(title string) (airlineIATACode, flightNumber, originIATA
 	airlineFlightNumber, route, _ = strings.Cut(title, " ")
 	airlineIATACode, flightNumber = airlineFlightNumber[:2], airlineFlightNumber[2:]
 	originIATACode, destinationIATACode, _ = strings.Cut(route, "-")
+	return
+}
+
+// parseFlightTitle parses a schedule title of the form "UA123 SFO-JFK 2025-01-02".
+func parseFlightTitle(title string) (airlineIATACode, flightNumber, originIATACode, destinationIATACode string, instanceDate localtime.LocalDate) {
+	var airlineFlightNumber, route, dateStr string
+	parts := strings.Split(title, " ")
+	if len(parts) != 3 {
+		panic("invalid flight title")
+	}
+	airlineFlightNumber, route, dateStr = parts[0], parts[1], parts[2]
+	airlineIATACode, flightNumber = airlineFlightNumber[:2], airlineFlightNumber[2:]
+	originIATACode, destinationIATACode, _ = strings.Cut(route, "-")
+	instanceDate, err := localtime.ParseLocalDate(dateStr)
+	if err != nil {
+		panic(err)
+	}
 	return
 }
 

@@ -1131,6 +1131,71 @@ func (q *Queries) ListFlightsByAirline(ctx context.Context, airlineID int64) ([]
 	return items, nil
 }
 
+const listFlightsByRoute = `-- name: ListFlightsByRoute :many
+SELECT id, source_schedule_id, source_schedule_instance_localdate, airline_id, number, origin_airport_id, destination_airport_id, fleet_id, aircraft_id, departure_datetime, arrival_datetime, departure_datetime_utc, arrival_datetime_utc, notes, published, airline_iata_code, airline_name, fleet_airline_id, fleet_code, fleet_description, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
+FROM flights_view
+WHERE origin_airport_id=?1 AND destination_airport_id=?2
+ORDER BY id ASC
+`
+
+type ListFlightsByRouteParams struct {
+	OriginAirport      int64
+	DestinationAirport int64
+}
+
+func (q *Queries) ListFlightsByRoute(ctx context.Context, arg ListFlightsByRouteParams) ([]FlightsView, error) {
+	rows, err := q.db.QueryContext(ctx, listFlightsByRoute, arg.OriginAirport, arg.DestinationAirport)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FlightsView
+	for rows.Next() {
+		var i FlightsView
+		if err := rows.Scan(
+			&i.ID,
+			&i.SourceScheduleID,
+			&i.SourceScheduleInstanceLocaldate,
+			&i.AirlineID,
+			&i.Number,
+			&i.OriginAirportID,
+			&i.DestinationAirportID,
+			&i.FleetID,
+			&i.AircraftID,
+			&i.DepartureDatetime,
+			&i.ArrivalDatetime,
+			&i.DepartureDatetimeUtc,
+			&i.ArrivalDatetimeUtc,
+			&i.Notes,
+			&i.Published,
+			&i.AirlineIataCode,
+			&i.AirlineName,
+			&i.FleetAirlineID,
+			&i.FleetCode,
+			&i.FleetDescription,
+			&i.OriginAirportIataCode,
+			&i.OriginAirportOadbID,
+			&i.DestinationAirportIataCode,
+			&i.DestinationAirportOadbID,
+			&i.AircraftRegistration,
+			&i.AircraftAircraftType,
+			&i.AircraftAirlineID,
+			&i.AircraftAirlineIataCode,
+			&i.AircraftAirlineName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listFlightsForSchedule = `-- name: ListFlightsForSchedule :many
 SELECT id, source_schedule_id, source_schedule_instance_localdate, airline_id, number, origin_airport_id, destination_airport_id, fleet_id, aircraft_id, departure_datetime, arrival_datetime, departure_datetime_utc, arrival_datetime_utc, notes, published, airline_iata_code, airline_name, fleet_airline_id, fleet_code, fleet_description, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id, aircraft_registration, aircraft_aircraft_type, aircraft_airline_id, aircraft_airline_iata_code, aircraft_airline_name
 FROM flights_view
@@ -1536,7 +1601,7 @@ func (q *Queries) ListSchedulesByAirport(ctx context.Context, airport int64) ([]
 const listSchedulesByRoute = `-- name: ListSchedulesByRoute :many
 SELECT id, airline_id, number, origin_airport_id, destination_airport_id, fleet_id, start_localdate, end_localdate, days_of_week, departure_localtime, duration_sec, published, airline_iata_code, airline_name, fleet_airline_id, fleet_code, fleet_description, origin_airport_iata_code, origin_airport_oadb_id, destination_airport_iata_code, destination_airport_oadb_id
 FROM schedules_view
-WHERE origin_airport_id=?1 OR destination_airport_id=?2
+WHERE origin_airport_id=?1 AND destination_airport_id=?2
 ORDER BY id ASC
 `
 

@@ -49,6 +49,9 @@ func getOrCreateAirportBySpec(ctx context.Context, dbtx db.DBTX, queriesTx *db.Q
 
 		airport, err := queriesTx.GetAirportByIATACode(ctx, iataCode)
 		if errors.Is(err, sql.ErrNoRows) {
+			if extdata.Airports.AirportByIATACode(iataCode) == nil {
+				return db.Airport{}, err
+			}
 			airport, err = createAirport(ctx, queriesTx, api.CreateAirportRequestObject{
 				Body: &api.CreateAirportJSONRequestBody{
 					IataCode: iataCode,

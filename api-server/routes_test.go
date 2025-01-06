@@ -96,20 +96,106 @@ func TestListRoutes(t *testing.T) {
 
 	want := api.ListRoutes200JSONResponse{
 		{
-			OriginAirport:        aaaAirport,
-			DestinationAirport:   cccAirport,
-			SchedulesCount: 2,
+			OriginAirport:      aaaAirport,
+			DestinationAirport: cccAirport,
+			SchedulesCount:     2,
 		},
 		{
-			OriginAirport:        aaaAirport,
-			DestinationAirport:   bbbAirport,
-			SchedulesCount: 1,
+			OriginAirport:      aaaAirport,
+			DestinationAirport: bbbAirport,
+			SchedulesCount:     1,
 		},
 		{
-			OriginAirport:        bbbAirport,
-			DestinationAirport:   aaaAirport,
-			SchedulesCount: 1,
+			OriginAirport:      bbbAirport,
+			DestinationAirport: aaaAirport,
+			SchedulesCount:     1,
 		},
 	}
 	assertEqual(t, resp, want)
+}
+
+func TestListSchedulesByRoute(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertSchedulesT(t, handler, "XX1 AAA-BBB", "XX2 BBB-AAA", "XX3 AAA-BBB")
+
+	t.Run("has flights", func(t *testing.T) {
+		resp, err := handler.ListSchedulesByRoute(ctx, api.ListSchedulesByRouteRequestObject{
+			Route: "AAA-BBB",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		assertEqual(t, mapSlice(scheduleTitle, resp.(api.ListSchedulesByRoute200JSONResponse)), []string{"XX1 AAA-BBB", "XX3 AAA-BBB"})
+	})
+
+	t.Run("valid airports but no flights", func(t *testing.T) {
+		resp, err := handler.ListSchedulesByRoute(ctx, api.ListSchedulesByRouteRequestObject{
+			Route: "AAA-CCC",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := resp.(api.ListSchedulesByRoute200JSONResponse); !ok {
+			t.Errorf("got %T", resp)
+		}
+	})
+
+	t.Run("invalid airports", func(t *testing.T) {
+		resp, err := handler.ListSchedulesByRoute(ctx, api.ListSchedulesByRouteRequestObject{
+			Route: "AAA-XXX",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := resp.(*api.ListSchedulesByRoute404Response); !ok {
+			t.Errorf("got %T", resp)
+		}
+	})
+}
+
+func TestListFlightsByRoute(t *testing.T) {
+	ctx, handler := handlerTest(t)
+	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB", "CCC")
+	insertAirlinesWithIATACodesT(t, handler, "XX")
+	insertFlightT(t, handler, fixtureManualFlight)
+
+	t.Run("has flights", func(t *testing.T) {
+		resp, err := handler.ListFlightsByRoute(ctx, api.ListFlightsByRouteRequestObject{
+			Route: "AAA-BBB",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		assertEqual(t, mapSlice(flightDescription, resp.(api.ListFlightsByRoute200JSONResponse)), []string{
+			"XX222 AAA-BBB on 2025-01-01",
+		})
+	})
+
+	t.Run("valid airports but no flights", func(t *testing.T) {
+		resp, err := handler.ListFlightsByRoute(ctx, api.ListFlightsByRouteRequestObject{
+			Route: "AAA-CCC",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := resp.(api.ListFlightsByRoute200JSONResponse); !ok {
+			t.Errorf("got %T", resp)
+		}
+	})
+
+	t.Run("invalid airports", func(t *testing.T) {
+		resp, err := handler.ListFlightsByRoute(ctx, api.ListFlightsByRouteRequestObject{
+			Route: "AAA-XXX",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := resp.(*api.ListFlightsByRoute404Response); !ok {
+			t.Errorf("got %T", resp)
+		}
+	})
 }

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/localtime"
 )
 
 func insertSampleData(ctx context.Context, handler *Handler) error {
@@ -240,7 +241,7 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 
 	log.Println("Creating fleets...")
 	fleetsByAirline := map[string][]api.CreateFleetJSONRequestBody{
-		"UA": []api.CreateFleetJSONRequestBody{
+		"UA": {
 			{Code: "A320", Description: "All Airbus 320"},
 			{Code: "B789", Description: "All 787-9"},
 			{Code: "B78X", Description: "All 787-10"},
@@ -249,16 +250,16 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 			{Code: "B738-ETOPS", Description: "All ETOPS-certified 737 MAX 8 and 737-800"},
 			{Code: "B739", Description: "All 737 MAX 9 and 737-900"},
 		},
-		"LH": []api.CreateFleetJSONRequestBody{
+		"LH": {
 			{Code: "B747", Description: "All 747"},
 			{Code: "A350", Description: "All A350"},
 		},
-		"SQ": []api.CreateFleetJSONRequestBody{
+		"SQ": {
 			{Code: "B777", Description: "All 777"},
 			{Code: "A359", Description: "All Airbus 350-900"},
 		},
-		"KL": []api.CreateFleetJSONRequestBody{{Code: "E190", Description: "All E190s"}},
-		"BA": []api.CreateFleetJSONRequestBody{{Code: "A20N", Description: "All A320 neos"}},
+		"KL": {{Code: "E190", Description: "All E190s"}},
+		"BA": {{Code: "A20N", Description: "All A320 neos"}},
 	}
 	for airlineCode, fleets := range fleetsByAirline {
 		for _, fleet := range fleets {
@@ -699,9 +700,10 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 
 	log.Println("Creating passengers...")
 	passengerNames := []string{
-		"John Doe", "Jane Doe", "Bob Smith", "John Smith", "Alice Zhao", "Maria Garcia", "James Johnson", "Sarah Wilson", "Michael Chen", "Emily Brown", "David Kim", "Lisa Patel", "Carlos Rodriguez", "Emma Davis", "Mohammed Ahmed", "Sofia Martinez", "William Lee",
-		"Olivia Taylor", "Daniel Jackson", "Isabella Lopez", "Alexander Wong", "Ava Thompson", "Lucas Nguyen", "Mia Anderson", "Ethan Kumar", "Sophia White", "Ryan O'Connor", "Grace Williams", "Nathan Cohen", "Victoria Singh",
-		"Liam Johnson", "Avery Thompson", "Elijah Martinez", "Scarlett Davis", "William Wang", "Chloe Anderson", "Noah Hernandez", "Camila Rodriguez", "Oliver Garcia", "Evelyn Hernandez", "Lucas Wilson", "Mila King", "James Brown", "Zoe Lee", "Benjamin Lewis", "Aria Young", "Henry Miller",
+		"John Doe", "Alice Zhao",
+		// "Jane Doe", "Bob Smith", "John Smith", "Maria Garcia", "James Johnson", "Sarah Wilson", "Michael Chen", "Emily Brown", "David Kim", "Lisa Patel", "Carlos Rodriguez", "Emma Davis", "Mohammed Ahmed", "Sofia Martinez", "William Lee",
+		// "Olivia Taylor", "Daniel Jackson", "Isabella Lopez", "Alexander Wong", "Ava Thompson", "Lucas Nguyen", "Mia Anderson", "Ethan Kumar", "Sophia White", "Ryan O'Connor", "Grace Williams", "Nathan Cohen", "Victoria Singh",
+		// "Liam Johnson", "Avery Thompson", "Elijah Martinez", "Scarlett Davis", "William Wang", "Chloe Anderson", "Noah Hernandez", "Camila Rodriguez", "Oliver Garcia", "Evelyn Hernandez", "Lucas Wilson", "Mila King", "James Brown", "Zoe Lee", "Benjamin Lewis", "Aria Young", "Henry Miller",
 		// "Penelope Davis", "Joseph Thompson", "Grace Davis", "Nathan Garcia", "Aria Rodriguez", "Mia Wilson", "Camila Anderson", "Ethan Martinez", "Olivia White",
 		// "Logan Walker", "Abigail Harris", "Samuel Green", "Avery Turner", "Joseph Hill", "Mila Foster", "Henry Campbell", "Sofia Reyes", "Carter Rivera", "Evelyn Cooper",
 		// "Thomas Mitchell", "Grace Turner", "Elijah Bailey", "Zoe Bailey", "Ella Lee", "Aiden Davis", "Avery Johnson", "Aubrey Wilson", "Cadence Perez", "Hannah Morris",
@@ -727,8 +729,8 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		for _, passengerID := range passengerIDs {
 			_, err := handler.CreateItinerary(ctx, api.CreateItineraryRequestObject{
 				Body: &api.CreateItineraryJSONRequestBody{
-					FlightIDs: []int{f.Id},
-					PassengerIDs:      []int{passengerID},
+					FlightIDs:    []int{f.Id},
+					PassengerIDs: []int{passengerID},
 				},
 			})
 			if err != nil {
@@ -772,5 +774,75 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		}
 	}
 
+	itins := []createItineraryParams{
+		{
+			Passengers: []int{passengerIDs[0], passengerIDs[1]},
+			Flights: []string{
+				"UA1 SFO-SIN 2025-01-25",
+				"SQ34 SIN-SFO 2025-01-29",
+				"UA2168 SFO-EWR 2025-01-30",
+				"UA14 EWR-LHR 2025-02-01",
+				"BA430 LHR-AMS 2025-02-02",
+				"KL1823 AMS-FRA 2025-02-03",
+			},
+		},
+	}
+	for _, itin := range itins {
+		if err := createItinerary(ctx, handler, itin); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+type createItineraryParams struct {
+	Passengers []int
+	Flights    []string // uses parseFlightTitle format ("UA123 SFO-JFK 2025-01-02")
+}
+
+func createItinerary(ctx context.Context, handler *Handler, params createItineraryParams) error {
+	log.Printf("Creating itinerary %+v", params)
+
+	var itinFlightIDs []int
+	for _, wantFlight := range params.Flights {
+		airlineIATACode, flightNumber, originIATACode, destinationIATACode, instanceDate := parseFlightTitle(wantFlight)
+
+		routeStr := fmt.Sprintf("%s-%s", originIATACode, destinationIATACode)
+		flights, err := handler.ListFlightsByRoute(ctx, api.ListFlightsByRouteRequestObject{Route: routeStr})
+		if err != nil {
+			return fmt.Errorf("listing flights for route %s: %w", routeStr, err)
+		}
+
+		var found bool
+		for _, f := range flights.(api.ListFlightsByRoute200JSONResponse) {
+			if f.ScheduleInstanceDate == nil {
+				continue
+			}
+			flightInstanceDate, err := localtime.ParseLocalDate(*f.ScheduleInstanceDate)
+			if err != nil {
+				return fmt.Errorf("parsing schedule instance date: %w", err)
+			}
+			if f.Airline.IataCode == airlineIATACode && f.Number == flightNumber && instanceDate.Equal(flightInstanceDate) {
+				found = true
+				itinFlightIDs = append(itinFlightIDs, f.Id)
+				break
+			}
+		}
+		if !found {
+			return fmt.Errorf("flight %q not found", wantFlight)
+		}
+	}
+
+	itin, err := handler.CreateItinerary(ctx, api.CreateItineraryRequestObject{
+		Body: &api.CreateItineraryJSONRequestBody{
+			FlightIDs:    itinFlightIDs,
+			PassengerIDs: params.Passengers,
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("creating itinerary: %w", err)
+	}
+	log.Printf("--> Created itinerary %q", itin.(api.CreateItinerary201JSONResponse).RecordID)
 	return nil
 }

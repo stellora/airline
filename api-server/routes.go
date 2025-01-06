@@ -70,3 +70,81 @@ func (h *Handler) GetRoute(ctx context.Context, request api.GetRouteRequestObjec
 
 	return api.GetRoute200JSONResponse(fromDBRoute(route)), nil
 }
+
+func getRouteAirports(ctx context.Context, tx db.DBTX, queriesTx *db.Queries, route string) (origin, destination db.Airport, err error) {
+	originIATACode, destinationIATACode, err := parseRoute(route)
+	if err != nil {
+		return
+	}
+	origin, err = getOrCreateAirportBySpec(ctx, tx, queriesTx, api.NewAirportSpec(0, originIATACode))
+	if err != nil {
+		return
+	}
+	destination, err = getOrCreateAirportBySpec(ctx, tx, queriesTx, api.NewAirportSpec(0, destinationIATACode))
+	if err != nil {
+		return
+	}
+	return origin, destination, nil
+}
+
+func (h *Handler) ListSchedulesByRoute(ctx context.Context, request api.ListSchedulesByRouteRequestObject) (api.ListSchedulesByRouteResponseObject, error) {
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
+
+	origin, destination, err := getRouteAirports(ctx, tx, queriesTx, request.Route)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.ListSchedulesByRoute404Response{}, nil
+		}
+		return nil, err
+	}
+
+	schedules, err := queriesTx.ListSchedulesByRoute(ctx, db.ListSchedulesByRouteParams{
+		OriginAirport:      origin.ID,
+		DestinationAirport: destination.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return api.ListSchedulesByRoute200JSONResponse(mapSlice(fromDBSchedule, schedules)), nil
+}
+
+func (h *Handler) ListFlightsByRoute(ctx context.Context, request api.ListFlightsByRouteRequestObject) (api.ListFlightsByRouteResponseObject, error) {
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	queriesTx := h.queries.WithTx(tx)
+
+	origin, destination, err := getRouteAirports(ctx, tx, queriesTx, request.Route)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.ListFlightsByRoute404Response{}, nil
+		}
+		return nil, err
+	}
+
+	flights, err := queriesTx.ListFlightsByRoute(ctx, db.ListFlightsByRouteParams{
+		OriginAirport:      origin.ID,
+		DestinationAirport: destination.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return api.ListFlightsByRoute200JSONResponse(mapSlice(fromDBFlight, flights)), nil
+}

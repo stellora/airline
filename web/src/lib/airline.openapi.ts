@@ -503,6 +503,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/routes/{route}/schedules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List schedules for a route */
+        get: operations["listSchedulesByRoute"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routes/{route}/flights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List flights for a route */
+        get: operations["listFlightsByRoute"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -652,6 +686,7 @@ export interface components {
         fleetSpec: components["schemas"]["FleetSpec"];
         airportSpec: components["schemas"]["AirportSpec"];
         itinerarySpec: components["schemas"]["ItinerarySpec"];
+        routeSpec: string;
     };
     requestBodies: never;
     headers: never;
@@ -2318,7 +2353,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                route: string;
+                route: components["parameters"]["routeSpec"];
             };
             cookie?: never;
         };
@@ -2331,6 +2366,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Route"];
+                };
+            };
+            /** @description Route not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listSchedulesByRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                route: components["parameters"]["routeSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of schedules */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Schedule"][];
+                };
+            };
+            /** @description Route not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFlightsByRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                route: components["parameters"]["routeSpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of flights */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Flight"][];
                 };
             };
             /** @description Route not found */

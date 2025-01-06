@@ -269,6 +269,7 @@ const ComponentsSchemasRoute = T.Object({
   distanceMiles: T.Number({ format: 'double' }),
   schedulesCount: T.Integer()
 })
+const ComponentsParametersRouteSpec = T.Any()
 
 const schema = {
   '/health': {
@@ -1183,6 +1184,34 @@ const schema = {
       }),
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
+  },
+  '/routes/{route}/schedules': {
+    GET: {
+      args: T.Object({
+        params: T.Object({
+          route: T.String({ pattern: '^[A-Z]{3}-[A-Z]{3}$', 'x-in': 'path' })
+        })
+      }),
+      data: T.Array(CloneType(ComponentsSchemasSchedule), {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
+  '/routes/{route}/flights': {
+    GET: {
+      args: T.Object({
+        params: T.Object({
+          route: T.String({ pattern: '^[A-Z]{3}-[A-Z]{3}$', 'x-in': 'path' })
+        })
+      }),
+      data: T.Array(CloneType(ComponentsSchemasFlight), {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
   }
 }
 
@@ -1192,7 +1221,10 @@ const _components = {
     airlineSpec: CloneType(ComponentsSchemasAirlineSpec, { 'x-in': 'path' }),
     fleetSpec: CloneType(ComponentsSchemasFleetSpec, { 'x-in': 'path' }),
     airportSpec: CloneType(ComponentsSchemasAirportSpec, { 'x-in': 'path' }),
-    itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, { 'x-in': 'path' })
+    itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
+      'x-in': 'path'
+    }),
+    routeSpec: T.String({ pattern: '^[A-Z]{3}-[A-Z]{3}$', 'x-in': 'path' })
   },
   schemas: {
     ZonedDateTime: CloneType(ComponentsSchemasZonedDateTime),

@@ -235,7 +235,7 @@ ORDER BY id ASC;
 -- name: ListSchedulesByRoute :many
 SELECT *
 FROM schedules_view
-WHERE origin_airport_id=:origin_airport OR destination_airport_id=:destination_airport
+WHERE origin_airport_id=:origin_airport AND destination_airport_id=:destination_airport
 ORDER BY id ASC;
 
 ------------------------------------------------------------------------------- flights
@@ -302,6 +302,12 @@ SELECT flights_view.*
 FROM flights_view
 WHERE airline_id=sqlc.arg('airline_id')
 ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
+
+-- name: ListFlightsByRoute :many
+SELECT *
+FROM flights_view
+WHERE origin_airport_id=:origin_airport AND destination_airport_id=:destination_airport
+ORDER BY id ASC;
 
 ------------------------------------------------------------------------------- passengers
 
