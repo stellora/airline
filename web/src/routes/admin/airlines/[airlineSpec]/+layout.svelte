@@ -72,7 +72,7 @@
 				</Drawer.Header>
 				<Drawer.ScrollArea>
 					<AirlineForm
-						action={route('/manage/[airlineSpec]', {
+						action={route('/admin/airlines/[airlineSpec]', {
 							params: { airlineSpec: page.params.airlineSpec },
 							query: '/update',
 						})}
@@ -90,7 +90,7 @@
 			size="pageNavbar"
 			href={route('/manage/[airlineSpec]', {
 				params: { airlineSpec: data.airline.iataCode },
-			})}>Manage...</Button
+			})}>Switch to management view</Button
 		>
 	{/snippet}
 </PageNav>

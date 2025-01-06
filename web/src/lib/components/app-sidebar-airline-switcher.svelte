@@ -43,7 +43,7 @@
 									airline={activeAirline}
 									size="lg"
 									showCode
-									class="flex-shrink-0 mt-0.5 border border-foreground/25"
+									class="flex-shrink-0 mt-0.5 border border-foreground/60"
 								/>
 								<div class="flex flex-col gap-0.5 overflow-hidden">
 									<span class="font-semibold text-sm truncate">{activeAirline.name}</span>
@@ -71,8 +71,9 @@
 									tooltip={false}
 									icon
 									showName
-									class={cn('[&_[data-airline-name]]:text-xs', {
-										'font-bold': airline.iataCode === activeAirlineIataCode,
+									class={cn('[&_[data-airline-name]]:text-xs overflow-hidden', {
+										'[&_[data-airline-name]]:text-foreground font-semibold':
+											airline.iataCode === activeAirlineIataCode,
 									})}
 								/>
 							</a>

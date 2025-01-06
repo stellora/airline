@@ -1,3 +1,39 @@
+<script module lang="ts">
+	type Item = {
+		title: string
+		url: string
+		icon: typeof TicketsPlane
+	}
+
+	export const globalAdminItems: Item[] = [
+		{
+			title: 'Airports',
+			url: route('/admin/airports'),
+			icon: MapPin,
+		},
+		{
+			title: 'Itineraries',
+			url: '/admin/itineraries',
+			icon: TicketsPlane,
+		},
+		{
+			title: 'Passengers',
+			url: '/admin/passengers',
+			icon: Users,
+		},
+		{
+			title: 'Airlines',
+			url: route('/admin/airlines'),
+			icon: Building,
+		},
+		{
+			title: 'Aircraft types',
+			url: route('/admin/aircraft-types'),
+			icon: List,
+		},
+	]
+</script>
+
 <script lang="ts">
 	import { page } from '$app/state'
 	import * as Sidebar from '$lib/components/ui/sidebar'
@@ -19,12 +55,6 @@
 	import Waypoints from 'lucide-svelte/icons/waypoints'
 	import type { LayoutData } from '../../routes/$types'
 	import AppSidebarAirlineSwitcher from './app-sidebar-airline-switcher.svelte'
-
-	type Item = {
-		title: string
-		url: string
-		icon: typeof TicketsPlane
-	}
 
 	const items: Item[] = [
 		{
@@ -84,34 +114,6 @@
 				params: { airlineSpec: airlineIataCode },
 			}),
 			icon: Plane,
-		},
-	]
-
-	const globalAdminItems: Item[] = [
-		{
-			title: 'Airports',
-			url: route('/admin/airports'),
-			icon: MapPin,
-		},
-		{
-			title: 'Itineraries',
-			url: '/admin/itineraries',
-			icon: TicketsPlane,
-		},
-		{
-			title: 'Passengers',
-			url: '/admin/passengers',
-			icon: Users,
-		},
-		{
-			title: 'Airlines',
-			url: route('/admin/airlines'),
-			icon: Building,
-		},
-		{
-			title: 'Aircraft types',
-			url: route('/admin/aircraft-types'),
-			icon: List,
 		},
 	]
 

@@ -31,3 +31,4 @@ See `mise run` for development commands.
 ## Notes
 
 - See https://standards.atlassian.net/wiki/spaces/AIDM/pages/607649825/IATA+Open+Air+JSON+schema+library for a JSON Schema.
+- Public stats: https://transtats.bts.gov/databases.asp?Z1qr_VQ=E&Z1qr_Qr5p=N8vn6v10&f7owrp6_VQF=D.

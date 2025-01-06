@@ -23,7 +23,10 @@ export const actions: Actions = {
 		if (!resp.response.ok || !resp.data) {
 			return message(form, resp.error, { status: 400 })
 		}
-		redirect(303, route('/admin/[airlineSpec]', { params: { airlineSpec: resp.data.iataCode } }))
+		redirect(
+			303,
+			route('/admin/airlines/[airlineSpec]', { params: { airlineSpec: resp.data.iataCode } }),
+		)
 	},
 	delete: async ({ params }) => {
 		const resp = await apiClient.DELETE('/airlines/{airlineSpec}', {
