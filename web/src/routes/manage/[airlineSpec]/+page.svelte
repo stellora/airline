@@ -1,13 +1,62 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
+	import { page } from '$app/state'
 	import AirlineCode from '$lib/components/airline-code.svelte'
 	import GreatCircleRoute from '$lib/components/maps/great-circle-route.svelte'
-	import { Button } from '$lib/components/ui/button'
 	import * as Card from '$lib/components/ui/card'
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
+	import PageNav from '$lib/components/ui/page/page-nav.svelte'
+	import PageNavbarBreadcrumbActionsDropdownMenu from '$lib/components/ui/page/page-navbar-breadcrumb-actions-dropdown-menu.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
+	import { route } from '$lib/route-helpers'
+	import Settings from 'lucide-svelte/icons/settings'
+	import Trash from 'lucide-svelte/icons/trash'
 
 	let { data } = $props()
 </script>
+
+<PageNav>
+	{#snippet breadcrumbActions()}
+		<PageNavbarBreadcrumbActionsDropdownMenu>
+			<DropdownMenu.Group>
+				<DropdownMenu.Item>
+					{#snippet child({ props })}
+						<a
+							{...props}
+							href={route('/admin/airlines/[airlineSpec]', {
+								params: { airlineSpec: page.params.airlineSpec },
+							})}
+						>
+							<Settings /> Public info
+						</a>
+					{/snippet}
+				</DropdownMenu.Item>
+				<DropdownMenu.Separator />
+				<DropdownMenu.Item>
+					{#snippet child({ props })}
+						<form
+							method="POST"
+							action={route('/manage/[airlineSpec]', {
+								params: { airlineSpec: page.params.airlineSpec },
+								query: '/delete',
+							})}
+							use:enhance={({ cancel }) => {
+								if (!confirm('Really delete?')) {
+									cancel()
+								}
+							}}
+							class="w-full [&>button]:w-full"
+						>
+							<button type="submit" {...props}>
+								<Trash /> Delete...
+							</button>
+						</form>
+					{/snippet}</DropdownMenu.Item
+				>
+			</DropdownMenu.Group>
+		</PageNavbarBreadcrumbActionsDropdownMenu>
+	{/snippet}
+</PageNav>
 
 <Page title={`${data.airline.iataCode}: ${data.airline.name}`}>
 	<Card.Root>

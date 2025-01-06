@@ -95,18 +95,18 @@
 			icon: CalendarRange,
 		},
 		{
-			title: 'Fleets',
-			url: route('/manage/[airlineSpec]/fleets', {
-				params: { airlineSpec: airlineIataCode },
-			}),
-			icon: Group,
-		},
-		{
 			title: 'Flights',
 			url: route('/manage/[airlineSpec]/flights', {
 				params: { airlineSpec: airlineIataCode },
 			}),
 			icon: PlaneTakeoff,
+		},
+		{
+			title: 'Fleets',
+			url: route('/manage/[airlineSpec]/fleets', {
+				params: { airlineSpec: airlineIataCode },
+			}),
+			icon: Group,
 		},
 		{
 			title: 'Aircraft',
