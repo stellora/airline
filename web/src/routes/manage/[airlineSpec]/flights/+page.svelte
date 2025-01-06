@@ -4,7 +4,7 @@
 	import BreadcrumbsForLayout from '$lib/components/ui/page/breadcrumbs-for-layout.svelte'
 	import Page from '$lib/components/ui/page/page.svelte'
 	import { route } from '$lib/route-helpers'
-	import FlightList from '../../../admin/flights/flight-list.svelte'
+	import FlightList from './flight-list.svelte'
 
 	let { data } = $props()
 </script>
