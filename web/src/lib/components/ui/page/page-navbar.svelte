@@ -20,7 +20,7 @@
 			class: '[&>svg]:!size-4 px-2 -ml-2',
 		})}
 	/>
-	<div class="border-r h-[calc(100%+1rem)] w-[1px]"></div>
+	<div class="border-r h-[calc(100%+1rem)] w-[1px] mr-2"></div>
 	<Breadcrumb.Root
 		class="[&>ol>li:not(:last-child)]:max-md:hidden [&>ol>li:last-child[role=presentation]]:hidden"
 	>

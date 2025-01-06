@@ -12,9 +12,9 @@
 <BreadcrumbsForLayout>
 	<Breadcrumb.Item>
 		<Breadcrumb.Link
-			href={route('/manage/[airlineSpec]/schedules', {
+			href={route('/manage/[airlineSpec]/flights', {
 				params: { airlineSpec: page.params.airlineSpec },
-			})}>Schedules</Breadcrumb.Link
+			})}>Flights</Breadcrumb.Link
 		>
 	</Breadcrumb.Item></BreadcrumbsForLayout
 >
