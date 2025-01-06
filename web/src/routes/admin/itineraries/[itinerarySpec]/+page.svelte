@@ -3,8 +3,7 @@
 	import * as Card from '$lib/components/ui/card/index.js'
 	import * as DefinitionList from '$lib/components/ui/definition-list'
 	import Page from '$lib/components/ui/page/page.svelte'
-	import { flightTitle } from '$lib/flight-helpers.js'
-	import { route } from '$lib/route-helpers.js'
+	import ItinerarySegment from './itinerary-segment.svelte'
 
 	let { data } = $props()
 </script>
@@ -24,25 +23,11 @@
 						{/each}
 					</ul>
 				</DefinitionList.Item>
-				<DefinitionList.Item title="Flights">
-					<ul>
-						{#each data.itinerary.flights as flight (flight.id)}
-							<li>
-								<a
-									href={route('/manage/[airlineSpec]/flights/[id]', {
-										params: {
-											airlineSpec: flight.airline.iataCode,
-											id: flight.id.toString(),
-										},
-									})}
-								>
-									{flightTitle(flight)}
-								</a>
-							</li>
-						{/each}
-					</ul>
-				</DefinitionList.Item>
 			</DefinitionList.Root>
 		</Card.Content>
 	</Card.Root>
+
+	{#each data.itinerary.flights as flight (flight.id)}
+		<ItinerarySegment {flight} />
+	{/each}
 </Page>
