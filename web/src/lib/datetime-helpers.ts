@@ -40,7 +40,7 @@ export function formatDateFull(value: ZonedDateTime): string {
 const flightDateOptions: Intl.DateTimeFormatOptions = {
 	year: 'numeric',
 	month: 'short',
-	day: '2-digit',
+	day: 'numeric',
 }
 
 export function formatFlightDate(value: ZonedDateTime): string {

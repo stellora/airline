@@ -5,11 +5,22 @@
 
 	const {
 		title,
+		titleChild,
 		children,
 		class: className,
 		...restProps
-	}: { title: string; children: Snippet } & HTMLAttributes<HTMLElement> = $props()
+	}: {
+		title: string
+		titleChild?: Snippet
+		children: Snippet
+	} & HTMLAttributes<HTMLElement> = $props()
 </script>
 
-<dt class="font-medium text-sm text-foreground/75">{title}</dt>
+<dt class="font-medium text-sm text-foreground/75">
+	{#if titleChild}
+		{@render titleChild()}
+	{:else}
+		{title}
+	{/if}
+</dt>
 <dd {...restProps} class={cn('', className)}>{@render children()}</dd>
