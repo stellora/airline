@@ -116,16 +116,6 @@ type Itinerary struct {
 	RecordID string
 }
 
-type ItineraryFlight struct {
-	ItineraryID int64
-	FlightID    int64
-}
-
-type ItineraryPassenger struct {
-	ItineraryID int64
-	PassengerID int64
-}
-
 type Passenger struct {
 	ID   int64
 	Name string
@@ -182,18 +172,45 @@ type SchedulesView struct {
 
 type SeatAssignment struct {
 	ID          int64
-	ItineraryID int64
-	PassengerID int64
+	SegmentID   int64
 	FlightID    int64
+	PassengerID int64
 	Seat        string
 }
 
 type SeatAssignmentsView struct {
 	ID                int64
-	ItineraryID       int64
-	PassengerID       int64
+	SegmentID         int64
 	FlightID          int64
+	PassengerID       int64
 	Seat              string
+	ItineraryID       int64
 	ItineraryRecordID string
 	PassengerName     string
+}
+
+type Segment struct {
+	ID           int64
+	ItineraryID  int64
+	FlightID     int64
+	PassengerID  int64
+	BookingClass string
+}
+
+type SegmentsView struct {
+	ID                int64
+	ItineraryID       int64
+	FlightID          int64
+	PassengerID       int64
+	BookingClass      string
+	ItineraryRecordID string
+	PassengerName     string
+}
+
+type Ticket struct {
+	ID          int64
+	Number      string
+	ItineraryID int64
+	PassengerID int64
+	FareBasis   string
 }

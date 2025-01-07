@@ -352,9 +352,9 @@ LIMIT 1;
 
 -- name: CreateSeatAssignment :one
 INSERT INTO seat_assignments (
-  itinerary_id,
-  passenger_id,
+  segment_id,
   flight_id,
+  passenger_id,
   seat
 ) VALUES (
   ?, ?, ?, ?
@@ -395,48 +395,94 @@ INSERT INTO itineraries (
 )
 RETURNING *;
 
--- name: AddFlightToItinerary :exec
-INSERT INTO itinerary_flights (
-  itinerary_id,
-  flight_id
-) VALUES (
-  ?, ?
-);
-
--- name: RemoveFlightFromItinerary :exec
-DELETE FROM itinerary_flights
-WHERE itinerary_id = ? AND flight_id = ?;
-
--- name: ListItineraryFlights :many
-SELECT flights_view.*
-FROM flights_view
-JOIN itinerary_flights ON itinerary_flights.flight_id = flights_view.id
-WHERE itinerary_flights.itinerary_id = sqlc.arg('itinerary_id')
-ORDER BY departure_datetime_utc ASC;
-
--- name: ListItineraryPassengers :many
-SELECT passengers.*
-FROM passengers
-JOIN itinerary_passengers ON itinerary_passengers.passenger_id = passengers.id
-WHERE itinerary_passengers.itinerary_id = sqlc.arg('itinerary_id')
-ORDER BY passengers.id ASC;
-
--- name: AddPassengerToItinerary :exec
-INSERT INTO itinerary_passengers (
-  itinerary_id,
-  passenger_id
-) VALUES (
-  ?, ?
-);
-
--- name: RemovePassengerFromItinerary :exec
-DELETE FROM itinerary_passengers
-WHERE itinerary_id = ? AND passenger_id = ?;
-
 -- name: DeleteItinerary :exec
 DELETE FROM itineraries
 WHERE id = ?;
 
+-- name: ListPassengersByItinerary :many
+SELECT passengers.*
+FROM passengers
+JOIN segments ON segments.passenger_id = passengers.id
+WHERE segments.itinerary_id = sqlc.arg('itinerary_id')
+ORDER BY passengers.id ASC;
+
+-- name: ListFlightsByItinerary :many
+SELECT DISTINCT flights_view.*
+FROM flights_view
+JOIN segments ON segments.flight_id = flights_view.id
+WHERE segments.itinerary_id = sqlc.arg('itinerary_id')
+ORDER BY departure_datetime_utc ASC, arrival_datetime_utc ASC, id ASC;
+
+------------------------------------------------------------------------------- tickets
+
+-- name: GetTicket :one
+SELECT sqlc.embed(tickets), sqlc.embed(itineraries), sqlc.embed(passengers)
+FROM tickets
+JOIN itineraries ON itineraries.id = tickets.itinerary_id
+JOIN passengers ON passengers.id = tickets.passenger_id
+WHERE tickets.id=sqlc.narg('id') OR tickets.number=sqlc.narg('number')
+LIMIT 1;
+
+-- name: ListTickets :many
+SELECT sqlc.embed(tickets), sqlc.embed(itineraries), sqlc.embed(passengers)
+FROM tickets
+JOIN itineraries ON itineraries.id = tickets.itinerary_id
+JOIN passengers ON passengers.id = tickets.passenger_id
+ORDER BY tickets.id ASC;
+
+-- name: CreateTicket :one
+INSERT INTO tickets (
+  number,
+  itinerary_id,
+  passenger_id,
+  fare_basis
+) VALUES (
+  ?, ?, ?, ?
+)
+RETURNING *;
+
+-- name: DeleteTicket :exec
+DELETE FROM tickets
+WHERE id=?;
+
+------------------------------------------------------------------------------- segments
+
+-- name: GetSegment :one
+SELECT * FROM segments_view
+WHERE id=? LIMIT 1;
+
+-- name: CreateSegment :one
+INSERT INTO segments (
+  itinerary_id,
+  flight_id,
+  passenger_id,
+  booking_class
+) VALUES (
+  ?, ?, ?, ?
+)
+RETURNING *;
+
+-- name: UpdateSegment :one
+UPDATE segments SET
+booking_class = COALESCE(sqlc.narg('booking_class'), booking_class)
+WHERE id=sqlc.arg('id')
+RETURNING *;
+
+-- name: DeleteSegment :exec
+DELETE FROM segments
+WHERE id=?;
+
+-- name: ListSegmentsByItinerary :many
+SELECT *
+FROM segments_view
+WHERE itinerary_id=?
+ORDER BY id ASC;
+
+-- name: ListSegmentsByFlight :many
+SELECT *
+FROM segments_view
+WHERE flight_id=?
+ORDER BY id ASC;
 
 ------------------------------------------------------------------------------- routes
 

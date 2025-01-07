@@ -11,7 +11,8 @@ import (
 
 func fromDBSeatAssignment(a db.SeatAssignmentsView) api.SeatAssignment {
 	return api.SeatAssignment{
-		Id: int(a.ID),
+		Id:        int(a.ID),
+		SegmentID: int(a.SegmentID),
 		Itinerary: api.ItinerarySpecs{
 			Id:       int(a.ItineraryID),
 			RecordID: a.ItineraryRecordID,
@@ -21,7 +22,7 @@ func fromDBSeatAssignment(a db.SeatAssignmentsView) api.SeatAssignment {
 			Name: a.PassengerName,
 		},
 		FlightID: int(a.FlightID),
-		Seat:             a.Seat,
+		Seat:     a.Seat,
 	}
 }
 
@@ -52,7 +53,7 @@ func (h *Handler) ListSeatAssignmentsForFlight(ctx context.Context, request api.
 	return api.ListSeatAssignmentsForFlight200JSONResponse(mapSlice(fromDBSeatAssignment, assignments)), nil
 }
 
-func (h *Handler) CreateSeatAssignment(ctx context.Context, request api.CreateSeatAssignmentRequestObject) (api.CreateSeatAssignmentResponseObject, error) {
+func (h *Handler) SetSeatAssignment(ctx context.Context, request api.SetSeatAssignmentRequestObject) (api.SetSeatAssignmentResponseObject, error) {
 	tx, err := h.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -60,17 +61,35 @@ func (h *Handler) CreateSeatAssignment(ctx context.Context, request api.CreateSe
 	defer tx.Rollback()
 	queriesTx := h.queries.WithTx(tx)
 
+	if _, err := getItineraryBySpec(ctx, queriesTx, request.ItinerarySpec); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.SetSeatAssignment404Response{}, nil
+		}
+		return nil, err
+
+	}
+
+	segment, err := getSegmentBySpec(ctx, queriesTx, request.SegmentID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &api.SetSeatAssignment404Response{}, nil
+		}
+		return nil, err
+	}
+
 	params := db.CreateSeatAssignmentParams{
-		ItineraryID:      int64(request.Body.ItineraryID),
-		PassengerID:      int64(request.Body.PassengerID),
-		FlightID: int64(request.FlightID),
-		Seat:             request.Body.Seat,
+		SegmentID:   int64(request.SegmentID),
+		FlightID:    int64(segment.FlightID),
+		PassengerID: int64(request.PassengerID),
+		Seat:        request.Body.Seat,
 	}
 
 	created, err := queriesTx.CreateSeatAssignment(ctx, params)
 	if err != nil {
 		return nil, err
 	}
+
+	// TODO!(sqs): handle setting new seat assignment when one exists
 
 	assignment, err := queriesTx.GetSeatAssignment(ctx, created)
 	if err != nil {
@@ -81,5 +100,5 @@ func (h *Handler) CreateSeatAssignment(ctx context.Context, request api.CreateSe
 		return nil, err
 	}
 
-	return api.CreateSeatAssignment201JSONResponse(fromDBSeatAssignment(assignment)), nil
+	return api.SetSeatAssignment201JSONResponse(fromDBSeatAssignment(assignment)), nil
 }

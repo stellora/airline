@@ -150,14 +150,23 @@ type FlightNumber = string
 
 // Itinerary defines model for Itinerary.
 type Itinerary struct {
+	// Flights All flights for all segments in the itinerary.
 	Flights []Flight `json:"flights"`
 
 	// Id A globally unique numeric identifier for an itinerary.
-	Id         ItineraryID `json:"id"`
+	Id ItineraryID `json:"id"`
+
+	// Passengers All passengers in the itinerary.
 	Passengers []Passenger `json:"passengers"`
 
 	// RecordID A globally unique record locator code for an itinerary.
 	RecordID RecordLocator `json:"recordID"`
+
+	// Segments All segments in the itinerary.
+	Segments *[]Segment `json:"segments,omitempty"`
+
+	// TicketNumbers All ticket numbers for all passengers in the itinerary.
+	TicketNumbers *[]TicketNumber `json:"ticketNumbers,omitempty"`
 }
 
 // ItineraryID A globally unique numeric identifier for an itinerary.
@@ -235,10 +244,36 @@ type SeatAssignment struct {
 	Itinerary ItinerarySpecs `json:"itinerary"`
 	Passenger Passenger      `json:"passenger"`
 	Seat      SeatNumber     `json:"seat"`
+	SegmentID int            `json:"segmentID"`
 }
 
 // SeatNumber defines model for SeatNumber.
 type SeatNumber = string
+
+// Segment defines model for Segment.
+type Segment struct {
+	BookingClass string `json:"bookingClass"`
+
+	// Flight A single flight, either created and synced automatically from a schedule or created manually.
+	Flight    Flight         `json:"flight"`
+	Id        int            `json:"id"`
+	Itinerary ItinerarySpecs `json:"itinerary"`
+	Passenger Passenger      `json:"passenger"`
+}
+
+// Ticket defines model for Ticket.
+type Ticket struct {
+	FareBasis string         `json:"fareBasis"`
+	Id        int            `json:"id"`
+	Itinerary ItinerarySpecs `json:"itinerary"`
+
+	// Number An eticket number.
+	Number    TicketNumber `json:"number"`
+	Passenger Passenger    `json:"passenger"`
+}
+
+// TicketNumber An eticket number.
+type TicketNumber = string
 
 // TimeOfDay A local time of day with hours and minutes (e.g., "7:30" or "21:45"), without a date or timezone.
 type TimeOfDay = string
@@ -327,14 +362,6 @@ type CreateFlightJSONBody struct {
 	Published          *bool         `json:"published,omitempty"`
 }
 
-// CreateSeatAssignmentJSONBody defines parameters for CreateSeatAssignment.
-type CreateSeatAssignmentJSONBody struct {
-	// ItineraryID A globally unique numeric identifier for an itinerary.
-	ItineraryID ItineraryID `json:"itineraryID"`
-	PassengerID int         `json:"passengerID"`
-	Seat        SeatNumber  `json:"seat"`
-}
-
 // UpdateFlightJSONBody defines parameters for UpdateFlight.
 type UpdateFlightJSONBody struct {
 	Aircraft *AircraftSpec `json:"aircraft,omitempty"`
@@ -356,6 +383,11 @@ type UpdateFlightJSONBody struct {
 type CreateItineraryJSONBody struct {
 	FlightIDs    []int `json:"flightIDs"`
 	PassengerIDs []int `json:"passengerIDs"`
+}
+
+// SetSeatAssignmentJSONBody defines parameters for SetSeatAssignment.
+type SetSeatAssignmentJSONBody struct {
+	Seat SeatNumber `json:"seat"`
 }
 
 // CreatePassengerJSONBody defines parameters for CreatePassenger.
@@ -436,14 +468,14 @@ type UpdateAirportJSONRequestBody UpdateAirportJSONBody
 // CreateFlightJSONRequestBody defines body for CreateFlight for application/json ContentType.
 type CreateFlightJSONRequestBody CreateFlightJSONBody
 
-// CreateSeatAssignmentJSONRequestBody defines body for CreateSeatAssignment for application/json ContentType.
-type CreateSeatAssignmentJSONRequestBody CreateSeatAssignmentJSONBody
-
 // UpdateFlightJSONRequestBody defines body for UpdateFlight for application/json ContentType.
 type UpdateFlightJSONRequestBody UpdateFlightJSONBody
 
 // CreateItineraryJSONRequestBody defines body for CreateItinerary for application/json ContentType.
 type CreateItineraryJSONRequestBody CreateItineraryJSONBody
+
+// SetSeatAssignmentJSONRequestBody defines body for SetSeatAssignment for application/json ContentType.
+type SetSeatAssignmentJSONRequestBody SetSeatAssignmentJSONBody
 
 // CreatePassengerJSONRequestBody defines body for CreatePassenger for application/json ContentType.
 type CreatePassengerJSONRequestBody CreatePassengerJSONBody
@@ -871,9 +903,6 @@ type ServerInterface interface {
 	// Get seat assignments for a flight
 	// (GET /flights/{flightID}/seat-assignments)
 	ListSeatAssignmentsForFlight(w http.ResponseWriter, r *http.Request, flightID int)
-	// Create a seat assignment for a flight
-	// (POST /flights/{flightID}/seat-assignments)
-	CreateSeatAssignment(w http.ResponseWriter, r *http.Request, flightID int)
 	// Delete a flight created from manual input
 	// (DELETE /flights/{id})
 	DeleteFlight(w http.ResponseWriter, r *http.Request, id int)
@@ -898,6 +927,27 @@ type ServerInterface interface {
 
 	// (GET /itineraries/{itinerarySpec})
 	GetItinerary(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec)
+	// List passengers for an itinerary
+	// (GET /itineraries/{itinerarySpec}/passengers)
+	ListPassengersByItinerary(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec)
+	// Remove a passenger from an itinerary
+	// (DELETE /itineraries/{itinerarySpec}/passengers/{passengerID})
+	DeletePassengerFromItinerary(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, passengerID int)
+
+	// (DELETE /itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment)
+	DeleteSeatAssignment(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, passengerID int, segmentID int)
+	// Get a seat assignment for a passenger on a segment in an itinerary
+	// (GET /itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment)
+	GetSeatAssignment(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, passengerID int, segmentID int)
+	// Set a seat assignment for a passenger on a segment in an itinerary
+	// (PUT /itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment)
+	SetSeatAssignment(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, passengerID int, segmentID int)
+	// List segments for all passengers on an itinerary
+	// (GET /itineraries/{itinerarySpec}/segments)
+	ListSegmentsByItinerary(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec)
+
+	// (DELETE /itineraries/{itinerarySpec}/segments/{segmentID})
+	DeleteSegmentFromItinerary(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, segmentID int)
 	// List all passengers
 	// (GET /passengers)
 	ListPassengers(w http.ResponseWriter, r *http.Request)
@@ -946,6 +996,12 @@ type ServerInterface interface {
 	// Get flights defined by a schedule
 	// (GET /schedules/{id}/flights)
 	ListFlightsForSchedule(w http.ResponseWriter, r *http.Request, id int)
+	// List all tickets
+	// (GET /tickets)
+	ListTickets(w http.ResponseWriter, r *http.Request)
+	// Get a ticket by ID
+	// (GET /tickets/{ticketNumber})
+	GetTicket(w http.ResponseWriter, r *http.Request, ticketNumber TicketNumber)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -1747,31 +1803,6 @@ func (siw *ServerInterfaceWrapper) ListSeatAssignmentsForFlight(w http.ResponseW
 	handler.ServeHTTP(w, r)
 }
 
-// CreateSeatAssignment operation middleware
-func (siw *ServerInterfaceWrapper) CreateSeatAssignment(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "flightID" -------------
-	var flightID int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "flightID", r.PathValue("flightID"), &flightID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "flightID", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateSeatAssignment(w, r, flightID)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
 // DeleteFlight operation middleware
 func (siw *ServerInterfaceWrapper) DeleteFlight(w http.ResponseWriter, r *http.Request) {
 
@@ -1930,6 +1961,253 @@ func (siw *ServerInterfaceWrapper) GetItinerary(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetItinerary(w, r, itinerarySpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListPassengersByItinerary operation middleware
+func (siw *ServerInterfaceWrapper) ListPassengersByItinerary(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "itinerarySpec" -------------
+	var itinerarySpec ItinerarySpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "itinerarySpec", r.PathValue("itinerarySpec"), &itinerarySpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itinerarySpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListPassengersByItinerary(w, r, itinerarySpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeletePassengerFromItinerary operation middleware
+func (siw *ServerInterfaceWrapper) DeletePassengerFromItinerary(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "itinerarySpec" -------------
+	var itinerarySpec ItinerarySpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "itinerarySpec", r.PathValue("itinerarySpec"), &itinerarySpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itinerarySpec", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "passengerID" -------------
+	var passengerID int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "passengerID", r.PathValue("passengerID"), &passengerID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "passengerID", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeletePassengerFromItinerary(w, r, itinerarySpec, passengerID)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteSeatAssignment operation middleware
+func (siw *ServerInterfaceWrapper) DeleteSeatAssignment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "itinerarySpec" -------------
+	var itinerarySpec ItinerarySpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "itinerarySpec", r.PathValue("itinerarySpec"), &itinerarySpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itinerarySpec", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "passengerID" -------------
+	var passengerID int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "passengerID", r.PathValue("passengerID"), &passengerID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "passengerID", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "segmentID" -------------
+	var segmentID int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "segmentID", r.PathValue("segmentID"), &segmentID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "segmentID", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteSeatAssignment(w, r, itinerarySpec, passengerID, segmentID)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetSeatAssignment operation middleware
+func (siw *ServerInterfaceWrapper) GetSeatAssignment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "itinerarySpec" -------------
+	var itinerarySpec ItinerarySpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "itinerarySpec", r.PathValue("itinerarySpec"), &itinerarySpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itinerarySpec", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "passengerID" -------------
+	var passengerID int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "passengerID", r.PathValue("passengerID"), &passengerID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "passengerID", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "segmentID" -------------
+	var segmentID int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "segmentID", r.PathValue("segmentID"), &segmentID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "segmentID", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetSeatAssignment(w, r, itinerarySpec, passengerID, segmentID)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetSeatAssignment operation middleware
+func (siw *ServerInterfaceWrapper) SetSeatAssignment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "itinerarySpec" -------------
+	var itinerarySpec ItinerarySpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "itinerarySpec", r.PathValue("itinerarySpec"), &itinerarySpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itinerarySpec", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "passengerID" -------------
+	var passengerID int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "passengerID", r.PathValue("passengerID"), &passengerID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "passengerID", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "segmentID" -------------
+	var segmentID int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "segmentID", r.PathValue("segmentID"), &segmentID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "segmentID", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetSeatAssignment(w, r, itinerarySpec, passengerID, segmentID)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListSegmentsByItinerary operation middleware
+func (siw *ServerInterfaceWrapper) ListSegmentsByItinerary(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "itinerarySpec" -------------
+	var itinerarySpec ItinerarySpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "itinerarySpec", r.PathValue("itinerarySpec"), &itinerarySpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itinerarySpec", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListSegmentsByItinerary(w, r, itinerarySpec)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteSegmentFromItinerary operation middleware
+func (siw *ServerInterfaceWrapper) DeleteSegmentFromItinerary(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "itinerarySpec" -------------
+	var itinerarySpec ItinerarySpec
+
+	err = runtime.BindStyledParameterWithOptions("simple", "itinerarySpec", r.PathValue("itinerarySpec"), &itinerarySpec, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itinerarySpec", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "segmentID" -------------
+	var segmentID int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "segmentID", r.PathValue("segmentID"), &segmentID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "segmentID", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteSegmentFromItinerary(w, r, itinerarySpec, segmentID)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2273,6 +2551,45 @@ func (siw *ServerInterfaceWrapper) ListFlightsForSchedule(w http.ResponseWriter,
 	handler.ServeHTTP(w, r)
 }
 
+// ListTickets operation middleware
+func (siw *ServerInterfaceWrapper) ListTickets(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListTickets(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetTicket operation middleware
+func (siw *ServerInterfaceWrapper) GetTicket(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "ticketNumber" -------------
+	var ticketNumber TicketNumber
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticketNumber", r.PathValue("ticketNumber"), &ticketNumber, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticketNumber", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTicket(w, r, ticketNumber)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -2427,7 +2744,6 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/flights", wrapper.ListFlights)
 	m.HandleFunc("POST "+options.BaseURL+"/flights", wrapper.CreateFlight)
 	m.HandleFunc("GET "+options.BaseURL+"/flights/{flightID}/seat-assignments", wrapper.ListSeatAssignmentsForFlight)
-	m.HandleFunc("POST "+options.BaseURL+"/flights/{flightID}/seat-assignments", wrapper.CreateSeatAssignment)
 	m.HandleFunc("DELETE "+options.BaseURL+"/flights/{id}", wrapper.DeleteFlight)
 	m.HandleFunc("GET "+options.BaseURL+"/flights/{id}", wrapper.GetFlight)
 	m.HandleFunc("PATCH "+options.BaseURL+"/flights/{id}", wrapper.UpdateFlight)
@@ -2436,6 +2752,13 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("POST "+options.BaseURL+"/itineraries", wrapper.CreateItinerary)
 	m.HandleFunc("DELETE "+options.BaseURL+"/itineraries/{itinerarySpec}", wrapper.DeleteItinerary)
 	m.HandleFunc("GET "+options.BaseURL+"/itineraries/{itinerarySpec}", wrapper.GetItinerary)
+	m.HandleFunc("GET "+options.BaseURL+"/itineraries/{itinerarySpec}/passengers", wrapper.ListPassengersByItinerary)
+	m.HandleFunc("DELETE "+options.BaseURL+"/itineraries/{itinerarySpec}/passengers/{passengerID}", wrapper.DeletePassengerFromItinerary)
+	m.HandleFunc("DELETE "+options.BaseURL+"/itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment", wrapper.DeleteSeatAssignment)
+	m.HandleFunc("GET "+options.BaseURL+"/itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment", wrapper.GetSeatAssignment)
+	m.HandleFunc("PUT "+options.BaseURL+"/itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment", wrapper.SetSeatAssignment)
+	m.HandleFunc("GET "+options.BaseURL+"/itineraries/{itinerarySpec}/segments", wrapper.ListSegmentsByItinerary)
+	m.HandleFunc("DELETE "+options.BaseURL+"/itineraries/{itinerarySpec}/segments/{segmentID}", wrapper.DeleteSegmentFromItinerary)
 	m.HandleFunc("GET "+options.BaseURL+"/passengers", wrapper.ListPassengers)
 	m.HandleFunc("POST "+options.BaseURL+"/passengers", wrapper.CreatePassenger)
 	m.HandleFunc("DELETE "+options.BaseURL+"/passengers/{id}", wrapper.DeletePassenger)
@@ -2452,6 +2775,8 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/schedules/{id}", wrapper.GetSchedule)
 	m.HandleFunc("PATCH "+options.BaseURL+"/schedules/{id}", wrapper.UpdateSchedule)
 	m.HandleFunc("GET "+options.BaseURL+"/schedules/{id}/flights", wrapper.ListFlightsForSchedule)
+	m.HandleFunc("GET "+options.BaseURL+"/tickets", wrapper.ListTickets)
+	m.HandleFunc("GET "+options.BaseURL+"/tickets/{ticketNumber}", wrapper.GetTicket)
 
 	return m
 }
@@ -3254,40 +3579,6 @@ func (response ListSeatAssignmentsForFlight404Response) VisitListSeatAssignments
 	return nil
 }
 
-type CreateSeatAssignmentRequestObject struct {
-	FlightID int `json:"flightID"`
-	Body     *CreateSeatAssignmentJSONRequestBody
-}
-
-type CreateSeatAssignmentResponseObject interface {
-	VisitCreateSeatAssignmentResponse(w http.ResponseWriter) error
-}
-
-type CreateSeatAssignment201JSONResponse SeatAssignment
-
-func (response CreateSeatAssignment201JSONResponse) VisitCreateSeatAssignmentResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type CreateSeatAssignment400Response struct {
-}
-
-func (response CreateSeatAssignment400Response) VisitCreateSeatAssignmentResponse(w http.ResponseWriter) error {
-	w.WriteHeader(400)
-	return nil
-}
-
-type CreateSeatAssignment404Response struct {
-}
-
-func (response CreateSeatAssignment404Response) VisitCreateSeatAssignmentResponse(w http.ResponseWriter) error {
-	w.WriteHeader(404)
-	return nil
-}
-
 type DeleteFlightRequestObject struct {
 	Id int `json:"id"`
 }
@@ -3483,6 +3774,195 @@ type GetItinerary404Response struct {
 }
 
 func (response GetItinerary404Response) VisitGetItineraryResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type ListPassengersByItineraryRequestObject struct {
+	ItinerarySpec ItinerarySpec `json:"itinerarySpec"`
+}
+
+type ListPassengersByItineraryResponseObject interface {
+	VisitListPassengersByItineraryResponse(w http.ResponseWriter) error
+}
+
+type ListPassengersByItinerary200JSONResponse []Passenger
+
+func (response ListPassengersByItinerary200JSONResponse) VisitListPassengersByItineraryResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListPassengersByItinerary404Response struct {
+}
+
+func (response ListPassengersByItinerary404Response) VisitListPassengersByItineraryResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type DeletePassengerFromItineraryRequestObject struct {
+	ItinerarySpec ItinerarySpec `json:"itinerarySpec"`
+	PassengerID   int           `json:"passengerID"`
+}
+
+type DeletePassengerFromItineraryResponseObject interface {
+	VisitDeletePassengerFromItineraryResponse(w http.ResponseWriter) error
+}
+
+type DeletePassengerFromItinerary204Response struct {
+}
+
+func (response DeletePassengerFromItinerary204Response) VisitDeletePassengerFromItineraryResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeletePassengerFromItinerary404Response struct {
+}
+
+func (response DeletePassengerFromItinerary404Response) VisitDeletePassengerFromItineraryResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type DeleteSeatAssignmentRequestObject struct {
+	ItinerarySpec ItinerarySpec `json:"itinerarySpec"`
+	PassengerID   int           `json:"passengerID"`
+	SegmentID     int           `json:"segmentID"`
+}
+
+type DeleteSeatAssignmentResponseObject interface {
+	VisitDeleteSeatAssignmentResponse(w http.ResponseWriter) error
+}
+
+type DeleteSeatAssignment204Response struct {
+}
+
+func (response DeleteSeatAssignment204Response) VisitDeleteSeatAssignmentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteSeatAssignment404Response struct {
+}
+
+func (response DeleteSeatAssignment404Response) VisitDeleteSeatAssignmentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type GetSeatAssignmentRequestObject struct {
+	ItinerarySpec ItinerarySpec `json:"itinerarySpec"`
+	PassengerID   int           `json:"passengerID"`
+	SegmentID     int           `json:"segmentID"`
+}
+
+type GetSeatAssignmentResponseObject interface {
+	VisitGetSeatAssignmentResponse(w http.ResponseWriter) error
+}
+
+type GetSeatAssignment200JSONResponse SeatAssignment
+
+func (response GetSeatAssignment200JSONResponse) VisitGetSeatAssignmentResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSeatAssignment404Response struct {
+}
+
+func (response GetSeatAssignment404Response) VisitGetSeatAssignmentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type SetSeatAssignmentRequestObject struct {
+	ItinerarySpec ItinerarySpec `json:"itinerarySpec"`
+	PassengerID   int           `json:"passengerID"`
+	SegmentID     int           `json:"segmentID"`
+	Body          *SetSeatAssignmentJSONRequestBody
+}
+
+type SetSeatAssignmentResponseObject interface {
+	VisitSetSeatAssignmentResponse(w http.ResponseWriter) error
+}
+
+type SetSeatAssignment201JSONResponse SeatAssignment
+
+func (response SetSeatAssignment201JSONResponse) VisitSetSeatAssignmentResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type SetSeatAssignment400Response struct {
+}
+
+func (response SetSeatAssignment400Response) VisitSetSeatAssignmentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
+type SetSeatAssignment404Response struct {
+}
+
+func (response SetSeatAssignment404Response) VisitSetSeatAssignmentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type ListSegmentsByItineraryRequestObject struct {
+	ItinerarySpec ItinerarySpec `json:"itinerarySpec"`
+}
+
+type ListSegmentsByItineraryResponseObject interface {
+	VisitListSegmentsByItineraryResponse(w http.ResponseWriter) error
+}
+
+type ListSegmentsByItinerary200JSONResponse []Segment
+
+func (response ListSegmentsByItinerary200JSONResponse) VisitListSegmentsByItineraryResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListSegmentsByItinerary404Response struct {
+}
+
+func (response ListSegmentsByItinerary404Response) VisitListSegmentsByItineraryResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type DeleteSegmentFromItineraryRequestObject struct {
+	ItinerarySpec ItinerarySpec `json:"itinerarySpec"`
+	SegmentID     int           `json:"segmentID"`
+}
+
+type DeleteSegmentFromItineraryResponseObject interface {
+	VisitDeleteSegmentFromItineraryResponse(w http.ResponseWriter) error
+}
+
+type DeleteSegmentFromItinerary204Response struct {
+}
+
+func (response DeleteSegmentFromItinerary204Response) VisitDeleteSegmentFromItineraryResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteSegmentFromItinerary404Response struct {
+}
+
+func (response DeleteSegmentFromItinerary404Response) VisitDeleteSegmentFromItineraryResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
@@ -3858,6 +4338,47 @@ func (response ListFlightsForSchedule404Response) VisitListFlightsForScheduleRes
 	return nil
 }
 
+type ListTicketsRequestObject struct {
+}
+
+type ListTicketsResponseObject interface {
+	VisitListTicketsResponse(w http.ResponseWriter) error
+}
+
+type ListTickets200JSONResponse []Ticket
+
+func (response ListTickets200JSONResponse) VisitListTicketsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetTicketRequestObject struct {
+	TicketNumber TicketNumber `json:"ticketNumber"`
+}
+
+type GetTicketResponseObject interface {
+	VisitGetTicketResponse(w http.ResponseWriter) error
+}
+
+type GetTicket200JSONResponse Ticket
+
+func (response GetTicket200JSONResponse) VisitGetTicketResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetTicket404Response struct {
+}
+
+func (response GetTicket404Response) VisitGetTicketResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Delete all aircraft
@@ -3962,9 +4483,6 @@ type StrictServerInterface interface {
 	// Get seat assignments for a flight
 	// (GET /flights/{flightID}/seat-assignments)
 	ListSeatAssignmentsForFlight(ctx context.Context, request ListSeatAssignmentsForFlightRequestObject) (ListSeatAssignmentsForFlightResponseObject, error)
-	// Create a seat assignment for a flight
-	// (POST /flights/{flightID}/seat-assignments)
-	CreateSeatAssignment(ctx context.Context, request CreateSeatAssignmentRequestObject) (CreateSeatAssignmentResponseObject, error)
 	// Delete a flight created from manual input
 	// (DELETE /flights/{id})
 	DeleteFlight(ctx context.Context, request DeleteFlightRequestObject) (DeleteFlightResponseObject, error)
@@ -3989,6 +4507,27 @@ type StrictServerInterface interface {
 
 	// (GET /itineraries/{itinerarySpec})
 	GetItinerary(ctx context.Context, request GetItineraryRequestObject) (GetItineraryResponseObject, error)
+	// List passengers for an itinerary
+	// (GET /itineraries/{itinerarySpec}/passengers)
+	ListPassengersByItinerary(ctx context.Context, request ListPassengersByItineraryRequestObject) (ListPassengersByItineraryResponseObject, error)
+	// Remove a passenger from an itinerary
+	// (DELETE /itineraries/{itinerarySpec}/passengers/{passengerID})
+	DeletePassengerFromItinerary(ctx context.Context, request DeletePassengerFromItineraryRequestObject) (DeletePassengerFromItineraryResponseObject, error)
+
+	// (DELETE /itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment)
+	DeleteSeatAssignment(ctx context.Context, request DeleteSeatAssignmentRequestObject) (DeleteSeatAssignmentResponseObject, error)
+	// Get a seat assignment for a passenger on a segment in an itinerary
+	// (GET /itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment)
+	GetSeatAssignment(ctx context.Context, request GetSeatAssignmentRequestObject) (GetSeatAssignmentResponseObject, error)
+	// Set a seat assignment for a passenger on a segment in an itinerary
+	// (PUT /itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment)
+	SetSeatAssignment(ctx context.Context, request SetSeatAssignmentRequestObject) (SetSeatAssignmentResponseObject, error)
+	// List segments for all passengers on an itinerary
+	// (GET /itineraries/{itinerarySpec}/segments)
+	ListSegmentsByItinerary(ctx context.Context, request ListSegmentsByItineraryRequestObject) (ListSegmentsByItineraryResponseObject, error)
+
+	// (DELETE /itineraries/{itinerarySpec}/segments/{segmentID})
+	DeleteSegmentFromItinerary(ctx context.Context, request DeleteSegmentFromItineraryRequestObject) (DeleteSegmentFromItineraryResponseObject, error)
 	// List all passengers
 	// (GET /passengers)
 	ListPassengers(ctx context.Context, request ListPassengersRequestObject) (ListPassengersResponseObject, error)
@@ -4037,6 +4576,12 @@ type StrictServerInterface interface {
 	// Get flights defined by a schedule
 	// (GET /schedules/{id}/flights)
 	ListFlightsForSchedule(ctx context.Context, request ListFlightsForScheduleRequestObject) (ListFlightsForScheduleResponseObject, error)
+	// List all tickets
+	// (GET /tickets)
+	ListTickets(ctx context.Context, request ListTicketsRequestObject) (ListTicketsResponseObject, error)
+	// Get a ticket by ID
+	// (GET /tickets/{ticketNumber})
+	GetTicket(ctx context.Context, request GetTicketRequestObject) (GetTicketResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -4999,39 +5544,6 @@ func (sh *strictHandler) ListSeatAssignmentsForFlight(w http.ResponseWriter, r *
 	}
 }
 
-// CreateSeatAssignment operation middleware
-func (sh *strictHandler) CreateSeatAssignment(w http.ResponseWriter, r *http.Request, flightID int) {
-	var request CreateSeatAssignmentRequestObject
-
-	request.FlightID = flightID
-
-	var body CreateSeatAssignmentJSONRequestBody
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
-		return
-	}
-	request.Body = &body
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.CreateSeatAssignment(ctx, request.(CreateSeatAssignmentRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "CreateSeatAssignment")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(CreateSeatAssignmentResponseObject); ok {
-		if err := validResponse.VisitCreateSeatAssignmentResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
 // DeleteFlight operation middleware
 func (sh *strictHandler) DeleteFlight(w http.ResponseWriter, r *http.Request, id int) {
 	var request DeleteFlightRequestObject
@@ -5241,6 +5753,203 @@ func (sh *strictHandler) GetItinerary(w http.ResponseWriter, r *http.Request, it
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetItineraryResponseObject); ok {
 		if err := validResponse.VisitGetItineraryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListPassengersByItinerary operation middleware
+func (sh *strictHandler) ListPassengersByItinerary(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec) {
+	var request ListPassengersByItineraryRequestObject
+
+	request.ItinerarySpec = itinerarySpec
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListPassengersByItinerary(ctx, request.(ListPassengersByItineraryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListPassengersByItinerary")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListPassengersByItineraryResponseObject); ok {
+		if err := validResponse.VisitListPassengersByItineraryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeletePassengerFromItinerary operation middleware
+func (sh *strictHandler) DeletePassengerFromItinerary(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, passengerID int) {
+	var request DeletePassengerFromItineraryRequestObject
+
+	request.ItinerarySpec = itinerarySpec
+	request.PassengerID = passengerID
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeletePassengerFromItinerary(ctx, request.(DeletePassengerFromItineraryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeletePassengerFromItinerary")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeletePassengerFromItineraryResponseObject); ok {
+		if err := validResponse.VisitDeletePassengerFromItineraryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteSeatAssignment operation middleware
+func (sh *strictHandler) DeleteSeatAssignment(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, passengerID int, segmentID int) {
+	var request DeleteSeatAssignmentRequestObject
+
+	request.ItinerarySpec = itinerarySpec
+	request.PassengerID = passengerID
+	request.SegmentID = segmentID
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteSeatAssignment(ctx, request.(DeleteSeatAssignmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteSeatAssignment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteSeatAssignmentResponseObject); ok {
+		if err := validResponse.VisitDeleteSeatAssignmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetSeatAssignment operation middleware
+func (sh *strictHandler) GetSeatAssignment(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, passengerID int, segmentID int) {
+	var request GetSeatAssignmentRequestObject
+
+	request.ItinerarySpec = itinerarySpec
+	request.PassengerID = passengerID
+	request.SegmentID = segmentID
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetSeatAssignment(ctx, request.(GetSeatAssignmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetSeatAssignment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetSeatAssignmentResponseObject); ok {
+		if err := validResponse.VisitGetSeatAssignmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SetSeatAssignment operation middleware
+func (sh *strictHandler) SetSeatAssignment(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, passengerID int, segmentID int) {
+	var request SetSeatAssignmentRequestObject
+
+	request.ItinerarySpec = itinerarySpec
+	request.PassengerID = passengerID
+	request.SegmentID = segmentID
+
+	var body SetSeatAssignmentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SetSeatAssignment(ctx, request.(SetSeatAssignmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SetSeatAssignment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SetSeatAssignmentResponseObject); ok {
+		if err := validResponse.VisitSetSeatAssignmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListSegmentsByItinerary operation middleware
+func (sh *strictHandler) ListSegmentsByItinerary(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec) {
+	var request ListSegmentsByItineraryRequestObject
+
+	request.ItinerarySpec = itinerarySpec
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListSegmentsByItinerary(ctx, request.(ListSegmentsByItineraryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListSegmentsByItinerary")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListSegmentsByItineraryResponseObject); ok {
+		if err := validResponse.VisitListSegmentsByItineraryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteSegmentFromItinerary operation middleware
+func (sh *strictHandler) DeleteSegmentFromItinerary(w http.ResponseWriter, r *http.Request, itinerarySpec ItinerarySpec, segmentID int) {
+	var request DeleteSegmentFromItineraryRequestObject
+
+	request.ItinerarySpec = itinerarySpec
+	request.SegmentID = segmentID
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteSegmentFromItinerary(ctx, request.(DeleteSegmentFromItineraryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteSegmentFromItinerary")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteSegmentFromItineraryResponseObject); ok {
+		if err := validResponse.VisitDeleteSegmentFromItineraryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -5673,6 +6382,56 @@ func (sh *strictHandler) ListFlightsForSchedule(w http.ResponseWriter, r *http.R
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ListFlightsForScheduleResponseObject); ok {
 		if err := validResponse.VisitListFlightsForScheduleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListTickets operation middleware
+func (sh *strictHandler) ListTickets(w http.ResponseWriter, r *http.Request) {
+	var request ListTicketsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListTickets(ctx, request.(ListTicketsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListTickets")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListTicketsResponseObject); ok {
+		if err := validResponse.VisitListTicketsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetTicket operation middleware
+func (sh *strictHandler) GetTicket(w http.ResponseWriter, r *http.Request, ticketNumber TicketNumber) {
+	var request GetTicketRequestObject
+
+	request.TicketNumber = ticketNumber
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetTicket(ctx, request.(GetTicketRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetTicket")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetTicketResponseObject); ok {
+		if err := validResponse.VisitGetTicketResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

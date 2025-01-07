@@ -249,12 +249,27 @@ const ComponentsSchemasSeatAssignment = T.Object({
   id: T.Integer(),
   itinerary: CloneType(ComponentsSchemasItinerarySpecs),
   passenger: CloneType(ComponentsSchemasPassenger),
+  segmentID: T.Integer(),
   flightID: T.Integer(),
   seat: CloneType(ComponentsSchemasSeatNumber)
+})
+const ComponentsSchemasTicketNumber = T.String({
+  pattern: '^[0-9]{13}$',
+  minLength: 13,
+  maxLength: 13
+})
+const ComponentsSchemasSegment = T.Object({
+  id: T.Integer(),
+  itinerary: CloneType(ComponentsSchemasItinerarySpecs),
+  flight: CloneType(ComponentsSchemasFlight),
+  passenger: CloneType(ComponentsSchemasPassenger),
+  bookingClass: T.String()
 })
 const ComponentsSchemasItinerary = T.Object({
   id: CloneType(ComponentsSchemasItineraryId),
   recordID: CloneType(ComponentsSchemasRecordLocator),
+  ticketNumbers: T.Optional(T.Array(CloneType(ComponentsSchemasTicketNumber))),
+  segments: T.Optional(T.Array(CloneType(ComponentsSchemasSegment))),
   flights: T.Array(CloneType(ComponentsSchemasFlight)),
   passengers: T.Array(CloneType(ComponentsSchemasPassenger), { minItems: 1 })
 })
@@ -263,6 +278,13 @@ const ComponentsSchemasItinerarySpec = T.Union([
   CloneType(ComponentsSchemasRecordLocator)
 ])
 const ComponentsParametersItinerarySpec = T.Any()
+const ComponentsSchemasTicket = T.Object({
+  id: T.Integer(),
+  number: CloneType(ComponentsSchemasTicketNumber),
+  itinerary: CloneType(ComponentsSchemasItinerarySpecs),
+  passenger: CloneType(ComponentsSchemasPassenger),
+  fareBasis: T.String()
+})
 const ComponentsSchemasRoute = T.Object({
   originAirport: CloneType(ComponentsSchemasAirport),
   destinationAirport: CloneType(ComponentsSchemasAirport),
@@ -1006,31 +1028,6 @@ const schema = {
         'x-content-type': 'application/json'
       }),
       error: T.Union([T.Any({ 'x-status-code': '404' })])
-    },
-    POST: {
-      args: T.Object({
-        params: T.Object({
-          flightID: T.Integer({ 'x-in': 'path' })
-        }),
-        body: T.Object(
-          {
-            itineraryID: CloneType(ComponentsSchemasItineraryId),
-            passengerID: T.Integer(),
-            seat: CloneType(ComponentsSchemasSeatNumber)
-          },
-          {
-            'x-content-type': 'application/json'
-          }
-        )
-      }),
-      data: CloneType(ComponentsSchemasSeatAssignment, {
-        'x-status-code': '201',
-        'x-content-type': 'application/json'
-      }),
-      error: T.Union([
-        T.Any({ 'x-status-code': '400' }),
-        T.Any({ 'x-status-code': '404' })
-      ])
     }
   },
   '/passengers': {
@@ -1161,6 +1158,151 @@ const schema = {
       error: T.Union([T.Any({ 'x-status-code': '404' })])
     }
   },
+  '/itineraries/{itinerarySpec}/passengers': {
+    GET: {
+      args: T.Object({
+        params: T.Object({
+          itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
+            'x-in': 'path'
+          })
+        })
+      }),
+      data: T.Array(CloneType(ComponentsSchemasPassenger), {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
+  '/itineraries/{itinerarySpec}/passengers/{passengerID}': {
+    DELETE: {
+      args: T.Object({
+        params: T.Object({
+          itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
+            'x-in': 'path'
+          }),
+          passengerID: T.Integer({ 'x-in': 'path' })
+        })
+      }),
+      data: T.Any({ 'x-status-code': '204' }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
+  '/itineraries/{itinerarySpec}/segments': {
+    GET: {
+      args: T.Object({
+        params: T.Object({
+          itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
+            'x-in': 'path'
+          })
+        })
+      }),
+      data: T.Array(CloneType(ComponentsSchemasSegment), {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
+  '/itineraries/{itinerarySpec}/segments/{segmentID}': {
+    DELETE: {
+      args: T.Object({
+        params: T.Object({
+          itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
+            'x-in': 'path'
+          }),
+          segmentID: T.Integer({ 'x-in': 'path' })
+        })
+      }),
+      data: T.Any({ 'x-status-code': '204' }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
+  '/itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment':
+    {
+      GET: {
+        args: T.Object({
+          params: T.Object({
+            itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
+              'x-in': 'path'
+            }),
+            passengerID: T.Integer({ 'x-in': 'path' }),
+            segmentID: T.Integer({ 'x-in': 'path' })
+          })
+        }),
+        data: CloneType(ComponentsSchemasSeatAssignment, {
+          'x-status-code': '200',
+          'x-content-type': 'application/json'
+        }),
+        error: T.Union([T.Any({ 'x-status-code': '404' })])
+      },
+      PUT: {
+        args: T.Object({
+          params: T.Object({
+            itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
+              'x-in': 'path'
+            }),
+            passengerID: T.Integer({ 'x-in': 'path' }),
+            segmentID: T.Integer({ 'x-in': 'path' })
+          }),
+          body: T.Object(
+            {
+              seat: CloneType(ComponentsSchemasSeatNumber)
+            },
+            {
+              'x-content-type': 'application/json'
+            }
+          )
+        }),
+        data: CloneType(ComponentsSchemasSeatAssignment, {
+          'x-status-code': '201',
+          'x-content-type': 'application/json'
+        }),
+        error: T.Union([
+          T.Any({ 'x-status-code': '400' }),
+          T.Any({ 'x-status-code': '404' })
+        ])
+      },
+      DELETE: {
+        args: T.Object({
+          params: T.Object({
+            itinerarySpec: CloneType(ComponentsSchemasItinerarySpec, {
+              'x-in': 'path'
+            }),
+            passengerID: T.Integer({ 'x-in': 'path' }),
+            segmentID: T.Integer({ 'x-in': 'path' })
+          })
+        }),
+        data: T.Any({ 'x-status-code': '204' }),
+        error: T.Union([T.Any({ 'x-status-code': '404' })])
+      }
+    },
+  '/tickets': {
+    GET: {
+      args: T.Void(),
+      data: T.Array(CloneType(ComponentsSchemasTicket), {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': 'default' })])
+    }
+  },
+  '/tickets/{ticketNumber}': {
+    GET: {
+      args: T.Object({
+        params: T.Object({
+          ticketNumber: CloneType(ComponentsSchemasTicketNumber, {
+            'x-in': 'path'
+          })
+        })
+      }),
+      data: CloneType(ComponentsSchemasTicket, {
+        'x-status-code': '200',
+        'x-content-type': 'application/json'
+      }),
+      error: T.Union([T.Any({ 'x-status-code': '404' })])
+    }
+  },
   '/routes': {
     GET: {
       args: T.Void(),
@@ -1262,6 +1404,9 @@ const _components = {
     Itinerary: CloneType(ComponentsSchemasItinerary),
     ItinerarySpecs: CloneType(ComponentsSchemasItinerarySpecs),
     Passenger: CloneType(ComponentsSchemasPassenger),
+    TicketNumber: CloneType(ComponentsSchemasTicketNumber, { 'x-in': 'path' }),
+    Ticket: CloneType(ComponentsSchemasTicket),
+    Segment: CloneType(ComponentsSchemasSegment),
     SeatNumber: CloneType(ComponentsSchemasSeatNumber),
     SeatAssignment: CloneType(ComponentsSchemasSeatAssignment)
   }

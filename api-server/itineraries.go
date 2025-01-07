@@ -21,13 +21,20 @@ func getItineraryBySpec(ctx context.Context, queriesTx *db.Queries, spec api.Iti
 	panic("invalid ItinerarySpec: " + fmt.Sprintf("%#v", spec))
 }
 
+func toItinerarySpecs(i db.Itinerary) api.ItinerarySpecs {
+	return api.ItinerarySpecs{
+		Id:       int(i.ID),
+		RecordID: i.RecordID,
+	}
+}
+
 func fromDBItinerary(ctx context.Context, queriesTx *db.Queries, i db.Itinerary) (api.Itinerary, error) {
 	flights, err := queriesTx.ListItineraryFlights(ctx, i.ID)
 	if err != nil {
 		return api.Itinerary{}, err
 	}
 
-	passengers, err := queriesTx.ListItineraryPassengers(ctx, i.ID)
+	passengers, err := queriesTx.ListPassengersByItinerary(ctx, i.ID)
 	if err != nil {
 		return api.Itinerary{}, err
 	}
@@ -115,8 +122,8 @@ func (h *Handler) CreateItinerary(ctx context.Context, request api.CreateItinera
 	// Add flights
 	for _, flightID := range request.Body.FlightIDs {
 		err := queriesTx.AddFlightToItinerary(ctx, db.AddFlightToItineraryParams{
-			ItineraryID:      created.ID,
-			FlightID: int64(flightID),
+			ItineraryID: created.ID,
+			FlightID:    int64(flightID),
 		})
 		if err != nil {
 			return nil, err

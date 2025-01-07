@@ -13,7 +13,7 @@ func TestGetItinerary(t *testing.T) {
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	passenger := insertPassengersWithNamesT(t, handler, "John Doe")[0]
 	flight := insertFlightT(t, handler, fixtureManualFlight)
-	itinerary := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passenger)})
+	itinerary := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{passenger})
 
 	t.Run("exists", func(t *testing.T) {
 		var recordID api.RecordLocator
@@ -75,8 +75,8 @@ func TestListItineraries(t *testing.T) {
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	passengers := insertPassengersWithNamesT(t, handler, "John Doe", "Jane Doe")
 	flight := insertFlightT(t, handler, fixtureManualFlight)
-	itinerary1 := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passengers[0])})
-	itinerary2 := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passengers[1])})
+	itinerary1 := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{passengers[0]})
+	itinerary2 := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{passengers[1]})
 
 	resp, err := handler.ListItineraries(ctx, api.ListItinerariesRequestObject{})
 	if err != nil {
@@ -98,8 +98,8 @@ func TestCreateItinerary(t *testing.T) {
 
 	resp, err := handler.CreateItinerary(ctx, api.CreateItineraryRequestObject{
 		Body: &api.CreateItineraryJSONRequestBody{
-			FlightIDs: []int{int(flight.Id)},
-			PassengerIDs:      []int{int(passengers[0])},
+			FlightIDs:    []int{int(flight.Id)},
+			PassengerIDs: []int{int(passengers[0])},
 		},
 	})
 	if err != nil {
@@ -119,7 +119,7 @@ func TestDeleteItinerary(t *testing.T) {
 	insertAirlinesWithIATACodesT(t, handler, "XX")
 	passengers := insertPassengersWithNamesT(t, handler, "John Doe")
 	flight := insertFlightT(t, handler, fixtureManualFlight)
-	itinerary := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passengers[0])})
+	itinerary := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{passengers[0]})
 
 	resp, err := handler.DeleteItinerary(ctx, api.DeleteItineraryRequestObject{
 		ItinerarySpec: api.NewItinerarySpec(int(itinerary), ""),
@@ -155,8 +155,8 @@ func insertItineraryT(t *testing.T, handler *Handler, flightIDs []int64, passeng
 
 	resp, err := handler.CreateItinerary(context.Background(), api.CreateItineraryRequestObject{
 		Body: &api.CreateItineraryJSONRequestBody{
-			FlightIDs: flightIds,
-			PassengerIDs:      passengerIds,
+			FlightIDs:    flightIds,
+			PassengerIDs: passengerIds,
 		},
 	})
 	if err != nil {

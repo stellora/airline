@@ -138,3 +138,10 @@ func NewFleetSpec(id int, code string) FleetSpec {
 	}
 	return spec
 }
+
+func (i Itinerary) ItinerarySpecs() ItinerarySpecs {
+	return ItinerarySpecs{
+		Id:       i.Id,
+		RecordID: i.RecordID,
+	}
+}

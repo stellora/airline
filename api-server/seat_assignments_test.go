@@ -32,11 +32,11 @@ func TestListSeatAssignmentsForFlight(t *testing.T) {
 					RecordID: "TEST00",
 				},
 				Passenger: api.Passenger{
-					Id:   passengers[0],
+					Id:   int(passengers[0]),
 					Name: "John Doe",
 				},
 				FlightID: flight.Id,
-				Seat:             "1A",
+				Seat:     "1A",
 			},
 			{
 				Id: 2,
@@ -45,11 +45,11 @@ func TestListSeatAssignmentsForFlight(t *testing.T) {
 					RecordID: "TEST01",
 				},
 				Passenger: api.Passenger{
-					Id:   passengers[1],
+					Id:   int(passengers[1]),
 					Name: "Jane Doe",
 				},
 				FlightID: flight.Id,
-				Seat:             "3D",
+				Seat:     "3D",
 			},
 		})
 	})
@@ -65,7 +65,7 @@ func TestListSeatAssignmentsForFlight(t *testing.T) {
 	})
 }
 
-func TestCreateSeatAssignment(t *testing.T) {
+func TestSetSeatAssignment(t *testing.T) {
 	ctx, handler := handlerTest(t)
 	insertAirportsWithIATACodesT(t, handler, "AAA", "BBB")
 	insertAirlinesWithIATACodesT(t, handler, "XX")
@@ -73,9 +73,10 @@ func TestCreateSeatAssignment(t *testing.T) {
 	flight := insertFlightT(t, handler, fixtureManualFlight)
 	itineraryID := insertItineraryT(t, handler, []int64{int64(flight.Id)}, []int64{int64(passenger)})
 
-	resp, err := handler.CreateSeatAssignment(ctx, api.CreateSeatAssignmentRequestObject{
-		FlightID: flight.Id,
-		Body: &api.CreateSeatAssignmentJSONRequestBody{
+	resp, err := handler.SetSeatAssignment(ctx, api.SetSeatAssignmentRequestObject{
+		ItinerarySpec: api.NewItinerarySpec(int(itineraryID), ""),
+		SegmentID:     int64(flight.Id), // TODO!(sqs): left off here on 2025-01-07, need to insert segments with insertSegmentT or make insertItineraryT do that automatically
+		Body: &api.SetSeatAssignmentJSONRequestBody{
 			ItineraryID: api.ItineraryID(itineraryID),
 			PassengerID: int(passenger),
 			Seat:        "1A",
@@ -85,8 +86,8 @@ func TestCreateSeatAssignment(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got := resp.(api.CreateSeatAssignment201JSONResponse)
-	assertEqual(t, got, api.CreateSeatAssignment201JSONResponse{
+	got := resp.(api.SetSeatAssignment201JSONResponse)
+	assertEqual(t, got, api.SetSeatAssignment201JSONResponse{
 		Id: 1,
 		Itinerary: api.ItinerarySpecs{
 			Id:       1,
@@ -97,7 +98,7 @@ func TestCreateSeatAssignment(t *testing.T) {
 			Name: "John Doe",
 		},
 		FlightID: flight.Id,
-		Seat:             "1A",
+		Seat:     "1A",
 	})
 }
 
@@ -105,9 +106,9 @@ func insertSeatAssignmentT(t *testing.T, handler *Handler, passengerID int64, fl
 	// Insert an itinerary for convenience.
 	itineraryID := insertItineraryT(t, handler, []int64{int64(flightID)}, []int64{passengerID})
 
-	resp, err := handler.CreateSeatAssignment(context.Background(), api.CreateSeatAssignmentRequestObject{
+	resp, err := handler.SetSeatAssignment(context.Background(), api.SetSeatAssignmentRequestObject{
 		FlightID: flightID,
-		Body: &api.CreateSeatAssignmentJSONRequestBody{
+		Body: &api.SetSeatAssignmentJSONRequestBody{
 			ItineraryID: int(itineraryID),
 			PassengerID: int(passengerID),
 			Seat:        seat,
@@ -116,6 +117,6 @@ func insertSeatAssignmentT(t *testing.T, handler *Handler, passengerID int64, fl
 	if err != nil {
 		t.Fatal(err)
 	}
-	created := resp.(api.CreateSeatAssignment201JSONResponse)
+	created := resp.(api.SetSeatAssignment201JSONResponse)
 	return int64(created.Id)
 }

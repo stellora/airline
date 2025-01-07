@@ -7,15 +7,16 @@ import (
 	"github.com/stellora/airline/api-server/api"
 )
 
-var samplePassenger = api.Passenger{
-	Id:   1,
-	Name: "John Doe",
-}
-
-var anotherPassenger = api.Passenger{
-	Id:   2,
-	Name: "Jane Smith",
-}
+var (
+	fixturePassenger1 = api.Passenger{
+		Id:   1,
+		Name: "John Doe",
+	}
+	fixturePassenger2 = api.Passenger{
+		Id:   2,
+		Name: "Jane Smith",
+	}
+)
 
 func TestGetPassenger(t *testing.T) {
 	ctx, handler := handlerTest(t)
@@ -28,7 +29,7 @@ func TestGetPassenger(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(t, resp, api.GetPassenger200JSONResponse(samplePassenger))
+		assertEqual(t, resp, api.GetPassenger200JSONResponse(fixturePassenger1))
 	})
 
 	t.Run("does not exist", func(t *testing.T) {
@@ -52,8 +53,8 @@ func TestListPassengers(t *testing.T) {
 	}
 
 	assertEqual(t, resp, api.ListPassengers200JSONResponse{
-		samplePassenger,
-		anotherPassenger,
+		fixturePassenger1,
+		fixturePassenger2,
 	})
 }
 
@@ -69,7 +70,7 @@ func TestCreatePassenger(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assertEqual(t, resp, api.CreatePassenger201JSONResponse(samplePassenger))
+	assertEqual(t, resp, api.CreatePassenger201JSONResponse(fixturePassenger1))
 	checkPassengerNames(t, handler, []string{"John Doe"})
 }
 
@@ -88,7 +89,7 @@ func TestUpdatePassenger(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := samplePassenger
+	expected := fixturePassenger1
 	expected.Name = newName
 	assertEqual(t, resp, api.UpdatePassenger200JSONResponse(expected))
 	checkPassengerNames(t, handler, []string{"John Smith"})
@@ -125,7 +126,7 @@ func checkPassengerNames(t *testing.T, handler *Handler, want []string) {
 	}
 }
 
-func insertPassengersWithNamesT(t *testing.T, handler *Handler, names ...string) (ids []int) {
+func insertPassengersWithNamesT(t *testing.T, handler *Handler, names ...string) (ids []int64) {
 	t.Helper()
 	ctx := context.Background()
 	for _, name := range names {
@@ -137,7 +138,7 @@ func insertPassengersWithNamesT(t *testing.T, handler *Handler, names ...string)
 		if err != nil {
 			t.Fatal(err)
 		}
-		ids = append(ids, resp.(api.CreatePassenger201JSONResponse).Id)
+		ids = append(ids, int64(resp.(api.CreatePassenger201JSONResponse).Id))
 	}
 	return ids
 }

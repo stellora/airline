@@ -150,39 +150,54 @@ CREATE TABLE IF NOT EXISTS itineraries (
   record_id TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS itinerary_flights (
-  itinerary_id INTEGER NOT NULL,
-  flight_id INTEGER NOT NULL,
-  PRIMARY KEY (itinerary_id, flight_id),
-  FOREIGN KEY (itinerary_id) REFERENCES itineraries(id),
-  FOREIGN KEY (flight_id) REFERENCES flights(id)
-);
-
-CREATE TABLE IF NOT EXISTS itinerary_passengers (
+CREATE TABLE IF NOT EXISTS tickets (
+  id INTEGER PRIMARY KEY,
+  number TEXT NOT NULL,
   itinerary_id INTEGER NOT NULL,
   passenger_id INTEGER NOT NULL,
-  PRIMARY KEY (itinerary_id, passenger_id),
-  FOREIGN KEY (itinerary_id) REFERENCES itineraries(id),
+  fare_basis TEXT NOT NULL,
+  UNIQUE (number),
   FOREIGN KEY (passenger_id) REFERENCES passengers(id)
 );
 
-CREATE TABLE IF NOT EXISTS seat_assignments (
+CREATE TABLE IF NOT EXISTS segments (
   id INTEGER PRIMARY KEY,
   itinerary_id INTEGER NOT NULL,
-  passenger_id INTEGER NOT NULL,
   flight_id INTEGER NOT NULL,
-  seat TEXT NOT NULL,
-  UNIQUE (itinerary_id, passenger_id, flight_id),
-  UNIQUE (flight_id, seat),
+  passenger_id INTEGER NOT NULL, -- all segments must have all passengers from itinerary_passengers
+  booking_class TEXT NOT NULL,
   FOREIGN KEY (itinerary_id) REFERENCES itineraries(id),
-  FOREIGN KEY (passenger_id) REFERENCES passengers(id),
-  FOREIGN KEY (flight_id) REFERENCES flights(id)
+  FOREIGN KEY (flight_id) REFERENCES flights(id),
+  FOREIGN KEY (passenger_id) REFERENCES passengers(id)
+);
+
+CREATE VIEW IF NOT EXISTS segments_view AS
+SELECT segments.*,
+  itineraries.record_id AS itinerary_record_id,
+  passengers.name AS passenger_name
+FROM segments
+JOIN itineraries ON itineraries.id=segments.itinerary_id
+JOIN passengers ON passengers.id=segments.passenger_id;
+
+CREATE TABLE IF NOT EXISTS seat_assignments (
+  id INTEGER PRIMARY KEY,
+  segment_id INTEGER NOT NULL,
+  flight_id INTEGER NOT NULL, -- denormalized (a seat assignment's flight_id must equal its segment's flight_id) to allow for unique constraint
+  passenger_id INTEGER NOT NULL,
+  seat TEXT NOT NULL,
+  UNIQUE (segment_id, passenger_id),
+  UNIQUE (flight_id, seat),
+  FOREIGN KEY (segment_id) REFERENCES segments(id),
+  FOREIGN KEY (flight_id) REFERENCES flights(id),
+  FOREIGN KEY (passenger_id) REFERENCES passengers(id)
 );
 
 CREATE VIEW IF NOT EXISTS seat_assignments_view AS
 SELECT seat_assignments.*,
+  itineraries.id AS itinerary_id,
   itineraries.record_id AS itinerary_record_id,
   passengers.name AS passenger_name
 FROM seat_assignments
-JOIN itineraries ON itineraries.id=seat_assignments.itinerary_id
+JOIN segments ON segments.id=seat_assignments.segment_id
+JOIN itineraries ON itineraries.id=segments.itinerary_id
 JOIN passengers ON passengers.id=seat_assignments.passenger_id;

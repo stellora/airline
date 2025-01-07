@@ -392,8 +392,7 @@ export interface paths {
         /** Get seat assignments for a flight */
         get: operations["listSeatAssignmentsForFlight"];
         put?: never;
-        /** Create a seat assignment for a flight */
-        post: operations["createSeatAssignment"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -464,6 +463,125 @@ export interface paths {
         post?: never;
         /** Delete an itinerary */
         delete: operations["deleteItinerary"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/itineraries/{itinerarySpec}/passengers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List passengers for an itinerary */
+        get: operations["listPassengersByItinerary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/itineraries/{itinerarySpec}/passengers/{passengerID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a passenger from an itinerary */
+        delete: operations["deletePassengerFromItinerary"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/itineraries/{itinerarySpec}/segments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List segments for all passengers on an itinerary */
+        get: operations["listSegmentsByItinerary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/itineraries/{itinerarySpec}/segments/{segmentID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deleteSegmentFromItinerary"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a seat assignment for a passenger on a segment in an itinerary */
+        get: operations["getSeatAssignment"];
+        /** Set a seat assignment for a passenger on a segment in an itinerary */
+        put: operations["setSeatAssignment"];
+        post?: never;
+        delete: operations["deleteSeatAssignment"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all tickets */
+        get: operations["listTickets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tickets/{ticketNumber}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a ticket by ID */
+        get: operations["getTicket"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -659,7 +777,13 @@ export interface components {
         Itinerary: {
             id: components["schemas"]["ItineraryID"];
             recordID: components["schemas"]["RecordLocator"];
+            /** @description All ticket numbers for all passengers in the itinerary. */
+            ticketNumbers?: components["schemas"]["TicketNumber"][];
+            /** @description All segments in the itinerary. */
+            segments?: components["schemas"]["Segment"][];
+            /** @description All flights for all segments in the itinerary. */
             flights: components["schemas"]["Flight"][];
+            /** @description All passengers in the itinerary. */
             passengers: components["schemas"]["Passenger"][];
         };
         ItinerarySpecs: {
@@ -670,11 +794,28 @@ export interface components {
             id: number;
             name: string;
         };
+        /** @description An eticket number. */
+        TicketNumber: string;
+        Ticket: {
+            id: number;
+            number: components["schemas"]["TicketNumber"];
+            itinerary: components["schemas"]["ItinerarySpecs"];
+            passenger: components["schemas"]["Passenger"];
+            fareBasis: string;
+        };
+        Segment: {
+            id: number;
+            itinerary: components["schemas"]["ItinerarySpecs"];
+            flight: components["schemas"]["Flight"];
+            passenger: components["schemas"]["Passenger"];
+            bookingClass: string;
+        };
         SeatNumber: string;
         SeatAssignment: {
             id: number;
             itinerary: components["schemas"]["ItinerarySpecs"];
             passenger: components["schemas"]["Passenger"];
+            segmentID: number;
             flightID: number;
             seat: components["schemas"]["SeatNumber"];
         };
@@ -2023,50 +2164,6 @@ export interface operations {
             };
         };
     };
-    createSeatAssignment: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                flightID: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    itineraryID: components["schemas"]["ItineraryID"];
-                    passengerID: number;
-                    seat: components["schemas"]["SeatNumber"];
-                };
-            };
-        };
-        responses: {
-            /** @description Seat assignment created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeatAssignment"];
-                };
-            };
-            /** @description Invalid request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Flight not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     listPassengers: {
         parameters: {
             query?: never;
@@ -2320,6 +2417,273 @@ export interface operations {
                 content?: never;
             };
             /** @description Itinerary not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listPassengersByItinerary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itinerarySpec: components["parameters"]["itinerarySpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of passengers */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Passenger"][];
+                };
+            };
+            /** @description Itinerary not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deletePassengerFromItinerary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itinerarySpec: components["parameters"]["itinerarySpec"];
+                passengerID: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Passenger deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Passenger or itinerary not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listSegmentsByItinerary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itinerarySpec: components["parameters"]["itinerarySpec"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of segments */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Segment"][];
+                };
+            };
+            /** @description Itinerary not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteSegmentFromItinerary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itinerarySpec: components["parameters"]["itinerarySpec"];
+                segmentID: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Segment deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Segment or itinerary not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getSeatAssignment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itinerarySpec: components["parameters"]["itinerarySpec"];
+                passengerID: number;
+                segmentID: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Seat assignment found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeatAssignment"];
+                };
+            };
+            /** @description Seat assignment not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    setSeatAssignment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itinerarySpec: components["parameters"]["itinerarySpec"];
+                passengerID: number;
+                segmentID: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    seat: components["schemas"]["SeatNumber"];
+                };
+            };
+        };
+        responses: {
+            /** @description Seat assignment created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeatAssignment"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Flight not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteSeatAssignment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itinerarySpec: components["parameters"]["itinerarySpec"];
+                passengerID: number;
+                segmentID: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Seat assignment deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Seat assignment not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listTickets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of tickets */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"][];
+                };
+            };
+        };
+    };
+    getTicket: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ticketNumber: components["schemas"]["TicketNumber"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ticket found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+            /** @description Ticket not found */
             404: {
                 headers: {
                     [name: string]: unknown;

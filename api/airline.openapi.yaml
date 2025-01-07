@@ -866,43 +866,6 @@ paths:
                   $ref: '#/components/schemas/SeatAssignment'
         '404':
           description: Flight not found
-    post:
-      operationId: createSeatAssignment
-      summary: Create a seat assignment for a flight
-      parameters:
-        - name: flightID
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                itineraryID:
-                  $ref: '#/components/schemas/ItineraryID'
-                passengerID:
-                  type: integer
-                seat:
-                  $ref: '#/components/schemas/SeatNumber'
-              required:
-                - itineraryID
-                - passengerID
-                - seat
-      responses:
-        '201':
-          description: Seat assignment created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SeatAssignment'
-        '400':
-          description: Invalid request
-        '404':
-          description: Flight not found
   /passengers:
     get:
       operationId: listPassengers
@@ -1069,6 +1032,184 @@ paths:
           description: Itinerary deleted
         '404':
           description: Itinerary not found
+  /itineraries/{itinerarySpec}/passengers:
+    get:
+      operationId: listPassengersByItinerary
+      summary: List passengers for an itinerary
+      parameters:
+        - $ref: '#/components/parameters/itinerarySpec'
+      responses:
+        '200':
+          description: List of passengers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Passenger'
+        '404':
+          description: Itinerary not found
+  /itineraries/{itinerarySpec}/passengers/{passengerID}:
+    delete:
+      operationId: deletePassengerFromItinerary
+      summary: Remove a passenger from an itinerary
+      parameters:
+        - $ref: '#/components/parameters/itinerarySpec'
+        - name: passengerID
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Passenger deleted
+        '404':
+          description: Passenger or itinerary not found
+  /itineraries/{itinerarySpec}/segments:
+    get:
+      operationId: listSegmentsByItinerary
+      summary: List segments for all passengers on an itinerary
+      parameters:
+        - $ref: '#/components/parameters/itinerarySpec'
+      responses:
+        '200':
+          description: List of segments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Segment'
+        '404':
+          description: Itinerary not found
+  /itineraries/{itinerarySpec}/segments/{segmentID}:
+    delete:
+      operationId: deleteSegmentFromItinerary
+      parameters:
+        - $ref: '#/components/parameters/itinerarySpec'
+        - name: segmentID
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Segment deleted
+        '404':
+          description: Segment or itinerary not found
+  /itineraries/{itinerarySpec}/passengers/{passengerID}/segments/{segmentID}/seat-assignment:
+    get:
+      operationId: getSeatAssignment
+      summary: Get a seat assignment for a passenger on a segment in an itinerary
+      parameters:
+        - $ref: '#/components/parameters/itinerarySpec'
+        - name: passengerID
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: segmentID
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Seat assignment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatAssignment'
+        '404':
+          description: Seat assignment not found
+    put:
+      operationId: setSeatAssignment
+      summary: Set a seat assignment for a passenger on a segment in an itinerary
+      parameters:
+        - $ref: '#/components/parameters/itinerarySpec'
+        - name: passengerID
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: segmentID
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seat:
+                  $ref: '#/components/schemas/SeatNumber'
+              required:
+                - seat
+      responses:
+        '201':
+          description: Seat assignment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatAssignment'
+        '400':
+          description: Invalid request
+        '404':
+          description: Flight not found
+    delete:
+      operationId: deleteSeatAssignment
+      parameters:
+        - $ref: '#/components/parameters/itinerarySpec'
+        - name: passengerID
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: segmentID
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Seat assignment deleted
+        '404':
+          description: Seat assignment not found
+  /tickets:
+    get:
+      operationId: listTickets
+      summary: List all tickets
+      responses:
+        '200':
+          description: List of tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+  /tickets/{ticketNumber}:
+    get:
+      operationId: getTicket
+      summary: Get a ticket by ID
+      parameters:
+        - name: ticketNumber
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TicketNumber'
+      responses:
+        '200':
+          description: Ticket found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '404':
+          description: Ticket not found
   /routes:
     get:
       operationId: listRoutes
@@ -1477,12 +1618,24 @@ components:
           $ref: '#/components/schemas/ItineraryID'
         recordID:
           $ref: '#/components/schemas/RecordLocator'
+        ticketNumbers:
+          type: array
+          description: All ticket numbers for all passengers in the itinerary.
+          items:
+            $ref: '#/components/schemas/TicketNumber'
+        segments:
+          type: array
+          description: All segments in the itinerary.
+          items:
+            $ref: '#/components/schemas/Segment'
         flights:
           type: array
+          description: All flights for all segments in the itinerary.
           items:
             $ref: '#/components/schemas/Flight'
         passengers:
           type: array
+          description: All passengers in the itinerary.
           items:
             $ref: '#/components/schemas/Passenger'
           minItems: 1
@@ -1511,6 +1664,50 @@ components:
       required:
         - id
         - name
+    TicketNumber:
+      type: string
+      description: An eticket number.
+      pattern: '^[0-9]{13}$'
+      minLength: 13
+      maxLength: 13
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+        number:
+          $ref: '#/components/schemas/TicketNumber'
+        itinerary:
+          $ref: '#/components/schemas/ItinerarySpecs'
+        passenger:
+          $ref: '#/components/schemas/Passenger'
+        fareBasis:
+          type: string
+      required:
+        - id
+        - number
+        - itinerary
+        - passenger
+        - fareBasis
+    Segment:
+      type: object
+      properties:
+        id:
+          type: integer
+        itinerary:
+          $ref: '#/components/schemas/ItinerarySpecs'
+        flight:
+          $ref: '#/components/schemas/Flight'
+        passenger:
+          $ref: '#/components/schemas/Passenger'
+        bookingClass:
+          type: string
+      required:
+        - id
+        - itinerary
+        - flight
+        - passenger
+        - bookingClass
     SeatNumber:
       type: string
       pattern: '^[0-9]{1,2}[A-Z]$'
@@ -1525,6 +1722,8 @@ components:
           $ref: '#/components/schemas/ItinerarySpecs'
         passenger:
           $ref: '#/components/schemas/Passenger'
+        segmentID:
+          type: integer
         flightID:
           type: integer
         seat:
@@ -1533,5 +1732,6 @@ components:
         - id
         - itinerary
         - passenger
+        - segmentID
         - flightID
         - seat
