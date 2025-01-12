@@ -13,7 +13,7 @@
 	<Sidebar.Provider>
 		<AppSidebar />
 		<div class="w-full overflow-hidden h-screen flex flex-col [&>:first-child]:flex-none">
-			<PageNavbar breadcrumbs={page.data.breadcrumbs} />
+			<PageNavbar />
 			<div class="overflow-x-hidden overflow-y-auto">
 				<div class="p-4 max-w-screen-lg mx-auto">
 					{@render children?.()}
