@@ -9,5 +9,6 @@
 	],
 	"files.exclude": {
 		"**/*.openapi.ts": true
-	}
+	},
+	"openctx.enable": false // TODO!(sqs)
 }
