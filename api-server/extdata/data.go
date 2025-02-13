@@ -11,7 +11,7 @@ import (
 )
 
 // TODO!(sqs): make this not run each time
-//OFF go:generate go run -tags gen github.com/stellora/airline/api-server/extdata/get-extdata -format=gob -out=airports.data.gob
+//go:generate go run -tags gen github.com/stellora/airline/api-server/extdata/get-extdata -format=gob -out=airports.data.gob
 
 //go:embed airports.data.gob
 var airportsData []byte
