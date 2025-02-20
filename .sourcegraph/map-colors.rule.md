@@ -1,0 +1,1 @@
+All map colors should use gradients instead of solid color.
