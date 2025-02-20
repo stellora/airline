@@ -1,5 +1,14 @@
 # Airline (demo app)
 
+Airline is a demonstration application that simulates an airline reservation and flight management system. It provides functionality for:
+
+- Managing flight schedules and routes between airports
+- Tracking airlines, aircraft, and fleet information
+- Handling passenger itineraries and bookings
+- Visualizing flight routes and airport connections
+
+The application consists of a Go-based API server and a TypeScript/web frontend.
+
 ## Usage
 
 ```shell
@@ -17,9 +26,13 @@ pnpm -C web dev
 
 See `mise run` for development commands.
 
-## Data
+## Data Sources
 
-- [Airports data](https://ourairports.com/data/) from OurAirports
+The application uses real-world data sources:
+
+- [Airports data](https://ourairports.com/data/) from OurAirports - provides accurate airport information including IATA codes and locations
+- Sample flight schedules and routes based on real airline operations
+- Simulated booking and passenger data for demonstration purposes
 
 ## Style guide
 
