@@ -9,3 +9,5 @@ Thumbs.db
 !.env.test
 
 /api-server/airline.db
+
+web/build/
