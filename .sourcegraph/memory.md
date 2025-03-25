@@ -2,8 +2,8 @@
 
 ## Web (Frontend)
 - **Install dependencies:** `pnpm -C web install`
-- **Development server:** `pnpm -C web dev` (then visit http://localhost:5174)
-  - Assume the user is already running the dev server at http://localhost:5174. For any changes to the web app, ALWAYS navigate to the page on http://localhost:5174 in Puppeteer and confirm the changes by viewing a screenshot.
+- **Development server:** `pnpm -C web dev` (then visit http://localhost:5179)
+  - Assume the user is already running the dev server at http://localhost:5179. For any changes to the web app, ALWAYS navigate to the page on http://localhost:5179 in Puppeteer and confirm the changes by viewing a screenshot.
 - **Build:** `pnpm -C web build`
 - **Lint:** `pnpm -C web lint`
 - **Type check:** `pnpm -C web check`

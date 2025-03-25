@@ -10,5 +10,5 @@ export default defineConfig({
 		include: ['src/**/*.test.ts'],
 		environmentMatchGlobs: [['src/**/*.svelte.test.ts', 'jsdom']],
 	},
-server:{port:5174}
+server:{port:5179}
 })
