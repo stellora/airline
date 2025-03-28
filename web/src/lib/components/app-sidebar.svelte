@@ -38,6 +38,7 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import * as Sidebar from '$lib/components/ui/sidebar'
+	import { isFeatureFlagEnabled } from '$lib/feature-flags'
 	import { route } from '$lib/route-helpers'
 	import Book from 'lucide-svelte/icons/book'
 	import Building from 'lucide-svelte/icons/building'
@@ -58,6 +59,7 @@
 	import AppSidebarAirlineSwitcher from './app-sidebar-airline-switcher.svelte'
 	import { isActiveURL } from './ui/page/page-navbar-tabs.svelte'
 
+	// Define items based on feature flags
 	const items: Item[] = [
 		{
 			title: 'Book flights',
@@ -119,6 +121,26 @@
 			icon: Plane,
 		},
 	]
+
+	if (isFeatureFlagEnabled('check-in.auto')) {
+		// Would add auto check-in item to admin menu
+		// items.push({
+		// 	title: 'Auto Check-in',
+		// 	url: route('/manage/[airlineSpec]/check-in', {
+		// 		params: { airlineSpec: airlineIataCode },
+		// 	}),
+		// 	icon: CalendarRange,
+		// })
+	}
+
+	if (isFeatureFlagEnabled('loyalty.tier-upgrades')) {
+		// Would add loyalty program item to menu
+		// items.push({
+		// 	title: 'Loyalty Program',
+		// 	url: '/loyalty',
+		// 	icon: CircleUser,
+		// })
+	}
 
 	const devItems: Item[] = [
 		{

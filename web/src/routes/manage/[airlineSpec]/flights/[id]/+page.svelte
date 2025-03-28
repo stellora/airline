@@ -15,7 +15,8 @@
 		formatFlightTime,
 	} from '$lib/datetime-helpers.js'
 	import { flightTitle } from '$lib/flight-helpers'
-	import { parseZonedDateTime } from '@internationalized/date'
+import { isFeatureFlagEnabled } from '$lib/feature-flags'
+import { parseZonedDateTime } from '@internationalized/date'
 	import CalendarDays from 'lucide-svelte/icons/calendar-days'
 
 	let { data } = $props()
@@ -80,6 +81,10 @@
 	<Card.Root>
 		<Card.Header>
 			<Card.Title>Notes</Card.Title>
+			{#if isFeatureFlagEnabled('ancillary.wifi-booking')}
+				<!-- WiFi booking badge would go here -->
+				<!-- <Badge variant="outline" class="ml-2">WiFi Available</Badge> -->
+			{/if}
 		</Card.Header>
 		<Card.Content>
 			{#if data.flight.notes}

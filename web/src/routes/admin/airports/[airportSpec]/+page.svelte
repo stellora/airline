@@ -3,7 +3,8 @@
 	import * as Card from '$lib/components/ui/card'
 	import * as DefinitionList from '$lib/components/ui/definition-list/index.js'
 	import Page from '$lib/components/ui/page/page.svelte'
-	import type { Feature, Point } from 'geojson'
+import { isFeatureFlagEnabled } from '$lib/feature-flags'
+import type { Feature, Point } from 'geojson'
 
 	let { data } = $props()
 
@@ -32,6 +33,15 @@
 			</Card.Header>
 			<Card.Content>
 				<DefinitionList.Root>
+					{#if isFeatureFlagEnabled('search.nearby-airports')}
+						<!-- Nearby airports would be shown here -->
+						<!-- <DefinitionList.Item title="Nearby airports">
+							<ul class="list-disc list-inside">
+								<li>AAA - 50 miles</li>
+								<li>BBB - 75 miles</li>
+							</ul>
+						</DefinitionList.Item> -->
+					{/if}
 					<DefinitionList.Item title="Location">
 						{data.airport.region}, {data.airport.country}
 					</DefinitionList.Item>

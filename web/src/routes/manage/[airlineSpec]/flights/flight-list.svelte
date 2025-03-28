@@ -9,7 +9,8 @@
 	import * as Table from '$lib/components/ui/table'
 	import { formatFlightDate, formatFlightDuration, formatFlightTime } from '$lib/datetime-helpers'
 	import { route } from '$lib/route-helpers'
-	import type { Flight } from '$lib/types'
+import type { Flight } from '$lib/types'
+import { isFeatureFlagEnabled } from '$lib/feature-flags'
 	import { parseZonedDateTime } from '@internationalized/date'
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
@@ -38,6 +39,12 @@
 					{@const departureDateTime = parseZonedDateTime(flight.departureDateTime)}
 					{@const arrivalDateTime = parseZonedDateTime(flight.arrivalDateTime)}
 					<Table.Row class="stretched-link-container group">
+						{#if isFeatureFlagEnabled('notification.sms')}
+							<!-- SMS notification badge would appear here for flights with SMS notifications enabled -->
+							<!-- <div class="absolute right-0 top-0 transform translate-x-1/2 -translate-y-1/2">
+								<span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">SMS</span>
+							</div> -->
+						{/if}
 						<Table.Cell>
 							<FormattedDatetime value={departureDateTime} class="cursor-help">
 								{formatFlightDate(departureDateTime)}

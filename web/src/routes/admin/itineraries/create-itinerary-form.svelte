@@ -4,6 +4,7 @@
 	import * as Form from '$lib/components/ui/form'
 	import { Input } from '$lib/components/ui/input'
 	import CircleAlert from 'lucide-svelte/icons/circle-alert'
+import { isFeatureFlagEnabled } from '$lib/feature-flags'
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms'
 	import { typebox } from 'sveltekit-superforms/adapters'
 
@@ -31,6 +32,17 @@
 	class="flex flex-col gap-6 items-start"
 	data-testid="itinerary-form"
 >
+	{#if isFeatureFlagEnabled('booking.multi-city')}
+		<!-- Multi-city booking form fields would go here -->
+		<!-- <Form.Field {form} name="legCount">
+			<Form.Control>
+				{#snippet children({ props })}
+					<Form.Label>Number of cities</Form.Label>
+					<Input {...props} type="number" min="2" max="5" />
+				{/snippet}
+			</Form.Control>
+		</Form.Field> -->
+	{/if}
 	<Form.Field {form} name="name">
 		<Form.Control>
 			{#snippet children({ props })}

@@ -9,5 +9,10 @@
 	],
 	"files.exclude": {
 		"**/*.openapi.ts": true
+	},
+	"amp.mcpServers": {
+		"feature-flags": {
+			"url": "http://localhost:7010/sse"
+		}
 	}
 }

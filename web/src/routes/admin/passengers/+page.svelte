@@ -7,7 +7,8 @@
 	import Page from '$lib/components/ui/page/page.svelte'
 	import * as Table from '$lib/components/ui/table'
 	import { route } from '$lib/route-helpers'
-	import ChevronRight from 'lucide-svelte/icons/chevron-right'
+import { isFeatureFlagEnabled } from '$lib/feature-flags'
+import ChevronRight from 'lucide-svelte/icons/chevron-right'
 	import Plus from 'lucide-svelte/icons/plus'
 	import PassengerForm from './passenger-form.svelte'
 
@@ -43,6 +44,10 @@
 			<Table.Header>
 				<Table.Row>
 					<Table.Head class="w-[300px]">Name</Table.Head>
+					{#if isFeatureFlagEnabled('auth.one-time-passwords')}
+						<!-- One-time password column would be here -->
+						<!-- <Table.Head>OTP Status</Table.Head> -->
+					{/if}
 					<Table.Head class="text-right"></Table.Head>
 				</Table.Row>
 			</Table.Header>
