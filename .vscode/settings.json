@@ -14,5 +14,7 @@
 		"feature-flags": {
 			"url": "http://localhost:7010/sse"
 		}
-	}
+	},
+//	"amp.commands.allowlist": ["*"],
+	"workbench.colorTheme": "Default Dark Modern",
 }
