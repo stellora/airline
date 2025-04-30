@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
 	"strings"
 
 	"github.com/stellora/airline/api-server/api"
+	"github.com/stellora/airline/api-server/db"
 	"github.com/stellora/airline/api-server/localtime"
 )
 
@@ -772,6 +775,11 @@ func insertSampleData(ctx context.Context, handler *Handler) error {
 		if seatAssignmentsCreated > 0 && seatAssignmentsCreated%100 == 0 {
 			log.Printf("- created %d seat assignments", seatAssignmentsCreated)
 		}
+	}
+	
+	// Create loyalty programs for airlines and passengers
+	if err := createSampleLoyaltyPrograms(ctx, handler); err != nil {
+		return err
 	}
 
 	itins := []createItineraryParams{

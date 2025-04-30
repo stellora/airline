@@ -66,7 +66,7 @@
 	)
 </script>
 
-<div class="flex flex-col gap-6 p-4 -mt-14">
+<div class="flex flex-col gap-6 p-4 -mt-14 bg-white">
 	<svg
 		class="self-center w-1/2 h-24 text-muted-foreground/20 scale-x-150 scale-y-[200%] ml-8"
 		viewBox="0 0 240 100"

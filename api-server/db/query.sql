@@ -265,9 +265,10 @@ INSERT INTO flights (
   departure_datetime_utc,
   arrival_datetime_utc,
   notes,
-  published
+  published,
+  mileage_reward
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 RETURNING id;
 
@@ -283,7 +284,8 @@ arrival_datetime = COALESCE(sqlc.narg('arrival_datetime'), arrival_datetime),
 departure_datetime_utc = COALESCE(sqlc.narg('departure_datetime_utc'), departure_datetime_utc),
 arrival_datetime_utc = COALESCE(sqlc.narg('arrival_datetime_utc'), arrival_datetime_utc),
 notes = COALESCE(sqlc.narg('notes'), notes),
-published = COALESCE(sqlc.narg('published'), published)
+published = COALESCE(sqlc.narg('published'), published),
+mileage_reward = COALESCE(sqlc.narg('mileage_reward'), mileage_reward)
 WHERE id=sqlc.arg('id')
 RETURNING id;
 
@@ -448,3 +450,35 @@ LIMIT 1;
 -- name: ListRoutes :many
 SELECT * FROM routes
 ORDER BY schedules_count DESC, origin_airport_id ASC, destination_airport_id ASC;
+
+------------------------------------------------------------------------------- airline_loyalties
+
+-- name: CreateAirlineLoyalty :one
+INSERT INTO airline_loyalties (airline_id, passenger_id, mileage_balance)
+VALUES (?, ?, ?)
+RETURNING id;
+
+-- name: GetAirlineLoyalty :one
+SELECT * FROM airline_loyalties
+WHERE airline_id = ? AND passenger_id = ?;
+
+-- name: GetAirlineLoyaltyByID :one
+SELECT * FROM airline_loyalties
+WHERE id = ?;
+
+-- name: GetAirlineLoyaltiesByPassenger :many
+SELECT * FROM airline_loyalties
+WHERE passenger_id = ?;
+
+-- name: ListAirlineLoyalties :many
+SELECT * FROM airline_loyalties;
+
+-- name: UpdateAirlineLoyalty :one
+UPDATE airline_loyalties
+SET mileage_balance = COALESCE(sqlc.narg('mileage_balance'), mileage_balance)
+WHERE id = sqlc.arg('id')
+RETURNING id;
+
+-- name: DeleteAirlineLoyalty :exec
+DELETE FROM airline_loyalties
+WHERE id = ?;

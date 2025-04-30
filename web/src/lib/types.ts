@@ -14,3 +14,9 @@ export type Itinerary = components['schemas']['Itinerary']
 export type SeatAssignment = components['schemas']['SeatAssignment']
 export type SeatNumber = components['schemas']['SeatNumber']
 export type Fleet = components['schemas']['Fleet']
+export type AirlineLoyalty = {
+  id: number;
+  airline: Airline;
+  passengerId: number;
+  mileageBalance: number;
+}

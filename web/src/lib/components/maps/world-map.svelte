@@ -99,7 +99,7 @@
 	})
 </script>
 
-<div class="map-wrapper" bind:this={containerRef}>
+<div class="map-wrapper bg-white" bind:this={containerRef}>
 	<svg
 		width={widthArg === 'auto' ? undefined : width}
 		height={heightArg === 'auto' ? undefined : height}

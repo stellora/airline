@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/stellora/airline/api-server/api"
@@ -45,6 +46,7 @@ func fromDBFlight(a db.FlightsView) api.Flight {
 		ArrivalDateTime:   a.ArrivalDatetime,
 		Notes:             a.Notes,
 		Published:         a.Published,
+		MileageReward:     int(a.MileageReward),
 	}
 	b.DistanceMiles = distanceMilesBetweenAirports(b.OriginAirport, b.DestinationAirport)
 	if a.AircraftID.Valid {
@@ -178,6 +180,7 @@ func (h *Handler) CreateFlight(ctx context.Context, request api.CreateFlightRequ
 		ArrivalDatetimeUtc:   request.Body.ArrivalDateTime.Time.In(time.UTC),
 		Notes:                request.Body.Notes,
 		Published:            request.Body.Published != nil && *request.Body.Published,
+		MileageReward:        calculateMileageReward(originAirport, destinationAirport),
 	})
 	if err != nil {
 		return nil, err
@@ -262,6 +265,16 @@ func (h *Handler) UpdateFlight(ctx context.Context, request api.UpdateFlightRequ
 	}
 
 	return api.UpdateFlight200JSONResponse(fromDBFlight(row)), nil
+}
+
+// Calculate mileage reward based on distance between airports
+func calculateMileageReward(origin, destination db.Airport) int64 {
+	distance := distanceMilesBetweenAirports(
+		fromDBAirport(origin),
+		fromDBAirport(destination),
+	)
+	// Base rule: 1 mile of travel = 1 reward mile, rounded to nearest hundred
+	return int64(math.Round(float64(distance) / 100) * 100)
 }
 
 func (h *Handler) DeleteFlight(ctx context.Context, request api.DeleteFlightRequestObject) (api.DeleteFlightResponseObject, error) {
