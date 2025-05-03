@@ -17,4 +17,6 @@
 	},
 //	"amp.commands.allowlist": ["*"],
 	"workbench.colorTheme": "Default Dark Modern",
+	"vitest.disableWorkspaceWarning": true,
 }
+
