@@ -24,9 +24,9 @@ jobs:
       - name: Set pnpm version from .tool-versions
         run: |
           PNPM_VERSION=$(grep pnpm .tool-versions | awk '{print $2}')
-          npm pkg set packageManager="pnpm@${PNPM_VERSION}"
+          cd web && npm pkg set packageManager="pnpm@${PNPM_VERSION}"
       - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # SECURITY: pin third-party action hashes
-      - run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - run: echo "STORE_PATH=$(cd web && pnpm store path)" >> $GITHUB_OUTPUT
         shell: bash
         id: pnpm-cache
       - name: Cache pnpm store

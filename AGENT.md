@@ -1,5 +1,7 @@
 # Build and Test Commands
 
+Use GitHub Actions for CI (`.github/workflows/ci.yml`).
+
 ## Web (Frontend)
 - **Install dependencies:** `pnpm -C web install`
 - **Development server:** `pnpm -C web dev` (then visit http://localhost:5179)
