@@ -18,6 +18,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'api-server/go.mod'
+          cache-dependency-path: "**/*.sum"
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
@@ -26,6 +27,8 @@ jobs:
           PNPM_VERSION=$(grep pnpm .tool-versions | awk '{print $2}')
           cd web && npm pkg set packageManager="pnpm@${PNPM_VERSION}"
       - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # SECURITY: pin third-party action hashes
+        with:
+          package_json_file: web/package.json
       - run: echo "STORE_PATH=$(cd web && pnpm store path)" >> $GITHUB_OUTPUT
         shell: bash
         id: pnpm-cache
