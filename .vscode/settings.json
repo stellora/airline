@@ -15,6 +15,20 @@
 			"url": "http://localhost:7010/sse"
 		}
 	},
+		"amp.hooks": [
+		{
+			"id": "svelte5-syntax-guard",
+			"on": {
+				"event": "tool-use:execute",
+				"tool": "edit_file",
+				"matchString": "export let"
+			},
+			"action": {
+				"type": "interrupt-with-user-message",
+				"message": "Always use Svelte 5 syntax (`let { ... } = $props()`) not `export let` (Svelte 4 syntax)"
+			}
+		}
+	],
 //	"amp.commands.allowlist": ["*"],
 	"workbench.colorTheme": "Default Dark Modern",
 	"vitest.disableWorkspaceWarning": true,
