@@ -1,0 +1,47 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'api-server/go.mod'
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+      - name: Set pnpm version from .tool-versions
+        run: |
+          PNPM_VERSION=$(grep pnpm .tool-versions | awk '{print $2}')
+          npm pkg set packageManager="pnpm@${PNPM_VERSION}"
+      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # SECURITY: pin third-party action hashes
+      - run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+        shell: bash
+        id: pnpm-cache
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-store-
+      # Go tests
+      - name: Run Go tests
+        run: cd api-server && go test ./...
+      # Web tests
+      - name: Install web dependencies
+        run: pnpm -C web install
+      - name: Run type check
+        run: pnpm -C web check
+      - name: Run unit tests
+        run: pnpm -C web test:unit
