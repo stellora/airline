@@ -577,8 +577,12 @@ paths:
                 durationSec:
                   type: integer
                 published:
-                  type: boolean
-                  default: false
+                type: boolean
+                default: false
+         mileageReward:
+            type: integer
+            description: The number of airline miles/points earned for this flight
+            default: 0
               required:
                 - airline
                 - number
@@ -959,6 +963,89 @@ paths:
                 $ref: '#/components/schemas/Passenger'
         '404':
           description: Passenger not found
+  /passengers/{id}/loyalty-programs:
+    get:
+      operationId: listPassengerAirlineLoyalties
+      summary: List all loyalty programs for a passenger
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of loyalty programs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AirlineLoyalty'
+        '404':
+          description: Passenger not found
+  /airline-loyalty-programs:
+    get:
+      operationId: listAirlineLoyalties
+      summary: List all airline loyalty programs
+      responses:
+        '200':
+          description: List of airline loyalty programs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AirlineLoyalty'
+  /airline-loyalty-programs/{id}:
+    get:
+      operationId: getAirlineLoyalty
+      summary: Get a specific airline loyalty program
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Airline loyalty program found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirlineLoyalty'
+        '404':
+          description: Airline loyalty program not found
+  /add-loyalty-miles:
+    post:
+      operationId: addLoyaltyMiles
+      summary: Add miles to a passenger's loyalty account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                airline:
+                  $ref: '#/components/schemas/AirlineSpec'
+                passengerId:
+                  type: integer
+                miles:
+                  type: integer
+              required:
+                - airline
+                - passengerId
+                - miles
+      responses:
+        '200':
+          description: Miles added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirlineLoyalty'
+        '404':
+          description: Airline or passenger not found
     patch:
       operationId: updatePassenger
       parameters:
@@ -1428,6 +1515,10 @@ components:
         published:
            type: boolean
            default: false
+        mileageReward:
+           type: integer
+           description: The number of airline miles/points earned for this flight
+           default: 0
       required:
         - id
         - airline
@@ -1535,3 +1626,20 @@ components:
         - passenger
         - flightID
         - seat
+    AirlineLoyalty:
+      type: object
+      properties:
+        id:
+          type: integer
+        airline:
+          $ref: '#/components/schemas/Airline'
+        passengerId:
+          type: integer
+        mileageBalance:
+          type: integer
+          description: The total number of miles/points accumulated
+      required:
+        - id
+        - airline
+        - passengerId
+        - mileageBalance

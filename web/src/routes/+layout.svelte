@@ -16,7 +16,7 @@ import { isFeatureFlagEnabled } from '$lib/feature-flags'
 		<div class="w-full overflow-hidden h-screen flex flex-col [&>:first-child]:flex-none">
 			<PageNavbar breadcrumbs={page.data.breadcrumbs} />
 			<div class="overflow-x-hidden overflow-y-auto">
-				<div class="p-4 max-w-screen-lg mx-auto">
+				<div class="p-4 max-w-screen-lg mx-auto bg-[#FECC00]">
 					{#if isFeatureFlagEnabled('support.live-chat')}
 						<!-- Live chat support widget would appear here -->
 						<!-- <div class="fixed bottom-4 right-4 z-50 shadow-lg rounded-full">

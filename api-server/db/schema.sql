@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS flights (
   arrival_datetime_utc DATETIME NOT NULL,
   notes TEXT NOT NULL,
   published BOOLEAN NOT NULL,
+  mileage_reward INTEGER NOT NULL DEFAULT 0,
   FOREIGN KEY (source_schedule_id) REFERENCES schedules(id),
   FOREIGN KEY (airline_id) REFERENCES airlines(id),
   FOREIGN KEY (fleet_id) REFERENCES fleets(id),
@@ -186,3 +187,13 @@ SELECT seat_assignments.*,
 FROM seat_assignments
 JOIN itineraries ON itineraries.id=seat_assignments.itinerary_id
 JOIN passengers ON passengers.id=seat_assignments.passenger_id;
+
+CREATE TABLE IF NOT EXISTS airline_loyalties (
+  id INTEGER PRIMARY KEY,
+  airline_id INTEGER NOT NULL,
+  passenger_id INTEGER NOT NULL,
+  mileage_balance INTEGER NOT NULL DEFAULT 0,
+  UNIQUE (airline_id, passenger_id),
+  FOREIGN KEY (airline_id) REFERENCES airlines(id),
+  FOREIGN KEY (passenger_id) REFERENCES passengers(id)
+);

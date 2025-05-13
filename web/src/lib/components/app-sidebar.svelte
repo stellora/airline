@@ -77,6 +77,11 @@
 			icon: Info,
 		},
 		{
+			title: 'Loyalty Programs',
+			url: '/loyalty',
+			icon: CircleUser,
+		},
+		{
 			title: 'Routes',
 			url: route('/admin/routes'),
 			icon: Waypoints,
