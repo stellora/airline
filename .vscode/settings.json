@@ -17,17 +17,18 @@
 	},
 		"amp.hooks": [
 		{
+			"compatibilityDate": "2025-05-13",
 			"id": "svelte5-syntax-guard",
 			"on": {
-				"event": "tool-use:execute",
+				"event": "tool:pre-execute",
 				"tool": "edit_file",
-				"matchString": "export let"
+				"input.contains": "export let"
 			},
 			"action": {
-				"type": "interrupt-with-user-message",
+				"type": "send-user-message",
 				"message": "Always use Svelte 5 syntax (`let { ... } = $props()`) not `export let` (Svelte 4 syntax)"
 			}
-		}
+		},
 	],
 //	"amp.commands.allowlist": ["*"],
 	"workbench.colorTheme": "Default Dark Modern",
