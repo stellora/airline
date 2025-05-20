@@ -13,6 +13,10 @@
 	"amp.mcpServers": {
 		"feature-flags": {
 			"url": "http://localhost:7010/sse"
+		},
+		"playwright": {
+			"command": "npx",
+			"args": ["-y", "@playwright/mcp@latest"]
 		}
 	},
 //	"amp.commands.allowlist": ["*"],
